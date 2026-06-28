@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import numpy as np
 
+from simulator.action_executor import is_action_valid
 from simulator.simulation import Simulation
 
 
 def action_mask(simulation: Simulation) -> np.ndarray:
-    valid_ids = set(simulation.valid_action_ids())
     return np.array(
-        [action_id in valid_ids for action_id in simulation.actions],
+        [is_action_valid(action, simulation.state)[0] for action in simulation.actions.values()],
         dtype=bool,
     )

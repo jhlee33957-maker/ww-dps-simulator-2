@@ -6,6 +6,7 @@ import gymnasium as gym
 import numpy as np
 from gymnasium import spaces
 
+from env.action_mask import action_mask
 from env.reward import reward_from_damage
 from simulator.simulation import Simulation
 
@@ -18,17 +19,21 @@ class WuwaDpsEnv(gym.Env):
         self.data_dir = Path(data_dir)
         self.simulation = Simulation.from_json(self.data_dir)
         self.action_ids = list(self.simulation.actions)
+        self.character_ids = list(self.simulation.characters)
+        observation_size = 3 + len(self.character_ids) * 3
         self.action_space = spaces.Discrete(len(self.action_ids))
         self.observation_space = spaces.Box(
             low=0.0,
             high=np.inf,
-            shape=(5,),
+            shape=(observation_size,),
             dtype=np.float32,
         )
 
     def reset(self, seed: int | None = None, options: dict | None = None):
         super().reset(seed=seed)
         self.simulation = Simulation.from_json(self.data_dir)
+        self.action_ids = list(self.simulation.actions)
+        self.character_ids = list(self.simulation.characters)
         return self._observation(), {}
 
     def step(self, action: int):
@@ -52,16 +57,28 @@ class WuwaDpsEnv(gym.Env):
         }
         return self._observation(), reward, terminated, truncated, info
 
+    def action_masks(self) -> np.ndarray:
+        return action_mask(self.simulation)
+
     def _observation(self) -> np.ndarray:
         state = self.simulation.state
-        active = state.active_character_id
-        return np.array(
-            [
-                state.current_time / self.simulation.combat_duration,
-                state.total_damage / 1_000_000.0,
-                state.resonance_energy.get(active, 0.0) / 100.0,
-                state.concerto_energy.get(active, 0.0) / 100.0,
-                float(len(state.active_buffs)),
-            ],
-            dtype=np.float32,
+        duration = self.simulation.combat_duration
+        values: list[float] = [
+            state.current_time / duration,
+            max(0.0, duration - state.current_time) / duration,
+            state.total_damage / 1_000_000.0,
+        ]
+        values.extend(
+            1.0 if character_id == state.active_character_id else 0.0
+            for character_id in self.character_ids
         )
+        values.extend(
+            state.resonance_energy.get(character_id, 0.0)
+            / self.simulation.characters[character_id].resonance_energy_max
+            for character_id in self.character_ids
+        )
+        values.extend(
+            state.concerto_energy.get(character_id, 0.0) / 100.0
+            for character_id in self.character_ids
+        )
+        return np.array(values, dtype=np.float32)

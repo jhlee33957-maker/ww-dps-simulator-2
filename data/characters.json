@@ -8,7 +8,8 @@
     "damage_bonus": 0.42,
     "resonance_energy": 80,
     "concerto_energy": 0,
-    "active": true
+    "active": true,
+    "resonance_energy_max": 125
   },
   {
     "id": "sub",
@@ -19,7 +20,8 @@
     "damage_bonus": 0.3,
     "resonance_energy": 70,
     "concerto_energy": 0,
-    "active": false
+    "active": false,
+    "resonance_energy_max": 125
   },
   {
     "id": "support",
@@ -30,6 +32,7 @@
     "damage_bonus": 0.18,
     "resonance_energy": 60,
     "concerto_energy": 0,
-    "active": false
+    "active": false,
+    "resonance_energy_max": 125
   }
 ]

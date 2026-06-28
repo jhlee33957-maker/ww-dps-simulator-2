@@ -25,6 +25,7 @@ class CharacterData(BaseModel):
     crit_damage: float = Field(ge=0)
     damage_bonus: float = 0.0
     resonance_energy: float = Field(ge=0)
+    resonance_energy_max: float = Field(default=125.0, gt=0)
     concerto_energy: float = Field(ge=0)
     active: bool = False
 
@@ -60,6 +61,13 @@ class ActiveBuff(BaseModel):
     remaining_duration: float
 
 
+class ResourceChange(BaseModel):
+    resonance_gained: float = 0.0
+    resonance_wasted: float = 0.0
+    concerto_gained: float = 0.0
+    concerto_wasted: float = 0.0
+
+
 class CombatState(BaseModel):
     current_time: float = 0.0
     total_damage: float = 0.0
@@ -68,6 +76,8 @@ class CombatState(BaseModel):
     active_buffs: list[ActiveBuff] = Field(default_factory=list)
     resonance_energy: dict[str, float] = Field(default_factory=dict)
     concerto_energy: dict[str, float] = Field(default_factory=dict)
+    wasted_resonance_energy: dict[str, float] = Field(default_factory=dict)
+    wasted_concerto_energy: dict[str, float] = Field(default_factory=dict)
 
 
 class ActionResult(BaseModel):
@@ -78,6 +88,10 @@ class ActionResult(BaseModel):
     end_time: float
     damage: float
     valid: bool
+    resonance_energy_gained: float = 0.0
+    resonance_energy_wasted: float = 0.0
+    concerto_energy_gained: float = 0.0
+    concerto_energy_wasted: float = 0.0
     reason: str | None = None
 
 
@@ -89,6 +103,10 @@ class TimelineEntry(BaseModel):
     character_id: str | None
     damage: float
     active_character: str
+    resonance_energy_gained: float = 0.0
+    resonance_energy_wasted: float = 0.0
+    concerto_energy_gained: float = 0.0
+    concerto_energy_wasted: float = 0.0
 
 
 class SimulationSummary(BaseModel):

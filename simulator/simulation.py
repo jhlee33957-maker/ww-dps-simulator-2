@@ -74,7 +74,10 @@ class Simulation:
         resources = {
             char_id: {
                 "resonance_energy": self.state.resonance_energy.get(char_id, 0.0),
+                "resonance_energy_max": self.characters[char_id].resonance_energy_max,
+                "wasted_resonance_energy": self.state.wasted_resonance_energy.get(char_id, 0.0),
                 "concerto_energy": self.state.concerto_energy.get(char_id, 0.0),
+                "wasted_concerto_energy": self.state.wasted_concerto_energy.get(char_id, 0.0),
             }
             for char_id in self.characters
         }

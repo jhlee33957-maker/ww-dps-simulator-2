@@ -13,6 +13,7 @@ DATA_DIR = Path(__file__).parent / "data"
 
 DEMO_SEQUENCES: dict[str, list[str]] = {
     "Balanced demo": [
+        "swap_to_support",
         "support_resonance_skill",
         "support_resonance_liberation",
         "swap_to_sub",
@@ -20,10 +21,8 @@ DEMO_SEQUENCES: dict[str, list[str]] = {
         "sub_echo_skill",
         "swap_to_main",
         "main_resonance_skill",
-        "main_basic_attack",
         "main_resonance_liberation",
-        "main_echo_skill",
-        "short_wait",
+        "main_basic_attack",
     ],
     "Main DPS focus": [
         "main_resonance_skill",

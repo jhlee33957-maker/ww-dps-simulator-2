@@ -10,6 +10,11 @@ def create_initial_state(characters: dict[str, CharacterData]) -> CombatState:
 
     return CombatState(
         active_character_id=active.id,
-        resonance_energy={char.id: char.resonance_energy for char in characters.values()},
-        concerto_energy={char.id: char.concerto_energy for char in characters.values()},
+        resonance_energy={
+            char.id: min(char.resonance_energy, char.resonance_energy_max)
+            for char in characters.values()
+        },
+        concerto_energy={char.id: min(char.concerto_energy, 100.0) for char in characters.values()},
+        wasted_resonance_energy={char.id: 0.0 for char in characters.values()},
+        wasted_concerto_energy={char.id: 0.0 for char in characters.values()},
     )
