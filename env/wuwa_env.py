@@ -18,23 +18,24 @@ class WuwaDpsEnv(gym.Env):
         super().__init__()
         self.data_dir = Path(data_dir)
         self.simulation = Simulation.from_json(self.data_dir)
-        self.action_ids = list(self.simulation.actions)
-        self.character_ids = list(self.simulation.characters)
-        observation_size = 3 + len(self.character_ids) * 3
+        self.action_ids = self._get_action_order()
+        self.character_ids = self._get_character_order()
+        self.buff_ids = self._get_buff_order()
         self.action_space = spaces.Discrete(len(self.action_ids))
         self.observation_space = spaces.Box(
             low=0.0,
             high=np.inf,
-            shape=(observation_size,),
+            shape=(self._get_observation_size(),),
             dtype=np.float32,
         )
 
     def reset(self, seed: int | None = None, options: dict | None = None):
         super().reset(seed=seed)
         self.simulation = Simulation.from_json(self.data_dir)
-        self.action_ids = list(self.simulation.actions)
-        self.character_ids = list(self.simulation.characters)
-        return self._observation(), {}
+        self.action_ids = self._get_action_order()
+        self.character_ids = self._get_character_order()
+        self.buff_ids = self._get_buff_order()
+        return self._get_observation(), {}
 
     def step(self, action: int):
         before_damage = self.simulation.state.total_damage
@@ -55,12 +56,37 @@ class WuwaDpsEnv(gym.Env):
             "total_damage": self.simulation.state.total_damage,
             "dps": self.simulation.state.total_damage / self.simulation.combat_duration,
         }
-        return self._observation(), reward, terminated, truncated, info
+        return self._get_observation(), reward, terminated, truncated, info
 
     def action_masks(self) -> np.ndarray:
         return action_mask(self.simulation)
 
-    def _observation(self) -> np.ndarray:
+    def _get_action_order(self) -> list[str]:
+        return list(self.simulation.actions)
+
+    def _get_character_order(self) -> list[str]:
+        return list(self.simulation.characters)
+
+    def _get_buff_order(self) -> list[str]:
+        return list(self.simulation.buffs)
+
+    def _get_observation_size(self) -> int:
+        base_values = 3
+        active_character_one_hot = len(self.character_ids)
+        resonance_ratios = len(self.character_ids)
+        concerto_ratios = len(self.character_ids)
+        cooldown_ratios = len(self.action_ids)
+        buff_duration_ratios = len(self.buff_ids)
+        return (
+            base_values
+            + active_character_one_hot
+            + resonance_ratios
+            + concerto_ratios
+            + cooldown_ratios
+            + buff_duration_ratios
+        )
+
+    def _get_observation(self) -> np.ndarray:
         state = self.simulation.state
         duration = self.simulation.combat_duration
         values: list[float] = [
@@ -81,4 +107,24 @@ class WuwaDpsEnv(gym.Env):
             state.concerto_energy.get(character_id, 0.0) / 100.0
             for character_id in self.character_ids
         )
+        values.extend(self._cooldown_ratio(action_id) for action_id in self.action_ids)
+        values.extend(self._buff_duration_ratio(buff_id) for buff_id in self.buff_ids)
         return np.array(values, dtype=np.float32)
+
+    def _cooldown_ratio(self, action_id: str) -> float:
+        action = self.simulation.actions[action_id]
+        if action.cooldown <= 0.0:
+            return 0.0
+        return self.simulation.state.cooldowns.get(action_id, 0.0) / action.cooldown
+
+    def _buff_duration_ratio(self, buff_id: str) -> float:
+        buff = self.simulation.buffs[buff_id]
+        remaining = max(
+            (active.remaining_duration for active in self.simulation.state.active_buffs if active.buff_id == buff_id),
+            default=0.0,
+        )
+        return remaining / buff.duration
+
+    # Backward-compatible alias for code that used the earlier private method.
+    def _observation(self) -> np.ndarray:
+        return self._get_observation()

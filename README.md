@@ -26,9 +26,18 @@ This project is an initial scaffold for a Wuthering Waves-style DPS simulation t
 - Echo skill is modeled per character with a normal cooldown.
 - No dash, animation canceling, hit timing, enemy behavior, or RL training is included yet.
 
+## Beam Search Baseline
+
+Beam Search is included as a deterministic baseline before PPO work begins. It expands only currently valid actions, deep-copies simulator states for candidate branches, and keeps the top candidates by a simple score. The score prioritizes total damage, adds small resource-value bonuses, penalizes wasted resources, and lightly penalizes ending too far past 120 seconds.
+
+This gives future RL work a readable comparison point: before training a policy, the project can already produce a deterministic search result using the same simulator and action validation rules.
+
 ## RL Status
 
-The project has a Gymnasium-ready environment skeleton and an `action_masks()` method for future sb3-contrib Maskable PPO support. It does not implement training yet.
+- A Gymnasium environment exists.
+- Action masks exist and are exposed through `WuwaDpsEnv.action_masks()`.
+- Observations include time, remaining time, total damage, active character, resources, cooldowns, and active buff durations.
+- PPO and Maskable PPO training are not implemented yet.
 
 ## Install
 
@@ -44,19 +53,24 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-## Smoke Test
+## Checks
 
 ```bash
+python -m compileall .
 python scripts/smoke_test.py
+python scripts/env_smoke_test.py
+python scripts/beam_search_test.py
+streamlit run app.py
 ```
 
 ## Project Layout
 
-- `app.py`: Streamlit prototype UI.
+- `app.py`: Streamlit prototype UI with demo and Beam Search modes.
 - `data/`: Dummy JSON data for characters, actions, and buffs.
 - `simulator/`: Core deterministic simulation logic.
 - `env/`: Gymnasium-ready environment skeleton for future RL.
-- `scripts/`: Small local utility scripts such as the smoke test.
+- `solver/`: Deterministic baseline solvers such as Beam Search.
+- `scripts/`: Small local utility scripts and smoke tests.
 - `results/`: Placeholder for experiment outputs.
 - `models/`: Placeholder for trained models later.
 
@@ -65,5 +79,5 @@ python scripts/smoke_test.py
 1. Add hit timing.
 2. Add real character data.
 3. Add proper intro, outro, and concerto logic.
-4. Add Beam Search baseline.
+4. Add stronger search baselines.
 5. Add Maskable PPO training.
