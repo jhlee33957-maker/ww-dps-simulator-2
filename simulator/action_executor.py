@@ -1,12 +1,8 @@
 from __future__ import annotations
 
+from simulator.anomaly_system import advance_anomalies, apply_anomaly, get_havoc_bane_def_reduction
 from simulator.buff_system import apply_buff, buffed_combat_stats, has_required_buffs, tick_buffs
-from simulator.damage_formula import (
-    calculate_anomaly_damage,
-    calculate_havoc_bane_def_reduction,
-    calculate_normal_damage,
-    calculate_tune_break_damage,
-)
+from simulator.damage_formula import calculate_normal_damage, calculate_tune_break_damage
 from simulator.models import ActionData, ActionResult, BuffData, CharacterData, CombatState, TimelineEntry
 from simulator.resource_system import apply_resource_changes, can_pay_resources
 
@@ -44,20 +40,19 @@ def reduce_cooldowns(state: CombatState, elapsed: float) -> None:
             del state.cooldowns[action_id]
 
 
-def _calculate_action_damage(
+def _calculate_direct_damage(
     action: ActionData,
     state: CombatState,
     characters: dict[str, CharacterData],
     buffs: dict[str, BuffData],
-) -> tuple[float, float, float]:
+) -> tuple[float, float]:
     if action.character_id is None or action.action_type == "swap":
-        return 0.0, 0.0, 0.0
+        return 0.0, 0.0
 
     character = characters[action.character_id]
     stats = buffed_combat_stats(character, state, buffs)
-    enemy_def_reduction = state.def_reduction
-    if action.anomaly_type == "havoc_bane":
-        enemy_def_reduction += calculate_havoc_bane_def_reduction(action.anomaly_stacks)
+    # Havoc Bane is modeled as enemy defense reduction while active.
+    final_def_reduction = state.def_reduction + get_havoc_bane_def_reduction(state)
 
     normal_damage = 0.0
     if action.damage_multiplier > 0.0:
@@ -76,7 +71,7 @@ def _calculate_action_damage(
             attacker_level=int(stats["attacker_level"]),
             enemy_level=state.enemy_level,
             def_ignore=stats["def_ignore"],
-            def_reduction=enemy_def_reduction,
+            def_reduction=final_def_reduction,
             dmg_taken=stats["dmg_taken"],
             final_dmg_bonus=stats["final_dmg_bonus"],
         )
@@ -92,23 +87,10 @@ def _calculate_action_damage(
             attacker_level=int(stats["attacker_level"]),
             enemy_level=state.enemy_level,
             def_ignore=stats["def_ignore"],
-            def_reduction=enemy_def_reduction,
+            def_reduction=final_def_reduction,
         )
 
-    anomaly_damage = 0.0
-    if action.anomaly_type is not None:
-        anomaly_damage = calculate_anomaly_damage(
-            anomaly_type=action.anomaly_type,
-            stacks=action.anomaly_stacks,
-            enemy_res=state.enemy_res,
-            res_pen=state.res_pen,
-            attacker_level=int(stats["attacker_level"]),
-            enemy_level=state.enemy_level,
-            def_ignore=stats["def_ignore"],
-            def_reduction=enemy_def_reduction,
-        )
-
-    return normal_damage, tune_break_damage, anomaly_damage
+    return normal_damage, tune_break_damage
 
 
 def execute_action(
@@ -131,27 +113,37 @@ def execute_action(
             reason=reason,
         )
 
-    # Only buffs active at action start affect this damage. Buffs from this action
-    # are applied after the action resolves and affect later actions.
-    normal_damage, tune_break_damage, anomaly_damage = _calculate_action_damage(action, state, characters, buffs)
-    total_action_damage = normal_damage + tune_break_damage + anomaly_damage
+    # Start-of-action direct damage uses already-active buffs and anomalies only.
+    normal_damage, tune_break_damage = _calculate_direct_damage(action, state, characters, buffs)
+    direct_damage = normal_damage + tune_break_damage
 
     if action.action_type == "swap" and action.character_id is not None:
         state.active_character_id = action.character_id
 
-    state.total_damage += total_action_damage
+    state.total_damage += direct_damage
     resource_change = apply_resource_changes(state, action, characters)
 
     state.current_time += action.duration
     reduce_cooldowns(state, action.duration)
     tick_buffs(state, action.duration)
+    anomaly_tick_damage, anomaly_damage_by_type = advance_anomalies(state, action.duration)
+    state.total_damage += anomaly_tick_damage
+
+    total_action_damage = direct_damage + anomaly_tick_damage
+
+    for buff_id in action.applies_buffs:
+        apply_buff(state, buffs[buff_id], action.character_id)
+    apply_anomaly(state, action)
 
     # Simplified cooldown model: cooldown starts at the end of the action.
     if action.cooldown > 0.0:
         state.cooldowns[action.id] = action.cooldown
 
-    for buff_id in action.applies_buffs:
-        apply_buff(state, buffs[buff_id], action.character_id)
+    active_anomalies_after = {
+        anomaly_type: anomaly.stacks
+        for anomaly_type, anomaly in state.active_anomalies.items()
+        if anomaly.remaining_duration > 0.0
+    }
 
     return ActionResult(
         action_id=action.id,
@@ -162,9 +154,13 @@ def execute_action(
         damage=total_action_damage,
         normal_damage=normal_damage,
         tune_break_damage=tune_break_damage,
-        anomaly_damage=anomaly_damage,
+        direct_anomaly_damage=0.0,
+        anomaly_tick_damage=anomaly_tick_damage,
+        anomaly_damage=anomaly_tick_damage,
+        anomaly_damage_by_type=anomaly_damage_by_type,
         total_action_damage=total_action_damage,
         total_damage_after=state.total_damage,
+        active_anomalies_after=active_anomalies_after,
         valid=True,
         resonance_energy_gained=resource_change.resonance_gained,
         resonance_energy_wasted=resource_change.resonance_wasted,
@@ -183,9 +179,13 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         damage=result.damage,
         normal_damage=result.normal_damage,
         tune_break_damage=result.tune_break_damage,
+        direct_anomaly_damage=result.direct_anomaly_damage,
+        anomaly_tick_damage=result.anomaly_tick_damage,
         anomaly_damage=result.anomaly_damage,
+        anomaly_damage_by_type=result.anomaly_damage_by_type,
         total_action_damage=result.total_action_damage,
         total_damage_after=result.total_damage_after,
+        active_anomalies_after=result.active_anomalies_after,
         active_character=active_character_name,
         resonance_energy_gained=result.resonance_energy_gained,
         resonance_energy_wasted=result.resonance_energy_wasted,

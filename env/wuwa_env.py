@@ -86,6 +86,8 @@ class WuwaDpsEnv(gym.Env):
         concerto_ratios = len(self.character_ids)
         cooldown_ratios = len(self.action_ids)
         buff_duration_ratios = len(self.buff_ids)
+        anomaly_stack_counts = 4
+        anomaly_duration_ratios = 4
         return (
             base_values
             + active_character_one_hot
@@ -93,6 +95,8 @@ class WuwaDpsEnv(gym.Env):
             + concerto_ratios
             + cooldown_ratios
             + buff_duration_ratios
+            + anomaly_stack_counts
+            + anomaly_duration_ratios
         )
 
     def _get_observation(self) -> np.ndarray:
@@ -118,6 +122,19 @@ class WuwaDpsEnv(gym.Env):
         )
         values.extend(self._cooldown_ratio(action_id) for action_id in self.action_ids)
         values.extend(self._buff_duration_ratio(buff_id) for buff_id in self.buff_ids)
+        anomaly_order = ["aero_erosion", "spectro_frazzle", "electro_flare", "havoc_bane"]
+        values.extend(
+            self.simulation.state.active_anomalies.get(anomaly_type).stacks / 99.0
+            if anomaly_type in self.simulation.state.active_anomalies
+            else 0.0
+            for anomaly_type in anomaly_order
+        )
+        values.extend(
+            self.simulation.state.active_anomalies.get(anomaly_type).remaining_duration / 6.0
+            if anomaly_type in self.simulation.state.active_anomalies
+            else 0.0
+            for anomaly_type in anomaly_order
+        )
         return np.array(values, dtype=np.float32)
 
     def _cooldown_ratio(self, action_id: str) -> float:

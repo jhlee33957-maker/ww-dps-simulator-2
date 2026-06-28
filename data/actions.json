@@ -20,7 +20,11 @@
     "tags": [
       "damage",
       "normal"
-    ]
+    ],
+    "applies_anomaly_type": null,
+    "applies_anomaly_stacks": 0,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1
   },
   {
     "damage_category": "normal",
@@ -46,7 +50,11 @@
       "damage",
       "skill",
       "normal"
-    ]
+    ],
+    "applies_anomaly_type": null,
+    "applies_anomaly_stacks": 0,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1
   },
   {
     "damage_category": "normal",
@@ -71,7 +79,11 @@
       "ultimate",
       "normal",
       "tune_break"
-    ]
+    ],
+    "applies_anomaly_type": null,
+    "applies_anomaly_stacks": 0,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1
   },
   {
     "damage_category": "normal",
@@ -95,21 +107,25 @@
       "damage",
       "echo",
       "tune_break"
-    ]
+    ],
+    "applies_anomaly_type": null,
+    "applies_anomaly_stacks": 0,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1
   },
   {
     "damage_category": "anomaly",
     "tune_break_multiplier": 0,
     "tune_break_boost_points": 0,
-    "anomaly_type": "aero_erosion",
-    "anomaly_stacks": 3,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
     "id": "main_aero_erosion",
-    "name": "Main Aero Erosion Proc",
+    "name": "Main Aero Erosion Application",
     "character_id": "main",
     "action_type": "basic_attack",
     "duration": 1,
     "cooldown": 10,
-    "damage_multiplier": 0.8,
+    "damage_multiplier": 0.25,
     "resonance_energy_gain": 5,
     "concerto_energy_gain": 5,
     "resonance_energy_cost": 0,
@@ -119,7 +135,38 @@
       "damage",
       "anomaly",
       "aero_erosion"
-    ]
+    ],
+    "applies_anomaly_type": "aero_erosion",
+    "applies_anomaly_stacks": 3,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1
+  },
+  {
+    "damage_category": "anomaly",
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
+    "id": "main_havoc_bane",
+    "name": "Main Havoc Bane Application",
+    "character_id": "main",
+    "action_type": "basic_attack",
+    "duration": 0.8,
+    "cooldown": 12,
+    "damage_multiplier": 0,
+    "resonance_energy_gain": 3,
+    "concerto_energy_gain": 3,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "anomaly",
+      "havoc_bane"
+    ],
+    "applies_anomaly_type": "havoc_bane",
+    "applies_anomaly_stacks": 5,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1
   },
   {
     "damage_category": "normal",
@@ -142,7 +189,11 @@
     "tags": [
       "damage",
       "normal"
-    ]
+    ],
+    "applies_anomaly_type": null,
+    "applies_anomaly_stacks": 0,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1
   },
   {
     "damage_category": "normal",
@@ -168,7 +219,11 @@
       "damage",
       "skill",
       "normal"
-    ]
+    ],
+    "applies_anomaly_type": null,
+    "applies_anomaly_stacks": 0,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1
   },
   {
     "damage_category": "normal",
@@ -192,14 +247,18 @@
       "damage",
       "ultimate",
       "normal"
-    ]
+    ],
+    "applies_anomaly_type": null,
+    "applies_anomaly_stacks": 0,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1
   },
   {
     "damage_category": "normal",
     "tune_break_multiplier": 0,
     "tune_break_boost_points": 0,
-    "anomaly_type": "electro_flare",
-    "anomaly_stacks": 8,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
     "id": "sub_echo_skill",
     "name": "Sub Echo Skill",
     "character_id": "sub",
@@ -217,14 +276,18 @@
       "echo",
       "anomaly",
       "electro_flare"
-    ]
+    ],
+    "applies_anomaly_type": "electro_flare",
+    "applies_anomaly_stacks": 5,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1
   },
   {
     "damage_category": "normal",
     "tune_break_multiplier": 0,
     "tune_break_boost_points": 0,
-    "anomaly_type": "spectro_frazzle",
-    "anomaly_stacks": 2,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
     "id": "support_basic_attack",
     "name": "Support Basic Attack",
     "character_id": "support",
@@ -241,7 +304,11 @@
       "damage",
       "anomaly",
       "spectro_frazzle"
-    ]
+    ],
+    "applies_anomaly_type": "spectro_frazzle",
+    "applies_anomaly_stacks": 2,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1
   },
   {
     "damage_category": "normal",
@@ -268,14 +335,18 @@
       "skill",
       "buff",
       "normal"
-    ]
+    ],
+    "applies_anomaly_type": null,
+    "applies_anomaly_stacks": 0,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1
   },
   {
     "damage_category": "normal",
     "tune_break_multiplier": 0,
     "tune_break_boost_points": 0,
-    "anomaly_type": "havoc_bane",
-    "anomaly_stacks": 5,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
     "id": "support_resonance_liberation",
     "name": "Support Resonance Liberation",
     "character_id": "support",
@@ -295,7 +366,11 @@
       "ultimate",
       "buff",
       "havoc_bane"
-    ]
+    ],
+    "applies_anomaly_type": "havoc_bane",
+    "applies_anomaly_stacks": 5,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1
   },
   {
     "damage_category": "normal",
@@ -319,7 +394,11 @@
       "damage",
       "echo",
       "tune_break"
-    ]
+    ],
+    "applies_anomaly_type": null,
+    "applies_anomaly_stacks": 0,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1
   },
   {
     "damage_category": "normal",
@@ -341,7 +420,11 @@
     "required_buffs": [],
     "tags": [
       "swap"
-    ]
+    ],
+    "applies_anomaly_type": null,
+    "applies_anomaly_stacks": 0,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1
   },
   {
     "damage_category": "normal",
@@ -363,7 +446,11 @@
     "required_buffs": [],
     "tags": [
       "swap"
-    ]
+    ],
+    "applies_anomaly_type": null,
+    "applies_anomaly_stacks": 0,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1
   },
   {
     "damage_category": "normal",
@@ -385,7 +472,11 @@
     "required_buffs": [],
     "tags": [
       "swap"
-    ]
+    ],
+    "applies_anomaly_type": null,
+    "applies_anomaly_stacks": 0,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1
   },
   {
     "damage_category": "normal",
@@ -407,6 +498,10 @@
     "required_buffs": [],
     "tags": [
       "wait"
-    ]
+    ],
+    "applies_anomaly_type": null,
+    "applies_anomaly_stacks": 0,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1
   }
 ]

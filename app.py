@@ -52,7 +52,7 @@ def enemy_settings() -> dict[str, float | int]:
     with st.sidebar.expander("Formula notes"):
         st.write("Normal damage uses attack, damage bonus, expected crit, boost, RES, DEF, DMG taken, and final damage multipliers.")
         st.write("Tune Break damage uses a fixed base, tune multiplier, tune boost, RES, DEF, and tune damage bonus.")
-        st.write("Attribute anomaly currently supports aero erosion, spectro frazzle, electro flare, and havoc bane defense reduction.")
+        st.write("Attribute anomalies are stored on the enemy. Aero, Spectro, and Electro tick while active; Havoc Bane adds defense reduction.")
     return settings
 
 
@@ -130,8 +130,9 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None) ->
         "time_end",
         "normal_damage",
         "tune_break_damage",
-        "anomaly_damage",
+        "anomaly_tick_damage",
         "total_action_damage",
+        "active_anomalies_after",
         "total_damage_after",
         "active_character",
     ]
@@ -145,7 +146,7 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None) ->
     with chart_col:
         st.subheader("Damage breakdown")
         if not timeline_df.empty:
-            category_columns = ["normal_damage", "tune_break_damage", "anomaly_damage"]
+            category_columns = ["normal_damage", "tune_break_damage", "anomaly_tick_damage"]
             damage_df = timeline_df[["action_name", *category_columns]].melt(
                 id_vars="action_name",
                 var_name="damage_type",
@@ -169,6 +170,8 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None) ->
 st.set_page_config(page_title="Wuwa DPS RL Simulator Prototype", layout="wide")
 st.title("Wuwa DPS RL Simulator Prototype")
 settings = enemy_settings()
+with st.expander("Active Anomaly System"):
+    st.write("Actions apply anomaly stacks to enemy-wide combat state. Aero/Spectro/Electro deal tick damage during later action durations. Havoc Bane deals no direct damage and contributes defense reduction while active. Current durations and tick intervals are simplified assumptions.")
 
 mode = st.radio("Mode", ["Demo Sequence", "PPO Model"], horizontal=True)
 

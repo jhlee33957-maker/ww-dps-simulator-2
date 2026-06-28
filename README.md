@@ -15,7 +15,7 @@ This project is a Wuthering Waves-style DPS simulation tool focused on Maskable 
 
 ## Damage Formulas
 
-The formula layer lives in simulator/damage_formula.py and currently supports normal damage, Tune Break damage, and simplified attribute anomaly damage.
+The formula layer lives in simulator/damage_formula.py and currently supports normal damage, Tune Break damage, and simplified attribute anomaly tick damage.
 
 Normal Damage =
 Skill Multiplier x Base ATK x ATK Multiplier x DMG Bonus Multiplier x Expected Crit Multiplier x Boost Multiplier x RES Multiplier x DEF Multiplier x DMG Taken Multiplier x Final DMG Multiplier
@@ -29,7 +29,17 @@ Expected Crit Multiplier = 1 + Crit Rate x (Crit DMG - 1)
 Tune Break Damage =
 Tune Break Base x Tune Break Multiplier x Tune Break Boost x RES Multiplier x DEF Multiplier x Tune DMG Bonus Multiplier
 
-Attribute anomaly currently includes:
+## Attribute Anomaly System
+
+- Actions apply anomaly stacks to enemy-wide CombatState.
+- Active anomalies persist with simplified remaining_duration, tick_interval, and tick_timer values.
+- Aero Erosion, Spectro Frazzle, and Electro Flare deal tick damage while active.
+- Havoc Bane does not deal direct damage in this simplified implementation.
+- Havoc Bane contributes defense reduction while active: def_reduction += stacks * 0.02.
+- Anomalies applied by the current action start affecting and ticking on later actions, not the same action.
+- Current durations, stack limits, tick intervals, and trigger behavior are simplified assumptions, not game-verified rules.
+
+Supported anomaly types:
 
 - aero_erosion
 - spectro_frazzle
@@ -40,10 +50,11 @@ Monster-specific resistance data, character-specific special coefficients, hit t
 
 ## Simplified Rules
 
-- Damage is split into normal_damage, tune_break_damage, anomaly_damage, and total_action_damage in the timeline.
+- Damage is split into normal_damage, tune_break_damage, anomaly_tick_damage, and total_action_damage in the timeline.
+- damage/anomaly_damage remain compatibility fields and mirror total_action_damage/anomaly_tick_damage where appropriate.
 - Damage uses expected crit value instead of random crit rolls.
-- Damage is calculated using buffs that are already active at the start of an action. Buffs applied by the current action are added after the action resolves and affect later actions only.
-- Existing buffs and cooldowns advance by the action duration.
+- Damage is calculated using buffs and anomalies that are already active at the start of an action. Buffs and anomalies applied by the current action are added after the action resolves and affect later actions only.
+- Existing buffs, cooldowns, and active anomalies advance by the action duration.
 - Cooldowns are set after the action resolves, so cooldown timing currently starts from the end of the action.
 - Resonance energy is capped by each character's resonance_energy_max, currently 125.0 in sample data.
 - Concerto energy is capped at 100.0.
@@ -60,7 +71,7 @@ The RL reward is intentionally simple and objective:
 reward = damage_this_action / 10000.0
 ```
 
-damage_this_action is the simulator total_action_damage for the selected action, including normal, Tune Break, and anomaly components. Resource waste, buff usage, cooldown usage, and action counts are analysis metrics only. They are not reward terms. Training is done by script, not inside Streamlit. Streamlit only evaluates a saved model in PPO Model mode. Demo Sequence mode is for deterministic simulator validation.
+damage_this_action is the simulator total_action_damage for the selected action, including normal, Tune Break, and active anomaly tick components. Resource waste, buff usage, cooldown usage, and action counts are analysis metrics only. They are not reward terms. Training is done by script, not inside Streamlit. Streamlit only evaluates a saved model in PPO Model mode. Demo Sequence mode is for deterministic simulator validation.
 
 ## Install
 
@@ -100,6 +111,7 @@ Streamlit supports Demo Sequence and PPO Model modes. PPO Model mode loads and e
 python -m compileall .
 python scripts/smoke_test.py
 python scripts/formula_smoke_test.py
+python scripts/anomaly_smoke_test.py
 python scripts/env_smoke_test.py
 python scripts/rl_smoke_test.py
 python rl/train_maskable_ppo.py --timesteps 50000
@@ -109,9 +121,9 @@ streamlit run app.py
 
 ## Project Layout
 
-- app.py: Streamlit prototype UI with demo, formula settings, and PPO model evaluation modes.
+- app.py: Streamlit prototype UI with demo, anomaly notes, formula settings, and PPO model evaluation modes.
 - data/: Dummy JSON data for characters, actions, enemy context, and buffs.
-- simulator/: Core deterministic simulation logic and reusable damage formula layer.
+- simulator/: Core deterministic simulation logic, anomaly state system, and reusable damage formula layer.
 - env/: Gymnasium environment, action masks, and objective damage reward.
 - rl/: Maskable PPO training and evaluation scripts.
 - scripts/: Smoke tests.

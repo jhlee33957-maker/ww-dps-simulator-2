@@ -62,6 +62,15 @@ class EnemyData(BaseModel):
     tune_dmg_bonus: float = 0.0
 
 
+class AnomalyState(BaseModel):
+    # Temporary simulator assumptions: durations and tick intervals are not game-verified.
+    anomaly_type: AnomalyType
+    stacks: int = Field(default=0, ge=0)
+    remaining_duration: float = Field(default=6.0, ge=0)
+    tick_interval: float = Field(default=1.0, gt=0)
+    tick_timer: float = Field(default=1.0, gt=0)
+
+
 class ActionData(BaseModel):
     id: str
     name: str
@@ -75,12 +84,24 @@ class ActionData(BaseModel):
     tune_break_boost_points: float = 0.0
     anomaly_type: AnomalyType | None = None
     anomaly_stacks: int = 0
+    applies_anomaly_type: AnomalyType | None = None
+    applies_anomaly_stacks: int = 0
+    anomaly_duration: float = Field(default=6.0, gt=0)
+    anomaly_tick_interval: float = Field(default=1.0, gt=0)
     resonance_energy_gain: float = 0.0
     concerto_energy_gain: float = 0.0
     resonance_energy_cost: float = Field(ge=0)
     applies_buffs: list[str] = Field(default_factory=list)
     required_buffs: list[str] = Field(default_factory=list)
     tags: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def apply_legacy_anomaly_fields(self) -> "ActionData":
+        if self.applies_anomaly_type is None and self.anomaly_type is not None:
+            self.applies_anomaly_type = self.anomaly_type
+        if self.applies_anomaly_stacks <= 0 and self.anomaly_stacks > 0:
+            self.applies_anomaly_stacks = self.anomaly_stacks
+        return self
 
 
 class BuffData(BaseModel):
@@ -117,6 +138,7 @@ class CombatState(BaseModel):
     tune_dmg_bonus: float = 0.0
     cooldowns: dict[str, float] = Field(default_factory=dict)
     active_buffs: list[ActiveBuff] = Field(default_factory=list)
+    active_anomalies: dict[str, AnomalyState] = Field(default_factory=dict)
     resonance_energy: dict[str, float] = Field(default_factory=dict)
     concerto_energy: dict[str, float] = Field(default_factory=dict)
     wasted_resonance_energy: dict[str, float] = Field(default_factory=dict)
@@ -132,9 +154,13 @@ class ActionResult(BaseModel):
     damage: float
     normal_damage: float = 0.0
     tune_break_damage: float = 0.0
+    direct_anomaly_damage: float = 0.0
+    anomaly_tick_damage: float = 0.0
     anomaly_damage: float = 0.0
+    anomaly_damage_by_type: dict[str, float] = Field(default_factory=dict)
     total_action_damage: float = 0.0
     total_damage_after: float = 0.0
+    active_anomalies_after: dict[str, int] = Field(default_factory=dict)
     valid: bool
     resonance_energy_gained: float = 0.0
     resonance_energy_wasted: float = 0.0
@@ -152,9 +178,13 @@ class TimelineEntry(BaseModel):
     damage: float
     normal_damage: float = 0.0
     tune_break_damage: float = 0.0
+    direct_anomaly_damage: float = 0.0
+    anomaly_tick_damage: float = 0.0
     anomaly_damage: float = 0.0
+    anomaly_damage_by_type: dict[str, float] = Field(default_factory=dict)
     total_action_damage: float = 0.0
     total_damage_after: float = 0.0
+    active_anomalies_after: dict[str, int] = Field(default_factory=dict)
     active_character: str
     resonance_energy_gained: float = 0.0
     resonance_energy_wasted: float = 0.0
