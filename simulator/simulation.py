@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from simulator.action_executor import execute_action, timeline_entry
-from simulator.models import ActionData, BuffData, CharacterData, CombatState, SimulationSummary, TimelineEntry
+from simulator.models import ActionData, BuffData, CharacterData, CombatState, EnemyData, SimulationSummary, TimelineEntry
 from simulator.state import create_initial_state
 
 
@@ -15,12 +15,14 @@ class Simulation:
         actions: dict[str, ActionData],
         buffs: dict[str, BuffData],
         combat_duration: float = 120.0,
+        enemy: EnemyData | None = None,
     ) -> None:
         self.characters = characters
         self.actions = actions
         self.buffs = buffs
         self.combat_duration = combat_duration
-        self.state: CombatState = create_initial_state(characters)
+        self.enemy = enemy or EnemyData()
+        self.state: CombatState = create_initial_state(characters, self.enemy)
         self.timeline: list[TimelineEntry] = []
 
     @classmethod
@@ -38,7 +40,32 @@ class Simulation:
             item["id"]: BuffData.model_validate(item)
             for item in _read_json(data_path / "buffs.json")
         }
-        return cls(characters=characters, actions=actions, buffs=buffs)
+        enemy_path = data_path / "enemy.json"
+        enemy = EnemyData.model_validate(_read_json_object(enemy_path)) if enemy_path.exists() else EnemyData()
+        return cls(characters=characters, actions=actions, buffs=buffs, enemy=enemy)
+
+    def set_enemy_context(
+        self,
+        *,
+        enemy_level: int | None = None,
+        enemy_res: float | None = None,
+        res_pen: float | None = None,
+        def_reduction: float | None = None,
+        dmg_taken: float | None = None,
+        tune_dmg_bonus: float | None = None,
+    ) -> None:
+        if enemy_level is not None:
+            self.state.enemy_level = enemy_level
+        if enemy_res is not None:
+            self.state.enemy_res = enemy_res
+        if res_pen is not None:
+            self.state.res_pen = res_pen
+        if def_reduction is not None:
+            self.state.def_reduction = def_reduction
+        if dmg_taken is not None:
+            self.state.dmg_taken = dmg_taken
+        if tune_dmg_bonus is not None:
+            self.state.tune_dmg_bonus = tune_dmg_bonus
 
     def execute_action(self, action_id: str) -> bool:
         if self.state.current_time >= self.combat_duration:
@@ -92,5 +119,10 @@ class Simulation:
 
 
 def _read_json(path: Path) -> list[dict]:
+    with path.open("r", encoding="utf-8") as file:
+        return json.load(file)
+
+
+def _read_json_object(path: Path) -> dict:
     with path.open("r", encoding="utf-8") as file:
         return json.load(file)

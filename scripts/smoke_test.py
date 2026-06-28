@@ -20,9 +20,11 @@ def main() -> None:
         "support_resonance_liberation",
         "swap_to_sub",
         "sub_resonance_skill",
+        "sub_echo_skill",
         "swap_to_main",
         "main_resonance_skill",
         "main_resonance_liberation",
+        "main_aero_erosion",
     ]
     for action_id in sequence:
         if not sim.execute_action(action_id):

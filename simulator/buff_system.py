@@ -28,27 +28,55 @@ def has_required_buffs(state: CombatState, required_buffs: list[str]) -> bool:
     return all(buff_id in active_ids for buff_id in required_buffs)
 
 
+def _buff_applies(buff: BuffData, active: ActiveBuff, character: CharacterData, state: CombatState) -> bool:
+    return (
+        buff.target == "team"
+        or (buff.target == "active" and character.id == state.active_character_id)
+        or (buff.target == "self" and active.source_character_id == character.id)
+    )
+
+
+def buffed_combat_stats(
+    character: CharacterData,
+    state: CombatState,
+    buffs: dict[str, BuffData],
+) -> dict[str, float]:
+    stats = {
+        "character_base_atk": character.character_base_atk,
+        "weapon_base_atk": character.weapon_base_atk,
+        "atk_percent": character.atk_percent,
+        "flat_atk": character.flat_atk,
+        "dmg_bonus": character.dmg_bonus,
+        "crit_rate": character.crit_rate,
+        "crit_damage": character.crit_damage,
+        "boost": character.boost,
+        "attacker_level": float(character.attacker_level),
+        "def_ignore": character.def_ignore,
+        "final_dmg_bonus": character.final_dmg_bonus,
+        "dmg_taken": state.dmg_taken,
+    }
+
+    for active in state.active_buffs:
+        buff = buffs[active.buff_id]
+        if not _buff_applies(buff, active, character, state):
+            continue
+        if buff.modifier_type == "attack":
+            stats["atk_percent"] += buff.value
+        elif buff.modifier_type == "damage_bonus":
+            stats["dmg_bonus"] += buff.value
+        elif buff.modifier_type == "boost":
+            stats["boost"] += buff.value
+        elif buff.modifier_type == "dmg_taken":
+            stats["dmg_taken"] += buff.value
+
+    return stats
+
+
 def buffed_stats(
     character: CharacterData,
     state: CombatState,
     buffs: dict[str, BuffData],
 ) -> tuple[float, float]:
-    attack = character.attack
-    damage_bonus = character.damage_bonus
-
-    for active in state.active_buffs:
-        buff = buffs[active.buff_id]
-        applies = (
-            buff.target == "team"
-            or (buff.target == "active" and character.id == state.active_character_id)
-            or (buff.target == "self" and active.source_character_id == character.id)
-        )
-        if not applies:
-            continue
-
-        if buff.modifier_type == "attack":
-            attack *= 1.0 + buff.value
-        elif buff.modifier_type == "damage_bonus":
-            damage_bonus += buff.value
-
-    return attack, damage_bonus
+    stats = buffed_combat_stats(character, state, buffs)
+    attack = (stats["character_base_atk"] + stats["weapon_base_atk"]) * (1.0 + stats["atk_percent"]) + stats["flat_atk"]
+    return attack, stats["dmg_bonus"]

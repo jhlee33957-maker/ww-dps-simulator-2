@@ -1,5 +1,10 @@
 [
   {
+    "damage_category": "normal",
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
     "id": "main_basic_attack",
     "name": "Main Basic Attack",
     "character_id": "main",
@@ -13,10 +18,16 @@
     "applies_buffs": [],
     "required_buffs": [],
     "tags": [
-      "damage"
+      "damage",
+      "normal"
     ]
   },
   {
+    "damage_category": "normal",
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
     "id": "main_resonance_skill",
     "name": "Main Resonance Skill",
     "character_id": "main",
@@ -33,10 +44,16 @@
     "required_buffs": [],
     "tags": [
       "damage",
-      "skill"
+      "skill",
+      "normal"
     ]
   },
   {
+    "damage_category": "normal",
+    "tune_break_multiplier": 0.45,
+    "tune_break_boost_points": 20,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
     "id": "main_resonance_liberation",
     "name": "Main Resonance Liberation",
     "character_id": "main",
@@ -51,10 +68,17 @@
     "required_buffs": [],
     "tags": [
       "damage",
-      "ultimate"
+      "ultimate",
+      "normal",
+      "tune_break"
     ]
   },
   {
+    "damage_category": "normal",
+    "tune_break_multiplier": 0.3,
+    "tune_break_boost_points": 10,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
     "id": "main_echo_skill",
     "name": "Main Echo Skill",
     "character_id": "main",
@@ -69,10 +93,40 @@
     "required_buffs": [],
     "tags": [
       "damage",
-      "echo"
+      "echo",
+      "tune_break"
     ]
   },
   {
+    "damage_category": "anomaly",
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "anomaly_type": "aero_erosion",
+    "anomaly_stacks": 3,
+    "id": "main_aero_erosion",
+    "name": "Main Aero Erosion Proc",
+    "character_id": "main",
+    "action_type": "basic_attack",
+    "duration": 1,
+    "cooldown": 10,
+    "damage_multiplier": 0.8,
+    "resonance_energy_gain": 5,
+    "concerto_energy_gain": 5,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "damage",
+      "anomaly",
+      "aero_erosion"
+    ]
+  },
+  {
+    "damage_category": "normal",
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
     "id": "sub_basic_attack",
     "name": "Sub Basic Attack",
     "character_id": "sub",
@@ -86,10 +140,16 @@
     "applies_buffs": [],
     "required_buffs": [],
     "tags": [
-      "damage"
+      "damage",
+      "normal"
     ]
   },
   {
+    "damage_category": "normal",
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
     "id": "sub_resonance_skill",
     "name": "Sub Resonance Skill",
     "character_id": "sub",
@@ -106,10 +166,16 @@
     "required_buffs": [],
     "tags": [
       "damage",
-      "skill"
+      "skill",
+      "normal"
     ]
   },
   {
+    "damage_category": "normal",
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
     "id": "sub_resonance_liberation",
     "name": "Sub Resonance Liberation",
     "character_id": "sub",
@@ -124,10 +190,16 @@
     "required_buffs": [],
     "tags": [
       "damage",
-      "ultimate"
+      "ultimate",
+      "normal"
     ]
   },
   {
+    "damage_category": "normal",
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "anomaly_type": "electro_flare",
+    "anomaly_stacks": 8,
     "id": "sub_echo_skill",
     "name": "Sub Echo Skill",
     "character_id": "sub",
@@ -142,10 +214,17 @@
     "required_buffs": [],
     "tags": [
       "damage",
-      "echo"
+      "echo",
+      "anomaly",
+      "electro_flare"
     ]
   },
   {
+    "damage_category": "normal",
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "anomaly_type": "spectro_frazzle",
+    "anomaly_stacks": 2,
     "id": "support_basic_attack",
     "name": "Support Basic Attack",
     "character_id": "support",
@@ -159,10 +238,17 @@
     "applies_buffs": [],
     "required_buffs": [],
     "tags": [
-      "damage"
+      "damage",
+      "anomaly",
+      "spectro_frazzle"
     ]
   },
   {
+    "damage_category": "normal",
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
     "id": "support_resonance_skill",
     "name": "Support Resonance Skill",
     "character_id": "support",
@@ -180,10 +266,16 @@
     "tags": [
       "damage",
       "skill",
-      "buff"
+      "buff",
+      "normal"
     ]
   },
   {
+    "damage_category": "normal",
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "anomaly_type": "havoc_bane",
+    "anomaly_stacks": 5,
     "id": "support_resonance_liberation",
     "name": "Support Resonance Liberation",
     "character_id": "support",
@@ -201,10 +293,16 @@
     "tags": [
       "damage",
       "ultimate",
-      "buff"
+      "buff",
+      "havoc_bane"
     ]
   },
   {
+    "damage_category": "normal",
+    "tune_break_multiplier": 0.22,
+    "tune_break_boost_points": 12,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
     "id": "support_echo_skill",
     "name": "Support Echo Skill",
     "character_id": "support",
@@ -219,10 +317,16 @@
     "required_buffs": [],
     "tags": [
       "damage",
-      "echo"
+      "echo",
+      "tune_break"
     ]
   },
   {
+    "damage_category": "normal",
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
     "id": "swap_to_main",
     "name": "Swap to Main DPS",
     "character_id": "main",
@@ -240,6 +344,11 @@
     ]
   },
   {
+    "damage_category": "normal",
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
     "id": "swap_to_sub",
     "name": "Swap to Sub DPS",
     "character_id": "sub",
@@ -257,6 +366,11 @@
     ]
   },
   {
+    "damage_category": "normal",
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
     "id": "swap_to_support",
     "name": "Swap to Support",
     "character_id": "support",
@@ -274,6 +388,11 @@
     ]
   },
   {
+    "damage_category": "normal",
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
     "id": "short_wait",
     "name": "Short Wait",
     "character_id": null,

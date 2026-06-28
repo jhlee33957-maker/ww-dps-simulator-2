@@ -1,6 +1,6 @@
 # Wuwa DPS RL Simulator Prototype
 
-This project is a Wuthering Waves-style DPS simulation tool focused on Maskable PPO reinforcement learning. It combines a deterministic simulator core, a Gymnasium environment with action masks, training and evaluation scripts, and a Streamlit UI for deterministic validation and saved-model evaluation. It is still a prototype and uses dummy data rather than real game values.
+This project is a Wuthering Waves-style DPS simulation tool focused on Maskable PPO reinforcement learning. It combines a deterministic simulator core, a Gymnasium environment with action masks, reusable damage formulas, training and evaluation scripts, and a Streamlit UI for deterministic validation and saved-model evaluation. It is still a prototype and uses dummy data rather than real game values.
 
 ## Current Scope
 
@@ -11,10 +11,36 @@ This project is a Wuthering Waves-style DPS simulation tool focused on Maskable 
 - Final DPS is always total_damage / 120.0.
 - Gymnasium environment for Maskable PPO training.
 - Streamlit UI with Demo Sequence and PPO Model evaluation modes.
-- Dummy character, action, and buff data are included. No real game data is used.
+- Dummy character, action, enemy, and buff data are included. No real game data is used.
+
+## Damage Formulas
+
+The formula layer lives in simulator/damage_formula.py and currently supports normal damage, Tune Break damage, and simplified attribute anomaly damage.
+
+Normal Damage =
+Skill Multiplier x Base ATK x ATK Multiplier x DMG Bonus Multiplier x Expected Crit Multiplier x Boost Multiplier x RES Multiplier x DEF Multiplier x DMG Taken Multiplier x Final DMG Multiplier
+
+Base ATK = Character Base ATK + Weapon Base ATK
+
+ATK Multiplier = 1 + ATK% + Flat ATK / Base ATK
+
+Expected Crit Multiplier = 1 + Crit Rate x (Crit DMG - 1)
+
+Tune Break Damage =
+Tune Break Base x Tune Break Multiplier x Tune Break Boost x RES Multiplier x DEF Multiplier x Tune DMG Bonus Multiplier
+
+Attribute anomaly currently includes:
+
+- aero_erosion
+- spectro_frazzle
+- electro_flare
+- havoc_bane defense reduction
+
+Monster-specific resistance data, character-specific special coefficients, hit timing, and full anomaly rules are not implemented yet. Current formulas are implemented as a reusable calculation layer with sample values.
 
 ## Simplified Rules
 
+- Damage is split into normal_damage, tune_break_damage, anomaly_damage, and total_action_damage in the timeline.
 - Damage uses expected crit value instead of random crit rolls.
 - Damage is calculated using buffs that are already active at the start of an action. Buffs applied by the current action are added after the action resolves and affect later actions only.
 - Existing buffs and cooldowns advance by the action duration.
@@ -34,7 +60,7 @@ The RL reward is intentionally simple and objective:
 reward = damage_this_action / 10000.0
 ```
 
-Resource waste, buff usage, cooldown usage, and action counts are analysis metrics only. They are not reward terms. Training is done by script, not inside Streamlit. Streamlit only evaluates a saved model in PPO Model mode. Demo Sequence mode is for deterministic simulator validation.
+damage_this_action is the simulator total_action_damage for the selected action, including normal, Tune Break, and anomaly components. Resource waste, buff usage, cooldown usage, and action counts are analysis metrics only. They are not reward terms. Training is done by script, not inside Streamlit. Streamlit only evaluates a saved model in PPO Model mode. Demo Sequence mode is for deterministic simulator validation.
 
 ## Install
 
@@ -73,6 +99,7 @@ Streamlit supports Demo Sequence and PPO Model modes. PPO Model mode loads and e
 ```bash
 python -m compileall .
 python scripts/smoke_test.py
+python scripts/formula_smoke_test.py
 python scripts/env_smoke_test.py
 python scripts/rl_smoke_test.py
 python rl/train_maskable_ppo.py --timesteps 50000
@@ -82,9 +109,9 @@ streamlit run app.py
 
 ## Project Layout
 
-- app.py: Streamlit prototype UI with demo and PPO model evaluation modes.
-- data/: Dummy JSON data for characters, actions, and buffs.
-- simulator/: Core deterministic simulation logic.
+- app.py: Streamlit prototype UI with demo, formula settings, and PPO model evaluation modes.
+- data/: Dummy JSON data for characters, actions, enemy context, and buffs.
+- simulator/: Core deterministic simulation logic and reusable damage formula layer.
 - env/: Gymnasium environment, action masks, and objective damage reward.
 - rl/: Maskable PPO training and evaluation scripts.
 - scripts/: Smoke tests.
@@ -95,6 +122,6 @@ streamlit run app.py
 
 1. Add hit timing.
 2. Add real character data.
-3. Add proper intro, outro, and concerto logic.
-4. Improve evaluation dashboards and comparison reports.
+3. Add monster-specific resistance and defense data.
+4. Add proper intro, outro, concerto, and anomaly logic.
 5. Tune Maskable PPO hyperparameters.

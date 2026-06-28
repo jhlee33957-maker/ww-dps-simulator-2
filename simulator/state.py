@@ -1,15 +1,22 @@
 from __future__ import annotations
 
-from simulator.models import CharacterData, CombatState
+from simulator.models import CharacterData, CombatState, EnemyData
 
 
-def create_initial_state(characters: dict[str, CharacterData]) -> CombatState:
+def create_initial_state(characters: dict[str, CharacterData], enemy: EnemyData | None = None) -> CombatState:
     active = next((char for char in characters.values() if char.active), None)
     if active is None:
         active = next(iter(characters.values()))
+    enemy = enemy or EnemyData()
 
     return CombatState(
         active_character_id=active.id,
+        enemy_level=enemy.level,
+        enemy_res=enemy.res,
+        res_pen=enemy.res_pen,
+        def_reduction=enemy.def_reduction,
+        dmg_taken=enemy.dmg_taken,
+        tune_dmg_bonus=enemy.tune_dmg_bonus,
         resonance_energy={
             char.id: min(char.resonance_energy, char.resonance_energy_max)
             for char in characters.values()
