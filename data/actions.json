@@ -1,0 +1,293 @@
+[
+  {
+    "id": "main_basic_attack",
+    "name": "Main Basic Attack",
+    "character_id": "main",
+    "action_type": "basic_attack",
+    "duration": 1.2,
+    "cooldown": 0,
+    "damage_multiplier": 1.15,
+    "resonance_energy_gain": 6,
+    "concerto_energy_gain": 5,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "damage"
+    ]
+  },
+  {
+    "id": "main_resonance_skill",
+    "name": "Main Resonance Skill",
+    "character_id": "main",
+    "action_type": "resonance_skill",
+    "duration": 1.8,
+    "cooldown": 6,
+    "damage_multiplier": 3.2,
+    "resonance_energy_gain": 16,
+    "concerto_energy_gain": 18,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [
+      "main_focus"
+    ],
+    "required_buffs": [],
+    "tags": [
+      "damage",
+      "skill"
+    ]
+  },
+  {
+    "id": "main_resonance_liberation",
+    "name": "Main Resonance Liberation",
+    "character_id": "main",
+    "action_type": "resonance_liberation",
+    "duration": 2.7,
+    "cooldown": 20,
+    "damage_multiplier": 8.5,
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 25,
+    "resonance_energy_cost": 80,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "damage",
+      "ultimate"
+    ]
+  },
+  {
+    "id": "main_echo_skill",
+    "name": "Main Echo Skill",
+    "character_id": "main",
+    "action_type": "echo_skill",
+    "duration": 1.9,
+    "cooldown": 18,
+    "damage_multiplier": 4.1,
+    "resonance_energy_gain": 4,
+    "concerto_energy_gain": 8,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "damage",
+      "echo"
+    ]
+  },
+  {
+    "id": "sub_basic_attack",
+    "name": "Sub Basic Attack",
+    "character_id": "sub",
+    "action_type": "basic_attack",
+    "duration": 1.1,
+    "cooldown": 0,
+    "damage_multiplier": 1,
+    "resonance_energy_gain": 6,
+    "concerto_energy_gain": 5,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "damage"
+    ]
+  },
+  {
+    "id": "sub_resonance_skill",
+    "name": "Sub Resonance Skill",
+    "character_id": "sub",
+    "action_type": "resonance_skill",
+    "duration": 1.6,
+    "cooldown": 7,
+    "damage_multiplier": 2.8,
+    "resonance_energy_gain": 14,
+    "concerto_energy_gain": 18,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [
+      "sub_damage_boost"
+    ],
+    "required_buffs": [],
+    "tags": [
+      "damage",
+      "skill"
+    ]
+  },
+  {
+    "id": "sub_resonance_liberation",
+    "name": "Sub Resonance Liberation",
+    "character_id": "sub",
+    "action_type": "resonance_liberation",
+    "duration": 2.4,
+    "cooldown": 22,
+    "damage_multiplier": 6.4,
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 24,
+    "resonance_energy_cost": 70,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "damage",
+      "ultimate"
+    ]
+  },
+  {
+    "id": "sub_echo_skill",
+    "name": "Sub Echo Skill",
+    "character_id": "sub",
+    "action_type": "echo_skill",
+    "duration": 1.8,
+    "cooldown": 18,
+    "damage_multiplier": 3.6,
+    "resonance_energy_gain": 4,
+    "concerto_energy_gain": 8,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "damage",
+      "echo"
+    ]
+  },
+  {
+    "id": "support_basic_attack",
+    "name": "Support Basic Attack",
+    "character_id": "support",
+    "action_type": "basic_attack",
+    "duration": 1,
+    "cooldown": 0,
+    "damage_multiplier": 0.8,
+    "resonance_energy_gain": 7,
+    "concerto_energy_gain": 6,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "damage"
+    ]
+  },
+  {
+    "id": "support_resonance_skill",
+    "name": "Support Resonance Skill",
+    "character_id": "support",
+    "action_type": "resonance_skill",
+    "duration": 1.5,
+    "cooldown": 8,
+    "damage_multiplier": 1.9,
+    "resonance_energy_gain": 15,
+    "concerto_energy_gain": 22,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [
+      "support_attack_boost"
+    ],
+    "required_buffs": [],
+    "tags": [
+      "damage",
+      "skill",
+      "buff"
+    ]
+  },
+  {
+    "id": "support_resonance_liberation",
+    "name": "Support Resonance Liberation",
+    "character_id": "support",
+    "action_type": "resonance_liberation",
+    "duration": 2.2,
+    "cooldown": 25,
+    "damage_multiplier": 3.4,
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 30,
+    "resonance_energy_cost": 60,
+    "applies_buffs": [
+      "support_attack_boost"
+    ],
+    "required_buffs": [],
+    "tags": [
+      "damage",
+      "ultimate",
+      "buff"
+    ]
+  },
+  {
+    "id": "support_echo_skill",
+    "name": "Support Echo Skill",
+    "character_id": "support",
+    "action_type": "echo_skill",
+    "duration": 1.7,
+    "cooldown": 18,
+    "damage_multiplier": 2.6,
+    "resonance_energy_gain": 4,
+    "concerto_energy_gain": 8,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "damage",
+      "echo"
+    ]
+  },
+  {
+    "id": "swap_to_main",
+    "name": "Swap to Main DPS",
+    "character_id": "main",
+    "action_type": "swap",
+    "duration": 0.8,
+    "cooldown": 0,
+    "damage_multiplier": 0,
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 0,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "swap"
+    ]
+  },
+  {
+    "id": "swap_to_sub",
+    "name": "Swap to Sub DPS",
+    "character_id": "sub",
+    "action_type": "swap",
+    "duration": 0.8,
+    "cooldown": 0,
+    "damage_multiplier": 0,
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 0,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "swap"
+    ]
+  },
+  {
+    "id": "swap_to_support",
+    "name": "Swap to Support",
+    "character_id": "support",
+    "action_type": "swap",
+    "duration": 0.8,
+    "cooldown": 0,
+    "damage_multiplier": 0,
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 0,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "swap"
+    ]
+  },
+  {
+    "id": "short_wait",
+    "name": "Short Wait",
+    "character_id": null,
+    "action_type": "wait",
+    "duration": 0.5,
+    "cooldown": 0,
+    "damage_multiplier": 0,
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 0,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "wait"
+    ]
+  }
+]

@@ -1,0 +1,35 @@
+[
+  {
+    "id": "main",
+    "name": "Main DPS",
+    "attack": 1850,
+    "crit_rate": 0.7,
+    "crit_damage": 1.6,
+    "damage_bonus": 0.42,
+    "resonance_energy": 80,
+    "concerto_energy": 0,
+    "active": true
+  },
+  {
+    "id": "sub",
+    "name": "Sub DPS",
+    "attack": 1550,
+    "crit_rate": 0.55,
+    "crit_damage": 1.25,
+    "damage_bonus": 0.3,
+    "resonance_energy": 70,
+    "concerto_energy": 0,
+    "active": false
+  },
+  {
+    "id": "support",
+    "name": "Support",
+    "attack": 1250,
+    "crit_rate": 0.35,
+    "crit_damage": 0.9,
+    "damage_bonus": 0.18,
+    "resonance_energy": 60,
+    "concerto_energy": 0,
+    "active": false
+  }
+]

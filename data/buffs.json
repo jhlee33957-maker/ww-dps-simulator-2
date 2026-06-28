@@ -1,0 +1,26 @@
+[
+  {
+    "id": "support_attack_boost",
+    "name": "Support Attack Boost",
+    "duration": 14,
+    "modifier_type": "attack",
+    "value": 0.18,
+    "target": "team"
+  },
+  {
+    "id": "sub_damage_boost",
+    "name": "Sub Damage Boost",
+    "duration": 10,
+    "modifier_type": "damage_bonus",
+    "value": 0.16,
+    "target": "active"
+  },
+  {
+    "id": "main_focus",
+    "name": "Main Focus",
+    "duration": 8,
+    "modifier_type": "damage_bonus",
+    "value": 0.22,
+    "target": "self"
+  }
+]
