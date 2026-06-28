@@ -3,8 +3,8 @@ from __future__ import annotations
 import copy
 from dataclasses import dataclass
 
-from simulator.simulation import Simulation
 from simulator.models import TimelineEntry
+from simulator.simulation import Simulation
 
 
 @dataclass(slots=True)
@@ -29,11 +29,18 @@ def run_beam_search(
     initial_simulation: Simulation,
     beam_width: int = 20,
     max_steps: int = 100,
+    use_heuristic_score: bool = False,
 ) -> BeamSearchResult:
     beam_width = max(1, beam_width)
     max_steps = max(1, max_steps)
     initial = copy.deepcopy(initial_simulation)
-    beam = [BeamCandidate(simulation=initial, action_sequence=[], score=_score(initial))]
+    beam = [
+        BeamCandidate(
+            simulation=initial,
+            action_sequence=[],
+            score=_score(initial, use_heuristic_score),
+        )
+    ]
     explored_nodes = 0
 
     for _ in range(max_steps):
@@ -56,7 +63,7 @@ def run_beam_search(
                     BeamCandidate(
                         simulation=next_sim,
                         action_sequence=[*candidate.action_sequence, action_id],
-                        score=_score(next_sim),
+                        score=_score(next_sim, use_heuristic_score),
                     )
                 )
 
@@ -79,18 +86,18 @@ def run_beam_search(
     )
 
 
-def _score(simulation: Simulation) -> float:
+def _score(simulation: Simulation, use_heuristic_score: bool = False) -> float:
+    if not use_heuristic_score:
+        return simulation.state.total_damage
+
     state = simulation.state
     resource_value = 0.0
     wasted_penalty = 0.0
-
     for character_id in simulation.characters:
         resource_value += state.resonance_energy.get(character_id, 0.0) * 10.0
         resource_value += state.concerto_energy.get(character_id, 0.0) * 2.0
         wasted_penalty += state.wasted_resonance_energy.get(character_id, 0.0) * 8.0
         wasted_penalty += state.wasted_concerto_energy.get(character_id, 0.0) * 1.0
 
-    # A small overrun penalty keeps equivalent damage paths closer to 120 seconds.
     overrun = max(0.0, state.current_time - simulation.combat_duration)
-    overrun_penalty = overrun * 100.0
-    return state.total_damage + resource_value - wasted_penalty - overrun_penalty
+    return state.total_damage + resource_value - wasted_penalty - overrun * 100.0

@@ -7,7 +7,7 @@ import numpy as np
 from gymnasium import spaces
 
 from env.action_mask import action_mask
-from env.reward import reward_from_damage
+from env.reward import calculate_reward
 from simulator.simulation import Simulation
 
 
@@ -39,19 +39,28 @@ class WuwaDpsEnv(gym.Env):
 
     def step(self, action: int):
         before_damage = self.simulation.state.total_damage
-        action_id = self.action_ids[action]
-        valid = self.simulation.execute_action(action_id)
+        invalid_action = False
 
-        if not valid:
-            self.simulation.execute_action("short_wait")
+        if action < 0 or action >= len(self.action_ids):
+            invalid_action = True
+            action_id = "short_wait"
+            valid = self.simulation.execute_action(action_id)
+        else:
+            action_id = self.action_ids[action]
+            valid = self.simulation.execute_action(action_id)
+            if not valid:
+                invalid_action = True
+                if "short_wait" in self.simulation.actions:
+                    self.simulation.execute_action("short_wait")
 
         damage_this_action = self.simulation.state.total_damage - before_damage
         terminated = self.simulation.state.current_time >= self.simulation.combat_duration
         truncated = False
-        reward = reward_from_damage(damage_this_action)
+        reward = calculate_reward(damage_this_action) if not invalid_action else -1.0
         info = {
             "action_id": action_id,
-            "valid_action": valid,
+            "valid_action": valid and not invalid_action,
+            "invalid_action": invalid_action,
             "damage_this_action": damage_this_action,
             "total_damage": self.simulation.state.total_damage,
             "dps": self.simulation.state.total_damage / self.simulation.combat_duration,
@@ -112,10 +121,10 @@ class WuwaDpsEnv(gym.Env):
         return np.array(values, dtype=np.float32)
 
     def _cooldown_ratio(self, action_id: str) -> float:
-        action = self.simulation.actions[action_id]
-        if action.cooldown <= 0.0:
+        action_data = self.simulation.actions[action_id]
+        if action_data.cooldown <= 0.0:
             return 0.0
-        return self.simulation.state.cooldowns.get(action_id, 0.0) / action.cooldown
+        return self.simulation.state.cooldowns.get(action_id, 0.0) / action_data.cooldown
 
     def _buff_duration_ratio(self, buff_id: str) -> float:
         buff = self.simulation.buffs[buff_id]
@@ -125,6 +134,5 @@ class WuwaDpsEnv(gym.Env):
         )
         return remaining / buff.duration
 
-    # Backward-compatible alias for code that used the earlier private method.
     def _observation(self) -> np.ndarray:
         return self._get_observation()

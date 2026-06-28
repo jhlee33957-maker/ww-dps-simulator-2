@@ -1,6 +1,6 @@
 # Wuwa DPS RL Simulator Prototype
 
-This project is an initial scaffold for a Wuthering Waves-style DPS simulation tool. It is designed as a clean foundation for future reinforcement-learning experiments, not as a full game-accurate simulator.
+This project is a Wuthering Waves-style DPS simulation tool with deterministic simulation, a Beam Search baseline, and Maskable PPO reinforcement-learning training. It is still a prototype and uses dummy data rather than real game values.
 
 ## Current Scope
 
@@ -22,22 +22,22 @@ This project is an initial scaffold for a Wuthering Waves-style DPS simulation t
 - Concerto energy is capped at `100.0`.
 - Wasted resonance and concerto energy are tracked per character and per timeline action.
 - Swapping to the currently active character is invalid and appears invalid in action masks.
-- Concerto energy is tracked, but intro and outro logic is not implemented yet.
-- Echo skill is modeled per character with a normal cooldown.
-- No dash, animation canceling, hit timing, enemy behavior, or RL training is included yet.
+
+## Reinforcement Learning
+
+Maskable PPO is implemented with `sb3-contrib`. It is used because many actions are invalid depending on active character, cooldowns, resonance energy, and swap state. The environment exposes `action_masks()`, and training/evaluation use those masks.
+
+The RL reward is intentionally simple and objective:
+
+```text
+reward = damage_this_action / 10000.0
+```
+
+Resource waste, buff usage, cooldown usage, and action counts are analysis metrics only. They are not reward terms. Training is done by script, not inside Streamlit. Streamlit only evaluates a saved model in PPO Model mode.
 
 ## Beam Search Baseline
 
-Beam Search is included as a deterministic baseline before PPO work begins. It expands only currently valid actions, deep-copies simulator states for candidate branches, and keeps the top candidates by a simple score. The score prioritizes total damage, adds small resource-value bonuses, penalizes wasted resources, and lightly penalizes ending too far past 120 seconds.
-
-This gives future RL work a readable comparison point: before training a policy, the project can already produce a deterministic search result using the same simulator and action validation rules.
-
-## RL Status
-
-- A Gymnasium environment exists.
-- Action masks exist and are exposed through `WuwaDpsEnv.action_masks()`.
-- Observations include time, remaining time, total damage, active character, resources, cooldowns, and active buff durations.
-- PPO and Maskable PPO training are not implemented yet.
+Beam Search is a deterministic comparison baseline, not reinforcement learning. By default it searches valid actions only and scores candidates by total damage. It remains useful as a sanity check and comparison point for PPO results.
 
 ## Install
 
@@ -47,11 +47,29 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-## Run
+## Train PPO
+
+```bash
+python rl/train_maskable_ppo.py --timesteps 50000
+```
+
+The default model output is `models/maskable_ppo_wuwa.zip`. Training metadata is written to `results/training_metadata.json`.
+
+## Evaluate PPO
+
+```bash
+python rl/evaluate_maskable_ppo.py --model-path models/maskable_ppo_wuwa.zip
+```
+
+Evaluation writes `results/ppo_evaluation_summary.json` and `results/ppo_timeline.csv`.
+
+## Run Streamlit
 
 ```bash
 streamlit run app.py
 ```
+
+Streamlit supports Demo Sequence, Beam Search, and PPO Model modes. PPO Model mode loads and evaluates a saved model; it does not train.
 
 ## Checks
 
@@ -60,24 +78,28 @@ python -m compileall .
 python scripts/smoke_test.py
 python scripts/env_smoke_test.py
 python scripts/beam_search_test.py
+python scripts/rl_smoke_test.py
+python rl/train_maskable_ppo.py --timesteps 50000
+python rl/evaluate_maskable_ppo.py --model-path models/maskable_ppo_wuwa.zip
 streamlit run app.py
 ```
 
 ## Project Layout
 
-- `app.py`: Streamlit prototype UI with demo and Beam Search modes.
+- `app.py`: Streamlit prototype UI with demo, Beam Search, and PPO model evaluation modes.
 - `data/`: Dummy JSON data for characters, actions, and buffs.
 - `simulator/`: Core deterministic simulation logic.
-- `env/`: Gymnasium-ready environment skeleton for future RL.
-- `solver/`: Deterministic baseline solvers such as Beam Search.
-- `scripts/`: Small local utility scripts and smoke tests.
-- `results/`: Placeholder for experiment outputs.
-- `models/`: Placeholder for trained models later.
+- `env/`: Gymnasium environment and objective damage reward.
+- `solver/`: Deterministic baselines such as Beam Search.
+- `rl/`: Maskable PPO training and evaluation scripts.
+- `scripts/`: Smoke tests.
+- `results/`: Training and evaluation artifacts.
+- `models/`: Saved PPO models.
 
 ## Roadmap
 
 1. Add hit timing.
 2. Add real character data.
 3. Add proper intro, outro, and concerto logic.
-4. Add stronger search baselines.
-5. Add Maskable PPO training.
+4. Improve evaluation dashboards and comparison reports.
+5. Tune Maskable PPO hyperparameters.
