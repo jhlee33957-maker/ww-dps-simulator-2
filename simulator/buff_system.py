@@ -40,6 +40,7 @@ def buffed_combat_stats(
     character: CharacterData,
     state: CombatState,
     buffs: dict[str, BuffData],
+    time_offset: float = 0.0,
 ) -> dict[str, float]:
     stats = {
         "character_base_atk": character.character_base_atk,
@@ -55,11 +56,15 @@ def buffed_combat_stats(
         "final_dmg_bonus": character.final_dmg_bonus,
         "dmg_taken": state.dmg_taken,
     }
+    active_buff_names: list[str] = []
 
     for active in state.active_buffs:
+        if active.remaining_duration <= time_offset:
+            continue
         buff = buffs[active.buff_id]
         if not _buff_applies(buff, active, character, state):
             continue
+        active_buff_names.append(buff.id)
         if buff.modifier_type == "attack":
             stats["atk_percent"] += buff.value
         elif buff.modifier_type == "damage_bonus":
@@ -69,6 +74,8 @@ def buffed_combat_stats(
         elif buff.modifier_type == "dmg_taken":
             stats["dmg_taken"] += buff.value
 
+    stats["active_buff_count"] = float(len(active_buff_names))
+    stats["active_buff_summary"] = active_buff_names
     return stats
 
 

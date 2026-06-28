@@ -21,7 +21,7 @@ def main() -> None:
     print("After application:", sim.timeline[-1].model_dump())
     sim.execute_action("short_wait")
     print("After short wait:", sim.timeline[-1].model_dump())
-    sim.execute_action("main_basic_attack")
+    sim.execute_action("main_resonance_skill")
     print("After later action with anomaly ticks:", sim.timeline[-1].model_dump())
 
     baseline = Simulation.from_json(PROJECT_ROOT / "data")

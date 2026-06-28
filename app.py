@@ -128,6 +128,8 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None) ->
         "action_name",
         "time_start",
         "time_end",
+        "action_time",
+        "hit_count",
         "normal_damage",
         "tune_break_damage",
         "anomaly_tick_damage",
@@ -172,6 +174,8 @@ st.title("Wuwa DPS RL Simulator Prototype")
 settings = enemy_settings()
 with st.expander("Active Anomaly System"):
     st.write("Actions apply anomaly stacks to enemy-wide combat state. Aero/Spectro/Electro deal tick damage during later action durations. Havoc Bane deals no direct damage and contributes defense reduction while active. Current durations and tick intervals are simplified assumptions.")
+with st.expander("Hit Timing Model"):
+    st.write("action_time is the combat timer consumed by the action and the time until the next action decision. hits are damage events inside action_time. Buffs and Havoc Bane are evaluated at each hit time. Animation-only duration and a general cancel system are not modeled.")
 
 mode = st.radio("Mode", ["Demo Sequence", "PPO Model"], horizontal=True)
 

@@ -29,6 +29,14 @@ Expected Crit Multiplier = 1 + Crit Rate x (Crit DMG - 1)
 Tune Break Damage =
 Tune Break Base x Tune Break Multiplier x Tune Break Boost x RES Multiplier x DEF Multiplier x Tune DMG Bonus Multiplier
 
+## Hit Timing Model
+
+The simulator does not model animation playback time and does not include a general cancel system. For DPS and reinforcement learning, each action has:
+
+- action_time: combat timer time consumed by the action and the time until the next action decision.
+- hits: damage events that occur at offsets inside action_time.
+
+Buffs, Havoc Bane, and other time-sensitive effects are evaluated at each hit time. For example, if Havoc Bane has 0.30 seconds remaining at action start, a hit at 0.20 receives its DEF reduction and a hit at 0.45 does not. Current hit timing data is dummy/sample data; real character-specific hit timings are not implemented yet.
 ## Attribute Anomaly System
 
 - Actions apply anomaly stacks to enemy-wide CombatState.
@@ -50,7 +58,7 @@ Monster-specific resistance data, character-specific special coefficients, hit t
 
 ## Simplified Rules
 
-- Damage is split into normal_damage, tune_break_damage, anomaly_tick_damage, and total_action_damage in the timeline.
+- Damage is split into normal_damage, tune_break_damage, anomaly_tick_damage, and total_action_damage in the timeline. Timeline rows also include action_time, hit_count, and hit_details for debugging.
 - damage/anomaly_damage remain compatibility fields and mirror total_action_damage/anomaly_tick_damage where appropriate.
 - Damage uses expected crit value instead of random crit rolls.
 - Damage is calculated using buffs and anomalies that are already active at the start of an action. Buffs and anomalies applied by the current action are added after the action resolves and affect later actions only.
@@ -112,6 +120,7 @@ python -m compileall .
 python scripts/smoke_test.py
 python scripts/formula_smoke_test.py
 python scripts/anomaly_smoke_test.py
+python scripts/hit_timing_smoke_test.py
 python scripts/env_smoke_test.py
 python scripts/rl_smoke_test.py
 python rl/train_maskable_ppo.py --timesteps 50000

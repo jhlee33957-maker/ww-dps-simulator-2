@@ -37,7 +37,18 @@ def main() -> None:
     print(f"Active character: {summary.active_character}")
     print("Timeline:")
     for row in summary.timeline:
-        print(row.model_dump())
+        data = row.model_dump()
+        print({
+            "action_id": data["action_id"],
+            "action_time": data["action_time"],
+            "hit_count": data["hit_count"],
+            "normal_damage": data["normal_damage"],
+            "tune_break_damage": data["tune_break_damage"],
+            "anomaly_tick_damage": data["anomaly_tick_damage"],
+            "total_action_damage": data["total_action_damage"],
+            "total_damage_after": data["total_damage_after"],
+            "active_anomalies_after": data["active_anomalies_after"],
+        })
 
 
 if __name__ == "__main__":

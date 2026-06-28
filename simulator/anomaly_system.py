@@ -30,8 +30,12 @@ def apply_anomaly(state: CombatState, action: ActionData) -> None:
 
 
 def get_havoc_bane_def_reduction(state: CombatState) -> float:
+    return get_havoc_bane_def_reduction_at_time(state, 0.0)
+
+
+def get_havoc_bane_def_reduction_at_time(state: CombatState, time_offset: float) -> float:
     havoc_bane = state.active_anomalies.get("havoc_bane")
-    if havoc_bane is None or havoc_bane.remaining_duration <= 0.0:
+    if havoc_bane is None or havoc_bane.remaining_duration <= time_offset:
         return 0.0
     return calculate_havoc_bane_def_reduction(havoc_bane.stacks)
 
