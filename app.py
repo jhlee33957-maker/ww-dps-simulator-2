@@ -9,7 +9,6 @@ import plotly.express as px
 import streamlit as st
 
 from simulator.simulation import Simulation
-from solver.beam_search import BeamSearchResult, run_beam_search
 
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -74,19 +73,12 @@ def evaluate_ppo_model(model_path: Path) -> tuple[Any, list[str]]:
     return env.simulation.summary(), action_sequence
 
 
-def render_simulation(
-    summary: Any,
-    action_sequence: list[str] | None = None,
-    explored_nodes: int | None = None,
-) -> None:
+def render_simulation(summary: Any, action_sequence: list[str] | None = None) -> None:
     metric_cols = st.columns(4)
     metric_cols[0].metric("Total damage", f"{summary.total_damage:,.0f}")
     metric_cols[1].metric("DPS", f"{summary.dps:,.0f}")
     metric_cols[2].metric("Final combat time", f"{summary.final_time:.2f}s")
     metric_cols[3].metric("Active character", summary.active_character)
-
-    if explored_nodes is not None:
-        st.caption(f"Explored nodes: {explored_nodes:,}")
 
     if action_sequence is not None:
         st.subheader("Selected action sequence")
@@ -133,25 +125,12 @@ def render_simulation(
 st.set_page_config(page_title="Wuwa DPS RL Simulator Prototype", layout="wide")
 st.title("Wuwa DPS RL Simulator Prototype")
 
-mode = st.radio("Mode", ["Demo Sequence", "Beam Search", "PPO Model"], horizontal=True)
+mode = st.radio("Mode", ["Demo Sequence", "PPO Model"], horizontal=True)
 
 if mode == "Demo Sequence":
     sequence_name = st.selectbox("Action sequence", list(DEMO_SEQUENCES))
     sim = run_repeating_sequence(DEMO_SEQUENCES[sequence_name])
     render_simulation(sim.summary())
-elif mode == "Beam Search":
-    beam_width = st.slider("Beam width", min_value=1, max_value=100, value=20, step=1)
-    max_steps = st.slider("Max steps", min_value=1, max_value=200, value=100, step=1)
-    result: BeamSearchResult = run_beam_search(
-        Simulation.from_json(DATA_DIR),
-        beam_width=beam_width,
-        max_steps=max_steps,
-    )
-    render_simulation(
-        result.simulation.summary(),
-        action_sequence=result.action_sequence,
-        explored_nodes=result.explored_nodes,
-    )
 else:
     model_path_text = st.text_input("PPO model path", value=str(DEFAULT_PPO_MODEL_PATH))
     model_path = Path(model_path_text)
