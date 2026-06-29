@@ -61,5 +61,26 @@
     "resonance_energy_max": 125,
     "concerto_energy": 0,
     "active": false
+  },
+  {
+    "id": "aemeath",
+    "name": "Aemeath Lite",
+    "attack": 1750,
+    "character_base_atk": 820,
+    "weapon_base_atk": 560,
+    "atk_percent": 0.45,
+    "flat_atk": 300,
+    "crit_rate": 0.65,
+    "crit_damage": 2.35,
+    "damage_bonus": 0.36,
+    "dmg_bonus": 0.36,
+    "boost": 0.06,
+    "attacker_level": 90,
+    "def_ignore": 0.03,
+    "final_dmg_bonus": 0,
+    "resonance_energy": 125,
+    "resonance_energy_max": 125,
+    "concerto_energy": 0,
+    "active": false
   }
 ]

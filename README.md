@@ -26,7 +26,42 @@ Character mechanic modules can:
 - extend PPO observations
 - provide debug state for Streamlit and smoke tests
 
-Existing dummy characters use DefaultCharacterMechanic, which is a no-op. AemeathMechanic exists as a placeholder with initial form, combo, synchronization, resonance, Seraphic Duo, Heavenfall Unbound, and finale availability fields. Full Aemeath action logic is planned later and is not implemented yet.
+Existing dummy characters use DefaultCharacterMechanic, which is a no-op. AemeathMechanic contains the first Aemeath-lite implementation. It resolves high-level policy actions into concrete internal actions and owns Aemeath-specific state updates. Full real-game Aemeath logic is planned later.
+
+## Aemeath-lite Character Mechanic
+
+Aemeath-lite is a first-pass architecture validation character, not a final real-game implementation. Common combat systems remain in simulator/. Aemeath-specific form state, combo state, action replacement, Synchronization Rate, Resonance Rate, Seraphic Duo, Overdrive, and Finale behavior live in characters/aemeath.py.
+
+PPO and Demo Sequence select high-level actions such as aemeath_basic_attack, aemeath_resonance_skill, and aemeath_resonance_liberation. AemeathMechanic resolves those inputs into concrete internal actions such as Aemeath Form Basic Stage 1, Mech Basic Stage 2, Seraphic Duet, Overdrive, or Finale based on current Aemeath state. Concrete internal actions are hidden from PPO with policy_selectable = false.
+
+Implemented Aemeath-lite scope:
+
+- Aemeath Form and Mech Form
+- Aemeath Form basic attack stages 1-4
+- Mech Form basic attack stages 1-4
+- Basic Attack resolution by current form and combo stage
+- Resonance Skill replacement for form switch and Seraphic Duet
+- Synchronization Rate and Resonance Rate
+- Seraphic Duo duration state
+- Resonance Liberation: Overdrive
+- Heavenfall Edict: Finale
+- Aemeath-specific PPO observation and Streamlit debug state
+
+Not implemented yet:
+
+- Starflux
+- Tune Rupture
+- Fusion Burst
+- Fusion Trail
+- Intro and Outro skills
+- team-wide buffs
+- full passive effects
+- air attacks and dodge counter
+- exact real hit timings or final damage values
+
+All Aemeath-lite damage multipliers, action_time values, hit timings, and resource gains are placeholder/sample values for architecture testing.
+
+Current simplification: Seraphic Duo duration is decremented in AemeathMechanic.after_action when Aemeath acts. A future generic mechanics time hook can make character-specific timers advance on every combat action.
 
 ## Damage Formulas
 
@@ -79,6 +114,9 @@ Monster-specific resistance data, character-specific special coefficients, hit t
 - Damage is calculated using buffs and anomalies that are already active at the start of an action. Buffs and anomalies applied by the current action are added after the action resolves and affect later actions only.
 - Existing buffs, cooldowns, and active anomalies advance by the action duration.
 - Cooldowns are set after the action resolves, so cooldown timing currently starts from the end of the action.
+- Actions may define cooldown_group. When present, cooldown checking and cooldown storage use that group key instead of action.id. Existing actions without cooldown_group keep their original behavior.
+- Actions may define policy_selectable = false to hide concrete internal mechanic actions from PPO while keeping them available for mechanic resolution.
+- Actions may define mechanic_effects. The common simulator stores this data but does not interpret character-specific effect keys.
 - Resonance energy is capped by each character's resonance_energy_max, currently 125.0 in sample data.
 - Concerto energy is capped at 100.0.
 - Wasted resonance and concerto energy are tracked per character and per timeline action.
@@ -137,6 +175,7 @@ python scripts/formula_smoke_test.py
 python scripts/anomaly_smoke_test.py
 python scripts/hit_timing_smoke_test.py
 python scripts/mechanics_smoke_test.py
+python scripts/aemeath_lite_smoke_test.py
 python scripts/env_smoke_test.py
 python scripts/rl_smoke_test.py
 python rl/train_maskable_ppo.py --timesteps 50000
@@ -147,7 +186,7 @@ streamlit run app.py
 ## Project Layout
 
 - app.py: Streamlit prototype UI with demo, anomaly notes, formula settings, and PPO model evaluation modes.
-- characters/: Character mechanics plugin interface, default no-op mechanic, registry, and Aemeath placeholder.
+- characters/: Character mechanics plugin interface, default no-op mechanic, registry, and Aemeath-lite mechanic.
 - data/: Dummy JSON data for characters, actions, enemy context, and buffs.
 - simulator/: Core deterministic simulation logic, anomaly state system, and reusable damage formula layer.
 - env/: Gymnasium environment, action masks, and objective damage reward.
@@ -158,7 +197,7 @@ streamlit run app.py
 
 ## Roadmap
 
-1. Add full character-specific mechanics such as Aemeath.
+1. Expand Aemeath-lite into fuller character-specific mechanics.
 2. Add real character data.
 3. Add monster-specific resistance and defense data.
 4. Add proper intro, outro, concerto, and anomaly logic.

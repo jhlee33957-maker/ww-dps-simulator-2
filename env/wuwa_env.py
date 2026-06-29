@@ -44,9 +44,11 @@ class WuwaDpsEnv(gym.Env):
         if action < 0 or action >= len(self.action_ids):
             invalid_action = True
             action_id = "short_wait"
+            resolved_action_id = self.simulation.resolve_action_id(action_id)
             valid = self.simulation.execute_action(action_id)
         else:
             action_id = self.action_ids[action]
+            resolved_action_id = self.simulation.resolve_action_id(action_id)
             valid = self.simulation.execute_action(action_id)
             if not valid:
                 invalid_action = True
@@ -59,6 +61,7 @@ class WuwaDpsEnv(gym.Env):
         reward = calculate_reward(damage_this_action) if not invalid_action else -1.0
         info = {
             "action_id": action_id,
+            "resolved_action_id": resolved_action_id,
             "valid_action": valid and not invalid_action,
             "invalid_action": invalid_action,
             "damage_this_action": damage_this_action,
@@ -71,7 +74,11 @@ class WuwaDpsEnv(gym.Env):
         return action_mask(self.simulation)
 
     def _get_action_order(self) -> list[str]:
-        return list(self.simulation.actions)
+        return [
+            action_id
+            for action_id, action in self.simulation.actions.items()
+            if action.policy_selectable
+        ]
 
     def _get_character_order(self) -> list[str]:
         return list(self.simulation.characters)
@@ -163,10 +170,11 @@ class WuwaDpsEnv(gym.Env):
         return labels
 
     def _cooldown_ratio(self, action_id: str) -> float:
-        action_data = self.simulation.actions[action_id]
+        action_data = self.simulation.resolve_action(self.simulation.actions[action_id])
         if action_data.cooldown <= 0.0:
             return 0.0
-        return self.simulation.state.cooldowns.get(action_id, 0.0) / action_data.cooldown
+        key = action_data.cooldown_group or action_data.id
+        return self.simulation.state.cooldowns.get(key, 0.0) / action_data.cooldown
 
     def _buff_duration_ratio(self, buff_id: str) -> float:
         buff = self.simulation.buffs[buff_id]

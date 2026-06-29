@@ -77,12 +77,8 @@ class Simulation:
             return False
 
         selected_action = self.actions[action_id]
-        if not self.is_action_available(selected_action):
-            return False
-
-        active_mechanic = self._mechanic_for_character(self.state.active_character_id)
-        action = active_mechanic.resolve_action(self.state, selected_action, self.actions)
-        if not self.is_action_available(action):
+        action = self.resolve_action(selected_action)
+        if not self.is_resolved_action_available(action):
             return False
 
         actor_character_id = self.state.active_character_id if action.action_type in {"swap", "wait"} else action.character_id
@@ -107,16 +103,28 @@ class Simulation:
         return [
             action_id
             for action_id, action in self.actions.items()
-            if self.is_action_available(action)
+            if action.policy_selectable and self.is_action_available(action)
         ]
 
     def is_action_available(self, action: ActionData) -> bool:
+        if action.policy_selectable:
+            action = self.resolve_action(action)
+        return self.is_resolved_action_available(action)
+
+    def is_resolved_action_available(self, action: ActionData) -> bool:
         valid, _reason = is_action_valid(action, self.state)
         if not valid:
             return False
         if action.action_type in {"swap", "wait"} or action.character_id is None:
             return True
         return self._mechanic_for_character(action.character_id).is_action_available(self.state, action)
+
+    def resolve_action(self, selected_action: ActionData) -> ActionData:
+        mechanic = self._mechanic_for_character(self.state.active_character_id)
+        return mechanic.resolve_action(self.state, selected_action, self.actions)
+
+    def resolve_action_id(self, action_id: str) -> str:
+        return self.resolve_action(self.actions[action_id]).id
 
     def _mechanic_for_character(self, character_id: str) -> CharacterMechanic:
         mechanic = self.character_mechanics.get(character_id)

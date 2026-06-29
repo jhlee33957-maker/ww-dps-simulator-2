@@ -36,6 +36,15 @@ DEMO_SEQUENCES: dict[str, list[str]] = {
         "main_aero_erosion",
         "short_wait",
     ],
+    "Aemeath-lite": [
+        "swap_to_aemeath",
+        "aemeath_basic_attack",
+        "aemeath_basic_attack",
+        "aemeath_resonance_skill",
+        "aemeath_basic_attack",
+        "aemeath_resonance_liberation",
+        "aemeath_resonance_skill",
+    ],
 }
 
 

@@ -21,7 +21,7 @@ def is_action_valid(action: ActionData, state: CombatState) -> tuple[bool, str |
     if action.character_id != state.active_character_id:
         return False, "Character is not active."
 
-    if state.cooldowns.get(action.id, 0.0) > 0.0:
+    if state.cooldowns.get(cooldown_key(action), 0.0) > 0.0:
         return False, "Action is on cooldown."
 
     if not can_pay_resources(state, action):
@@ -31,6 +31,10 @@ def is_action_valid(action: ActionData, state: CombatState) -> tuple[bool, str |
         return False, "Required buff is missing."
 
     return True, None
+
+
+def cooldown_key(action: ActionData) -> str:
+    return action.cooldown_group or action.id
 
 
 def reduce_cooldowns(state: CombatState, elapsed: float) -> None:
@@ -183,7 +187,7 @@ def execute_action(
 
     # Simplified cooldown model: cooldown starts at the end of the action.
     if action.cooldown > 0.0:
-        state.cooldowns[action.id] = action.cooldown
+        state.cooldowns[cooldown_key(action)] = action.cooldown
 
     active_anomalies_after = {
         anomaly_type: anomaly.stacks

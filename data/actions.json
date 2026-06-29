@@ -643,6 +643,716 @@
     "tune_break_boost_points": 0,
     "anomaly_type": null,
     "anomaly_stacks": 0,
+    "id": "swap_to_aemeath",
+    "name": "Swap to Aemeath Lite",
+    "character_id": "aemeath",
+    "action_type": "swap",
+    "duration": 0.8,
+    "cooldown": 0,
+    "damage_multiplier": 0,
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 0,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "swap",
+      "aemeath-lite"
+    ],
+    "applies_anomaly_type": null,
+    "applies_anomaly_stacks": 0,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1,
+    "action_time": 0.3,
+    "hits": []
+  },
+  {
+    "id": "aemeath_basic_attack",
+    "name": "Aemeath Basic Attack",
+    "character_id": "aemeath",
+    "action_type": "basic_attack",
+    "duration": 0.1,
+    "action_time": 0.1,
+    "cooldown": 0,
+    "damage_category": "normal",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "hits": [],
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
+    "applies_anomaly_type": null,
+    "applies_anomaly_stacks": 0,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1,
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 0,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "aemeath-lite",
+      "policy"
+    ],
+    "policy_selectable": true
+  },
+  {
+    "id": "aemeath_resonance_skill",
+    "name": "Aemeath Resonance Skill",
+    "character_id": "aemeath",
+    "action_type": "resonance_skill",
+    "duration": 0.1,
+    "action_time": 0.1,
+    "cooldown": 0,
+    "damage_category": "normal",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "hits": [],
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
+    "applies_anomaly_type": null,
+    "applies_anomaly_stacks": 0,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1,
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 0,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "aemeath-lite",
+      "policy"
+    ],
+    "policy_selectable": true
+  },
+  {
+    "id": "aemeath_resonance_liberation",
+    "name": "Aemeath Resonance Liberation",
+    "character_id": "aemeath",
+    "action_type": "resonance_liberation",
+    "duration": 0.1,
+    "action_time": 0.1,
+    "cooldown": 0,
+    "damage_category": "normal",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "hits": [],
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
+    "applies_anomaly_type": null,
+    "applies_anomaly_stacks": 0,
+    "anomaly_duration": 6,
+    "anomaly_tick_interval": 1,
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 0,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "aemeath-lite",
+      "policy"
+    ],
+    "policy_selectable": true
+  },
+  {
+    "id": "aemeath_basic_form_stage_1",
+    "name": "Aemeath Form Basic Stage 1",
+    "character_id": "aemeath",
+    "action_type": "basic_attack",
+    "duration": 0.45,
+    "action_time": 0.45,
+    "cooldown": 0,
+    "damage_category": "normal",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "hits": [
+      {
+        "time": 0.22,
+        "damage_category": "normal",
+        "damage_multiplier": 0.8,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath form basic 1"
+      }
+    ],
+    "resonance_energy_gain": 5,
+    "concerto_energy_gain": 4,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "aemeath-lite",
+      "internal"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "sync_delta": 8,
+      "set_aemeath_combo_stage": 2
+    }
+  },
+  {
+    "id": "aemeath_basic_form_stage_2",
+    "name": "Aemeath Form Basic Stage 2",
+    "character_id": "aemeath",
+    "action_type": "basic_attack",
+    "duration": 0.5,
+    "action_time": 0.5,
+    "cooldown": 0,
+    "damage_category": "normal",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "hits": [
+      {
+        "time": 0.25,
+        "damage_category": "normal",
+        "damage_multiplier": 0.95,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath form basic 2"
+      }
+    ],
+    "resonance_energy_gain": 5,
+    "concerto_energy_gain": 4,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "aemeath-lite",
+      "internal"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "sync_delta": 10,
+      "set_aemeath_combo_stage": 3
+    }
+  },
+  {
+    "id": "aemeath_basic_form_stage_3",
+    "name": "Aemeath Form Basic Stage 3",
+    "character_id": "aemeath",
+    "action_type": "basic_attack",
+    "duration": 0.65,
+    "action_time": 0.65,
+    "cooldown": 0,
+    "damage_category": "normal",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "hits": [
+      {
+        "time": 0.3,
+        "damage_category": "normal",
+        "damage_multiplier": 0.55,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath form basic 3a"
+      },
+      {
+        "time": 0.5,
+        "damage_category": "normal",
+        "damage_multiplier": 0.65,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath form basic 3b"
+      }
+    ],
+    "resonance_energy_gain": 6,
+    "concerto_energy_gain": 5,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "aemeath-lite",
+      "internal"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "sync_delta": 14,
+      "set_aemeath_combo_stage": 4
+    }
+  },
+  {
+    "id": "aemeath_basic_form_stage_4",
+    "name": "Aemeath Form Basic Stage 4",
+    "character_id": "aemeath",
+    "action_type": "basic_attack",
+    "duration": 0.85,
+    "action_time": 0.85,
+    "cooldown": 0,
+    "damage_category": "normal",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "hits": [
+      {
+        "time": 0.35,
+        "damage_category": "normal",
+        "damage_multiplier": 0.9,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath form basic 4a"
+      },
+      {
+        "time": 0.65,
+        "damage_category": "normal",
+        "damage_multiplier": 1.1,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath form basic 4b"
+      }
+    ],
+    "resonance_energy_gain": 7,
+    "concerto_energy_gain": 6,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "aemeath-lite",
+      "internal"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "sync_delta": 20,
+      "set_aemeath_combo_stage": 1
+    }
+  },
+  {
+    "id": "aemeath_mech_basic_stage_1",
+    "name": "Aemeath Mech Basic Stage 1",
+    "character_id": "aemeath",
+    "action_type": "basic_attack",
+    "duration": 0.55,
+    "action_time": 0.55,
+    "cooldown": 0,
+    "damage_category": "normal",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "hits": [
+      {
+        "time": 0.25,
+        "damage_category": "normal",
+        "damage_multiplier": 1,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath mech basic 1"
+      }
+    ],
+    "resonance_energy_gain": 6,
+    "concerto_energy_gain": 5,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "aemeath-lite",
+      "internal"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "sync_delta": 12,
+      "set_mech_combo_stage": 2
+    }
+  },
+  {
+    "id": "aemeath_mech_basic_stage_2",
+    "name": "Aemeath Mech Basic Stage 2",
+    "character_id": "aemeath",
+    "action_type": "basic_attack",
+    "duration": 0.6,
+    "action_time": 0.6,
+    "cooldown": 0,
+    "damage_category": "normal",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "hits": [
+      {
+        "time": 0.3,
+        "damage_category": "normal",
+        "damage_multiplier": 1.2,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath mech basic 2"
+      }
+    ],
+    "resonance_energy_gain": 6,
+    "concerto_energy_gain": 5,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "aemeath-lite",
+      "internal"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "sync_delta": 14,
+      "set_mech_combo_stage": 3
+    }
+  },
+  {
+    "id": "aemeath_mech_basic_stage_3",
+    "name": "Aemeath Mech Basic Stage 3",
+    "character_id": "aemeath",
+    "action_type": "basic_attack",
+    "duration": 0.75,
+    "action_time": 0.75,
+    "cooldown": 0,
+    "damage_category": "normal",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "hits": [
+      {
+        "time": 0.32,
+        "damage_category": "normal",
+        "damage_multiplier": 0.8,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath mech basic 3a"
+      },
+      {
+        "time": 0.55,
+        "damage_category": "normal",
+        "damage_multiplier": 0.8,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath mech basic 3b"
+      }
+    ],
+    "resonance_energy_gain": 7,
+    "concerto_energy_gain": 6,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "aemeath-lite",
+      "internal"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "sync_delta": 18,
+      "set_mech_combo_stage": 4
+    }
+  },
+  {
+    "id": "aemeath_mech_basic_stage_4",
+    "name": "Aemeath Mech Basic Stage 4",
+    "character_id": "aemeath",
+    "action_type": "basic_attack",
+    "duration": 0.9,
+    "action_time": 0.9,
+    "cooldown": 0,
+    "damage_category": "normal",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "hits": [
+      {
+        "time": 0.38,
+        "damage_category": "normal",
+        "damage_multiplier": 1.2,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath mech basic 4a"
+      },
+      {
+        "time": 0.7,
+        "damage_category": "normal",
+        "damage_multiplier": 1.4,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath mech basic 4b"
+      }
+    ],
+    "resonance_energy_gain": 8,
+    "concerto_energy_gain": 7,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "aemeath-lite",
+      "internal"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "sync_delta": 25,
+      "set_mech_combo_stage": 1
+    }
+  },
+  {
+    "id": "aemeath_form_switch_to_mech",
+    "name": "Aemeath Switch to Mech Form",
+    "character_id": "aemeath",
+    "action_type": "resonance_skill",
+    "duration": 0.35,
+    "action_time": 0.35,
+    "cooldown": 8,
+    "cooldown_group": "aemeath_form_switch",
+    "damage_category": "normal",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "hits": [
+      {
+        "time": 0.2,
+        "damage_category": "normal",
+        "damage_multiplier": 1.8,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "switch to mech"
+      }
+    ],
+    "resonance_energy_gain": 10,
+    "concerto_energy_gain": 8,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "aemeath-lite",
+      "internal"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "set_form": "mech",
+      "sync_delta": 15,
+      "set_mech_combo_stage": 2
+    }
+  },
+  {
+    "id": "aemeath_form_switch_to_aemeath",
+    "name": "Aemeath Switch to Aemeath Form",
+    "character_id": "aemeath",
+    "action_type": "resonance_skill",
+    "duration": 0.35,
+    "action_time": 0.35,
+    "cooldown": 8,
+    "cooldown_group": "aemeath_form_switch",
+    "damage_category": "normal",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "hits": [
+      {
+        "time": 0.2,
+        "damage_category": "normal",
+        "damage_multiplier": 1.6,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "switch to aemeath"
+      }
+    ],
+    "resonance_energy_gain": 10,
+    "concerto_energy_gain": 8,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "aemeath-lite",
+      "internal"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "set_form": "aemeath",
+      "sync_delta": 15,
+      "set_aemeath_combo_stage": 2
+    }
+  },
+  {
+    "id": "aemeath_seraphic_duet_overturn",
+    "name": "Aemeath Seraphic Duet Overturn",
+    "character_id": "aemeath",
+    "action_type": "resonance_skill",
+    "duration": 0.45,
+    "action_time": 0.45,
+    "cooldown": 0.5,
+    "cooldown_group": "aemeath_seraphic_duet",
+    "damage_category": "normal",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "hits": [
+      {
+        "time": 0.25,
+        "damage_category": "normal",
+        "damage_multiplier": 3.2,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "seraphic duet overturn"
+      }
+    ],
+    "resonance_energy_gain": 8,
+    "concerto_energy_gain": 8,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "aemeath-lite",
+      "internal"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "sync_delta": 40,
+      "resonance_rate_delta": 1
+    }
+  },
+  {
+    "id": "aemeath_seraphic_duet_encore",
+    "name": "Aemeath Seraphic Duet Encore",
+    "character_id": "aemeath",
+    "action_type": "resonance_skill",
+    "duration": 0.55,
+    "action_time": 0.55,
+    "cooldown": 0.5,
+    "cooldown_group": "aemeath_seraphic_duet",
+    "damage_category": "normal",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "hits": [
+      {
+        "time": 0.2,
+        "damage_category": "normal",
+        "damage_multiplier": 2.2,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "seraphic duet encore 1"
+      },
+      {
+        "time": 0.42,
+        "damage_category": "normal",
+        "damage_multiplier": 3.8,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "seraphic duet encore 2"
+      }
+    ],
+    "resonance_energy_gain": 8,
+    "concerto_energy_gain": 10,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "aemeath-lite",
+      "internal"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "sync_delta": -100,
+      "resonance_rate_delta": 1
+    }
+  },
+  {
+    "id": "aemeath_liberation_overdrive",
+    "name": "Aemeath Liberation Overdrive",
+    "character_id": "aemeath",
+    "action_type": "resonance_liberation",
+    "duration": 0.6,
+    "action_time": 0.6,
+    "cooldown": 20,
+    "cooldown_group": "aemeath_liberation",
+    "damage_category": "normal",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "hits": [
+      {
+        "time": 0.15,
+        "damage_category": "normal",
+        "damage_multiplier": 5,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "overdrive opener"
+      },
+      {
+        "time": 0.45,
+        "damage_category": "normal",
+        "damage_multiplier": 8,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "overdrive finisher"
+      }
+    ],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 20,
+    "resonance_energy_cost": 125,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "aemeath-lite",
+      "internal"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "set_form": "mech",
+      "seraphic_duo_duration": 5,
+      "heavenfall_unbound": true,
+      "resonance_rate_delta": 1,
+      "set_mech_combo_stage": 2
+    }
+  },
+  {
+    "id": "aemeath_heavenfall_finale",
+    "name": "Aemeath Heavenfall Finale",
+    "character_id": "aemeath",
+    "action_type": "resonance_liberation",
+    "duration": 0.75,
+    "action_time": 0.75,
+    "cooldown": 0,
+    "cooldown_group": "aemeath_liberation",
+    "damage_category": "normal",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "hits": [
+      {
+        "time": 0.25,
+        "damage_category": "normal",
+        "damage_multiplier": 8,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "finale opener"
+      },
+      {
+        "time": 0.6,
+        "damage_category": "normal",
+        "damage_multiplier": 14,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "finale finisher"
+      }
+    ],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 25,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "aemeath-lite",
+      "internal"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "set_form": "aemeath",
+      "set_synchronization_rate": 0,
+      "set_resonance_rate": 0,
+      "seraphic_duo_duration": 0,
+      "heavenfall_unbound": false,
+      "finale_available": false,
+      "set_aemeath_combo_stage": 1,
+      "set_mech_combo_stage": 1
+    }
+  },
+  {
+    "damage_category": "normal",
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "anomaly_type": null,
+    "anomaly_stacks": 0,
     "id": "swap_to_sub",
     "name": "Swap to Sub DPS",
     "character_id": "sub",

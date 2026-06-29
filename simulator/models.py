@@ -105,6 +105,9 @@ class ActionData(BaseModel):
     applies_buffs: list[str] = Field(default_factory=list)
     required_buffs: list[str] = Field(default_factory=list)
     tags: list[str] = Field(default_factory=list)
+    policy_selectable: bool = True
+    cooldown_group: str | None = None
+    mechanic_effects: dict[str, Any] = Field(default_factory=dict)
 
     @model_validator(mode="after")
     def apply_legacy_fields(self) -> "ActionData":

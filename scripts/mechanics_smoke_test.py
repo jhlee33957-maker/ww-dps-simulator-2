@@ -35,9 +35,9 @@ def main() -> None:
 
     aemeath = AemeathMechanic()
     aemeath.initialize_state(sim.state)
-    print(f"Aemeath placeholder labels: {aemeath.get_observation_labels()}")
-    print(f"Aemeath placeholder values: {aemeath.get_observation_values(sim.state)}")
-    print(f"Aemeath placeholder debug: {aemeath.get_debug_state(sim.state)}")
+    print(f"Aemeath-lite labels: {aemeath.get_observation_labels()}")
+    print(f"Aemeath-lite values: {aemeath.get_observation_values(sim.state)}")
+    print(f"Aemeath-lite debug: {aemeath.get_debug_state(sim.state)}")
 
 
 if __name__ == "__main__":
