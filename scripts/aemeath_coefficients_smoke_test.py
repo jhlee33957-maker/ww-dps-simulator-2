@@ -35,7 +35,7 @@ EXPECTED_MULTIPLIERS = {
         0.5965,
     ],
     "aemeath_seraphic_duet_encore": [0.179, 0.179, 0.179, 0.179, 0.3579, 0.3579, 0.3579, 1.7893],
-    "aemeath_liberation_overdrive": [0.208, 2.6744, 2.6744, 2.6744],
+    "aemeath_liberation_overdrive": [2.008, 2.6744, 2.6744, 2.6744],
     "aemeath_heavenfall_finale": [17.8929],
 }
 

@@ -44,8 +44,8 @@ Implemented Aemeath-lite scope:
 - Resonance Skill replacement for form switch and Seraphic Duet
 - Synchronization Rate and Resonance Rate
 - Seraphic Duo duration state
-- Resonance Liberation: Overdrive
-- Heavenfall Edict: Finale
+- Overdrive with Heavenfall Unbound and Stardust Resonance timers
+- Heavenfall Edict: Finale gate and resolution
 - Aemeath-specific PPO observation and Streamlit debug state
 
 Not implemented yet:
@@ -67,6 +67,7 @@ Aemeath-lite now uses Level 10 coefficients visible in the provided skill screen
 - Aemeath Form basic attacks
 - Mech Form basic attacks
 - Sync Strike variants used by Aemeath-lite form switching
+- Seraphic Duet Overture and Encore
 - Heavenfall Edict: Overdrive
 - Heavenfall Edict: Finale
 
@@ -75,12 +76,18 @@ These values are still placeholders or approximations:
 - action_time values
 - hit timing offsets
 - Synchronization Rate gain values
-- Seraphic Duet: Overturn and Encore coefficients
-- some mechanic effects and state transitions
+- some mechanic effects beyond the implemented Aemeath-lite subset
 
 Full Aemeath is not implemented yet. Starflux, Tune Rupture, Fusion Burst, Fusion Trail, Intro/Outro, team buffs, full passives, air attacks, dodge counters, and exact video-verified hit timings remain out of scope.
 
 Character mechanics have an advance_time hook that runs whenever combat time advances, even if the character is off-field. Aemeath Seraphic Duo uses this hook, so its remaining time decreases during swaps and during other characters' actions. Heavenfall Finale is separated from Overdrive cooldown by using its own cooldown group. Aemeath-lite has selected Level 10 screenshot coefficients, while timings and several mechanic values remain placeholder/sample values.
+
+Current Aemeath-lite mechanic notes:
+
+- Basic Attack Stage 4 in Aemeath Form or Mech Form grants Seraphic Duo for 5 seconds.
+- Overdrive does not grant Seraphic Duo. It switches to Mech Form, starts Heavenfall Unbound and Stardust Resonance timers, and grants 1 Resonance Rate.
+- Seraphic Duet Overture and Encore require Seraphic Duo plus at least 100 Synchronization Rate. They consume 100 Synchronization Rate, end Seraphic Duo, switch form, set the next Basic Attack stage, and grant 1 Resonance Rate.
+- Finale requires Heavenfall Unbound, 200 Synchronization Rate, and 4 Resonance Rate. Finale ends the Heavenfall Unbound and Stardust Resonance timers but does not reset Synchronization Rate or Resonance Rate.
 
 ## Character Selection
 
@@ -223,6 +230,7 @@ Streamlit supports Demo Sequence and PPO Model modes. PPO Model mode loads and e
 python -m compileall .
 python scripts/character_selection_smoke_test.py
 python scripts/aemeath_coefficients_smoke_test.py
+python scripts/aemeath_mechanics_correction_smoke_test.py
 python scripts/aemeath_lite_smoke_test.py
 python scripts/mechanics_smoke_test.py
 python scripts/smoke_test.py

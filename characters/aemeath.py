@@ -16,6 +16,8 @@ class AemeathMechanic(CharacterMechanic):
         "resonance_rate": 0.0,
         "seraphic_duo_remaining": 0.0,
         "heavenfall_unbound": False,
+        "heavenfall_unbound_remaining": 0.0,
+        "stardust_resonance_remaining": 0.0,
         "finale_available": False,
     }
 
@@ -48,16 +50,12 @@ class AemeathMechanic(CharacterMechanic):
             else:
                 resolved_id = self._AEMEATH_BASIC_BY_STAGE[int(data["aemeath_combo_stage"])]
         elif selected_action.id == "aemeath_resonance_skill":
-            if data["seraphic_duo_remaining"] > 0.0:
-                resolved_id = (
-                    "aemeath_seraphic_duet_encore"
-                    if data["synchronization_rate"] >= 100.0
-                    else "aemeath_seraphic_duet_overturn"
-                )
+            if data["seraphic_duo_remaining"] > 0.0 and data["synchronization_rate"] >= 100.0:
+                resolved_id = "aemeath_seraphic_duet_encore" if data["form"] == "mech" else "aemeath_seraphic_duet_overturn"
             else:
                 resolved_id = "aemeath_form_switch_to_aemeath" if data["form"] == "mech" else "aemeath_form_switch_to_mech"
         elif selected_action.id == "aemeath_resonance_liberation":
-            if data["finale_available"] or (data["heavenfall_unbound"] and data["resonance_rate"] >= 4.0):
+            if self._can_use_finale(data):
                 resolved_id = "aemeath_heavenfall_finale"
             else:
                 resolved_id = "aemeath_liberation_overdrive"
@@ -75,11 +73,19 @@ class AemeathMechanic(CharacterMechanic):
         if action_id.startswith("aemeath_form_switch_"):
             return True
         if action_id == "aemeath_seraphic_duet_overturn":
-            return data["seraphic_duo_remaining"] > 0.0
+            return (
+                data["form"] == "aemeath"
+                and data["seraphic_duo_remaining"] > 0.0
+                and data["synchronization_rate"] >= 100.0
+            )
         if action_id == "aemeath_seraphic_duet_encore":
-            return data["seraphic_duo_remaining"] > 0.0 and data["synchronization_rate"] >= 100.0
+            return (
+                data["form"] == "mech"
+                and data["seraphic_duo_remaining"] > 0.0
+                and data["synchronization_rate"] >= 100.0
+            )
         if action_id == "aemeath_heavenfall_finale":
-            return data["finale_available"] or (data["heavenfall_unbound"] and data["resonance_rate"] >= 4.0)
+            return self._can_use_finale(data)
         if action_id == "aemeath_liberation_overdrive":
             return True
         return True
@@ -103,6 +109,11 @@ class AemeathMechanic(CharacterMechanic):
             data["seraphic_duo_remaining"] = float(effects["seraphic_duo_duration"])
         if "heavenfall_unbound" in effects:
             data["heavenfall_unbound"] = bool(effects["heavenfall_unbound"])
+        if "heavenfall_unbound_duration" in effects:
+            data["heavenfall_unbound_remaining"] = float(effects["heavenfall_unbound_duration"])
+            data["heavenfall_unbound"] = data["heavenfall_unbound_remaining"] > 0.0
+        if "stardust_resonance_duration" in effects:
+            data["stardust_resonance_remaining"] = float(effects["stardust_resonance_duration"])
         if "finale_available" in effects:
             data["finale_available"] = bool(effects["finale_available"])
         if "set_aemeath_combo_stage" in effects:
@@ -111,13 +122,18 @@ class AemeathMechanic(CharacterMechanic):
             data["mech_combo_stage"] = int(effects["set_mech_combo_stage"])
 
         self._clamp(data)
-        if data["heavenfall_unbound"] and data["resonance_rate"] >= 4.0:
-            data["finale_available"] = True
+        data["finale_available"] = self._can_use_finale(data)
 
     def advance_time(self, state: Any, elapsed_time: float) -> None:
         data = self._state(state)
         if data["seraphic_duo_remaining"] > 0.0:
             data["seraphic_duo_remaining"] = max(0.0, data["seraphic_duo_remaining"] - elapsed_time)
+        if data["heavenfall_unbound_remaining"] > 0.0:
+            data["heavenfall_unbound_remaining"] = max(0.0, data["heavenfall_unbound_remaining"] - elapsed_time)
+        if data["stardust_resonance_remaining"] > 0.0:
+            data["stardust_resonance_remaining"] = max(0.0, data["stardust_resonance_remaining"] - elapsed_time)
+        data["heavenfall_unbound"] = data["heavenfall_unbound_remaining"] > 0.0
+        data["finale_available"] = self._can_use_finale(data)
 
     def get_observation_values(self, state: Any) -> list[float]:
         data = self._state(state)
@@ -130,6 +146,8 @@ class AemeathMechanic(CharacterMechanic):
             float(data["seraphic_duo_remaining"]) / 5.0,
             1.0 if data["heavenfall_unbound"] else 0.0,
             1.0 if data["finale_available"] else 0.0,
+            float(data["heavenfall_unbound_remaining"]) / 60.0,
+            float(data["stardust_resonance_remaining"]) / 30.0,
         ]
 
     def get_observation_labels(self) -> list[str]:
@@ -142,6 +160,8 @@ class AemeathMechanic(CharacterMechanic):
             "aemeath.seraphic_duo_remaining",
             "aemeath.heavenfall_unbound",
             "aemeath.finale_available",
+            "aemeath.heavenfall_unbound_remaining",
+            "aemeath.stardust_resonance_remaining",
         ]
 
     def get_debug_state(self, state: Any) -> dict[str, Any]:
@@ -154,6 +174,8 @@ class AemeathMechanic(CharacterMechanic):
             "resonance_rate": data["resonance_rate"],
             "seraphic_duo_remaining": data["seraphic_duo_remaining"],
             "heavenfall_unbound": data["heavenfall_unbound"],
+            "heavenfall_unbound_remaining": data["heavenfall_unbound_remaining"],
+            "stardust_resonance_remaining": data["stardust_resonance_remaining"],
             "finale_available": data["finale_available"],
         }
 
@@ -168,5 +190,14 @@ class AemeathMechanic(CharacterMechanic):
         data["synchronization_rate"] = max(0.0, min(200.0, float(data["synchronization_rate"])))
         data["resonance_rate"] = max(0.0, min(4.0, float(data["resonance_rate"])))
         data["seraphic_duo_remaining"] = max(0.0, float(data["seraphic_duo_remaining"]))
-        data["heavenfall_unbound"] = bool(data["heavenfall_unbound"])
+        data["heavenfall_unbound_remaining"] = max(0.0, float(data["heavenfall_unbound_remaining"]))
+        data["stardust_resonance_remaining"] = max(0.0, float(data["stardust_resonance_remaining"]))
+        data["heavenfall_unbound"] = bool(data["heavenfall_unbound"]) or data["heavenfall_unbound_remaining"] > 0.0
         data["finale_available"] = bool(data["finale_available"])
+
+    def _can_use_finale(self, data: dict[str, Any]) -> bool:
+        return (
+            bool(data["heavenfall_unbound"])
+            and float(data["synchronization_rate"]) >= 200.0
+            and float(data["resonance_rate"]) >= 4.0
+        )

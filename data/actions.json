@@ -1186,8 +1186,9 @@
                  ],
         "policy_selectable":  false,
         "mechanic_effects":  {
-                                 "sync_delta":  20,
-                                 "set_aemeath_combo_stage":  1
+                                 "set_aemeath_combo_stage":  1,
+                                 "sync_delta":  40,
+                                 "seraphic_duo_duration":  5
                              }
     },
     {
@@ -1468,8 +1469,9 @@
                  ],
         "policy_selectable":  false,
         "mechanic_effects":  {
-                                 "sync_delta":  25,
-                                 "set_mech_combo_stage":  1
+                                 "set_mech_combo_stage":  1,
+                                 "sync_delta":  40,
+                                 "seraphic_duo_duration":  5
                              }
     },
     {
@@ -1772,8 +1774,11 @@
                  ],
         "policy_selectable":  false,
         "mechanic_effects":  {
-                                 "sync_delta":  40,
-                                 "resonance_rate_delta":  1
+                                 "set_mech_combo_stage":  2,
+                                 "resonance_rate_delta":  1,
+                                 "sync_delta":  -100,
+                                 "set_form":  "mech",
+                                 "seraphic_duo_duration":  0
                              }
     },
     {
@@ -1886,8 +1891,11 @@
                  ],
         "policy_selectable":  false,
         "mechanic_effects":  {
+                                 "set_aemeath_combo_stage":  2,
+                                 "resonance_rate_delta":  1,
                                  "sync_delta":  -100,
-                                 "resonance_rate_delta":  1
+                                 "set_form":  "aemeath",
+                                 "seraphic_duo_duration":  0
                              }
     },
     {
@@ -1907,7 +1915,7 @@
                      {
                          "time":  0.12,
                          "damage_category":  "normal",
-                         "damage_multiplier":  0.208,
+                         "damage_multiplier":  2.008,
                          "tune_break_multiplier":  0,
                          "tags":  [
 
@@ -1960,11 +1968,11 @@
                  ],
         "policy_selectable":  false,
         "mechanic_effects":  {
-                                 "set_form":  "mech",
-                                 "seraphic_duo_duration":  5,
-                                 "heavenfall_unbound":  true,
+                                 "set_mech_combo_stage":  2,
                                  "resonance_rate_delta":  1,
-                                 "set_mech_combo_stage":  2
+                                 "stardust_resonance_duration":  30,
+                                 "set_form":  "mech",
+                                 "heavenfall_unbound_duration":  60
                              }
     },
     {
@@ -2007,14 +2015,13 @@
                  ],
         "policy_selectable":  false,
         "mechanic_effects":  {
-                                 "set_form":  "aemeath",
-                                 "set_synchronization_rate":  0,
-                                 "set_resonance_rate":  0,
-                                 "seraphic_duo_duration":  0,
-                                 "heavenfall_unbound":  false,
-                                 "finale_available":  false,
                                  "set_aemeath_combo_stage":  1,
-                                 "set_mech_combo_stage":  1
+                                 "stardust_resonance_duration":  0,
+                                 "set_mech_combo_stage":  1,
+                                 "seraphic_duo_duration":  0,
+                                 "heavenfall_unbound_duration":  0,
+                                 "set_form":  "aemeath",
+                                 "finale_available":  false
                              }
     },
     {
