@@ -89,7 +89,7 @@
     "character_id": "main",
     "action_type": "resonance_liberation",
     "duration": 2.7,
-    "cooldown": 20,
+    "cooldown": 25,
     "damage_multiplier": 8.5,
     "resonance_energy_gain": 0,
     "concerto_energy_gain": 25,
@@ -465,7 +465,7 @@
         "damage_category": "normal",
         "tags": [],
         "name": "support basic",
-        "damage_multiplier": 0.8,
+        "damage_multiplier": 0.4635,
         "tune_break_multiplier": 0
       }
     ]
@@ -772,7 +772,7 @@
       {
         "time": 0.22,
         "damage_category": "normal",
-        "damage_multiplier": 0.8,
+        "damage_multiplier": 0.4635,
         "tune_break_multiplier": 0,
         "tags": [],
         "name": "aemeath form basic 1"
@@ -807,12 +807,28 @@
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.25,
+        "time": 0.16,
         "damage_category": "normal",
-        "damage_multiplier": 0.95,
+        "damage_multiplier": 0.1389,
         "tune_break_multiplier": 0,
         "tags": [],
-        "name": "aemeath form basic 2"
+        "name": "aemeath form basic 2a"
+      },
+      {
+        "time": 0.28,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2084,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath form basic 2b"
+      },
+      {
+        "time": 0.4,
+        "damage_category": "normal",
+        "damage_multiplier": 0.3473,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath form basic 2c"
       }
     ],
     "resonance_energy_gain": 5,
@@ -844,20 +860,44 @@
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.3,
+        "time": 0.18,
         "damage_category": "normal",
-        "damage_multiplier": 0.55,
+        "damage_multiplier": 0.0932,
         "tune_break_multiplier": 0,
         "tags": [],
         "name": "aemeath form basic 3a"
       },
       {
-        "time": 0.5,
+        "time": 0.26,
         "damage_category": "normal",
-        "damage_multiplier": 0.65,
+        "damage_multiplier": 0.0932,
         "tune_break_multiplier": 0,
         "tags": [],
         "name": "aemeath form basic 3b"
+      },
+      {
+        "time": 0.34,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0932,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath form basic 3c"
+      },
+      {
+        "time": 0.46,
+        "damage_category": "normal",
+        "damage_multiplier": 0.1863,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath form basic 3d"
+      },
+      {
+        "time": 0.58,
+        "damage_category": "normal",
+        "damage_multiplier": 0.4656,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath form basic 3e"
       }
     ],
     "resonance_energy_gain": 6,
@@ -889,20 +929,52 @@
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.35,
+        "time": 0.18,
         "damage_category": "normal",
-        "damage_multiplier": 0.9,
+        "damage_multiplier": 0.0673,
         "tune_break_multiplier": 0,
         "tags": [],
         "name": "aemeath form basic 4a"
       },
       {
-        "time": 0.65,
+        "time": 0.28,
         "damage_category": "normal",
-        "damage_multiplier": 1.1,
+        "damage_multiplier": 0.0673,
         "tune_break_multiplier": 0,
         "tags": [],
         "name": "aemeath form basic 4b"
+      },
+      {
+        "time": 0.38,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0673,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath form basic 4c"
+      },
+      {
+        "time": 0.48,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0673,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath form basic 4d"
+      },
+      {
+        "time": 0.58,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0673,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath form basic 4e"
+      },
+      {
+        "time": 0.72,
+        "damage_category": "normal",
+        "damage_multiplier": 1.0094,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath form basic 4f"
       }
     ],
     "resonance_energy_gain": 7,
@@ -934,12 +1006,28 @@
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.25,
+        "time": 0.16,
         "damage_category": "normal",
-        "damage_multiplier": 1,
+        "damage_multiplier": 0.232,
         "tune_break_multiplier": 0,
         "tags": [],
-        "name": "aemeath mech basic 1"
+        "name": "aemeath mech basic 1a"
+      },
+      {
+        "time": 0.28,
+        "damage_category": "normal",
+        "damage_multiplier": 0.232,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath mech basic 1b"
+      },
+      {
+        "time": 0.4,
+        "damage_category": "normal",
+        "damage_multiplier": 0.232,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath mech basic 1c"
       }
     ],
     "resonance_energy_gain": 6,
@@ -971,12 +1059,20 @@
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.3,
+        "time": 0.24,
         "damage_category": "normal",
-        "damage_multiplier": 1.2,
+        "damage_multiplier": 0.1857,
         "tune_break_multiplier": 0,
         "tags": [],
-        "name": "aemeath mech basic 2"
+        "name": "aemeath mech basic 2a"
+      },
+      {
+        "time": 0.46,
+        "damage_category": "normal",
+        "damage_multiplier": 0.7426,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath mech basic 2b"
       }
     ],
     "resonance_energy_gain": 6,
@@ -1008,20 +1104,68 @@
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.32,
+        "time": 0.14,
         "damage_category": "normal",
-        "damage_multiplier": 0.8,
+        "damage_multiplier": 0.0389,
         "tune_break_multiplier": 0,
         "tags": [],
         "name": "aemeath mech basic 3a"
       },
       {
-        "time": 0.55,
+        "time": 0.2,
         "damage_category": "normal",
-        "damage_multiplier": 0.8,
+        "damage_multiplier": 0.0389,
         "tune_break_multiplier": 0,
         "tags": [],
         "name": "aemeath mech basic 3b"
+      },
+      {
+        "time": 0.26,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0389,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath mech basic 3c"
+      },
+      {
+        "time": 0.32,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0389,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath mech basic 3d"
+      },
+      {
+        "time": 0.38,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0389,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath mech basic 3e"
+      },
+      {
+        "time": 0.44,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0389,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath mech basic 3f"
+      },
+      {
+        "time": 0.58,
+        "damage_category": "normal",
+        "damage_multiplier": 0.8154,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath mech basic 3g"
+      },
+      {
+        "time": 0.7,
+        "damage_category": "normal",
+        "damage_multiplier": 0.6165,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "aemeath mech basic 3h"
       }
     ],
     "resonance_energy_gain": 7,
@@ -1053,17 +1197,17 @@
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.38,
+        "time": 0.32,
         "damage_category": "normal",
-        "damage_multiplier": 1.2,
+        "damage_multiplier": 0.4038,
         "tune_break_multiplier": 0,
         "tags": [],
         "name": "aemeath mech basic 4a"
       },
       {
-        "time": 0.7,
+        "time": 0.68,
         "damage_category": "normal",
-        "damage_multiplier": 1.4,
+        "damage_multiplier": 0.9421,
         "tune_break_multiplier": 0,
         "tags": [],
         "name": "aemeath mech basic 4b"
@@ -1091,7 +1235,7 @@
     "action_type": "resonance_skill",
     "duration": 0.35,
     "action_time": 0.35,
-    "cooldown": 8,
+    "cooldown": 1,
     "cooldown_group": "aemeath_form_switch",
     "damage_category": "normal",
     "damage_multiplier": 0,
@@ -1099,12 +1243,28 @@
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.2,
+        "time": 0.12,
         "damage_category": "normal",
-        "damage_multiplier": 1.8,
+        "damage_multiplier": 0.2692,
         "tune_break_multiplier": 0,
         "tags": [],
-        "name": "switch to mech"
+        "name": "sync strike armament merge 1"
+      },
+      {
+        "time": 0.22,
+        "damage_category": "normal",
+        "damage_multiplier": 0.4038,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "sync strike armament merge 2"
+      },
+      {
+        "time": 0.31,
+        "damage_category": "normal",
+        "damage_multiplier": 0.6729,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "sync strike armament merge 3"
       }
     ],
     "resonance_energy_gain": 10,
@@ -1130,7 +1290,7 @@
     "action_type": "resonance_skill",
     "duration": 0.35,
     "action_time": 0.35,
-    "cooldown": 8,
+    "cooldown": 1,
     "cooldown_group": "aemeath_form_switch",
     "damage_category": "normal",
     "damage_multiplier": 0,
@@ -1138,12 +1298,36 @@
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.2,
+        "time": 0.1,
         "damage_category": "normal",
-        "damage_multiplier": 1.6,
+        "damage_multiplier": 0.1633,
         "tune_break_multiplier": 0,
         "tags": [],
-        "name": "switch to aemeath"
+        "name": "sync strike call of dawn 1"
+      },
+      {
+        "time": 0.17,
+        "damage_category": "normal",
+        "damage_multiplier": 0.1633,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "sync strike call of dawn 2"
+      },
+      {
+        "time": 0.24,
+        "damage_category": "normal",
+        "damage_multiplier": 0.1633,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "sync strike call of dawn 3"
+      },
+      {
+        "time": 0.31,
+        "damage_category": "normal",
+        "damage_multiplier": 1.1428,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "sync strike call of dawn 4"
       }
     ],
     "resonance_energy_gain": 10,
@@ -1253,7 +1437,7 @@
     "action_type": "resonance_liberation",
     "duration": 0.6,
     "action_time": 0.6,
-    "cooldown": 20,
+    "cooldown": 25,
     "cooldown_group": "aemeath_overdrive",
     "damage_category": "normal",
     "damage_multiplier": 0,
@@ -1261,20 +1445,36 @@
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.15,
+        "time": 0.12,
         "damage_category": "normal",
-        "damage_multiplier": 5,
+        "damage_multiplier": 0.208,
         "tune_break_multiplier": 0,
         "tags": [],
-        "name": "overdrive opener"
+        "name": "overdrive hit 1"
       },
       {
-        "time": 0.45,
+        "time": 0.26,
         "damage_category": "normal",
-        "damage_multiplier": 8,
+        "damage_multiplier": 2.6744,
         "tune_break_multiplier": 0,
         "tags": [],
-        "name": "overdrive finisher"
+        "name": "overdrive hit 2"
+      },
+      {
+        "time": 0.4,
+        "damage_category": "normal",
+        "damage_multiplier": 2.6744,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "overdrive hit 3"
+      },
+      {
+        "time": 0.54,
+        "damage_category": "normal",
+        "damage_multiplier": 2.6744,
+        "tune_break_multiplier": 0,
+        "tags": [],
+        "name": "overdrive hit 4"
       }
     ],
     "resonance_energy_gain": 0,
@@ -1302,7 +1502,7 @@
     "action_type": "resonance_liberation",
     "duration": 0.75,
     "action_time": 0.75,
-    "cooldown": 0,
+    "cooldown": 25,
     "cooldown_group": "aemeath_finale",
     "damage_category": "normal",
     "damage_multiplier": 0,
@@ -1310,24 +1510,16 @@
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.25,
-        "damage_category": "normal",
-        "damage_multiplier": 8,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "finale opener"
-      },
-      {
         "time": 0.6,
         "damage_category": "normal",
-        "damage_multiplier": 14,
+        "damage_multiplier": 17.8929,
         "tune_break_multiplier": 0,
         "tags": [],
-        "name": "finale finisher"
+        "name": "heavenfall finale"
       }
     ],
     "resonance_energy_gain": 0,
-    "concerto_energy_gain": 25,
+    "concerto_energy_gain": 20,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],

@@ -60,9 +60,27 @@ Not implemented yet:
 - air attacks and dodge counter
 - exact real hit timings or final damage values
 
-All Aemeath-lite damage multipliers, action_time values, hit timings, and resource gains are placeholder/sample values for architecture testing.
+## Aemeath-lite Data Accuracy
 
-Character mechanics have an advance_time hook that runs whenever combat time advances, even if the character is off-field. Aemeath Seraphic Duo uses this hook, so its remaining time decreases during swaps and during other characters' actions. Heavenfall Finale is separated from Overdrive cooldown by using its own cooldown group. Aemeath numerical values are still placeholder/sample values; real Aemeath skill coefficients are not implemented yet.
+Aemeath-lite now uses Level 10 coefficients visible in the provided skill screenshots for:
+
+- Aemeath Form basic attacks
+- Mech Form basic attacks
+- Sync Strike variants used by Aemeath-lite form switching
+- Heavenfall Edict: Overdrive
+- Heavenfall Edict: Finale
+
+These values are still placeholders or approximations:
+
+- action_time values
+- hit timing offsets
+- Synchronization Rate gain values
+- Seraphic Duet: Overturn and Encore coefficients
+- some mechanic effects and state transitions
+
+Full Aemeath is not implemented yet. Starflux, Tune Rupture, Fusion Burst, Fusion Trail, Intro/Outro, team buffs, full passives, air attacks, dodge counters, and exact video-verified hit timings remain out of scope.
+
+Character mechanics have an advance_time hook that runs whenever combat time advances, even if the character is off-field. Aemeath Seraphic Duo uses this hook, so its remaining time decreases during swaps and during other characters' actions. Heavenfall Finale is separated from Overdrive cooldown by using its own cooldown group. Aemeath-lite has selected Level 10 screenshot coefficients, while timings and several mechanic values remain placeholder/sample values.
 
 ## Damage Formulas
 
@@ -171,12 +189,13 @@ Streamlit supports Demo Sequence and PPO Model modes. PPO Model mode loads and e
 
 ```bash
 python -m compileall .
-python scripts/smoke_test.py
-python scripts/formula_smoke_test.py
-python scripts/anomaly_smoke_test.py
-python scripts/hit_timing_smoke_test.py
-python scripts/mechanics_smoke_test.py
+python scripts/aemeath_coefficients_smoke_test.py
 python scripts/aemeath_lite_smoke_test.py
+python scripts/mechanics_smoke_test.py
+python scripts/smoke_test.py
+python scripts/hit_timing_smoke_test.py
+python scripts/anomaly_smoke_test.py
+python scripts/formula_smoke_test.py
 python scripts/env_smoke_test.py
 python scripts/rl_smoke_test.py
 python rl/train_maskable_ppo.py --timesteps 50000
