@@ -4,49 +4,18 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+import json
 import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+from simulator.models import CharacterData
+from simulator.roster import is_dummy_character, parse_character_ids
 from simulator.simulation import Simulation
 
 
 DATA_DIR = Path(__file__).parent / "data"
 DEFAULT_PPO_MODEL_PATH = Path(__file__).parent / "models" / "maskable_ppo_wuwa.zip"
-
-DEMO_SEQUENCES: dict[str, list[str]] = {
-    "Balanced demo": [
-        "swap_to_support",
-        "support_resonance_skill",
-        "support_resonance_liberation",
-        "swap_to_sub",
-        "sub_resonance_skill",
-        "sub_echo_skill",
-        "swap_to_main",
-        "main_resonance_skill",
-        "main_resonance_liberation",
-        "main_aero_erosion",
-        "main_basic_attack",
-    ],
-    "Main DPS focus": [
-        "main_resonance_skill",
-        "main_basic_attack",
-        "main_echo_skill",
-        "main_resonance_liberation",
-        "main_aero_erosion",
-        "short_wait",
-    ],
-    "Aemeath-lite": [
-        "swap_to_aemeath",
-        "aemeath_basic_attack",
-        "aemeath_basic_attack",
-        "aemeath_resonance_skill",
-        "aemeath_basic_attack",
-        "aemeath_resonance_liberation",
-        "aemeath_resonance_skill",
-    ],
-}
-
 
 def enemy_settings() -> dict[str, float | int]:
     st.sidebar.header("Damage Formula Settings")
@@ -65,6 +34,37 @@ def enemy_settings() -> dict[str, float | int]:
     return settings
 
 
+def load_available_characters() -> dict[str, CharacterData]:
+    with (DATA_DIR / "characters.json").open("r", encoding="utf-8-sig") as file:
+        return {
+            item["id"]: CharacterData.model_validate(item)
+            for item in json.load(file)
+        }
+
+
+def character_label(character: CharacterData) -> str:
+    suffix = " (Dummy Sample)" if is_dummy_character(character) else ""
+    return f"{character.name}{suffix}"
+
+
+def character_selection() -> list[str]:
+    characters = load_available_characters()
+    default_ids = parse_character_ids(None, list(characters))
+    options = list(characters)
+    selected = st.sidebar.multiselect(
+        "Characters",
+        options=options,
+        default=default_ids,
+        format_func=lambda character_id: character_label(characters[character_id]),
+    )
+    if not selected:
+        selected = default_ids
+        st.sidebar.info("Using default character selection.")
+    if any(is_dummy_character(characters[character_id]) for character_id in selected):
+        st.sidebar.warning("Dummy sample characters use intentionally low placeholder coefficients and are not intended for real DPS analysis.")
+    return parse_character_ids(selected, options)
+
+
 def apply_enemy_settings(sim: Simulation, settings: dict[str, float | int]) -> None:
     sim.set_enemy_context(
         enemy_level=int(settings["enemy_level"]),
@@ -76,8 +76,12 @@ def apply_enemy_settings(sim: Simulation, settings: dict[str, float | int]) -> N
     )
 
 
-def run_repeating_sequence(sequence: list[str], settings: dict[str, float | int]) -> Simulation:
-    sim = Simulation.from_json(DATA_DIR)
+def run_repeating_sequence(
+    sequence: list[str],
+    settings: dict[str, float | int],
+    selected_character_ids: list[str],
+) -> Simulation:
+    sim = Simulation.from_json(DATA_DIR, selected_character_ids=selected_character_ids)
     apply_enemy_settings(sim, settings)
     index = 0
 
@@ -90,7 +94,11 @@ def run_repeating_sequence(sequence: list[str], settings: dict[str, float | int]
     return sim
 
 
-def evaluate_ppo_model(model_path: Path, settings: dict[str, float | int]) -> tuple[Any, list[str], Simulation]:
+def evaluate_ppo_model(
+    model_path: Path,
+    settings: dict[str, float | int],
+    selected_character_ids: list[str],
+) -> tuple[Any, list[str], Simulation]:
     try:
         from sb3_contrib import MaskablePPO
         from env.wuwa_env import WuwaDpsEnv
@@ -98,7 +106,7 @@ def evaluate_ppo_model(model_path: Path, settings: dict[str, float | int]) -> tu
         raise RuntimeError("Missing RL dependency. Run: pip install -r requirements.txt") from exc
 
     model = MaskablePPO.load(model_path)
-    env = WuwaDpsEnv(DATA_DIR)
+    env = WuwaDpsEnv(DATA_DIR, selected_character_ids=selected_character_ids)
     observation, _ = env.reset()
     apply_enemy_settings(env.simulation, settings)
     action_sequence: list[str] = []
@@ -119,6 +127,14 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
     metric_cols[1].metric("DPS", f"{summary.dps:,.0f}")
     metric_cols[2].metric("Final combat time", f"{summary.final_time:.2f}s")
     metric_cols[3].metric("Active character", summary.active_character)
+    if simulation is not None:
+        st.caption(
+            f"Selected characters: {', '.join(simulation.selected_character_ids)} | "
+            f"Initial active: {simulation.initial_active_character} | "
+            f"Policy actions: {len(simulation.policy_actions)}"
+        )
+        with st.expander("Policy Action IDs"):
+            st.write(simulation.get_policy_action_ids())
 
     if action_sequence is not None:
         st.subheader("Selected action sequence")
@@ -134,6 +150,8 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
     timeline_df = pd.DataFrame(timeline_rows)
     preferred_columns = [
         "action_id",
+        "selected_action_id",
+        "resolved_action_id",
         "action_name",
         "time_start",
         "time_end",
@@ -193,6 +211,7 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
 st.set_page_config(page_title="Wuwa DPS RL Simulator Prototype", layout="wide")
 st.title("Wuwa DPS RL Simulator Prototype")
 settings = enemy_settings()
+selected_character_ids = character_selection()
 with st.expander("Active Anomaly System"):
     st.write("Actions apply anomaly stacks to enemy-wide combat state. Aero/Spectro/Electro deal tick damage during later action durations. Havoc Bane deals no direct damage and contributes defense reduction while active. Current durations and tick intervals are simplified assumptions.")
 with st.expander("Hit Timing Model"):
@@ -201,8 +220,18 @@ with st.expander("Hit Timing Model"):
 mode = st.radio("Mode", ["Demo Sequence", "PPO Model"], horizontal=True)
 
 if mode == "Demo Sequence":
-    sequence_name = st.selectbox("Action sequence", list(DEMO_SEQUENCES))
-    sim = run_repeating_sequence(DEMO_SEQUENCES[sequence_name], settings)
+    preview_sim = Simulation.from_json(DATA_DIR, selected_character_ids=selected_character_ids)
+    policy_action_ids = preview_sim.get_policy_action_ids()
+    valid_policy_action_ids = preview_sim.valid_action_ids()
+    default_sequence = [action_id for action_id in valid_policy_action_ids if action_id != "short_wait"][:3] or valid_policy_action_ids
+    sequence = st.multiselect(
+        "Action sequence",
+        options=policy_action_ids,
+        default=default_sequence,
+    )
+    if not sequence:
+        sequence = ["short_wait"] if "short_wait" in policy_action_ids else policy_action_ids[:1]
+    sim = run_repeating_sequence(sequence, settings, selected_character_ids)
     render_simulation(sim.summary(), simulation=sim)
 else:
     model_path_text = st.text_input("PPO model path", value=str(DEFAULT_PPO_MODEL_PATH))
@@ -211,7 +240,7 @@ else:
         st.info("No trained PPO model found. Run training first: python rl/train_maskable_ppo.py --timesteps 50000")
     else:
         try:
-            ppo_summary, ppo_actions, ppo_simulation = evaluate_ppo_model(model_path, settings)
+            ppo_summary, ppo_actions, ppo_simulation = evaluate_ppo_model(model_path, settings, selected_character_ids)
             render_simulation(ppo_summary, action_sequence=ppo_actions, simulation=ppo_simulation)
         except RuntimeError as exc:
             st.error(str(exc))

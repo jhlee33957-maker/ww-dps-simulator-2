@@ -39,6 +39,9 @@ class CharacterData(BaseModel):
     resonance_energy_max: float = Field(default=125.0, gt=0)
     concerto_energy: float = Field(ge=0)
     active: bool = False
+    data_status: str | None = None
+    is_dummy_sample: bool = False
+    notes: str | None = None
 
     @model_validator(mode="after")
     def apply_legacy_defaults(self) -> "CharacterData":
@@ -108,6 +111,8 @@ class ActionData(BaseModel):
     policy_selectable: bool = True
     cooldown_group: str | None = None
     mechanic_effects: dict[str, Any] = Field(default_factory=dict)
+    data_status: str | None = None
+    notes: str | None = None
 
     @model_validator(mode="after")
     def apply_legacy_fields(self) -> "ActionData":
@@ -191,6 +196,8 @@ class CombatState(BaseModel):
 
 
 class ActionResult(BaseModel):
+    selected_action_id: str | None = None
+    resolved_action_id: str | None = None
     action_id: str
     action_name: str
     character_id: str | None
@@ -219,6 +226,8 @@ class ActionResult(BaseModel):
 
 
 class TimelineEntry(BaseModel):
+    selected_action_id: str | None = None
+    resolved_action_id: str | None = None
     time_start: float
     time_end: float
     action_id: str

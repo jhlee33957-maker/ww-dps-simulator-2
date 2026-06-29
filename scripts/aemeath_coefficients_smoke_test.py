@@ -27,7 +27,7 @@ EXPECTED_MULTIPLIERS = {
 def main() -> None:
     actions = {
         action["id"]: action
-        for action in json.loads((DATA_DIR / "actions.json").read_text(encoding="utf-8"))
+        for action in json.loads((DATA_DIR / "actions.json").read_text(encoding="utf-8-sig"))
     }
 
     for action_id, expected in EXPECTED_MULTIPLIERS.items():

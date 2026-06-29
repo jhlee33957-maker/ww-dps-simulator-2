@@ -3,10 +3,17 @@ from __future__ import annotations
 from simulator.models import CharacterData, CombatState, EnemyData
 
 
-def create_initial_state(characters: dict[str, CharacterData], enemy: EnemyData | None = None) -> CombatState:
-    active = next((char for char in characters.values() if char.active), None)
-    if active is None:
-        active = next(iter(characters.values()))
+def create_initial_state(
+    characters: dict[str, CharacterData],
+    enemy: EnemyData | None = None,
+    active_character_id: str | None = None,
+) -> CombatState:
+    if active_character_id is not None:
+        active = characters[active_character_id]
+    else:
+        active = next((char for char in characters.values() if char.active), None)
+        if active is None:
+            active = next(iter(characters.values()))
     enemy = enemy or EnemyData()
 
     return CombatState(

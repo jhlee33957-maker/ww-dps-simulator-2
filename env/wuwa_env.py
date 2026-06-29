@@ -14,10 +14,22 @@ from simulator.simulation import Simulation
 class WuwaDpsEnv(gym.Env):
     metadata = {"render_modes": []}
 
-    def __init__(self, data_dir: Path | str = "data") -> None:
+    def __init__(
+        self,
+        data_dir: Path | str = "data",
+        selected_character_ids: list[str] | str | None = None,
+        character_ids: list[str] | str | None = None,
+        initial_active_character: str | None = None,
+    ) -> None:
         super().__init__()
         self.data_dir = Path(data_dir)
-        self.simulation = Simulation.from_json(self.data_dir)
+        self.selected_character_ids_arg = selected_character_ids if selected_character_ids is not None else character_ids
+        self.initial_active_character_arg = initial_active_character
+        self.simulation = Simulation.from_json(
+            self.data_dir,
+            selected_character_ids=self.selected_character_ids_arg,
+            initial_active_character=self.initial_active_character_arg,
+        )
         self.action_ids = self._get_action_order()
         self.character_ids = self._get_character_order()
         self.buff_ids = self._get_buff_order()
@@ -31,7 +43,11 @@ class WuwaDpsEnv(gym.Env):
 
     def reset(self, seed: int | None = None, options: dict | None = None):
         super().reset(seed=seed)
-        self.simulation = Simulation.from_json(self.data_dir)
+        self.simulation = Simulation.from_json(
+            self.data_dir,
+            selected_character_ids=self.selected_character_ids_arg,
+            initial_active_character=self.initial_active_character_arg,
+        )
         self.action_ids = self._get_action_order()
         self.character_ids = self._get_character_order()
         self.buff_ids = self._get_buff_order()
@@ -74,14 +90,10 @@ class WuwaDpsEnv(gym.Env):
         return action_mask(self.simulation)
 
     def _get_action_order(self) -> list[str]:
-        return [
-            action_id
-            for action_id, action in self.simulation.actions.items()
-            if action.policy_selectable
-        ]
+        return self.simulation.get_policy_action_ids()
 
     def _get_character_order(self) -> list[str]:
-        return list(self.simulation.characters)
+        return list(self.simulation.selected_character_ids)
 
     def _get_buff_order(self) -> list[str]:
         return list(self.simulation.buffs)
@@ -186,3 +198,12 @@ class WuwaDpsEnv(gym.Env):
 
     def _observation(self) -> np.ndarray:
         return self._get_observation()
+
+    def get_selected_character_ids(self) -> list[str]:
+        return list(self.simulation.selected_character_ids)
+
+    def get_policy_action_ids(self) -> list[str]:
+        return list(self.action_ids)
+
+    def get_initial_active_character(self) -> str:
+        return self.simulation.initial_active_character

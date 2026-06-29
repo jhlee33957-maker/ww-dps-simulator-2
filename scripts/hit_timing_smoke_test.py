@@ -12,7 +12,7 @@ from simulator.simulation import Simulation
 
 
 def main() -> None:
-    sim = Simulation.from_json(PROJECT_ROOT / "data")
+    sim = Simulation.from_json(PROJECT_ROOT / "data", selected_character_ids=["main", "sub", "support"])
     sim.execute_action("main_resonance_liberation")
     row = sim.timeline[-1]
     print("Multi-hit action:", row.action_id)
@@ -22,7 +22,7 @@ def main() -> None:
     print("Total action damage:", row.total_action_damage)
     print("Hit category sum:", sum(row.hit_damage_by_category.values()))
 
-    timing = Simulation.from_json(PROJECT_ROOT / "data")
+    timing = Simulation.from_json(PROJECT_ROOT / "data", selected_character_ids=["main", "sub", "support"])
     timing.state.active_anomalies["havoc_bane"] = AnomalyState(
         anomaly_type="havoc_bane",
         stacks=5,

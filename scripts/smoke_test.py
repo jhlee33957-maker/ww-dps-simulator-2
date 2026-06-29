@@ -11,7 +11,7 @@ from simulator.simulation import Simulation
 
 
 def main() -> None:
-    sim = Simulation.from_json(PROJECT_ROOT / "data")
+    sim = Simulation.from_json(PROJECT_ROOT / "data", selected_character_ids=["main", "sub", "support"])
     print("Valid actions at start:", ", ".join(sim.valid_action_ids()))
 
     sequence = [

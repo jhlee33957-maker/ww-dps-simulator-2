@@ -7,10 +7,21 @@ from typing import Any
 from env.wuwa_env import WuwaDpsEnv
 
 
-def run_masked_episode(model: Any, data_dir: Path | str = "data", deterministic: bool = True) -> tuple[WuwaDpsEnv, list[str]]:
-    env = WuwaDpsEnv(data_dir)
+def run_masked_episode(
+    model: Any,
+    data_dir: Path | str = "data",
+    deterministic: bool = True,
+    selected_character_ids: list[str] | str | None = None,
+    initial_active_character: str | None = None,
+) -> tuple[WuwaDpsEnv, list[str], list[str]]:
+    env = WuwaDpsEnv(
+        data_dir,
+        selected_character_ids=selected_character_ids,
+        initial_active_character=initial_active_character,
+    )
     observation, _ = env.reset()
     action_sequence: list[str] = []
+    resolved_action_sequence: list[str] = []
 
     while env.simulation.state.current_time < env.simulation.combat_duration:
         mask = env.action_masks()
@@ -18,10 +29,11 @@ def run_masked_episode(model: Any, data_dir: Path | str = "data", deterministic:
         action_index = int(action)
         observation, _reward, terminated, truncated, info = env.step(action_index)
         action_sequence.append(str(info["action_id"]))
+        resolved_action_sequence.append(str(info["resolved_action_id"]))
         if terminated or truncated:
             break
 
-    return env, action_sequence
+    return env, action_sequence, resolved_action_sequence
 
 
 def action_count_breakdown(action_sequence: list[str]) -> dict[str, int]:

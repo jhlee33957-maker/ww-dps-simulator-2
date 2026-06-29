@@ -226,6 +226,8 @@ def execute_action(
 
 def timeline_entry(result: ActionResult, active_character_name: str) -> TimelineEntry:
     return TimelineEntry(
+        selected_action_id=result.selected_action_id,
+        resolved_action_id=result.resolved_action_id or result.action_id,
         time_start=result.start_time,
         time_end=result.end_time,
         action_id=result.action_id,

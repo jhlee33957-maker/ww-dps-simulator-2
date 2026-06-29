@@ -7,6 +7,7 @@ from characters.base import CharacterMechanic
 from characters.registry import get_mechanic, get_mechanics_for_characters
 from simulator.action_executor import execute_action, is_action_valid, timeline_entry
 from simulator.models import ActionData, BuffData, CharacterData, CombatState, EnemyData, SimulationSummary, TimelineEntry
+from simulator.roster import get_initial_active_character, parse_character_ids
 from simulator.state import create_initial_state
 
 
@@ -18,20 +19,35 @@ class Simulation:
         buffs: dict[str, BuffData],
         combat_duration: float = 120.0,
         enemy: EnemyData | None = None,
+        selected_character_ids: list[str] | str | None = None,
+        initial_active_character: str | None = None,
     ) -> None:
-        self.characters = characters
+        self.all_characters = characters
+        self.selected_character_ids = parse_character_ids(selected_character_ids, list(characters))
+        self.initial_active_character = get_initial_active_character(self.selected_character_ids, initial_active_character)
+        self.characters = {
+            character_id: characters[character_id]
+            for character_id in self.selected_character_ids
+        }
         self.actions = actions
+        self.actions_by_id = actions
+        self.policy_actions = self._build_policy_actions()
         self.buffs = buffs
         self.combat_duration = combat_duration
         self.enemy = enemy or EnemyData()
-        self.state: CombatState = create_initial_state(characters, self.enemy)
-        self.character_mechanics = get_mechanics_for_characters(list(characters))
+        self.state: CombatState = create_initial_state(self.characters, self.enemy, self.initial_active_character)
+        self.character_mechanics = get_mechanics_for_characters(self.selected_character_ids)
         for mechanic in self.character_mechanics.values():
             mechanic.initialize_state(self.state)
         self.timeline: list[TimelineEntry] = []
 
     @classmethod
-    def from_json(cls, data_dir: Path | str) -> "Simulation":
+    def from_json(
+        cls,
+        data_dir: Path | str,
+        selected_character_ids: list[str] | str | None = None,
+        initial_active_character: str | None = None,
+    ) -> "Simulation":
         data_path = Path(data_dir)
         characters = {
             item["id"]: CharacterData.model_validate(item)
@@ -47,7 +63,14 @@ class Simulation:
         }
         enemy_path = data_path / "enemy.json"
         enemy = EnemyData.model_validate(_read_json_object(enemy_path)) if enemy_path.exists() else EnemyData()
-        return cls(characters=characters, actions=actions, buffs=buffs, enemy=enemy)
+        return cls(
+            characters=characters,
+            actions=actions,
+            buffs=buffs,
+            enemy=enemy,
+            selected_character_ids=selected_character_ids,
+            initial_active_character=initial_active_character,
+        )
 
     def set_enemy_context(
         self,
@@ -77,6 +100,8 @@ class Simulation:
             return False
 
         selected_action = self.actions[action_id]
+        if selected_action.policy_selectable and action_id not in self.policy_actions:
+            return False
         action = self.resolve_action(selected_action)
         if not self.is_resolved_action_available(action):
             return False
@@ -87,6 +112,8 @@ class Simulation:
         result = execute_action(action, self.state, self.characters, self.buffs, mechanic=actor_mechanic)
         if not result.valid:
             return False
+        result.selected_action_id = selected_action.id
+        result.resolved_action_id = action.id
 
         for mechanic in self.character_mechanics.values():
             mechanic.advance_time(self.state, result.action_time)
@@ -106,7 +133,7 @@ class Simulation:
     def valid_action_ids(self) -> list[str]:
         return [
             action_id
-            for action_id, action in self.actions.items()
+            for action_id, action in self.policy_actions.items()
             if action.policy_selectable and self.is_action_available(action)
         ]
 
@@ -129,6 +156,20 @@ class Simulation:
 
     def resolve_action_id(self, action_id: str) -> str:
         return self.resolve_action(self.actions[action_id]).id
+
+    def get_policy_action_ids(self) -> list[str]:
+        return list(self.policy_actions)
+
+    def _build_policy_actions(self) -> dict[str, ActionData]:
+        policy_actions: dict[str, ActionData] = {}
+        selected = set(self.selected_character_ids)
+        for action_id, action in self.actions.items():
+            if not action.policy_selectable:
+                continue
+            if action.character_id is not None and action.character_id not in selected:
+                continue
+            policy_actions[action_id] = action
+        return policy_actions
 
     def _mechanic_for_character(self, character_id: str) -> CharacterMechanic:
         mechanic = self.character_mechanics.get(character_id)
@@ -161,10 +202,10 @@ class Simulation:
 
 
 def _read_json(path: Path) -> list[dict]:
-    with path.open("r", encoding="utf-8") as file:
+    with path.open("r", encoding="utf-8-sig") as file:
         return json.load(file)
 
 
 def _read_json_object(path: Path) -> dict:
-    with path.open("r", encoding="utf-8") as file:
+    with path.open("r", encoding="utf-8-sig") as file:
         return json.load(file)

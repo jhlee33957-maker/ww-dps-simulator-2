@@ -14,7 +14,9 @@ DATA_DIR = PROJECT_ROOT / "data"
 
 
 def main() -> None:
-    sim = Simulation.from_json(DATA_DIR)
+    sim = Simulation.from_json(DATA_DIR, selected_character_ids=["main", "sub", "support"])
+    print(f"Selected characters: {sim.selected_character_ids}")
+    print(f"Policy actions: {sim.get_policy_action_ids()}")
     print("Registered mechanics:")
     for character_id, mechanic in sim.character_mechanics.items():
         print(f"- {character_id}: {mechanic.__class__.__name__}")

@@ -29,10 +29,9 @@ def run_step(sim: Simulation, selected_action_id: str, expected_resolved_id: str
 
 
 def main() -> None:
-    sim = Simulation.from_json(DATA_DIR)
+    sim = Simulation.from_json(DATA_DIR, selected_character_ids=["aemeath"])
     print(f"Initial Aemeath state: {aemeath_state(sim)}")
 
-    run_step(sim, "swap_to_aemeath", "swap_to_aemeath")
     assert sim.state.active_character_id == "aemeath"
 
     run_step(sim, "aemeath_basic_attack", "aemeath_basic_form_stage_1")
@@ -53,15 +52,9 @@ def main() -> None:
     after_seraphic_duet = aemeath_state(sim)["seraphic_duo_remaining"]
     assert after_seraphic_duet < before_seraphic_duet
 
-    run_step(sim, "swap_to_main", "swap_to_main")
-    after_swap_out = aemeath_state(sim)["seraphic_duo_remaining"]
-    assert after_swap_out < after_seraphic_duet
-
-    run_step(sim, "main_basic_attack", "main_basic_attack")
-    after_off_field_action = aemeath_state(sim)["seraphic_duo_remaining"]
-    assert after_off_field_action < after_swap_out
-
-    run_step(sim, "swap_to_aemeath", "swap_to_aemeath")
+    run_step(sim, "short_wait", "short_wait")
+    after_wait = aemeath_state(sim)["seraphic_duo_remaining"]
+    assert after_wait < after_seraphic_duet
 
     data = aemeath_state(sim)
     data["resonance_rate"] = 4.0

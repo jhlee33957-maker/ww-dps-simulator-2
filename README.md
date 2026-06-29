@@ -82,6 +82,38 @@ Full Aemeath is not implemented yet. Starflux, Tune Rupture, Fusion Burst, Fusio
 
 Character mechanics have an advance_time hook that runs whenever combat time advances, even if the character is off-field. Aemeath Seraphic Duo uses this hook, so its remaining time decreases during swaps and during other characters' actions. Heavenfall Finale is separated from Overdrive cooldown by using its own cooldown group. Aemeath-lite has selected Level 10 screenshot coefficients, while timings and several mechanic values remain placeholder/sample values.
 
+## Character Selection
+
+The simulator supports selecting which characters are active for training, evaluation, deterministic simulation, and Streamlit. PPO action space is built only from the selected characters' policy-selectable actions. Concrete internal actions remain hidden from PPO and are used only after character mechanic resolution.
+
+By default, the roster prefers Aemeath when available. Main DPS, Sub DPS, and Support are retained as dummy sample characters with intentionally low coefficients for system testing. They are not intended for real DPS analysis. Aemeath is the first partial real character implementation.
+
+Models are roster-specific because both action space and observation shape can change when selected characters change.
+
+Train Aemeath only:
+
+```bash
+python rl/train_maskable_ppo.py --timesteps 50000 --character-ids aemeath
+```
+
+Evaluate Aemeath only:
+
+```bash
+python rl/evaluate_maskable_ppo.py --model-path models/maskable_ppo_wuwa.zip --character-ids aemeath
+```
+
+Train dummy sample trio:
+
+```bash
+python rl/train_maskable_ppo.py --timesteps 50000 --character-ids main,sub,support
+```
+
+Evaluate dummy sample trio:
+
+```bash
+python rl/evaluate_maskable_ppo.py --model-path models/maskable_ppo_wuwa.zip --character-ids main,sub,support
+```
+
 ## Damage Formulas
 
 The formula layer lives in simulator/damage_formula.py and currently supports normal damage, Tune Break damage, and simplified attribute anomaly tick damage.
@@ -189,6 +221,7 @@ Streamlit supports Demo Sequence and PPO Model modes. PPO Model mode loads and e
 
 ```bash
 python -m compileall .
+python scripts/character_selection_smoke_test.py
 python scripts/aemeath_coefficients_smoke_test.py
 python scripts/aemeath_lite_smoke_test.py
 python scripts/mechanics_smoke_test.py
@@ -198,8 +231,6 @@ python scripts/anomaly_smoke_test.py
 python scripts/formula_smoke_test.py
 python scripts/env_smoke_test.py
 python scripts/rl_smoke_test.py
-python rl/train_maskable_ppo.py --timesteps 50000
-python rl/evaluate_maskable_ppo.py --model-path models/maskable_ppo_wuwa.zip
 streamlit run app.py
 ```
 
