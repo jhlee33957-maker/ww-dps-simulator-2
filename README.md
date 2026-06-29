@@ -22,6 +22,7 @@ Character mechanic modules can:
 - initialize character-specific state
 - resolve high-level actions into concrete actions
 - add character-specific action availability rules
+- advance character-specific timers whenever combat time passes
 - update state before and after actions
 - extend PPO observations
 - provide debug state for Streamlit and smoke tests
@@ -61,7 +62,7 @@ Not implemented yet:
 
 All Aemeath-lite damage multipliers, action_time values, hit timings, and resource gains are placeholder/sample values for architecture testing.
 
-Current simplification: Seraphic Duo duration is decremented in AemeathMechanic.after_action when Aemeath acts. A future generic mechanics time hook can make character-specific timers advance on every combat action.
+Character mechanics have an advance_time hook that runs whenever combat time advances, even if the character is off-field. Aemeath Seraphic Duo uses this hook, so its remaining time decreases during swaps and during other characters' actions. Heavenfall Finale is separated from Overdrive cooldown by using its own cooldown group. Aemeath numerical values are still placeholder/sample values; real Aemeath skill coefficients are not implemented yet.
 
 ## Damage Formulas
 

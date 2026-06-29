@@ -221,8 +221,6 @@ def execute_action(
         concerto_energy_gained=resource_change.concerto_gained,
         concerto_energy_wasted=resource_change.concerto_wasted,
     )
-    if mechanic is not None:
-        mechanic.after_action(state, action, result)
     return result
 
 

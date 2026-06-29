@@ -88,6 +88,10 @@ class Simulation:
         if not result.valid:
             return False
 
+        for mechanic in self.character_mechanics.values():
+            mechanic.advance_time(self.state, result.action_time)
+        actor_mechanic.after_action(self.state, action, result)
+
         active_name = self.characters[self.state.active_character_id].name
         self.timeline.append(timeline_entry(result, active_name))
         return True

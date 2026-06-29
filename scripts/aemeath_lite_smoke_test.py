@@ -45,14 +45,26 @@ def main() -> None:
 
     sim.state.resonance_energy["aemeath"] = 125.0
     run_step(sim, "aemeath_resonance_liberation", "aemeath_liberation_overdrive")
-    assert aemeath_state(sim)["seraphic_duo_remaining"] > 0.0
+    assert aemeath_state(sim)["seraphic_duo_remaining"] == 5.0
     assert aemeath_state(sim)["heavenfall_unbound"] is True
 
+    before_seraphic_duet = aemeath_state(sim)["seraphic_duo_remaining"]
     run_step(sim, "aemeath_resonance_skill", "aemeath_seraphic_duet_overturn")
+    after_seraphic_duet = aemeath_state(sim)["seraphic_duo_remaining"]
+    assert after_seraphic_duet < before_seraphic_duet
+
+    run_step(sim, "swap_to_main", "swap_to_main")
+    after_swap_out = aemeath_state(sim)["seraphic_duo_remaining"]
+    assert after_swap_out < after_seraphic_duet
+
+    run_step(sim, "main_basic_attack", "main_basic_attack")
+    after_off_field_action = aemeath_state(sim)["seraphic_duo_remaining"]
+    assert after_off_field_action < after_swap_out
+
+    run_step(sim, "swap_to_aemeath", "swap_to_aemeath")
 
     data = aemeath_state(sim)
     data["resonance_rate"] = 4.0
-    sim.state.cooldowns["aemeath_liberation"] = 0.0
     print(f"Targeted resonance_rate setup for Finale check: {data}")
 
     run_step(sim, "aemeath_resonance_liberation", "aemeath_heavenfall_finale")

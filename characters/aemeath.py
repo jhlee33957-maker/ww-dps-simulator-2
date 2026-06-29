@@ -89,9 +89,6 @@ class AemeathMechanic(CharacterMechanic):
         effects = action.mechanic_effects
         duration_was_set = "seraphic_duo_duration" in effects
 
-        if data["seraphic_duo_remaining"] > 0.0:
-            data["seraphic_duo_remaining"] = max(0.0, data["seraphic_duo_remaining"] - result.action_time)
-
         if "set_form" in effects:
             data["form"] = effects["set_form"]
         if "sync_delta" in effects:
@@ -116,6 +113,11 @@ class AemeathMechanic(CharacterMechanic):
         self._clamp(data)
         if data["heavenfall_unbound"] and data["resonance_rate"] >= 4.0:
             data["finale_available"] = True
+
+    def advance_time(self, state: Any, elapsed_time: float) -> None:
+        data = self._state(state)
+        if data["seraphic_duo_remaining"] > 0.0:
+            data["seraphic_duo_remaining"] = max(0.0, data["seraphic_duo_remaining"] - elapsed_time)
 
     def get_observation_values(self, state: Any) -> list[float]:
         data = self._state(state)

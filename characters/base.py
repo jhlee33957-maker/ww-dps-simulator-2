@@ -21,6 +21,9 @@ class CharacterMechanic:
     def after_action(self, state: Any, action: Any, result: Any) -> None:
         pass
 
+    def advance_time(self, state: Any, elapsed_time: float) -> None:
+        pass
+
     def get_observation_values(self, state: Any) -> list[float]:
         return []
 
