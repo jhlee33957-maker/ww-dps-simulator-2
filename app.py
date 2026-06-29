@@ -47,19 +47,22 @@ def character_label(character: CharacterData) -> str:
     return f"{character.name}{suffix}"
 
 
-def character_selection() -> list[str]:
+def party_selection() -> list[str]:
     characters = load_available_characters()
     default_ids = parse_character_ids(None, list(characters))
     options = list(characters)
     selected = st.sidebar.multiselect(
-        "Characters",
+        "Party Selection",
         options=options,
         default=default_ids,
         format_func=lambda character_id: character_label(characters[character_id]),
     )
     if not selected:
         selected = default_ids
-        st.sidebar.info("Using default character selection.")
+        st.sidebar.info("Using default party selection.")
+    if len(selected) > 3:
+        selected = selected[:3]
+        st.sidebar.warning("A party can currently contain 1 to 3 characters. Using the first three selected characters.")
     if any(is_dummy_character(characters[character_id]) for character_id in selected):
         st.sidebar.warning("Dummy sample characters use intentionally low placeholder coefficients and are not intended for real DPS analysis.")
     return parse_character_ids(selected, options)
@@ -128,17 +131,24 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
     metric_cols[2].metric("Final combat time", f"{summary.final_time:.2f}s")
     metric_cols[3].metric("Active character", summary.active_character)
     if simulation is not None:
+        party_kind = "Solo party" if len(simulation.selected_party_character_ids) == 1 else "Multi-character party"
         st.caption(
-            f"Selected characters: {', '.join(simulation.selected_character_ids)} | "
+            f"Selected party: {', '.join(simulation.selected_party_character_ids)} | "
             f"Initial active: {simulation.initial_active_character} | "
-            f"Policy actions: {len(simulation.policy_actions)}"
+            f"Policy actions: {len(simulation.policy_actions)} | {party_kind}"
         )
         with st.expander("Policy Action IDs"):
             st.write(simulation.get_policy_action_ids())
+        with st.expander("Registered Character Mechanics"):
+            st.write({character_id: mechanic.__class__.__name__ for character_id, mechanic in simulation.character_mechanics.items()})
 
     if action_sequence is not None:
         st.subheader("Selected action sequence")
         st.write(" -> ".join(action_sequence))
+        if simulation is not None:
+            resolved_sequence = [entry.resolved_action_id or entry.action_id for entry in summary.timeline]
+            st.subheader("Resolved action sequence")
+            st.write(" -> ".join(resolved_sequence))
         st.subheader("Action count breakdown")
         st.dataframe(
             pd.DataFrame(sorted(Counter(action_sequence).items()), columns=["action_id", "count"]),
@@ -151,7 +161,9 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
     preferred_columns = [
         "action_id",
         "selected_action_id",
+        "selected_action_name",
         "resolved_action_id",
+        "resolved_action_name",
         "action_name",
         "time_start",
         "time_end",
@@ -164,16 +176,25 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "active_anomalies_after",
         "total_damage_after",
         "active_character",
+        "mechanic_debug_after",
     ]
     visible_columns = [column for column in preferred_columns if column in timeline_df.columns]
 
     st.subheader("Timeline")
     st.dataframe(timeline_df[visible_columns] if visible_columns else timeline_df, use_container_width=True, hide_index=True)
 
+    if not timeline_df.empty and {"selected_action_id", "resolved_action_id"}.issubset(timeline_df.columns):
+        st.subheader("Selected -> Resolved Actions")
+        st.dataframe(
+            timeline_df[["selected_action_id", "resolved_action_id", "total_action_damage"]],
+            use_container_width=True,
+            hide_index=True,
+        )
+
     chart_col, resource_col = st.columns([2, 1])
 
     with chart_col:
-        st.subheader("Damage breakdown")
+        st.subheader("Damage breakdown by resolved action")
         if not timeline_df.empty:
             category_columns = ["normal_damage", "tune_break_damage", "anomaly_tick_damage"]
             damage_df = timeline_df[["action_name", *category_columns]].melt(
@@ -186,6 +207,20 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
                 fig = px.bar(damage_df, x="action_name", y="damage", color="damage_type", text_auto=".2s")
                 fig.update_layout(xaxis_title="", yaxis_title="Expected damage")
                 st.plotly_chart(fig, use_container_width=True)
+            if {"selected_action_id", "total_action_damage"}.issubset(timeline_df.columns):
+                selected_damage = timeline_df.groupby("selected_action_id", as_index=False)["total_action_damage"].sum()
+                if not selected_damage.empty:
+                    st.subheader("Total damage by selected action")
+                    fig = px.bar(selected_damage, x="selected_action_id", y="total_action_damage", text_auto=".2s")
+                    fig.update_layout(xaxis_title="", yaxis_title="Total damage")
+                    st.plotly_chart(fig, use_container_width=True)
+            if {"resolved_action_id", "total_action_damage"}.issubset(timeline_df.columns):
+                resolved_damage = timeline_df.groupby("resolved_action_id", as_index=False)["total_action_damage"].sum()
+                if not resolved_damage.empty:
+                    st.subheader("Total damage by resolved action")
+                    fig = px.bar(resolved_damage, x="resolved_action_id", y="total_action_damage", text_auto=".2s")
+                    fig.update_layout(xaxis_title="", yaxis_title="Total damage")
+                    st.plotly_chart(fig, use_container_width=True)
 
     with resource_col:
         st.subheader("Resources")
@@ -211,7 +246,7 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
 st.set_page_config(page_title="Wuwa DPS RL Simulator Prototype", layout="wide")
 st.title("Wuwa DPS RL Simulator Prototype")
 settings = enemy_settings()
-selected_character_ids = character_selection()
+selected_character_ids = party_selection()
 with st.expander("Active Anomaly System"):
     st.write("Actions apply anomaly stacks to enemy-wide combat state. Aero/Spectro/Electro deal tick damage during later action durations. Havoc Bane deals no direct damage and contributes defense reduction while active. Current durations and tick intervals are simplified assumptions.")
 with st.expander("Hit Timing Model"):

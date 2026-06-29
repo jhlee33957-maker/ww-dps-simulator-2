@@ -12,11 +12,15 @@ def run_masked_episode(
     data_dir: Path | str = "data",
     deterministic: bool = True,
     selected_character_ids: list[str] | str | None = None,
+    selected_party_character_ids: list[str] | str | None = None,
+    party: list[str] | str | None = None,
     initial_active_character: str | None = None,
 ) -> tuple[WuwaDpsEnv, list[str], list[str]]:
     env = WuwaDpsEnv(
         data_dir,
         selected_character_ids=selected_character_ids,
+        selected_party_character_ids=selected_party_character_ids,
+        party=party,
         initial_active_character=initial_active_character,
     )
     observation, _ = env.reset()

@@ -227,7 +227,9 @@ def execute_action(
 def timeline_entry(result: ActionResult, active_character_name: str) -> TimelineEntry:
     return TimelineEntry(
         selected_action_id=result.selected_action_id,
+        selected_action_name=result.selected_action_name,
         resolved_action_id=result.resolved_action_id or result.action_id,
+        resolved_action_name=result.resolved_action_name or result.action_name,
         time_start=result.start_time,
         time_end=result.end_time,
         action_id=result.action_id,
@@ -252,4 +254,5 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         resonance_energy_wasted=result.resonance_energy_wasted,
         concerto_energy_gained=result.concerto_energy_gained,
         concerto_energy_wasted=result.concerto_energy_wasted,
+        mechanic_debug_after=result.mechanic_debug_after,
     )

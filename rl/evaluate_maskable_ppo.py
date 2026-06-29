@@ -16,6 +16,8 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Evaluate a trained Maskable PPO model.")
     parser.add_argument("--model-path", type=Path, default=PROJECT_ROOT / "models" / "maskable_ppo_wuwa.zip")
     parser.add_argument("--character-ids", type=str, default=None)
+    parser.add_argument("--party-character-ids", type=str, default=None)
+    parser.add_argument("--party", type=str, default=None)
     parser.add_argument("--initial-active-character", type=str, default=None)
     parser.add_argument("--allow-mismatch", action="store_true")
     return parser.parse_args()
@@ -41,14 +43,14 @@ def main() -> None:
         model,
         PROJECT_ROOT / "data",
         deterministic=True,
-        selected_character_ids=args.character_ids,
+        selected_character_ids=args.character_ids or args.party_character_ids or args.party,
         initial_active_character=args.initial_active_character,
     )
     metadata_path = PROJECT_ROOT / "results" / "training_metadata.json"
     if metadata_path.exists():
         metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
         expected = {
-            "selected_character_ids": env.get_selected_character_ids(),
+            "selected_party_character_ids": env.get_selected_party_character_ids(),
             "policy_action_ids": env.get_policy_action_ids(),
             "observation_shape": list(env.observation_space.shape),
         }
@@ -71,7 +73,7 @@ def main() -> None:
         damage_by_action[selected_id] += row.total_action_damage
         damage_by_resolved[resolved_id] += row.total_action_damage
 
-    print("Selected characters:", env.get_selected_character_ids())
+    print("Selected party:", env.get_selected_party_character_ids())
     print("Initial active character:", env.get_initial_active_character())
     print("Policy action IDs:", env.get_policy_action_ids())
     print(f"Total damage: {summary.total_damage:.2f}")
@@ -98,6 +100,7 @@ def main() -> None:
         "final_time": summary.final_time,
         "active_character": summary.active_character,
         "selected_character_ids": env.get_selected_character_ids(),
+        "selected_party_character_ids": env.get_selected_party_character_ids(),
         "initial_active_character": env.get_initial_active_character(),
         "policy_action_ids": env.get_policy_action_ids(),
         "action_sequence": action_sequence,

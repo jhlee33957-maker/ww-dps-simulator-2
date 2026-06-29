@@ -197,7 +197,9 @@ class CombatState(BaseModel):
 
 class ActionResult(BaseModel):
     selected_action_id: str | None = None
+    selected_action_name: str | None = None
     resolved_action_id: str | None = None
+    resolved_action_name: str | None = None
     action_id: str
     action_name: str
     character_id: str | None
@@ -222,12 +224,15 @@ class ActionResult(BaseModel):
     resonance_energy_wasted: float = 0.0
     concerto_energy_gained: float = 0.0
     concerto_energy_wasted: float = 0.0
+    mechanic_debug_after: dict[str, Any] = Field(default_factory=dict)
     reason: str | None = None
 
 
 class TimelineEntry(BaseModel):
     selected_action_id: str | None = None
+    selected_action_name: str | None = None
     resolved_action_id: str | None = None
+    resolved_action_name: str | None = None
     time_start: float
     time_end: float
     action_id: str
@@ -252,6 +257,7 @@ class TimelineEntry(BaseModel):
     resonance_energy_wasted: float = 0.0
     concerto_energy_gained: float = 0.0
     concerto_energy_wasted: float = 0.0
+    mechanic_debug_after: dict[str, Any] = Field(default_factory=dict)
 
 
 class SimulationSummary(BaseModel):

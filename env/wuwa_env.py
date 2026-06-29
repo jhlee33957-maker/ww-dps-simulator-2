@@ -18,12 +18,25 @@ class WuwaDpsEnv(gym.Env):
         self,
         data_dir: Path | str = "data",
         selected_character_ids: list[str] | str | None = None,
+        selected_party_character_ids: list[str] | str | None = None,
+        party_character_ids: list[str] | str | None = None,
+        party: list[str] | str | None = None,
         character_ids: list[str] | str | None = None,
         initial_active_character: str | None = None,
     ) -> None:
         super().__init__()
         self.data_dir = Path(data_dir)
-        self.selected_character_ids_arg = selected_character_ids if selected_character_ids is not None else character_ids
+        self.selected_character_ids_arg = (
+            selected_character_ids
+            if selected_character_ids is not None
+            else selected_party_character_ids
+            if selected_party_character_ids is not None
+            else party_character_ids
+            if party_character_ids is not None
+            else party
+            if party is not None
+            else character_ids
+        )
         self.initial_active_character_arg = initial_active_character
         self.simulation = Simulation.from_json(
             self.data_dir,
@@ -201,6 +214,9 @@ class WuwaDpsEnv(gym.Env):
 
     def get_selected_character_ids(self) -> list[str]:
         return list(self.simulation.selected_character_ids)
+
+    def get_selected_party_character_ids(self) -> list[str]:
+        return list(self.simulation.selected_party_character_ids)
 
     def get_policy_action_ids(self) -> list[str]:
         return list(self.action_ids)

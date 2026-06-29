@@ -7,7 +7,7 @@ from characters.base import CharacterMechanic
 from characters.registry import get_mechanic, get_mechanics_for_characters
 from simulator.action_executor import execute_action, is_action_valid, timeline_entry
 from simulator.models import ActionData, BuffData, CharacterData, CombatState, EnemyData, SimulationSummary, TimelineEntry
-from simulator.roster import get_initial_active_character, parse_character_ids
+from simulator.roster import get_initial_active_character, get_swap_target_character_id, is_swap_action, parse_party_character_ids
 from simulator.state import create_initial_state
 
 
@@ -23,7 +23,10 @@ class Simulation:
         initial_active_character: str | None = None,
     ) -> None:
         self.all_characters = characters
-        self.selected_character_ids = parse_character_ids(selected_character_ids, list(characters))
+        self.selected_character_ids = parse_party_character_ids(selected_character_ids, characters)
+        self.selected_party_character_ids = self.selected_character_ids
+        self.party_character_ids = self.selected_character_ids
+        self.selected_party = self.selected_character_ids
         self.initial_active_character = get_initial_active_character(self.selected_character_ids, initial_active_character)
         self.characters = {
             character_id: characters[character_id]
@@ -46,6 +49,9 @@ class Simulation:
         cls,
         data_dir: Path | str,
         selected_character_ids: list[str] | str | None = None,
+        selected_party_character_ids: list[str] | str | None = None,
+        party_character_ids: list[str] | str | None = None,
+        party: list[str] | str | None = None,
         initial_active_character: str | None = None,
     ) -> "Simulation":
         data_path = Path(data_dir)
@@ -68,7 +74,15 @@ class Simulation:
             actions=actions,
             buffs=buffs,
             enemy=enemy,
-            selected_character_ids=selected_character_ids,
+            selected_character_ids=(
+                selected_character_ids
+                if selected_character_ids is not None
+                else selected_party_character_ids
+                if selected_party_character_ids is not None
+                else party_character_ids
+                if party_character_ids is not None
+                else party
+            ),
             initial_active_character=initial_active_character,
         )
 
@@ -113,11 +127,18 @@ class Simulation:
         if not result.valid:
             return False
         result.selected_action_id = selected_action.id
+        result.selected_action_name = selected_action.name
         result.resolved_action_id = action.id
+        result.resolved_action_name = action.name
 
         for mechanic in self.character_mechanics.values():
             mechanic.advance_time(self.state, result.action_time)
         actor_mechanic.after_action(self.state, action, result)
+        result.mechanic_debug_after = {
+            character_id: mechanic.get_debug_state(self.state)
+            for character_id, mechanic in self.character_mechanics.items()
+            if mechanic.get_debug_state(self.state)
+        }
 
         active_name = self.characters[self.state.active_character_id].name
         self.timeline.append(timeline_entry(result, active_name))
@@ -166,6 +187,10 @@ class Simulation:
         for action_id, action in self.actions.items():
             if not action.policy_selectable:
                 continue
+            if is_swap_action(action):
+                target = get_swap_target_character_id(action)
+                if len(selected) <= 1 or target not in selected:
+                    continue
             if action.character_id is not None and action.character_id not in selected:
                 continue
             policy_actions[action_id] = action

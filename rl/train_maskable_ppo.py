@@ -26,6 +26,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--model-path", type=Path, default=PROJECT_ROOT / "models" / "maskable_ppo_wuwa.zip")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--character-ids", type=str, default=None)
+    parser.add_argument("--party-character-ids", type=str, default=None)
+    parser.add_argument("--party", type=str, default=None)
     parser.add_argument("--initial-active-character", type=str, default=None)
     return parser.parse_args()
 
@@ -34,7 +36,7 @@ def main() -> None:
     args = parse_args()
     env = WuwaDpsEnv(
         PROJECT_ROOT / "data",
-        selected_character_ids=args.character_ids,
+        selected_character_ids=args.character_ids or args.party_character_ids or args.party,
         initial_active_character=args.initial_active_character,
     )
 
@@ -66,12 +68,13 @@ def main() -> None:
         "seed": args.seed,
         "model_path": str(args.model_path),
         "selected_character_ids": env.get_selected_character_ids(),
+        "selected_party_character_ids": env.get_selected_party_character_ids(),
         "initial_active_character": env.get_initial_active_character(),
         "policy_action_ids": env.get_policy_action_ids(),
         "observation_shape": list(env.observation_space.shape),
         "reward": "damage_this_action / 10000.0",
         "uses_action_masks": True,
-        "note": "Maskable PPO models are roster-specific because action space and observation shape can change.",
+        "note": "Maskable PPO models are party-specific because action space and observation shape can change.",
     }
     results_path = PROJECT_ROOT / "results" / "training_metadata.json"
     results_path.parent.mkdir(parents=True, exist_ok=True)

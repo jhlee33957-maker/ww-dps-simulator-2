@@ -1614,7 +1614,7 @@
     },
     {
         "id":  "aemeath_seraphic_duet_overturn",
-        "name":  "Aemeath Seraphic Duet Overturn",
+        "name":  "Aemeath Seraphic Duet Overture",
         "character_id":  "aemeath",
         "action_type":  "resonance_skill",
         "duration":  0.45,
@@ -1627,14 +1627,134 @@
         "tune_break_boost_points":  0,
         "hits":  [
                      {
-                         "time":  0.25,
+                         "time":  0.0321,
                          "damage_category":  "normal",
-                         "damage_multiplier":  3.2,
+                         "damage_multiplier":  0.179,
                          "tune_break_multiplier":  0,
                          "tags":  [
 
                                   ],
-                         "name":  "seraphic duet overturn"
+                         "name":  "seraphic duet overture 1"
+                     },
+                     {
+                         "time":  0.0643,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.1492,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "seraphic duet overture 2"
+                     },
+                     {
+                         "time":  0.0964,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.1492,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "seraphic duet overture 3"
+                     },
+                     {
+                         "time":  0.1286,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.1492,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "seraphic duet overture 4"
+                     },
+                     {
+                         "time":  0.1607,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.1492,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "seraphic duet overture 5"
+                     },
+                     {
+                         "time":  0.1929,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.1492,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "seraphic duet overture 6"
+                     },
+                     {
+                         "time":  0.225,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.1492,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "seraphic duet overture 7"
+                     },
+                     {
+                         "time":  0.2571,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.2386,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "seraphic duet overture 8"
+                     },
+                     {
+                         "time":  0.2893,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.2386,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "seraphic duet overture 9"
+                     },
+                     {
+                         "time":  0.3214,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.2386,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "seraphic duet overture 10"
+                     },
+                     {
+                         "time":  0.3536,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.5965,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "seraphic duet overture 11"
+                     },
+                     {
+                         "time":  0.3857,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.5965,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "seraphic duet overture 12"
+                     },
+                     {
+                         "time":  0.4179,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.5965,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "seraphic duet overture 13"
                      }
                  ],
         "resonance_energy_gain":  8,
@@ -1671,9 +1791,9 @@
         "tune_break_boost_points":  0,
         "hits":  [
                      {
-                         "time":  0.2,
+                         "time":  0.0611,
                          "damage_category":  "normal",
-                         "damage_multiplier":  2.2,
+                         "damage_multiplier":  0.179,
                          "tune_break_multiplier":  0,
                          "tags":  [
 
@@ -1681,14 +1801,74 @@
                          "name":  "seraphic duet encore 1"
                      },
                      {
-                         "time":  0.42,
+                         "time":  0.1222,
                          "damage_category":  "normal",
-                         "damage_multiplier":  3.8,
+                         "damage_multiplier":  0.179,
                          "tune_break_multiplier":  0,
                          "tags":  [
 
                                   ],
                          "name":  "seraphic duet encore 2"
+                     },
+                     {
+                         "time":  0.1833,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.179,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "seraphic duet encore 3"
+                     },
+                     {
+                         "time":  0.2444,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.179,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "seraphic duet encore 4"
+                     },
+                     {
+                         "time":  0.3056,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.3579,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "seraphic duet encore 5"
+                     },
+                     {
+                         "time":  0.3667,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.3579,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "seraphic duet encore 6"
+                     },
+                     {
+                         "time":  0.4278,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.3579,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "seraphic duet encore 7"
+                     },
+                     {
+                         "time":  0.4889,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  1.7893,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "seraphic duet encore 8"
                      }
                  ],
         "resonance_energy_gain":  8,
