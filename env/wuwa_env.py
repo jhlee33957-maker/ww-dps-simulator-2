@@ -88,6 +88,10 @@ class WuwaDpsEnv(gym.Env):
         buff_duration_ratios = len(self.buff_ids)
         anomaly_stack_counts = 4
         anomaly_duration_ratios = 4
+        character_mechanic_values = sum(
+            len(self.simulation.character_mechanics[character_id].get_observation_labels())
+            for character_id in self.character_ids
+        )
         return (
             base_values
             + active_character_one_hot
@@ -97,6 +101,7 @@ class WuwaDpsEnv(gym.Env):
             + buff_duration_ratios
             + anomaly_stack_counts
             + anomaly_duration_ratios
+            + character_mechanic_values
         )
 
     def _get_observation(self) -> np.ndarray:
@@ -135,7 +140,27 @@ class WuwaDpsEnv(gym.Env):
             else 0.0
             for anomaly_type in anomaly_order
         )
+        for character_id in self.character_ids:
+            mechanic = self.simulation.character_mechanics[character_id]
+            values.extend(mechanic.get_observation_values(state))
         return np.array(values, dtype=np.float32)
+
+    def observation_labels(self) -> list[str]:
+        labels = [
+            "time_elapsed",
+            "time_remaining",
+            "total_damage",
+        ]
+        labels.extend(f"active_character.{character_id}" for character_id in self.character_ids)
+        labels.extend(f"resonance_ratio.{character_id}" for character_id in self.character_ids)
+        labels.extend(f"concerto_ratio.{character_id}" for character_id in self.character_ids)
+        labels.extend(f"cooldown_ratio.{action_id}" for action_id in self.action_ids)
+        labels.extend(f"buff_duration_ratio.{buff_id}" for buff_id in self.buff_ids)
+        labels.extend(f"anomaly_stacks.{anomaly_type}" for anomaly_type in ["aero_erosion", "spectro_frazzle", "electro_flare", "havoc_bane"])
+        labels.extend(f"anomaly_duration.{anomaly_type}" for anomaly_type in ["aero_erosion", "spectro_frazzle", "electro_flare", "havoc_bane"])
+        for character_id in self.character_ids:
+            labels.extend(self.simulation.character_mechanics[character_id].get_observation_labels())
+        return labels
 
     def _cooldown_ratio(self, action_id: str) -> float:
         action_data = self.simulation.actions[action_id]

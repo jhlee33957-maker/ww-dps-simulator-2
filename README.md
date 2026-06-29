@@ -13,6 +13,21 @@ This project is a Wuthering Waves-style DPS simulation tool focused on Maskable 
 - Streamlit UI with Demo Sequence and PPO Model evaluation modes.
 - Dummy character, action, enemy, and buff data are included. No real game data is used.
 
+## Character Mechanics Architecture
+
+The common combat engine handles shared systems: damage formulas, action_time, hit timing, buffs, cooldowns, resources, attribute anomaly state, Havoc Bane DEF reduction, and the PPO reward objective. Character-specific mechanics are isolated under characters/ so the simulator core does not need character-specific branches.
+
+Character mechanic modules can:
+
+- initialize character-specific state
+- resolve high-level actions into concrete actions
+- add character-specific action availability rules
+- update state before and after actions
+- extend PPO observations
+- provide debug state for Streamlit and smoke tests
+
+Existing dummy characters use DefaultCharacterMechanic, which is a no-op. AemeathMechanic exists as a placeholder with initial form, combo, synchronization, resonance, Seraphic Duo, Heavenfall Unbound, and finale availability fields. Full Aemeath action logic is planned later and is not implemented yet.
+
 ## Damage Formulas
 
 The formula layer lives in simulator/damage_formula.py and currently supports normal damage, Tune Break damage, and simplified attribute anomaly tick damage.
@@ -121,6 +136,7 @@ python scripts/smoke_test.py
 python scripts/formula_smoke_test.py
 python scripts/anomaly_smoke_test.py
 python scripts/hit_timing_smoke_test.py
+python scripts/mechanics_smoke_test.py
 python scripts/env_smoke_test.py
 python scripts/rl_smoke_test.py
 python rl/train_maskable_ppo.py --timesteps 50000
@@ -131,6 +147,7 @@ streamlit run app.py
 ## Project Layout
 
 - app.py: Streamlit prototype UI with demo, anomaly notes, formula settings, and PPO model evaluation modes.
+- characters/: Character mechanics plugin interface, default no-op mechanic, registry, and Aemeath placeholder.
 - data/: Dummy JSON data for characters, actions, enemy context, and buffs.
 - simulator/: Core deterministic simulation logic, anomaly state system, and reusable damage formula layer.
 - env/: Gymnasium environment, action masks, and objective damage reward.
@@ -141,7 +158,7 @@ streamlit run app.py
 
 ## Roadmap
 
-1. Add hit timing.
+1. Add full character-specific mechanics such as Aemeath.
 2. Add real character data.
 3. Add monster-specific resistance and defense data.
 4. Add proper intro, outro, concerto, and anomaly logic.

@@ -1,0 +1,8 @@
+from __future__ import annotations
+
+from characters.base import CharacterMechanic
+
+
+class DefaultCharacterMechanic(CharacterMechanic):
+    def __init__(self, character_id: str = "default") -> None:
+        self.character_id = character_id

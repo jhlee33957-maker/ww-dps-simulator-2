@@ -81,7 +81,7 @@ def run_repeating_sequence(sequence: list[str], settings: dict[str, float | int]
     return sim
 
 
-def evaluate_ppo_model(model_path: Path, settings: dict[str, float | int]) -> tuple[Any, list[str]]:
+def evaluate_ppo_model(model_path: Path, settings: dict[str, float | int]) -> tuple[Any, list[str], Simulation]:
     try:
         from sb3_contrib import MaskablePPO
         from env.wuwa_env import WuwaDpsEnv
@@ -101,10 +101,10 @@ def evaluate_ppo_model(model_path: Path, settings: dict[str, float | int]) -> tu
         if terminated or truncated:
             break
 
-    return env.simulation.summary(), action_sequence
+    return env.simulation.summary(), action_sequence, env.simulation
 
 
-def render_simulation(summary: Any, action_sequence: list[str] | None = None) -> None:
+def render_simulation(summary: Any, action_sequence: list[str] | None = None, simulation: Simulation | None = None) -> None:
     metric_cols = st.columns(4)
     metric_cols[0].metric("Total damage", f"{summary.total_damage:,.0f}")
     metric_cols[1].metric("DPS", f"{summary.dps:,.0f}")
@@ -168,6 +168,18 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None) ->
             hide_index=True,
         )
 
+    if simulation is not None:
+        with st.expander("Character Mechanics Debug"):
+            st.json(
+                {
+                    "character_mechanics_state": simulation.state.character_mechanics_state,
+                    "mechanics": {
+                        character_id: mechanic.get_debug_state(simulation.state)
+                        for character_id, mechanic in simulation.character_mechanics.items()
+                    },
+                }
+            )
+
 
 st.set_page_config(page_title="Wuwa DPS RL Simulator Prototype", layout="wide")
 st.title("Wuwa DPS RL Simulator Prototype")
@@ -182,7 +194,7 @@ mode = st.radio("Mode", ["Demo Sequence", "PPO Model"], horizontal=True)
 if mode == "Demo Sequence":
     sequence_name = st.selectbox("Action sequence", list(DEMO_SEQUENCES))
     sim = run_repeating_sequence(DEMO_SEQUENCES[sequence_name], settings)
-    render_simulation(sim.summary())
+    render_simulation(sim.summary(), simulation=sim)
 else:
     model_path_text = st.text_input("PPO model path", value=str(DEFAULT_PPO_MODEL_PATH))
     model_path = Path(model_path_text)
@@ -190,8 +202,8 @@ else:
         st.info("No trained PPO model found. Run training first: python rl/train_maskable_ppo.py --timesteps 50000")
     else:
         try:
-            ppo_summary, ppo_actions = evaluate_ppo_model(model_path, settings)
-            render_simulation(ppo_summary, action_sequence=ppo_actions)
+            ppo_summary, ppo_actions, ppo_simulation = evaluate_ppo_model(model_path, settings)
+            render_simulation(ppo_summary, action_sequence=ppo_actions, simulation=ppo_simulation)
         except RuntimeError as exc:
             st.error(str(exc))
         except Exception as exc:

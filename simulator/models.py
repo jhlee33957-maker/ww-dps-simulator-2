@@ -180,6 +180,7 @@ class CombatState(BaseModel):
     cooldowns: dict[str, float] = Field(default_factory=dict)
     active_buffs: list[ActiveBuff] = Field(default_factory=list)
     active_anomalies: dict[str, AnomalyState] = Field(default_factory=dict)
+    character_mechanics_state: dict[str, dict] = Field(default_factory=dict)
     resonance_energy: dict[str, float] = Field(default_factory=dict)
     concerto_energy: dict[str, float] = Field(default_factory=dict)
     wasted_resonance_energy: dict[str, float] = Field(default_factory=dict)

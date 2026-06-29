@@ -3,7 +3,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from simulator.action_executor import execute_action, timeline_entry
+from characters.base import CharacterMechanic
+from characters.registry import get_mechanic, get_mechanics_for_characters
+from simulator.action_executor import execute_action, is_action_valid, timeline_entry
 from simulator.models import ActionData, BuffData, CharacterData, CombatState, EnemyData, SimulationSummary, TimelineEntry
 from simulator.state import create_initial_state
 
@@ -23,6 +25,9 @@ class Simulation:
         self.combat_duration = combat_duration
         self.enemy = enemy or EnemyData()
         self.state: CombatState = create_initial_state(characters, self.enemy)
+        self.character_mechanics = get_mechanics_for_characters(list(characters))
+        for mechanic in self.character_mechanics.values():
+            mechanic.initialize_state(self.state)
         self.timeline: list[TimelineEntry] = []
 
     @classmethod
@@ -71,8 +76,19 @@ class Simulation:
         if self.state.current_time >= self.combat_duration:
             return False
 
-        action = self.actions[action_id]
-        result = execute_action(action, self.state, self.characters, self.buffs)
+        selected_action = self.actions[action_id]
+        if not self.is_action_available(selected_action):
+            return False
+
+        active_mechanic = self._mechanic_for_character(self.state.active_character_id)
+        action = active_mechanic.resolve_action(self.state, selected_action, self.actions)
+        if not self.is_action_available(action):
+            return False
+
+        actor_character_id = self.state.active_character_id if action.action_type in {"swap", "wait"} else action.character_id
+        actor_character_id = actor_character_id or self.state.active_character_id
+        actor_mechanic = self._mechanic_for_character(actor_character_id)
+        result = execute_action(action, self.state, self.characters, self.buffs, mechanic=actor_mechanic)
         if not result.valid:
             return False
 
@@ -88,13 +104,27 @@ class Simulation:
         return self
 
     def valid_action_ids(self) -> list[str]:
-        from simulator.action_executor import is_action_valid
-
         return [
             action_id
             for action_id, action in self.actions.items()
-            if is_action_valid(action, self.state)[0]
+            if self.is_action_available(action)
         ]
+
+    def is_action_available(self, action: ActionData) -> bool:
+        valid, _reason = is_action_valid(action, self.state)
+        if not valid:
+            return False
+        if action.action_type in {"swap", "wait"} or action.character_id is None:
+            return True
+        return self._mechanic_for_character(action.character_id).is_action_available(self.state, action)
+
+    def _mechanic_for_character(self, character_id: str) -> CharacterMechanic:
+        mechanic = self.character_mechanics.get(character_id)
+        if mechanic is None:
+            mechanic = get_mechanic(character_id)
+            mechanic.initialize_state(self.state)
+            self.character_mechanics[character_id] = mechanic
+        return mechanic
 
     def summary(self) -> SimulationSummary:
         active_character = self.characters[self.state.active_character_id].name

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from simulator.anomaly_system import advance_anomalies, apply_anomaly, get_havoc_bane_def_reduction_at_time
 from simulator.buff_system import apply_buff, buffed_combat_stats, has_required_buffs, tick_buffs
 from simulator.damage_formula import calculate_normal_damage, calculate_tune_break_damage
@@ -133,6 +135,7 @@ def execute_action(
     state: CombatState,
     characters: dict[str, CharacterData],
     buffs: dict[str, BuffData],
+    mechanic: Any | None = None,
 ) -> ActionResult:
     valid, reason = is_action_valid(action, state)
     start_time = state.current_time
@@ -149,6 +152,9 @@ def execute_action(
             valid=False,
             reason=reason,
         )
+
+    if mechanic is not None:
+        mechanic.before_action(state, action)
 
     # Damage events use an action-start state snapshot. Buffs/anomalies applied by
     # this action are added after action_time and do not affect same-action hits.
@@ -185,7 +191,7 @@ def execute_action(
         if anomaly.remaining_duration > 0.0
     }
 
-    return ActionResult(
+    result = ActionResult(
         action_id=action.id,
         action_name=action.name,
         character_id=action.character_id,
@@ -211,6 +217,9 @@ def execute_action(
         concerto_energy_gained=resource_change.concerto_gained,
         concerto_energy_wasted=resource_change.concerto_wasted,
     )
+    if mechanic is not None:
+        mechanic.after_action(state, action, result)
+    return result
 
 
 def timeline_entry(result: ActionResult, active_character_name: str) -> TimelineEntry:
