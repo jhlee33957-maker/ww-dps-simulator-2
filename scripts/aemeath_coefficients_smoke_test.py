@@ -17,8 +17,10 @@ EXPECTED_MULTIPLIERS = {
     "aemeath_mech_basic_stage_2": [0.1857, 0.7426],
     "aemeath_mech_basic_stage_3": [0.0389, 0.0389, 0.0389, 0.0389, 0.0389, 0.0389, 0.8154, 0.6165],
     "aemeath_mech_basic_stage_4": [0.4038, 0.9421],
-    "aemeath_form_switch_to_mech": [0.2692, 0.4038, 0.6729],
-    "aemeath_form_switch_to_aemeath": [0.1633, 0.1633, 0.1633, 1.1428],
+    "aemeath_form_switch_to_mech_normal": [0.232, 0.232, 0.232],
+    "aemeath_form_switch_to_aemeath_normal": [0.4635],
+    "aemeath_sync_strike_armament_merge": [0.2692, 0.4038, 0.6729],
+    "aemeath_sync_strike_call_of_dawn": [0.1633, 0.1633, 0.1633, 1.1428],
     "aemeath_seraphic_duet_overturn": [
         0.179,
         0.1492,
@@ -35,6 +37,10 @@ EXPECTED_MULTIPLIERS = {
         0.5965,
     ],
     "aemeath_seraphic_duet_encore": [0.179, 0.179, 0.179, 0.179, 0.3579, 0.3579, 0.3579, 1.7893],
+    "aemeath_heavy_aemeath_charged_1": [0.1857, 0.7426],
+    "aemeath_heavy_aemeath_charged_2": [0.116, 0.116, 0.116, 0.116, 1.856],
+    "aemeath_heavy_mech_charged_1": [0.9283],
+    "aemeath_heavy_mech_charged_2": [2.32],
     "aemeath_liberation_overdrive": [2.008, 2.6744, 2.6744, 2.6744],
     "aemeath_heavenfall_finale": [17.8929],
 }
@@ -68,8 +74,10 @@ def main() -> None:
     assert finale["mechanic_effects"]["set_synchronization_rate"] == 0
     assert finale["mechanic_effects"]["set_resonance_rate"] == 0
 
-    assert actions["aemeath_form_switch_to_mech"]["cooldown"] == 1
-    assert actions["aemeath_form_switch_to_aemeath"]["cooldown"] == 1
+    assert actions["aemeath_form_switch_to_mech_normal"]["cooldown"] == 1
+    assert actions["aemeath_form_switch_to_aemeath_normal"]["cooldown"] == 1
+    assert actions["aemeath_sync_strike_armament_merge"]["cooldown_group"] == "aemeath_form_switch"
+    assert actions["aemeath_sync_strike_call_of_dawn"]["cooldown_group"] == "aemeath_form_switch"
 
     print("Aemeath coefficient smoke test passed.")
 

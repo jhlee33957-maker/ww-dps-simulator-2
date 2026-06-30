@@ -19,6 +19,7 @@ def main() -> None:
     assert solo.selected_party_character_ids == ["aemeath"]
     assert solo.state.active_character_id == "aemeath"
     assert "aemeath_basic_attack" in solo_actions
+    assert "aemeath_heavy_attack" in solo_actions
     assert "aemeath_resonance_skill" in solo_actions
     assert "aemeath_resonance_liberation" in solo_actions
     assert "short_wait" in solo_actions
@@ -36,6 +37,7 @@ def main() -> None:
     mixed = Simulation.from_json(DATA_DIR, party=["aemeath", "support"])
     mixed_actions = mixed.get_policy_action_ids()
     assert "aemeath_basic_attack" in mixed_actions
+    assert "aemeath_heavy_attack" in mixed_actions
     assert "support_basic_attack" in mixed_actions
     assert "swap_to_aemeath" in mixed_actions
     assert "swap_to_support" in mixed_actions

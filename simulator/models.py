@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field, model_validator
 
 ActionType = Literal[
     "basic_attack",
+    "heavy_attack",
     "resonance_skill",
     "resonance_liberation",
     "echo_skill",

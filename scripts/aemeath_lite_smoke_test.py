@@ -37,7 +37,7 @@ def main() -> None:
     run_step(sim, "aemeath_basic_attack", "aemeath_basic_form_stage_1")
     assert aemeath_state(sim)["aemeath_combo_stage"] == 2
 
-    run_step(sim, "aemeath_resonance_skill", "aemeath_form_switch_to_mech")
+    run_step(sim, "aemeath_resonance_skill", "aemeath_form_switch_to_mech_normal")
     assert aemeath_state(sim)["form"] == "mech"
 
     run_step(sim, "aemeath_basic_attack", "aemeath_mech_basic_stage_2")
@@ -45,7 +45,7 @@ def main() -> None:
     sim.state.resonance_energy["aemeath"] = 125.0
     run_step(sim, "aemeath_resonance_liberation", "aemeath_liberation_overdrive")
     assert aemeath_state(sim)["seraphic_duo_remaining"] == 0.0
-    assert aemeath_state(sim)["synchronization_rate"] == 67.0
+    assert aemeath_state(sim)["synchronization_rate"] == 64.0
     assert aemeath_state(sim)["resonance_rate"] == 1.0
     assert aemeath_state(sim)["heavenfall_unbound"] is True
     assert aemeath_state(sim)["heavenfall_unbound_remaining"] == 60.0

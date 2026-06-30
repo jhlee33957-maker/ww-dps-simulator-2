@@ -873,6 +873,42 @@
         "policy_selectable":  true
     },
     {
+        "id":  "aemeath_heavy_attack",
+        "name":  "Aemeath Heavy Attack",
+        "character_id":  "aemeath",
+        "action_type":  "heavy_attack",
+        "duration":  0.1,
+        "action_time":  0.1,
+        "cooldown":  0,
+        "damage_category":  "normal",
+        "damage_multiplier":  0,
+        "tune_break_multiplier":  0,
+        "tune_break_boost_points":  0,
+        "hits":  [
+
+                 ],
+        "anomaly_type":  null,
+        "anomaly_stacks":  0,
+        "applies_anomaly_type":  null,
+        "applies_anomaly_stacks":  0,
+        "anomaly_duration":  6,
+        "anomaly_tick_interval":  1,
+        "resonance_energy_gain":  0,
+        "concerto_energy_gain":  0,
+        "resonance_energy_cost":  0,
+        "applies_buffs":  [
+
+                          ],
+        "required_buffs":  [
+
+                           ],
+        "tags":  [
+                     "aemeath-lite",
+                     "policy"
+                 ],
+        "policy_selectable":  true
+    },
+    {
         "id":  "aemeath_resonance_liberation",
         "name":  "Aemeath Resonance Liberation",
         "character_id":  "aemeath",
@@ -1475,8 +1511,118 @@
                              }
     },
     {
-        "id":  "aemeath_form_switch_to_mech",
-        "name":  "Aemeath Switch to Mech Form",
+        "id":  "aemeath_form_switch_to_mech_normal",
+        "name":  "Aemeath Normal Form Switch to Mech",
+        "character_id":  "aemeath",
+        "action_type":  "resonance_skill",
+        "duration":  0.35,
+        "action_time":  0.35,
+        "cooldown":  1,
+        "cooldown_group":  "aemeath_form_switch",
+        "damage_category":  "normal",
+        "damage_multiplier":  0,
+        "tune_break_multiplier":  0,
+        "tune_break_boost_points":  0,
+        "hits":  [
+                     {
+                         "time":  0.16,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.232,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "normal form switch mech basic 1a"
+                     },
+                     {
+                         "time":  0.28,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.232,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "normal form switch mech basic 1b"
+                     },
+                     {
+                         "time":  0.4,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.232,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "normal form switch mech basic 1c"
+                     }
+                 ],
+        "resonance_energy_gain":  6,
+        "concerto_energy_gain":  4,
+        "resonance_energy_cost":  0,
+        "applies_buffs":  [
+
+                          ],
+        "required_buffs":  [
+
+                           ],
+        "tags":  [
+                     "aemeath-lite",
+                     "internal"
+                 ],
+        "policy_selectable":  false,
+        "mechanic_effects":  {
+                                 "set_form":  "mech",
+                                 "sync_delta":  12,
+                                 "set_mech_combo_stage":  2
+                             }
+    },
+    {
+        "id":  "aemeath_form_switch_to_aemeath_normal",
+        "name":  "Aemeath Normal Form Switch to Aemeath",
+        "character_id":  "aemeath",
+        "action_type":  "resonance_skill",
+        "duration":  0.35,
+        "action_time":  0.35,
+        "cooldown":  1,
+        "cooldown_group":  "aemeath_form_switch",
+        "damage_category":  "normal",
+        "damage_multiplier":  0,
+        "tune_break_multiplier":  0,
+        "tune_break_boost_points":  0,
+        "hits":  [
+                     {
+                         "time":  0.22,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.4635,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "normal form switch aemeath basic 1"
+                     }
+                 ],
+        "resonance_energy_gain":  5,
+        "concerto_energy_gain":  4,
+        "resonance_energy_cost":  0,
+        "applies_buffs":  [
+
+                          ],
+        "required_buffs":  [
+
+                           ],
+        "tags":  [
+                     "aemeath-lite",
+                     "internal"
+                 ],
+        "policy_selectable":  false,
+        "mechanic_effects":  {
+                                 "set_form":  "aemeath",
+                                 "sync_delta":  8,
+                                 "set_aemeath_combo_stage":  2
+                             }
+    },
+    {
+        "id":  "aemeath_sync_strike_armament_merge",
+        "name":  "Aemeath Sync Strike Armament Merge",
         "character_id":  "aemeath",
         "action_type":  "resonance_skill",
         "duration":  0.35,
@@ -1530,7 +1676,8 @@
                            ],
         "tags":  [
                      "aemeath-lite",
-                     "internal"
+                     "internal",
+                     "sync-strike"
                  ],
         "policy_selectable":  false,
         "mechanic_effects":  {
@@ -1540,8 +1687,8 @@
                              }
     },
     {
-        "id":  "aemeath_form_switch_to_aemeath",
-        "name":  "Aemeath Switch to Aemeath Form",
+        "id":  "aemeath_sync_strike_call_of_dawn",
+        "name":  "Aemeath Sync Strike Call of Dawn",
         "character_id":  "aemeath",
         "action_type":  "resonance_skill",
         "duration":  0.35,
@@ -1605,7 +1752,8 @@
                            ],
         "tags":  [
                      "aemeath-lite",
-                     "internal"
+                     "internal",
+                     "sync-strike"
                  ],
         "policy_selectable":  false,
         "mechanic_effects":  {
@@ -1899,6 +2047,244 @@
                              }
     },
     {
+        "id":  "aemeath_heavy_aemeath_charged_1",
+        "name":  "Aemeath Heavy Attack Charged I",
+        "character_id":  "aemeath",
+        "action_type":  "heavy_attack",
+        "duration":  0.55,
+        "action_time":  0.55,
+        "cooldown":  0,
+        "damage_category":  "normal",
+        "damage_multiplier":  0,
+        "tune_break_multiplier":  0,
+        "tune_break_boost_points":  0,
+        "hits":  [
+                     {
+                         "time":  0.2,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.1857,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "aemeath heavy charged i 1"
+                     },
+                     {
+                         "time":  0.48,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.7426,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "aemeath heavy charged i 2"
+                     }
+                 ],
+        "resonance_energy_gain":  5,
+        "concerto_energy_gain":  4,
+        "resonance_energy_cost":  0,
+        "applies_buffs":  [
+
+                          ],
+        "required_buffs":  [
+
+                           ],
+        "tags":  [
+                     "aemeath-lite",
+                     "internal",
+                     "heavy"
+                 ],
+        "policy_selectable":  false,
+        "mechanic_effects":  {
+                                 "set_aemeath_combo_stage":  2,
+                                 "set_sync_strike_window":  "armament_merge"
+                             },
+        "notes":  "Aemeath-lite placeholder action_time. Damage is simplified as normal damage."
+    },
+    {
+        "id":  "aemeath_heavy_aemeath_charged_2",
+        "name":  "Aemeath Heavy Attack Charged II",
+        "character_id":  "aemeath",
+        "action_type":  "heavy_attack",
+        "duration":  0.45,
+        "action_time":  0.45,
+        "cooldown":  0,
+        "damage_category":  "normal",
+        "damage_multiplier":  0,
+        "tune_break_multiplier":  0,
+        "tune_break_boost_points":  0,
+        "hits":  [
+                     {
+                         "time":  0.08,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.116,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "aemeath heavy charged ii 1"
+                     },
+                     {
+                         "time":  0.16,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.116,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "aemeath heavy charged ii 2"
+                     },
+                     {
+                         "time":  0.24,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.116,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "aemeath heavy charged ii 3"
+                     },
+                     {
+                         "time":  0.32,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.116,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "aemeath heavy charged ii 4"
+                     },
+                     {
+                         "time":  0.42,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  1.856,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "aemeath heavy charged ii 5"
+                     }
+                 ],
+        "resonance_energy_gain":  5,
+        "concerto_energy_gain":  5,
+        "resonance_energy_cost":  0,
+        "applies_buffs":  [
+
+                          ],
+        "required_buffs":  [
+
+                           ],
+        "tags":  [
+                     "aemeath-lite",
+                     "internal",
+                     "heavy",
+                     "instant-response"
+                 ],
+        "policy_selectable":  false,
+        "mechanic_effects":  {
+                                 "set_aemeath_combo_stage":  3,
+                                 "set_sync_strike_window":  "armament_merge",
+                                 "instant_response_sync_delta":  200,
+                                 "instant_response":  false,
+                                 "instant_response_consumed":  true
+                             },
+        "notes":  "Aemeath-lite placeholder action_time. Instant Response damage amplification is applied by AemeathMechanic as x3.0."
+    },
+    {
+        "id":  "aemeath_heavy_mech_charged_1",
+        "name":  "Aemeath Mech Heavy Attack Charged I",
+        "character_id":  "aemeath",
+        "action_type":  "heavy_attack",
+        "duration":  0.5,
+        "action_time":  0.5,
+        "cooldown":  0,
+        "damage_category":  "normal",
+        "damage_multiplier":  0,
+        "tune_break_multiplier":  0,
+        "tune_break_boost_points":  0,
+        "hits":  [
+                     {
+                         "time":  0.38,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.9283,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "aemeath mech heavy charged i"
+                     }
+                 ],
+        "resonance_energy_gain":  6,
+        "concerto_energy_gain":  4,
+        "resonance_energy_cost":  0,
+        "applies_buffs":  [
+
+                          ],
+        "required_buffs":  [
+
+                           ],
+        "tags":  [
+                     "aemeath-lite",
+                     "internal",
+                     "heavy"
+                 ],
+        "policy_selectable":  false,
+        "mechanic_effects":  {
+                                 "set_mech_combo_stage":  2,
+                                 "set_sync_strike_window":  "call_of_dawn"
+                             },
+        "notes":  "Aemeath-lite placeholder action_time. Damage is simplified as normal damage."
+    },
+    {
+        "id":  "aemeath_heavy_mech_charged_2",
+        "name":  "Aemeath Mech Heavy Attack Charged II",
+        "character_id":  "aemeath",
+        "action_type":  "heavy_attack",
+        "duration":  0.4,
+        "action_time":  0.4,
+        "cooldown":  0,
+        "damage_category":  "normal",
+        "damage_multiplier":  0,
+        "tune_break_multiplier":  0,
+        "tune_break_boost_points":  0,
+        "hits":  [
+                     {
+                         "time":  0.32,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  2.32,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "aemeath mech heavy charged ii"
+                     }
+                 ],
+        "resonance_energy_gain":  6,
+        "concerto_energy_gain":  5,
+        "resonance_energy_cost":  0,
+        "applies_buffs":  [
+
+                          ],
+        "required_buffs":  [
+
+                           ],
+        "tags":  [
+                     "aemeath-lite",
+                     "internal",
+                     "heavy",
+                     "instant-response"
+                 ],
+        "policy_selectable":  false,
+        "mechanic_effects":  {
+                                 "set_mech_combo_stage":  3,
+                                 "set_sync_strike_window":  "call_of_dawn",
+                                 "instant_response_sync_delta":  200,
+                                 "instant_response":  false,
+                                 "instant_response_consumed":  true
+                             },
+        "notes":  "Aemeath-lite placeholder action_time. Instant Response damage amplification is applied by AemeathMechanic as x3.0."
+    },
+    {
         "id":  "aemeath_liberation_overdrive",
         "name":  "Aemeath Liberation Overdrive",
         "character_id":  "aemeath",
@@ -1973,7 +2359,8 @@
                                  "set_form":  "mech",
                                  "set_mech_combo_stage":  2,
                                  "stardust_resonance_duration":  30,
-                                 "heavenfall_unbound_duration":  60
+                                 "heavenfall_unbound_duration":  60,
+                                 "instant_response_consumed":  false
                              }
     },
     {
@@ -2023,6 +2410,7 @@
                                  "heavenfall_unbound_duration":  0,
                                  "stardust_resonance_duration":  0,
                                  "instant_response":  false,
+                                 "instant_response_consumed":  false,
                                  "finale_available":  false,
                                  "set_aemeath_combo_stage":  1,
                                  "set_mech_combo_stage":  1

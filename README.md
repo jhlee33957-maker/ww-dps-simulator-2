@@ -41,7 +41,8 @@ Implemented Aemeath-lite scope:
 - Aemeath Form basic attack stages 1-4
 - Mech Form basic attack stages 1-4
 - Basic Attack resolution by current form and combo stage
-- Resonance Skill replacement for form switch and Seraphic Duet
+- Resonance Skill replacement for normal Form Switch, Sync Strike, Seraphic Duet, and Finale
+- Heavy Attack Charged I/II routing for Aemeath and Mech forms
 - Synchronization Rate and Resonance Rate
 - Seraphic Duet duration state
 - Overdrive with Heavenfall Unbound and Stardust Resonance timers
@@ -71,7 +72,7 @@ Aemeath-lite now uses Level 10 coefficients visible in the provided skill screen
 
 - Aemeath Form basic attacks
 - Mech Form basic attacks
-- Sync Strike variants used by Aemeath-lite form switching
+- normal Form Switch and Sync Strike variants
 - Seraphic Duet Overture and Encore
 - Heavenfall Edict: Overdrive
 - Heavenfall Edict: Finale
@@ -94,6 +95,13 @@ Current Aemeath-lite mechanic notes:
 - Basic Attack Stage 4 in Aemeath Form or Mech Form grants Seraphic Duet for 5 seconds.
 - If Seraphic Duet is active but Synchronization Rate is below 100, Resonance Skill performs the normal form switch, Seraphic Duet remains active, and the next Basic Attack in the new form starts from Stage 2.
 - If Seraphic Duet is active and Synchronization Rate is 100 or higher, Resonance Skill performs Seraphic Duet Overture or Encore, consumes 100 Synchronization Rate, ends Seraphic Duet, switches form, sets the next Basic Attack in the new form to Stage 2, and grants 1 Resonance Rate.
+- Normal Form Switch is separate from Sync Strike. Grounded Aemeath-lite normal Form Switch uses the resulting form's Basic Attack Stage 1 coefficients and sets the next Basic Attack to Stage 2.
+- Sync Strike occurs only after eligible previous actions in a one-action window. Aemeath Basic Attack Stages 2-4 and Aemeath Heavy Attacks open Armament Merge; Mech Basic Attack Stages 2-4 and Mech Heavy Attacks open Call of Dawn. Exact real-time trigger windows are not implemented.
+- Heavy Attack Charged I and Charged II are implemented for Aemeath and Mech. Charged I connects to Basic Attack Stage 2, and Charged II connects to Basic Attack Stage 3.
+- Outside Instant Response, aemeath_heavy_attack resolves to Charged I. During Instant Response, it resolves to Charged II.
+- During Instant Response and Heavenfall Edict: Unbound, Charged II restores 200 Synchronization Rate, ends Instant Response, and can enable Finale if Resonance Rate is also 4.
+- Instant Response Heavy Attack damage amplification is approximated as x3.0 total direct hit damage in this simulator.
+- Heavy Attack action_time values are placeholders.
 - Heavenfall Edict: Overdrive deals Fusion DMG, recovers 30 Synchronization Rate and 1 Resonance Rate, switches to Mech Form, sets Mech Basic Attack to Stage 2, grants Stardust Resonance for 30 seconds, and grants Heavenfall Edict: Unbound for 60 seconds.
 - Overdrive does not directly grant Seraphic Duet. The next Resonance Skill form switch after Overdrive connects to Aemeath Basic Attack Stage 2.
 - If Starlume Acceleration is active, Overdrive recovers 1 additional Resonance Rate. The source and full behavior of Starlume Acceleration are not implemented yet.
@@ -249,6 +257,7 @@ python -m compileall .
 python scripts/aemeath_client_mechanics_smoke_test.py
 python scripts/aemeath_coefficients_smoke_test.py
 python scripts/aemeath_finale_condition_smoke_test.py
+python scripts/aemeath_heavy_sync_strike_smoke_test.py
 python scripts/aemeath_mechanics_correction_smoke_test.py
 python scripts/aemeath_lite_smoke_test.py
 python scripts/party_selection_smoke_test.py

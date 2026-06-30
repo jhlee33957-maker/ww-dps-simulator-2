@@ -21,6 +21,25 @@ class AemeathMechanic(CharacterMechanic):
         "starlume_acceleration_remaining": 0.0,
         "instant_response": False,
         "finale_available": False,
+        "instant_response_consumed": False,
+        "last_resolved_action_id": None,
+        "sync_strike_window_type": None,
+        "sync_strike_window_remaining": 0,
+    }
+
+    _ARMAMENT_MERGE_WINDOW_ACTIONS = {
+        "aemeath_basic_form_stage_2",
+        "aemeath_basic_form_stage_3",
+        "aemeath_basic_form_stage_4",
+        "aemeath_heavy_aemeath_charged_1",
+        "aemeath_heavy_aemeath_charged_2",
+    }
+    _CALL_OF_DAWN_WINDOW_ACTIONS = {
+        "aemeath_mech_basic_stage_2",
+        "aemeath_mech_basic_stage_3",
+        "aemeath_mech_basic_stage_4",
+        "aemeath_heavy_mech_charged_1",
+        "aemeath_heavy_mech_charged_2",
     }
 
     _AEMEATH_BASIC_BY_STAGE = {
@@ -56,13 +75,22 @@ class AemeathMechanic(CharacterMechanic):
         elif selected_action.id == "aemeath_resonance_skill":
             if data["seraphic_duo_remaining"] > 0.0 and data["synchronization_rate"] >= 100.0:
                 resolved_id = "aemeath_seraphic_duet_encore" if data["form"] == "mech" else "aemeath_seraphic_duet_overturn"
+            elif data["sync_strike_window_type"] == "armament_merge":
+                resolved_id = "aemeath_sync_strike_armament_merge"
+            elif data["sync_strike_window_type"] == "call_of_dawn":
+                resolved_id = "aemeath_sync_strike_call_of_dawn"
             else:
-                resolved_id = "aemeath_form_switch_to_aemeath" if data["form"] == "mech" else "aemeath_form_switch_to_mech"
+                resolved_id = "aemeath_form_switch_to_aemeath_normal" if data["form"] == "mech" else "aemeath_form_switch_to_mech_normal"
         elif selected_action.id == "aemeath_resonance_liberation":
             if data["heavenfall_unbound"]:
                 resolved_id = "aemeath_heavenfall_finale"
             else:
                 resolved_id = "aemeath_liberation_overdrive"
+        elif selected_action.id == "aemeath_heavy_attack":
+            if data["form"] == "mech":
+                resolved_id = "aemeath_heavy_mech_charged_2" if data["instant_response"] else "aemeath_heavy_mech_charged_1"
+            else:
+                resolved_id = "aemeath_heavy_aemeath_charged_2" if data["instant_response"] else "aemeath_heavy_aemeath_charged_1"
 
         try:
             return actions_by_id[resolved_id]
@@ -75,6 +103,10 @@ class AemeathMechanic(CharacterMechanic):
         if action_id.startswith("aemeath_basic_form_stage_") or action_id.startswith("aemeath_mech_basic_stage_"):
             return True
         if action_id.startswith("aemeath_form_switch_"):
+            return True
+        if action_id.startswith("aemeath_sync_strike_"):
+            return True
+        if action_id.startswith("aemeath_heavy_"):
             return True
         if action_id == "aemeath_seraphic_duet_overturn":
             return (
@@ -94,15 +126,27 @@ class AemeathMechanic(CharacterMechanic):
             return not data["heavenfall_unbound"]
         return True
 
+    def get_action_damage_multiplier(self, state: Any, action: Any) -> float:
+        data = self._state(state)
+        if action.id in {"aemeath_heavy_aemeath_charged_2", "aemeath_heavy_mech_charged_2"} and data["instant_response"]:
+            return 3.0
+        return 1.0
+
     def after_action(self, state: Any, action: Any, result: Any) -> None:
         data = self._state(state)
         effects = action.mechanic_effects
         duration_was_set = "seraphic_duo_duration" in effects
+        consumed_instant_response = (
+            action.id in {"aemeath_heavy_aemeath_charged_2", "aemeath_heavy_mech_charged_2"}
+            and data["instant_response"]
+        )
 
         if "set_form" in effects:
             data["form"] = effects["set_form"]
         if "sync_delta" in effects:
             data["synchronization_rate"] += float(effects["sync_delta"])
+        if "instant_response_sync_delta" in effects and consumed_instant_response and data["heavenfall_unbound"]:
+            data["synchronization_rate"] += float(effects["instant_response_sync_delta"])
         if "set_synchronization_rate" in effects:
             data["synchronization_rate"] = float(effects["set_synchronization_rate"])
         if "resonance_rate_delta" in effects:
@@ -124,15 +168,33 @@ class AemeathMechanic(CharacterMechanic):
             data["starlume_acceleration_remaining"] = float(effects["starlume_acceleration_duration"])
         if "instant_response" in effects:
             data["instant_response"] = bool(effects["instant_response"])
+        if "instant_response_consumed" in effects:
+            data["instant_response_consumed"] = bool(effects["instant_response_consumed"])
         if "finale_available" in effects:
             data["finale_available"] = bool(effects["finale_available"])
         if "set_aemeath_combo_stage" in effects:
             data["aemeath_combo_stage"] = int(effects["set_aemeath_combo_stage"])
         if "set_mech_combo_stage" in effects:
             data["mech_combo_stage"] = int(effects["set_mech_combo_stage"])
+        if "set_sync_strike_window" in effects:
+            self._set_sync_strike_window(data, effects["set_sync_strike_window"])
+        elif action.id in self._ARMAMENT_MERGE_WINDOW_ACTIONS:
+            self._set_sync_strike_window(data, "armament_merge")
+        elif action.id in self._CALL_OF_DAWN_WINDOW_ACTIONS:
+            self._set_sync_strike_window(data, "call_of_dawn")
+        else:
+            self._clear_sync_strike_window(data)
+        if consumed_instant_response:
+            data["instant_response"] = False
+            data["instant_response_consumed"] = True
+        if action.id == "aemeath_liberation_overdrive":
+            data["instant_response_consumed"] = False
+        if data["heavenfall_unbound_remaining"] <= 0.0:
+            data["instant_response_consumed"] = False
 
         self._clamp(data)
         self._derive_state(data)
+        data["last_resolved_action_id"] = action.id
 
     def advance_time(self, state: Any, elapsed_time: float) -> None:
         data = self._state(state)
@@ -194,6 +256,11 @@ class AemeathMechanic(CharacterMechanic):
             "starlume_acceleration_remaining": data["starlume_acceleration_remaining"],
             "instant_response": data["instant_response"],
             "finale_available": data["finale_available"],
+            "instant_response_consumed": data["instant_response_consumed"],
+            "last_resolved_action_id": data["last_resolved_action_id"],
+            "sync_strike_window_type": data["sync_strike_window_type"],
+            "sync_strike_window_remaining": data["sync_strike_window_remaining"],
+            "next_resonance_skill_variant": data["sync_strike_window_type"],
         }
 
     def _state(self, state: Any) -> dict[str, Any]:
@@ -213,11 +280,32 @@ class AemeathMechanic(CharacterMechanic):
         data["heavenfall_unbound"] = bool(data["heavenfall_unbound"]) or data["heavenfall_unbound_remaining"] > 0.0
         data["instant_response"] = bool(data["instant_response"])
         data["finale_available"] = bool(data["finale_available"])
+        data["instant_response_consumed"] = bool(data["instant_response_consumed"])
+        if data["sync_strike_window_type"] not in {"armament_merge", "call_of_dawn"}:
+            data["sync_strike_window_type"] = None
+        data["sync_strike_window_remaining"] = 1 if data["sync_strike_window_type"] else 0
 
     def _derive_state(self, data: dict[str, Any]) -> None:
         data["heavenfall_unbound"] = data["heavenfall_unbound_remaining"] > 0.0
-        data["instant_response"] = data["heavenfall_unbound"] and data["resonance_rate"] >= 4.0
+        if not data["heavenfall_unbound"]:
+            data["instant_response_consumed"] = False
+        data["instant_response"] = (
+            data["heavenfall_unbound"]
+            and data["resonance_rate"] >= 4.0
+            and not data["instant_response_consumed"]
+        )
         data["finale_available"] = self._is_finale_ready(data)
+
+    def _set_sync_strike_window(self, data: dict[str, Any], window_type: Any) -> None:
+        if window_type in {"armament_merge", "call_of_dawn"}:
+            data["sync_strike_window_type"] = window_type
+            data["sync_strike_window_remaining"] = 1
+        else:
+            self._clear_sync_strike_window(data)
+
+    def _clear_sync_strike_window(self, data: dict[str, Any]) -> None:
+        data["sync_strike_window_type"] = None
+        data["sync_strike_window_remaining"] = 0
 
     def _is_finale_ready(self, data: dict[str, Any]) -> bool:
         return (

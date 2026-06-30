@@ -43,7 +43,7 @@ def main() -> None:
     assert aemeath.selected_character_ids == ["aemeath"]
     assert aemeath.state.active_character_id == "aemeath"
     aemeath_actions = aemeath.get_policy_action_ids()
-    assert_contains(aemeath_actions, ["aemeath_basic_attack", "aemeath_resonance_skill", "aemeath_resonance_liberation"])
+    assert_contains(aemeath_actions, ["aemeath_basic_attack", "aemeath_heavy_attack", "aemeath_resonance_skill", "aemeath_resonance_liberation"])
     assert_excludes(aemeath_actions, ["main_", "sub_", "support_", "swap_to_main", "swap_to_sub", "swap_to_support"])
     print("Aemeath-only policy actions:", aemeath_actions)
 
@@ -56,7 +56,7 @@ def main() -> None:
 
     mixed = Simulation.from_json(DATA_DIR, selected_character_ids=["aemeath", "support"])
     mixed_actions = mixed.get_policy_action_ids()
-    assert_contains(mixed_actions, ["aemeath_basic_attack", "support_basic_attack", "swap_to_aemeath", "swap_to_support"])
+    assert_contains(mixed_actions, ["aemeath_basic_attack", "aemeath_heavy_attack", "support_basic_attack", "swap_to_aemeath", "swap_to_support"])
     assert_excludes(mixed_actions, ["main_", "sub_", "swap_to_main", "swap_to_sub"])
     print("Mixed policy actions:", mixed_actions)
 

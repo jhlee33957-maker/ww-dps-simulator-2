@@ -18,6 +18,9 @@ class CharacterMechanic:
     def before_action(self, state: Any, action: Any) -> None:
         pass
 
+    def get_action_damage_multiplier(self, state: Any, action: Any) -> float:
+        return 1.0
+
     def after_action(self, state: Any, action: Any, result: Any) -> None:
         pass
 

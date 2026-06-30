@@ -113,6 +113,7 @@ def _calculate_hit_damage_totals(
     state: CombatState,
     characters: dict[str, CharacterData],
     buffs: dict[str, BuffData],
+    action_damage_multiplier: float = 1.0,
 ) -> tuple[float, float, list[dict], dict[str, float]]:
     normal_damage = 0.0
     tune_break_damage = 0.0
@@ -123,6 +124,10 @@ def _calculate_hit_damage_totals(
         if hit.time > action.effective_action_time:
             continue
         damage, detail = _calculate_hit_damage(hit, action, state, characters, buffs)
+        if damage > 0.0 and action_damage_multiplier != 1.0:
+            damage *= action_damage_multiplier
+            detail["damage"] = damage
+            detail["mechanic_damage_multiplier"] = action_damage_multiplier
         if detail:
             hit_details.append(detail)
         damage_by_category[hit.damage_category] = damage_by_category.get(hit.damage_category, 0.0) + damage
@@ -159,11 +164,16 @@ def execute_action(
 
     if mechanic is not None:
         mechanic.before_action(state, action)
+    action_damage_multiplier = (
+        mechanic.get_action_damage_multiplier(state, action)
+        if mechanic is not None
+        else 1.0
+    )
 
     # Damage events use an action-start state snapshot. Buffs/anomalies applied by
     # this action are added after action_time and do not affect same-action hits.
     normal_damage, tune_break_damage, hit_details, hit_damage_by_category = _calculate_hit_damage_totals(
-        action, state, characters, buffs
+        action, state, characters, buffs, action_damage_multiplier
     )
     direct_damage = normal_damage + tune_break_damage
 

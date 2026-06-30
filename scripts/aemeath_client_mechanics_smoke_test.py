@@ -145,7 +145,7 @@ def test_seraphic_duet_low_sync_behavior() -> None:
     data["form"] = "aemeath"
     data["seraphic_duo_remaining"] = 5.0
     data["synchronization_rate"] = 99.0
-    execute(sim, "aemeath_resonance_skill", "aemeath_form_switch_to_mech")
+    execute(sim, "aemeath_resonance_skill", "aemeath_form_switch_to_mech_normal")
     data = state(sim)
     assert data["seraphic_duo_remaining"] > 0.0
     assert data["form"] == "mech"
@@ -156,7 +156,7 @@ def test_seraphic_duet_low_sync_behavior() -> None:
     data["form"] = "mech"
     data["seraphic_duo_remaining"] = 5.0
     data["synchronization_rate"] = 99.0
-    execute(sim, "aemeath_resonance_skill", "aemeath_form_switch_to_aemeath")
+    execute(sim, "aemeath_resonance_skill", "aemeath_form_switch_to_aemeath_normal")
     data = state(sim)
     assert data["seraphic_duo_remaining"] > 0.0
     assert data["form"] == "aemeath"
@@ -195,7 +195,7 @@ def test_overdrive_then_resonance_skill_is_normal_switch() -> None:
     sim = make_sim()
     prepare_overdrive(sim)
     execute(sim, "aemeath_resonance_liberation", "aemeath_liberation_overdrive")
-    execute(sim, "aemeath_resonance_skill", "aemeath_form_switch_to_aemeath")
+    execute(sim, "aemeath_resonance_skill", "aemeath_form_switch_to_aemeath_normal")
     data = state(sim)
     assert data["seraphic_duo_remaining"] == 0.0
     assert data["form"] == "aemeath"

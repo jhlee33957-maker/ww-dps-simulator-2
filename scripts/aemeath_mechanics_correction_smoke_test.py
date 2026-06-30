@@ -101,7 +101,7 @@ def test_finale_replaces_overdrive_during_heavenfall_unbound() -> None:
     state["resonance_rate"] = 0.0
     derive(sim)
     assert sim.resolve_action_id("aemeath_resonance_liberation") == "aemeath_heavenfall_finale"
-    assert sim.resolve_action_id("aemeath_resonance_skill") == "aemeath_form_switch_to_mech"
+    assert sim.resolve_action_id("aemeath_resonance_skill") == "aemeath_form_switch_to_mech_normal"
     assert not sim.is_action_available(sim.actions["aemeath_resonance_liberation"])
 
     sim = make_sim()
