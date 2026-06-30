@@ -1968,10 +1968,11 @@
                  ],
         "policy_selectable":  false,
         "mechanic_effects":  {
-                                 "set_mech_combo_stage":  2,
+                                 "sync_delta":  40,
                                  "resonance_rate_delta":  1,
-                                 "stardust_resonance_duration":  30,
                                  "set_form":  "mech",
+                                 "set_mech_combo_stage":  2,
+                                 "stardust_resonance_duration":  30,
                                  "heavenfall_unbound_duration":  60
                              }
     },
@@ -2015,13 +2016,14 @@
                  ],
         "policy_selectable":  false,
         "mechanic_effects":  {
-                                 "set_aemeath_combo_stage":  1,
-                                 "stardust_resonance_duration":  0,
-                                 "set_mech_combo_stage":  1,
+                                 "set_form":  "aemeath",
                                  "seraphic_duo_duration":  0,
                                  "heavenfall_unbound_duration":  0,
-                                 "set_form":  "aemeath",
-                                 "finale_available":  false
+                                 "stardust_resonance_duration":  0,
+                                 "instant_response":  false,
+                                 "finale_available":  false,
+                                 "set_aemeath_combo_stage":  1,
+                                 "set_mech_combo_stage":  1
                              }
     },
     {

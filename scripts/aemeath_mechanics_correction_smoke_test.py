@@ -52,6 +52,7 @@ def test_overdrive_starts_timers_without_seraphic_duo() -> None:
     assert state["heavenfall_unbound"] is True
     assert state["heavenfall_unbound_remaining"] == 60.0
     assert state["stardust_resonance_remaining"] == 30.0
+    assert state["synchronization_rate"] == 40.0
     assert state["resonance_rate"] == 1.0
 
 
@@ -83,27 +84,21 @@ def test_seraphic_duet_consumes_sync_and_switches_form() -> None:
     assert state["resonance_rate"] == 1.0
 
 
-def test_finale_requires_heavenfall_sync_and_resonance() -> None:
+def test_finale_replaces_overdrive_during_heavenfall_unbound() -> None:
     sim = make_sim()
     sim.state.resonance_energy["aemeath"] = 125.0
-    state = aemeath_state(sim)
-    state["heavenfall_unbound"] = True
-    state["heavenfall_unbound_remaining"] = 60.0
-    state["synchronization_rate"] = 199.0
-    state["resonance_rate"] = 4.0
     assert sim.resolve_action_id("aemeath_resonance_liberation") == "aemeath_liberation_overdrive"
 
     sim = make_sim()
     state = aemeath_state(sim)
     state["heavenfall_unbound"] = True
     state["heavenfall_unbound_remaining"] = 60.0
-    state["synchronization_rate"] = 200.0
-    state["resonance_rate"] = 3.0
-    assert sim.resolve_action_id("aemeath_resonance_liberation") == "aemeath_liberation_overdrive"
+    state["synchronization_rate"] = 0.0
+    state["resonance_rate"] = 0.0
+    assert sim.resolve_action_id("aemeath_resonance_liberation") == "aemeath_heavenfall_finale"
 
     sim = make_sim()
     state = aemeath_state(sim)
-    state["synchronization_rate"] = 200.0
     state["resonance_rate"] = 4.0
     assert sim.resolve_action_id("aemeath_resonance_liberation") == "aemeath_liberation_overdrive"
 
@@ -112,15 +107,16 @@ def test_finale_requires_heavenfall_sync_and_resonance() -> None:
     state["heavenfall_unbound"] = True
     state["heavenfall_unbound_remaining"] = 60.0
     state["stardust_resonance_remaining"] = 30.0
-    state["synchronization_rate"] = 200.0
-    state["resonance_rate"] = 4.0
+    state["synchronization_rate"] = 40.0
+    state["resonance_rate"] = 0.0
     execute(sim, "aemeath_resonance_liberation", "aemeath_heavenfall_finale")
     state = aemeath_state(sim)
-    assert state["synchronization_rate"] == 200.0
-    assert state["resonance_rate"] == 4.0
+    assert state["synchronization_rate"] == 40.0
+    assert state["resonance_rate"] == 0.0
     assert state["heavenfall_unbound"] is False
     assert state["heavenfall_unbound_remaining"] == 0.0
     assert state["stardust_resonance_remaining"] == 0.0
+    assert state["instant_response"] is False
     assert state["finale_available"] is False
 
 
@@ -128,7 +124,7 @@ def main() -> None:
     test_basic_stage_4_grants_seraphic_duo()
     test_overdrive_starts_timers_without_seraphic_duo()
     test_seraphic_duet_consumes_sync_and_switches_form()
-    test_finale_requires_heavenfall_sync_and_resonance()
+    test_finale_replaces_overdrive_during_heavenfall_unbound()
     print("Aemeath mechanics correction smoke test passed.")
 
 

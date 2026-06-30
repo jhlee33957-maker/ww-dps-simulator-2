@@ -18,6 +18,8 @@ class AemeathMechanic(CharacterMechanic):
         "heavenfall_unbound": False,
         "heavenfall_unbound_remaining": 0.0,
         "stardust_resonance_remaining": 0.0,
+        "starlume_acceleration_remaining": 0.0,
+        "instant_response": False,
         "finale_available": False,
     }
 
@@ -55,7 +57,7 @@ class AemeathMechanic(CharacterMechanic):
             else:
                 resolved_id = "aemeath_form_switch_to_aemeath" if data["form"] == "mech" else "aemeath_form_switch_to_mech"
         elif selected_action.id == "aemeath_resonance_liberation":
-            if self._can_use_finale(data):
+            if data["heavenfall_unbound"]:
                 resolved_id = "aemeath_heavenfall_finale"
             else:
                 resolved_id = "aemeath_liberation_overdrive"
@@ -85,7 +87,7 @@ class AemeathMechanic(CharacterMechanic):
                 and data["synchronization_rate"] >= 100.0
             )
         if action_id == "aemeath_heavenfall_finale":
-            return self._can_use_finale(data)
+            return data["heavenfall_unbound"]
         if action_id == "aemeath_liberation_overdrive":
             return True
         return True
@@ -103,6 +105,8 @@ class AemeathMechanic(CharacterMechanic):
             data["synchronization_rate"] = float(effects["set_synchronization_rate"])
         if "resonance_rate_delta" in effects:
             data["resonance_rate"] += float(effects["resonance_rate_delta"])
+            if action.id == "aemeath_liberation_overdrive" and data["starlume_acceleration_remaining"] > 0.0:
+                data["resonance_rate"] += 1.0
         if "set_resonance_rate" in effects:
             data["resonance_rate"] = float(effects["set_resonance_rate"])
         if duration_was_set:
@@ -114,6 +118,10 @@ class AemeathMechanic(CharacterMechanic):
             data["heavenfall_unbound"] = data["heavenfall_unbound_remaining"] > 0.0
         if "stardust_resonance_duration" in effects:
             data["stardust_resonance_remaining"] = float(effects["stardust_resonance_duration"])
+        if "starlume_acceleration_duration" in effects:
+            data["starlume_acceleration_remaining"] = float(effects["starlume_acceleration_duration"])
+        if "instant_response" in effects:
+            data["instant_response"] = bool(effects["instant_response"])
         if "finale_available" in effects:
             data["finale_available"] = bool(effects["finale_available"])
         if "set_aemeath_combo_stage" in effects:
@@ -122,7 +130,7 @@ class AemeathMechanic(CharacterMechanic):
             data["mech_combo_stage"] = int(effects["set_mech_combo_stage"])
 
         self._clamp(data)
-        data["finale_available"] = self._can_use_finale(data)
+        self._derive_state(data)
 
     def advance_time(self, state: Any, elapsed_time: float) -> None:
         data = self._state(state)
@@ -132,8 +140,9 @@ class AemeathMechanic(CharacterMechanic):
             data["heavenfall_unbound_remaining"] = max(0.0, data["heavenfall_unbound_remaining"] - elapsed_time)
         if data["stardust_resonance_remaining"] > 0.0:
             data["stardust_resonance_remaining"] = max(0.0, data["stardust_resonance_remaining"] - elapsed_time)
-        data["heavenfall_unbound"] = data["heavenfall_unbound_remaining"] > 0.0
-        data["finale_available"] = self._can_use_finale(data)
+        if data["starlume_acceleration_remaining"] > 0.0:
+            data["starlume_acceleration_remaining"] = max(0.0, data["starlume_acceleration_remaining"] - elapsed_time)
+        self._derive_state(data)
 
     def get_observation_values(self, state: Any) -> list[float]:
         data = self._state(state)
@@ -148,6 +157,8 @@ class AemeathMechanic(CharacterMechanic):
             1.0 if data["finale_available"] else 0.0,
             float(data["heavenfall_unbound_remaining"]) / 60.0,
             float(data["stardust_resonance_remaining"]) / 30.0,
+            float(data["starlume_acceleration_remaining"]) / 30.0,
+            1.0 if data["instant_response"] else 0.0,
         ]
 
     def get_observation_labels(self) -> list[str]:
@@ -162,6 +173,8 @@ class AemeathMechanic(CharacterMechanic):
             "aemeath.finale_available",
             "aemeath.heavenfall_unbound_remaining",
             "aemeath.stardust_resonance_remaining",
+            "aemeath.starlume_acceleration_remaining",
+            "aemeath.instant_response",
         ]
 
     def get_debug_state(self, state: Any) -> dict[str, Any]:
@@ -176,6 +189,8 @@ class AemeathMechanic(CharacterMechanic):
             "heavenfall_unbound": data["heavenfall_unbound"],
             "heavenfall_unbound_remaining": data["heavenfall_unbound_remaining"],
             "stardust_resonance_remaining": data["stardust_resonance_remaining"],
+            "starlume_acceleration_remaining": data["starlume_acceleration_remaining"],
+            "instant_response": data["instant_response"],
             "finale_available": data["finale_available"],
         }
 
@@ -192,12 +207,12 @@ class AemeathMechanic(CharacterMechanic):
         data["seraphic_duo_remaining"] = max(0.0, float(data["seraphic_duo_remaining"]))
         data["heavenfall_unbound_remaining"] = max(0.0, float(data["heavenfall_unbound_remaining"]))
         data["stardust_resonance_remaining"] = max(0.0, float(data["stardust_resonance_remaining"]))
+        data["starlume_acceleration_remaining"] = max(0.0, float(data["starlume_acceleration_remaining"]))
         data["heavenfall_unbound"] = bool(data["heavenfall_unbound"]) or data["heavenfall_unbound_remaining"] > 0.0
+        data["instant_response"] = bool(data["instant_response"])
         data["finale_available"] = bool(data["finale_available"])
 
-    def _can_use_finale(self, data: dict[str, Any]) -> bool:
-        return (
-            bool(data["heavenfall_unbound"])
-            and float(data["synchronization_rate"]) >= 200.0
-            and float(data["resonance_rate"]) >= 4.0
-        )
+    def _derive_state(self, data: dict[str, Any]) -> None:
+        data["heavenfall_unbound"] = data["heavenfall_unbound_remaining"] > 0.0
+        data["instant_response"] = data["heavenfall_unbound"] and data["resonance_rate"] >= 4.0
+        data["finale_available"] = data["heavenfall_unbound"]
