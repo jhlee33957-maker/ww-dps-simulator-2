@@ -46,12 +46,12 @@ Implemented Aemeath-lite scope:
 - Seraphic Duet duration state
 - Overdrive with Heavenfall Unbound and Stardust Resonance timers
 - Starlume Acceleration and Instant Response state placeholders
-- Heavenfall Edict: Finale replacement while Heavenfall Unbound is active
+- Heavenfall Edict: Finale replacement while Heavenfall Unbound is active and both resource limits are met
 - Aemeath-specific PPO observation and Streamlit debug state
 
 Not implemented yet:
 
-- Starflux
+- Starflux utility behavior and natural recovery
 - Tune Break
 - Tune Rupture
 - Fusion Burst
@@ -83,7 +83,7 @@ These values are still placeholders or approximations:
 - Synchronization Rate gain values
 - some mechanic effects beyond the implemented Aemeath-lite subset
 
-Full Aemeath is not implemented yet. Starflux natural recovery/spending, Tune Break, Tune Rupture, Fusion Burst, Fusion Trail, Rupturous Trail, Stardust Resonance's full effects, Heavy Attacks, Intro/Outro, team buffs, full passives, mid-air attacks, dodge counters, and exact video-verified hit timings remain out of scope.
+Full Aemeath is not implemented yet. Starflux is utility-related and intentionally omitted from the current DPS-lite implementation. Starflux natural recovery/spending, Tune Break, Tune Rupture, Fusion Burst, Fusion Trail, Rupturous Trail, Stardust Resonance's full Trail effects, Heavy Attacks, Intro/Outro, team buffs, full passives, mid-air attacks, dodge counters, and exact video-verified hit timings remain out of scope.
 
 Character mechanics have an advance_time hook that runs whenever combat time advances, even if the character is off-field. Aemeath Seraphic Duet, Heavenfall Unbound, Stardust Resonance, and Starlume Acceleration timers use this hook, so their remaining time decreases during swaps and during other characters' actions. Heavenfall Finale is separated from Overdrive cooldown by using its own cooldown group. Aemeath-lite has selected Level 10 screenshot coefficients, while timings and several mechanic values remain placeholder/sample values.
 
@@ -94,12 +94,18 @@ Current Aemeath-lite mechanic notes:
 - Basic Attack Stage 4 in Aemeath Form or Mech Form grants Seraphic Duet for 5 seconds.
 - If Seraphic Duet is active but Synchronization Rate is below 100, Resonance Skill performs the normal form switch, Seraphic Duet remains active, and the next Basic Attack in the new form starts from Stage 2.
 - If Seraphic Duet is active and Synchronization Rate is 100 or higher, Resonance Skill performs Seraphic Duet Overture or Encore, consumes 100 Synchronization Rate, ends Seraphic Duet, switches form, sets the next Basic Attack in the new form to Stage 2, and grants 1 Resonance Rate.
-- Overdrive does not directly grant Seraphic Duet. It recovers 40 Synchronization Rate and 1 Resonance Rate, switches to Mech Form, sets Mech Basic Attack to Stage 2, and starts Heavenfall Unbound and Stardust Resonance timers.
+- Heavenfall Edict: Overdrive deals Fusion DMG, recovers 30 Synchronization Rate and 1 Resonance Rate, switches to Mech Form, sets Mech Basic Attack to Stage 2, grants Stardust Resonance for 30 seconds, and grants Heavenfall Edict: Unbound for 60 seconds.
+- Overdrive does not directly grant Seraphic Duet. The next Resonance Skill form switch after Overdrive connects to Aemeath Basic Attack Stage 2.
 - If Starlume Acceleration is active, Overdrive recovers 1 additional Resonance Rate. The source and full behavior of Starlume Acceleration are not implemented yet.
-- Heavenfall Edict: Unbound replaces Overdrive with Finale. Current Aemeath-lite resolves Finale whenever Heavenfall Unbound is active.
+- The next Seraphic Duet cast within 30 seconds after Overdrive does not consume Rupturous Trail / Fusion Trail. Full Trail systems are not implemented yet.
+- Heavenfall Edict: Unbound replaces the Overdrive slot with Finale, but Finale is only available when Synchronization Rate is 200 and Resonance Rate is 4.
+- When Finale is ready, Resonance Skill or Resonance Liberation casts Heavenfall Edict: Finale.
 - When Heavenfall Unbound is active and Resonance Rate reaches 4, Aemeath enters Instant Response.
+- Instant Response alone does not mean Finale is ready unless Synchronization Rate is also 200.
+- After Overdrive from the initial state, Aemeath has only 30 Synchronization Rate and 1 Resonance Rate, so Finale is not immediately available.
 - Instant Response is removed when Heavenfall Unbound ends. Its Heavy Attack effects are not implemented yet.
-- Finale ends Heavenfall Unbound and Stardust Resonance but does not reset Synchronization Rate or Resonance Rate.
+- Finale depletes Synchronization Rate and Resonance Rate, ends Heavenfall Unbound, Stardust Resonance, and Seraphic Duet, and switches Aemeath back to Aemeath Form.
+- Overdrive and Finale use separate cooldown groups and do not share cooldown.
 
 ## Character Selection
 
@@ -242,6 +248,7 @@ Streamlit supports Demo Sequence and PPO Model modes. PPO Model mode loads and e
 python -m compileall .
 python scripts/aemeath_client_mechanics_smoke_test.py
 python scripts/aemeath_coefficients_smoke_test.py
+python scripts/aemeath_finale_condition_smoke_test.py
 python scripts/aemeath_mechanics_correction_smoke_test.py
 python scripts/aemeath_lite_smoke_test.py
 python scripts/party_selection_smoke_test.py

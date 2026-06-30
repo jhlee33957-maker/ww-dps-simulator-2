@@ -21,6 +21,10 @@ def aemeath_state(sim: Simulation) -> dict:
     return sim.state.character_mechanics_state["aemeath"]
 
 
+def derive(sim: Simulation) -> None:
+    sim.character_mechanics["aemeath"].advance_time(sim.state, 0.0)
+
+
 def execute(sim: Simulation, selected_action_id: str, expected_resolved_id: str) -> None:
     resolved_id = sim.resolve_action_id(selected_action_id)
     assert resolved_id == expected_resolved_id, f"{selected_action_id}: expected {expected_resolved_id}, got {resolved_id}"
@@ -52,7 +56,7 @@ def test_overdrive_starts_timers_without_seraphic_duo() -> None:
     assert state["heavenfall_unbound"] is True
     assert state["heavenfall_unbound_remaining"] == 60.0
     assert state["stardust_resonance_remaining"] == 30.0
-    assert state["synchronization_rate"] == 40.0
+    assert state["synchronization_rate"] == 30.0
     assert state["resonance_rate"] == 1.0
 
 
@@ -95,7 +99,10 @@ def test_finale_replaces_overdrive_during_heavenfall_unbound() -> None:
     state["heavenfall_unbound_remaining"] = 60.0
     state["synchronization_rate"] = 0.0
     state["resonance_rate"] = 0.0
+    derive(sim)
     assert sim.resolve_action_id("aemeath_resonance_liberation") == "aemeath_heavenfall_finale"
+    assert sim.resolve_action_id("aemeath_resonance_skill") == "aemeath_form_switch_to_mech"
+    assert not sim.is_action_available(sim.actions["aemeath_resonance_liberation"])
 
     sim = make_sim()
     state = aemeath_state(sim)
@@ -107,11 +114,13 @@ def test_finale_replaces_overdrive_during_heavenfall_unbound() -> None:
     state["heavenfall_unbound"] = True
     state["heavenfall_unbound_remaining"] = 60.0
     state["stardust_resonance_remaining"] = 30.0
-    state["synchronization_rate"] = 40.0
-    state["resonance_rate"] = 0.0
+    state["synchronization_rate"] = 200.0
+    state["resonance_rate"] = 4.0
+    derive(sim)
+    assert sim.resolve_action_id("aemeath_resonance_skill") == "aemeath_heavenfall_finale"
     execute(sim, "aemeath_resonance_liberation", "aemeath_heavenfall_finale")
     state = aemeath_state(sim)
-    assert state["synchronization_rate"] == 40.0
+    assert state["synchronization_rate"] == 0.0
     assert state["resonance_rate"] == 0.0
     assert state["heavenfall_unbound"] is False
     assert state["heavenfall_unbound_remaining"] == 0.0

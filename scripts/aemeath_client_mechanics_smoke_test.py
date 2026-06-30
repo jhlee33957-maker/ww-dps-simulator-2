@@ -21,6 +21,10 @@ def state(sim: Simulation) -> dict:
     return sim.state.character_mechanics_state["aemeath"]
 
 
+def derive(sim: Simulation) -> None:
+    sim.character_mechanics["aemeath"].advance_time(sim.state, 0.0)
+
+
 def execute(sim: Simulation, selected_action_id: str, expected_resolved_id: str) -> None:
     resolved_id = sim.resolve_action_id(selected_action_id)
     assert resolved_id == expected_resolved_id, f"{selected_action_id}: expected {expected_resolved_id}, got {resolved_id}"
@@ -40,7 +44,7 @@ def test_overdrive() -> None:
     execute(sim, "aemeath_resonance_liberation", "aemeath_liberation_overdrive")
     data = state(sim)
     assert data["seraphic_duo_remaining"] == 0.0
-    assert data["synchronization_rate"] == 40.0
+    assert data["synchronization_rate"] == 30.0
     assert data["resonance_rate"] == 1.0
     assert data["heavenfall_unbound"] is True
     assert data["heavenfall_unbound_remaining"] == 60.0
@@ -97,10 +101,14 @@ def test_instant_response() -> None:
     data["heavenfall_unbound"] = True
     data["heavenfall_unbound_remaining"] = 60.0
     data["stardust_resonance_remaining"] = 30.0
+    data["synchronization_rate"] = 200.0
     data["resonance_rate"] = 4.0
+    derive(sim)
     execute(sim, "aemeath_resonance_liberation", "aemeath_heavenfall_finale")
     assert state(sim)["instant_response"] is False
     assert state(sim)["heavenfall_unbound"] is False
+    assert state(sim)["synchronization_rate"] == 0.0
+    assert state(sim)["resonance_rate"] == 0.0
 
 
 def test_finale_replacement() -> None:
@@ -113,7 +121,17 @@ def test_finale_replacement() -> None:
     data["heavenfall_unbound"] = True
     data["heavenfall_unbound_remaining"] = 60.0
     data["resonance_rate"] = 0.0
+    data["synchronization_rate"] = 0.0
+    derive(sim)
     assert sim.resolve_action_id("aemeath_resonance_liberation") == "aemeath_heavenfall_finale"
+    assert not sim.is_action_available(sim.actions["aemeath_resonance_liberation"])
+
+    data["synchronization_rate"] = 200.0
+    data["resonance_rate"] = 4.0
+    derive(sim)
+    assert sim.resolve_action_id("aemeath_resonance_liberation") == "aemeath_heavenfall_finale"
+    assert sim.resolve_action_id("aemeath_resonance_skill") == "aemeath_heavenfall_finale"
+    assert sim.is_action_available(sim.actions["aemeath_resonance_liberation"])
 
     sim = make_sim()
     data = state(sim)

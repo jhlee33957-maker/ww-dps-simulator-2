@@ -57,12 +57,16 @@ def main() -> None:
     assert overdrive["cooldown_group"] == "aemeath_overdrive"
     assert overdrive["resonance_energy_cost"] == 125
     assert overdrive["concerto_energy_gain"] == 20
+    assert overdrive["mechanic_effects"]["sync_delta"] == 30
+    assert overdrive["mechanic_effects"]["resonance_rate_delta"] == 1
 
     finale = actions["aemeath_heavenfall_finale"]
     assert finale["cooldown"] == 25
     assert finale["cooldown_group"] == "aemeath_finale"
     assert finale["resonance_energy_cost"] == 0
     assert finale["concerto_energy_gain"] == 20
+    assert finale["mechanic_effects"]["set_synchronization_rate"] == 0
+    assert finale["mechanic_effects"]["set_resonance_rate"] == 0
 
     assert actions["aemeath_form_switch_to_mech"]["cooldown"] == 1
     assert actions["aemeath_form_switch_to_aemeath"]["cooldown"] == 1

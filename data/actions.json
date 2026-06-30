@@ -1968,7 +1968,7 @@
                  ],
         "policy_selectable":  false,
         "mechanic_effects":  {
-                                 "sync_delta":  40,
+                                 "sync_delta":  30,
                                  "resonance_rate_delta":  1,
                                  "set_form":  "mech",
                                  "set_mech_combo_stage":  2,
@@ -2017,6 +2017,8 @@
         "policy_selectable":  false,
         "mechanic_effects":  {
                                  "set_form":  "aemeath",
+                                 "set_synchronization_rate":  0,
+                                 "set_resonance_rate":  0,
                                  "seraphic_duo_duration":  0,
                                  "heavenfall_unbound_duration":  0,
                                  "stardust_resonance_duration":  0,

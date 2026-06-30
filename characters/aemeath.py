@@ -46,7 +46,9 @@ class AemeathMechanic(CharacterMechanic):
         data = self._state(state)
         resolved_id = selected_action.id
 
-        if selected_action.id == "aemeath_basic_attack":
+        if selected_action.id in {"aemeath_resonance_skill", "aemeath_resonance_liberation"} and self._is_finale_ready(data):
+            resolved_id = "aemeath_heavenfall_finale"
+        elif selected_action.id == "aemeath_basic_attack":
             if data["form"] == "mech":
                 resolved_id = self._MECH_BASIC_BY_STAGE[int(data["mech_combo_stage"])]
             else:
@@ -87,9 +89,9 @@ class AemeathMechanic(CharacterMechanic):
                 and data["synchronization_rate"] >= 100.0
             )
         if action_id == "aemeath_heavenfall_finale":
-            return data["heavenfall_unbound"]
+            return self._is_finale_ready(data)
         if action_id == "aemeath_liberation_overdrive":
-            return True
+            return not data["heavenfall_unbound"]
         return True
 
     def after_action(self, state: Any, action: Any, result: Any) -> None:
@@ -215,4 +217,11 @@ class AemeathMechanic(CharacterMechanic):
     def _derive_state(self, data: dict[str, Any]) -> None:
         data["heavenfall_unbound"] = data["heavenfall_unbound_remaining"] > 0.0
         data["instant_response"] = data["heavenfall_unbound"] and data["resonance_rate"] >= 4.0
-        data["finale_available"] = data["heavenfall_unbound"]
+        data["finale_available"] = self._is_finale_ready(data)
+
+    def _is_finale_ready(self, data: dict[str, Any]) -> bool:
+        return (
+            data["heavenfall_unbound"]
+            and data["synchronization_rate"] >= 200.0
+            and data["resonance_rate"] >= 4.0
+        )

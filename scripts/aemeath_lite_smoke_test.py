@@ -45,7 +45,7 @@ def main() -> None:
     sim.state.resonance_energy["aemeath"] = 125.0
     run_step(sim, "aemeath_resonance_liberation", "aemeath_liberation_overdrive")
     assert aemeath_state(sim)["seraphic_duo_remaining"] == 0.0
-    assert aemeath_state(sim)["synchronization_rate"] == 77.0
+    assert aemeath_state(sim)["synchronization_rate"] == 67.0
     assert aemeath_state(sim)["resonance_rate"] == 1.0
     assert aemeath_state(sim)["heavenfall_unbound"] is True
     assert aemeath_state(sim)["heavenfall_unbound_remaining"] == 60.0
@@ -64,15 +64,16 @@ def main() -> None:
     assert after_wait == after_seraphic_duet
 
     data = aemeath_state(sim)
-    expected_sync = data["synchronization_rate"]
-    expected_resonance = data["resonance_rate"]
+    data["synchronization_rate"] = 200.0
+    data["resonance_rate"] = 4.0
+    sim.character_mechanics["aemeath"].advance_time(sim.state, 0.0)
     print(f"Finale replacement check: {data}")
 
     run_step(sim, "aemeath_resonance_liberation", "aemeath_heavenfall_finale")
     final_state = aemeath_state(sim)
     assert final_state["form"] == "aemeath"
-    assert final_state["synchronization_rate"] == expected_sync
-    assert final_state["resonance_rate"] == expected_resonance
+    assert final_state["synchronization_rate"] == 0.0
+    assert final_state["resonance_rate"] == 0.0
     assert final_state["seraphic_duo_remaining"] == 0.0
     assert final_state["heavenfall_unbound"] is False
     assert final_state["heavenfall_unbound_remaining"] == 0.0
