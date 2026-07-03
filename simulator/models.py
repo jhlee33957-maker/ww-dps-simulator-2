@@ -113,6 +113,7 @@ class ActionData(BaseModel):
     policy_selectable: bool = True
     cooldown_group: str | None = None
     mechanic_effects: dict[str, Any] = Field(default_factory=dict)
+    timing_overrides: dict[str, dict[str, float]] = Field(default_factory=dict)
     data_status: str | None = None
     notes: str | None = None
 

@@ -46,6 +46,25 @@ def reduce_cooldowns(state: CombatState, elapsed: float) -> None:
             del state.cooldowns[action_id]
 
 
+def resolve_action_timing(action: ActionData, actor_state: Any | None = None) -> tuple[float, float]:
+    action_time = action.effective_action_time
+    combat_time_cost = action.effective_combat_time_cost
+    overrides = action.timing_overrides or {}
+
+    instant_response = False
+    if isinstance(actor_state, dict):
+        instant_response = bool(actor_state.get("instant_response"))
+    elif actor_state is not None:
+        instant_response = bool(getattr(actor_state, "instant_response", False))
+
+    if instant_response and "instant_response" in overrides:
+        override = overrides["instant_response"]
+        action_time = override.get("action_time", action_time)
+        combat_time_cost = override.get("combat_time_cost", action_time)
+
+    return action_time, combat_time_cost
+
+
 def _calculate_hit_damage(
     hit: HitData,
     action: ActionData,
@@ -149,8 +168,8 @@ def execute_action(
     valid, reason = is_action_valid(action, state)
     start_time = state.current_time
     combat_start_time = state.combat_time
-    action_time = action.effective_action_time
-    combat_time_cost = action.effective_combat_time_cost
+    actor_state = state.character_mechanics_state.get(action.character_id or state.active_character_id, {})
+    action_time, combat_time_cost = resolve_action_timing(action, actor_state)
     if not valid:
         return ActionResult(
             action_id=action.id,

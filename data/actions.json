@@ -304,7 +304,8 @@
         "applies_anomaly_stacks":  5,
         "anomaly_duration":  6,
         "anomaly_tick_interval":  1,
-        "action_time":  0.35,
+        "action_time":  0.55,
+        "combat_time_cost":  0.55,
         "hits":  [
 
                  ],
@@ -1516,7 +1517,8 @@
         "character_id":  "aemeath",
         "action_type":  "resonance_skill",
         "duration":  0.35,
-        "action_time":  0.35,
+        "action_time":  0.55,
+        "combat_time_cost":  0.55,
         "cooldown":  1,
         "cooldown_group":  "aemeath_form_switch",
         "damage_category":  "normal",
@@ -1581,7 +1583,8 @@
         "character_id":  "aemeath",
         "action_type":  "resonance_skill",
         "duration":  0.35,
-        "action_time":  0.35,
+        "action_time":  0.45,
+        "combat_time_cost":  0.45,
         "cooldown":  1,
         "cooldown_group":  "aemeath_form_switch",
         "damage_category":  "normal",
@@ -1626,7 +1629,8 @@
         "character_id":  "aemeath",
         "action_type":  "resonance_skill",
         "duration":  0.35,
-        "action_time":  0.35,
+        "action_time":  1.1667,
+        "combat_time_cost":  1.1667,
         "cooldown":  1,
         "cooldown_group":  "aemeath_form_switch",
         "damage_category":  "normal",
@@ -1692,7 +1696,8 @@
         "character_id":  "aemeath",
         "action_type":  "resonance_skill",
         "duration":  0.35,
-        "action_time":  0.35,
+        "action_time":  0.9667,
+        "combat_time_cost":  0.9667,
         "cooldown":  1,
         "cooldown_group":  "aemeath_form_switch",
         "damage_category":  "normal",
@@ -2054,7 +2059,8 @@
         "character_id":  "aemeath",
         "action_type":  "heavy_attack",
         "duration":  0.55,
-        "action_time":  0.55,
+        "action_time":  1.8333,
+        "combat_time_cost":  1.8333,
         "cooldown":  0,
         "damage_category":  "normal",
         "damage_multiplier":  0,
@@ -2101,7 +2107,7 @@
                                  "set_aemeath_combo_stage":  2,
                                  "set_sync_strike_window":  "armament_merge"
                              },
-        "notes":  "Aemeath-lite placeholder action_time. Damage is simplified as normal damage."
+        "notes":  "Aemeath normal Charged I timing: 110F / 1.8333s. Damage is simplified as normal damage."
     },
     {
         "id":  "aemeath_heavy_aemeath_charged_2",
@@ -2109,7 +2115,8 @@
         "character_id":  "aemeath",
         "action_type":  "heavy_attack",
         "duration":  0.45,
-        "action_time":  0.45,
+        "action_time":  3.6667,
+        "combat_time_cost":  3.6667,
         "cooldown":  0,
         "damage_category":  "normal",
         "damage_multiplier":  0,
@@ -2190,7 +2197,13 @@
                                  "instant_response":  false,
                                  "instant_response_consumed":  true
                              },
-        "notes":  "Aemeath-lite placeholder action_time. Instant Response damage amplification is applied by AemeathMechanic as x3.0."
+        "timing_overrides":  {
+                                 "instant_response":  {
+                                                          "action_time":  1.8333,
+                                                          "combat_time_cost":  1.8333
+                                                      }
+                             },
+        "notes":  "Aemeath normal Charged II timing: 220F / 3.6667s. Instant Response Charged II uses the Charged I timing override and keeps AemeathMechanic x3.0 damage amplification."
     },
     {
         "id":  "aemeath_heavy_mech_charged_1",
@@ -2198,7 +2211,8 @@
         "character_id":  "aemeath",
         "action_type":  "heavy_attack",
         "duration":  0.5,
-        "action_time":  0.5,
+        "action_time":  1.0333,
+        "combat_time_cost":  1.0333,
         "cooldown":  0,
         "damage_category":  "normal",
         "damage_multiplier":  0,
@@ -2235,7 +2249,7 @@
                                  "set_mech_combo_stage":  2,
                                  "set_sync_strike_window":  "call_of_dawn"
                              },
-        "notes":  "Aemeath-lite placeholder action_time. Damage is simplified as normal damage."
+        "notes":  "Aemeath Mech normal Charged I timing: 62F / 1.0333s. Damage is simplified as normal damage."
     },
     {
         "id":  "aemeath_heavy_mech_charged_2",
@@ -2243,7 +2257,8 @@
         "character_id":  "aemeath",
         "action_type":  "heavy_attack",
         "duration":  0.4,
-        "action_time":  0.4,
+        "action_time":  2.0667,
+        "combat_time_cost":  2.0667,
         "cooldown":  0,
         "damage_category":  "normal",
         "damage_multiplier":  0,
@@ -2284,7 +2299,13 @@
                                  "instant_response":  false,
                                  "instant_response_consumed":  true
                              },
-        "notes":  "Aemeath-lite placeholder action_time. Instant Response damage amplification is applied by AemeathMechanic as x3.0."
+        "timing_overrides":  {
+                                 "instant_response":  {
+                                                          "action_time":  1.0333,
+                                                          "combat_time_cost":  1.0333
+                                                      }
+                             },
+        "notes":  "Aemeath Mech normal Charged II timing: 124F / 2.0667s. Instant Response Charged II uses the Charged I timing override and keeps AemeathMechanic x3.0 damage amplification."
     },
     {
         "id":  "aemeath_liberation_overdrive",

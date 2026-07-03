@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-03T08:27:27.929204+00:00",
+  "generated_at": "2026-07-03T09:13:39.849499+00:00",
   "source_workbook": "data\\source\\鸣潮动作数据汇总.xlsx",
   "fps": 60,
   "safe_to_patch": false,
@@ -110,11 +110,11 @@
         "instant_response_source_rows": []
       },
       "current_actions_comparison": {
-        "current_action_time": 0.55,
-        "current_combat_time_cost": 0.55,
+        "current_action_time": 1.8333,
+        "current_combat_time_cost": 1.8333,
         "candidate_action_time": 1.8333,
         "candidate_combat_time_cost": 1.8333,
-        "difference_summary": "action_time current=0.55 candidate=1.8333; combat_time_cost current=0.55 candidate=1.8333"
+        "difference_summary": "matches current timing"
       }
     },
     {
@@ -494,11 +494,11 @@
         ]
       },
       "current_actions_comparison": {
-        "current_action_time": 0.45,
-        "current_combat_time_cost": 0.45,
+        "current_action_time": 3.6667,
+        "current_combat_time_cost": 3.6667,
         "candidate_action_time": 1.8333,
         "candidate_combat_time_cost": 1.8333,
-        "difference_summary": "action_time current=0.45 candidate=1.8333; combat_time_cost current=0.45 candidate=1.8333"
+        "difference_summary": "action_time current=3.6667 candidate=1.8333; combat_time_cost current=3.6667 candidate=1.8333"
       }
     },
     {
@@ -597,11 +597,11 @@
         "instant_response_source_rows": []
       },
       "current_actions_comparison": {
-        "current_action_time": 0.5,
-        "current_combat_time_cost": 0.5,
+        "current_action_time": 1.0333,
+        "current_combat_time_cost": 1.0333,
         "candidate_action_time": 1.0333,
         "candidate_combat_time_cost": 1.0333,
-        "difference_summary": "action_time current=0.5 candidate=1.0333; combat_time_cost current=0.5 candidate=1.0333"
+        "difference_summary": "matches current timing"
       }
     },
     {
@@ -830,11 +830,11 @@
         ]
       },
       "current_actions_comparison": {
-        "current_action_time": 0.4,
-        "current_combat_time_cost": 0.4,
+        "current_action_time": 2.0667,
+        "current_combat_time_cost": 2.0667,
         "candidate_action_time": 1.0333,
         "candidate_combat_time_cost": 1.0333,
-        "difference_summary": "action_time current=0.4 candidate=1.0333; combat_time_cost current=0.4 candidate=1.0333"
+        "difference_summary": "action_time current=2.0667 candidate=1.0333; combat_time_cost current=2.0667 candidate=1.0333"
       }
     },
     {
@@ -911,8 +911,8 @@
         "instant_response_source_rows": []
       },
       "current_actions_comparison": {
-        "current_action_time": 0.35,
-        "current_combat_time_cost": 0.35,
+        "current_action_time": 0.45,
+        "current_combat_time_cost": 0.45,
         "candidate_action_time": null,
         "candidate_combat_time_cost": null,
         "difference_summary": "matches current timing"
@@ -992,11 +992,11 @@
         "instant_response_source_rows": []
       },
       "current_actions_comparison": {
-        "current_action_time": 0.35,
-        "current_combat_time_cost": 0.35,
+        "current_action_time": 0.55,
+        "current_combat_time_cost": 0.55,
         "candidate_action_time": 1.0,
         "candidate_combat_time_cost": 1.0,
-        "difference_summary": "action_time current=0.35 candidate=1.0; combat_time_cost current=0.35 candidate=1.0"
+        "difference_summary": "action_time current=0.55 candidate=1.0; combat_time_cost current=0.55 candidate=1.0"
       }
     },
     {
@@ -1227,11 +1227,11 @@
         "instant_response_source_rows": []
       },
       "current_actions_comparison": {
-        "current_action_time": 0.35,
-        "current_combat_time_cost": 0.35,
+        "current_action_time": 1.1667,
+        "current_combat_time_cost": 1.1667,
         "candidate_action_time": 1.1667,
         "candidate_combat_time_cost": 1.1667,
-        "difference_summary": "action_time current=0.35 candidate=1.1667; combat_time_cost current=0.35 candidate=1.1667"
+        "difference_summary": "matches current timing"
       }
     },
     {
@@ -1505,11 +1505,11 @@
         "instant_response_source_rows": []
       },
       "current_actions_comparison": {
-        "current_action_time": 0.35,
-        "current_combat_time_cost": 0.35,
+        "current_action_time": 0.9667,
+        "current_combat_time_cost": 0.9667,
         "candidate_action_time": 0.9667,
         "candidate_combat_time_cost": 0.9667,
-        "difference_summary": "action_time current=0.35 candidate=0.9667; combat_time_cost current=0.35 candidate=0.9667"
+        "difference_summary": "matches current timing"
       }
     }
   ]

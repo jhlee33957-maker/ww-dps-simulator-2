@@ -103,7 +103,24 @@ Confirmed whitelist values currently applied:
 - Seraphic Duet Overture/Overturn: 3.0s action_time / 1.3167s combat_time_cost.
 - Seraphic Duet Encore: 2.4167s action_time / 1.3333s combat_time_cost.
 
-Heavy Attack, Form Switch, and Sync Strike Excel timings are not applied yet.
+Heavy Attack, Form Switch, and Sync Strike reviewed timings are also applied as described below.
+
+## Aemeath Heavy / Form Switch / Sync Strike Timing
+
+Reviewed Heavy Attack and Sync Strike timing values are applied without PPO retraining changes:
+
+- Aemeath Form Charged I: 110F / 1.8333s action_time and combat_time_cost.
+- Aemeath Form Charged II: 220F / 3.6667s action_time and combat_time_cost.
+- Aemeath Form Charged II during Instant Response: 110F / 1.8333s action_time and combat_time_cost.
+- Mech Form Charged I: 62F / 1.0333s action_time and combat_time_cost.
+- Mech Form Charged II: 124F / 2.0667s action_time and combat_time_cost.
+- Mech Form Charged II during Instant Response: 62F / 1.0333s action_time and combat_time_cost.
+- Sync Strike: Armament Merge: 1.1667s action_time and combat_time_cost.
+- Sync Strike: Call of Dawn: 0.9667s action_time and combat_time_cost.
+
+Normal Form Switch is modeled as the immediate opposite-form Basic Attack Stage 1 rather than a separate 1.0s E1 action. Switching from Aemeath to Mech uses Mech Basic Stage 1 timing and hit multipliers, then sets the next Mech Basic Attack to Stage 2. Switching from Mech to Aemeath uses Aemeath Basic Stage 1 timing and hit multipliers, then sets the next Aemeath Basic Attack to Stage 2.
+
+Instant Response Heavy Attack timing follows the manually reviewed frame values and is resolved before the after-action mechanic clears Instant Response. This preserves the existing rule that `combat_time_cost` affects only the timed-combat clock while `action_time` drives action lock, buffs, anomalies, cooldowns, and Aemeath mechanic timers.
 
 Current Aemeath-lite mechanic notes:
 
@@ -116,7 +133,7 @@ Current Aemeath-lite mechanic notes:
 - Outside Instant Response, aemeath_heavy_attack resolves to Charged I. During Instant Response, it resolves to Charged II.
 - During Instant Response and Heavenfall Edict: Unbound, Charged II restores 200 Synchronization Rate, ends Instant Response, and can enable Finale if Resonance Rate is also 4.
 - Instant Response Heavy Attack damage amplification is approximated as x3.0 total direct hit damage in this simulator.
-- Heavy Attack action_time values are placeholders.
+- Heavy Attack action_time values use the reviewed frame timings listed above, including Instant Response overrides.
 - Heavenfall Edict: Overdrive deals Fusion DMG, recovers 30 Synchronization Rate and 1 Resonance Rate, switches to Mech Form, sets Mech Basic Attack to Stage 2, grants Stardust Resonance for 30 seconds, and grants Heavenfall Edict: Unbound for 60 seconds.
 - Overdrive does not directly grant Seraphic Duet. The next Resonance Skill form switch after Overdrive connects to Aemeath Basic Attack Stage 2.
 - If Starlume Acceleration is active, Overdrive recovers 1 additional Resonance Rate. The source and full behavior of Starlume Acceleration are not implemented yet.
@@ -126,7 +143,7 @@ Current Aemeath-lite mechanic notes:
 - When Heavenfall Unbound is active and Resonance Rate reaches 4, Aemeath enters Instant Response.
 - Instant Response alone does not mean Finale is ready unless Synchronization Rate is also 200.
 - After Overdrive from the initial state, Aemeath has only 30 Synchronization Rate and 1 Resonance Rate, so Finale is not immediately available.
-- Instant Response is removed when Heavenfall Unbound ends. Its Heavy Attack effects are not implemented yet.
+  - Instant Response is removed when Heavenfall Unbound ends or after an Instant Response Charged II Heavy Attack.
 - Finale depletes Synchronization Rate and Resonance Rate, ends Heavenfall Unbound, Stardust Resonance, and Seraphic Duet, and switches Aemeath back to Aemeath Form.
 - Overdrive and Finale use separate cooldown groups and do not share cooldown.
 
