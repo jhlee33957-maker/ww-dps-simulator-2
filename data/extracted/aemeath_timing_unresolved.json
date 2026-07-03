@@ -1,0 +1,2856 @@
+{
+  "generated_at": "2026-07-03T08:27:27.929204+00:00",
+  "source_workbook": "data\\source\\鸣潮动作数据汇总.xlsx",
+  "fps": 60,
+  "summary": {
+    "candidate_rows_scanned": 229,
+    "timing_candidates_created": 8,
+    "high_confidence_count": 2,
+    "medium_confidence_count": 5,
+    "low_confidence_count": 1,
+    "safe_to_patch_count": 2,
+    "unresolved_count": 112,
+    "heavy_candidates_count": 4,
+    "form_switch_candidates_count": 2,
+    "sync_strike_candidates_count": 2,
+    "excluded_qte_rows_count": 9
+  },
+  "rows": [
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2739,
+      "character_scope": "aemeath",
+      "source_action_name": "A1",
+      "candidate_action_id": "aemeath_basic_form_stage_1",
+      "hit_frames": [
+        16.0
+      ],
+      "candidate_action_time_frames": [
+        22.0
+      ],
+      "derivation_frames": [
+        22.0
+      ],
+      "action_end_frames": [
+        55.0
+      ],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "爱弥斯 | 1 | A1 | 16 | 12 | 1 | 1 | 24 | 22 | 49 | 55 | √ | √ | 33.3 | 26.64 | 0.84 | 1.67 | 3.29 | 0.75 | 2,1 | 地面 | 攻击顿帧 | 0.3 | 2 | 0.3 | 2 | 目标 | 爱弥斯 | (175,0,125) | 矩形(220,250,175)",
+      "warnings": []
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2740,
+      "character_scope": "aemeath",
+      "source_action_name": "A2-1",
+      "candidate_action_id": "aemeath_basic_form_stage_2",
+      "hit_frames": [
+        6.0
+      ],
+      "candidate_action_time_frames": [
+        12.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "2 | A2-1 | 第30F～96F可派生E2 | 6 | 12 | 1 | 1 | √ | √ | 9.98 | 7.99 | 0.25 | 0.5 | 1.29 | 0.5625 | 2 | 地面 | 攻击顿帧 | 0.1 | 2 | 0.1 | 2 | 目标 | 爱弥斯 | (100,0,115) | 矩形(300,300,225)",
+      "warnings": []
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2741,
+      "character_scope": "aemeath",
+      "source_action_name": "A2-2",
+      "candidate_action_id": "aemeath_basic_form_stage_2",
+      "hit_frames": [
+        9.0
+      ],
+      "candidate_action_time_frames": [
+        12.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "A2-2 | 9 | 12 | 1 | 1 | √ | √ | 14.97 | 11.98 | 0.38 | 0.75 | 1.93 | 2 | 地面 | 攻击顿帧 | 0.1 | 2 | 0.1 | 2 | 目标 | 爱弥斯 | (100,0,115) | 矩形(300,300,225)",
+      "warnings": []
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2742,
+      "character_scope": "aemeath",
+      "source_action_name": "A2-3",
+      "candidate_action_id": "aemeath_basic_form_stage_2",
+      "hit_frames": [
+        20.0
+      ],
+      "candidate_action_time_frames": [
+        36.0
+      ],
+      "derivation_frames": [
+        36.0
+      ],
+      "action_end_frames": [
+        70.0
+      ],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "A2-3 | 20 | 12 | 3 | 3 | 38 | 36 | 60 | 70 | √ | √ | 24.95 | 19.96 | 0.63 | 1.25 | 3.22 | 2,1 | 地面 | 攻击顿帧 | 0.01 | 4 | 0.01 | 4 | 目标 | 爱弥斯 | (100,0,115) | 矩形(400,300,225)",
+      "warnings": []
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2743,
+      "character_scope": "aemeath",
+      "source_action_name": "A3-1",
+      "candidate_action_id": "aemeath_basic_form_stage_3",
+      "hit_frames": [
+        4.0
+      ],
+      "candidate_action_time_frames": [
+        6.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        6.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "3 | A3-1 | 第90F前可派生E2 | 4 | 6 | 1 | 1 | √ | √ | 6.69 | 5.36 | 0.17 | 0.34 | 1.67 | 0.5625 | 2 | 地面 | 攻击顿帧 | 0.01 | 2 | 0.01 | 2 | 目标 | 爱弥斯 | (200,0,115) | 矩形(350,300,225)",
+      "warnings": []
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2744,
+      "character_scope": "aemeath",
+      "source_action_name": "A3-2",
+      "candidate_action_id": "aemeath_basic_form_stage_3",
+      "hit_frames": [
+        10.0
+      ],
+      "candidate_action_time_frames": [
+        6.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        6.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "A3-2 | 10 | 6 | 1 | 1 | √ | √ | 6.69 | 5.36 | 0.17 | 0.34 | 1.67 | 2 | 地面 | 攻击顿帧 | 0.01 | 2 | 0.01 | 2 | 目标 | 爱弥斯 | (200,0,115) | 矩形(350,300,225)",
+      "warnings": []
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2745,
+      "character_scope": "aemeath",
+      "source_action_name": "A3-3",
+      "candidate_action_id": "aemeath_basic_form_stage_3",
+      "hit_frames": [
+        14.0
+      ],
+      "candidate_action_time_frames": [
+        6.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        6.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "A3-3 | 14 | 6 | 3 | 3 | √ | √ | 6.69 | 5.36 | 0.17 | 0.34 | 1.67 | 2 | 地面 | 攻击顿帧 | 0.01 | 4 | 0.01 | 4 | 目标 | 爱弥斯 | (200,0,115) | 矩形(350,300,225)",
+      "warnings": []
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2746,
+      "character_scope": "aemeath",
+      "source_action_name": "A3-4",
+      "candidate_action_id": "aemeath_basic_form_stage_3",
+      "hit_frames": [
+        18.0
+      ],
+      "candidate_action_time_frames": [
+        6.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        6.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "A3-4 | 18 | 6 | √ | √ | 13.38 | 10.71 | 0.34 | 0.67 | 3.33 | 2 | 地面 | 目标 | 爱弥斯 | (250,0,115) | 矩形(350,300,225)",
+      "warnings": []
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2747,
+      "character_scope": "aemeath",
+      "source_action_name": "A3-5",
+      "candidate_action_id": "aemeath_basic_form_stage_3",
+      "hit_frames": [
+        20.0
+      ],
+      "candidate_action_time_frames": [
+        34.0
+      ],
+      "derivation_frames": [
+        34.0
+      ],
+      "action_end_frames": [
+        60.0
+      ],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "技能类型 | A3-5 | 20 | 12 | 5 | 5 | 36 | 34 | 57 | 60 | √ | √ | 33.45 | 26.76 | 0.84 | 1.68 | 8.32 | 2,1 | 地面 | 攻击顿帧 | 0.01 | 6 | 0.01 | 6 | 目标 | 爱弥斯 | (400,0,115) | 矩形(600,300,225)",
+      "warnings": []
+    },
+    {
+      "reason": "dodge_counter_out_of_scope",
+      "classification": "dodge_counter",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2748,
+      "character_scope": "aemeath",
+      "source_action_name": "A3-1D",
+      "candidate_action_id": "aemeath_basic_form_stage_3",
+      "hit_frames": [
+        4.0
+      ],
+      "candidate_action_time_frames": [
+        6.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        6.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "偏谐机制 | 4 | A3-1D | 爱弥斯地面闪避反击 | 4 | 6 | 1 | 1 | 1 | 40 | √ | √ | 18.69 | 10.16 | 0.32 | 0.64 | 2.9 | 0.178 | 8,2 | 地面 | 攻击顿帧 | 0.01 | 2 | 0.01 | 2 | 目标 | 爱弥斯 | (200,0,100) | 矩形(350,300,225)",
+      "warnings": []
+    },
+    {
+      "reason": "dodge_counter_out_of_scope",
+      "classification": "dodge_counter",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2749,
+      "character_scope": "aemeath",
+      "source_action_name": "A3-2D",
+      "candidate_action_id": "aemeath_basic_form_stage_3",
+      "hit_frames": [
+        10.0
+      ],
+      "candidate_action_time_frames": [
+        6.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        6.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "伤害计算 | A3-2D | 第90F前可派生E2 | 10 | 6 | 1 | 1 | √ | √ | 18.69 | 10.16 | 0.32 | 0.64 | 2.9 | 2 | 地面 | 攻击顿帧 | 0.01 | 2 | 0.01 | 2 | 目标 | 爱弥斯 | (200,0,100) | 矩形(350,300,225)",
+      "warnings": []
+    },
+    {
+      "reason": "dodge_counter_out_of_scope",
+      "classification": "dodge_counter",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2750,
+      "character_scope": "aemeath",
+      "source_action_name": "A3-3D",
+      "candidate_action_id": "aemeath_basic_form_stage_3",
+      "hit_frames": [
+        14.0
+      ],
+      "candidate_action_time_frames": [
+        6.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        6.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "输入缓存 | A3-3D | 14 | 6 | 3 | 3 | √ | √ | 18.69 | 10.16 | 0.32 | 0.64 | 2.9 | 2 | 地面 | 攻击顿帧 | 0.01 | 4 | 0.01 | 4 | 目标 | 爱弥斯 | (200,0,100) | 矩形(350,300,225)",
+      "warnings": []
+    },
+    {
+      "reason": "dodge_counter_out_of_scope",
+      "classification": "dodge_counter",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2751,
+      "character_scope": "aemeath",
+      "source_action_name": "A3-4D",
+      "candidate_action_id": "aemeath_basic_form_stage_3",
+      "hit_frames": [
+        18.0
+      ],
+      "candidate_action_time_frames": [
+        6.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        6.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "牵引 | A3-4D | 18 | 6 | √ | √ | 37.38 | 20.31 | 0.64 | 1.27 | 5.8 | 2 | 地面 | 目标 | 爱弥斯 | (250,0,100) | 矩形(350,300,225)",
+      "warnings": []
+    },
+    {
+      "reason": "dodge_counter_out_of_scope",
+      "classification": "dodge_counter",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2752,
+      "character_scope": "aemeath",
+      "source_action_name": "A3-5D",
+      "candidate_action_id": "aemeath_basic_form_stage_3",
+      "hit_frames": [
+        20.0
+      ],
+      "candidate_action_time_frames": [
+        40.0
+      ],
+      "derivation_frames": [
+        40.0
+      ],
+      "action_end_frames": [
+        60.0
+      ],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "A3-5D | 20 | 12 | 5 | 5 | 42 | 40 | 50 | 60 | √ | √ | 93.45 | 50.76 | 1.59 | 3.18 | 14.49 | 2,1 | 地面 | 攻击顿帧 | 0.01 | 6 | 0.01 | 6 | 目标 | 爱弥斯 | (400,0,150) | 矩形(600,300,225)",
+      "warnings": []
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2753,
+      "character_scope": "aemeath",
+      "source_action_name": "A4-1",
+      "candidate_action_id": "aemeath_basic_form_stage_4",
+      "hit_frames": [
+        1.0
+      ],
+      "candidate_action_time_frames": [
+        48.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        48.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "5 | A4-1 | 获得【强化E解锁前置】，持续5秒 | 1 | 48 | √ | √ | 4.84 | 3.87 | 0.13 | 0.25 | 1.17 | 0.4219 | 2 | 地面 | 目标 | 爱弥斯 | (0,0,50) | 圆柱(800,0,400)",
+      "warnings": [
+        "Row text contains unrelated action keyword(s) ignored for mapping: 强化E"
+      ]
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2754,
+      "character_scope": "aemeath",
+      "source_action_name": "A4-2",
+      "candidate_action_id": "aemeath_basic_form_stage_4",
+      "hit_frames": [
+        2.0
+      ],
+      "candidate_action_time_frames": [
+        28.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        28.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "A4-2 | 持续帧内每9F进行一次判定，最多4次 | 2 | 28 | 3 | √ | × | 4.84 | 3.87 | 0.13 | 0.25 | 1.17 | 2 | 地面 | 攻击顿帧 | 0.2 | 4 | 目标 | 爱弥斯 | (-50,0,100) | 圆柱(800,0,400)",
+      "warnings": []
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2755,
+      "character_scope": "aemeath",
+      "source_action_name": "A4-3",
+      "candidate_action_id": "aemeath_basic_form_stage_4",
+      "hit_frames": [
+        46.0
+      ],
+      "candidate_action_time_frames": [
+        58.0
+      ],
+      "derivation_frames": [
+        58.0
+      ],
+      "action_end_frames": [
+        70.0
+      ],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "A4-3 | 第120F前可派生E1 | 46 | 12 | 1 | 4 | 60 | 58 | 62 | 70 | √ | √ | 72.53 | 58.02 | 1.82 | 3.63 | 17.46 | 2,1 | 地面 | 攻击顿帧 | 0.5 | 4 | 0.2 | 6 | 目标 | 爱弥斯 | (750,0,300) | 圆柱(800,0,500)",
+      "warnings": []
+    },
+    {
+      "reason": "resonance_liberation_already_handled",
+      "classification": "resonance_liberation",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2798,
+      "character_scope": "aemeath",
+      "source_action_name": "大招2-前置",
+      "candidate_action_id": "aemeath_heavenfall_finale",
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        340.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        340.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "15 | 大招2-前置 | 无敌期间不能切人\n第1F切换至爱弥斯，移除速蓄状态、强化E解锁状态\n第1F清空同步率、共鸣率，技能结束后移除【大招2解锁前置】 | 1 | 340 | 20 | -200 | 0 | 10 | 地面 | 时停 | 0 | 1 | 340 | 0 | 1 | 340",
+      "warnings": [
+        "Row text contains unrelated action keyword(s) ignored for mapping: 强化E"
+      ]
+    },
+    {
+      "reason": "resonance_liberation_already_handled",
+      "classification": "resonance_liberation",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2799,
+      "character_scope": "aemeath",
+      "source_action_name": "大招2-全局时停",
+      "candidate_action_id": "aemeath_heavenfall_finale",
+      "hit_frames": [],
+      "candidate_action_time_frames": [],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [],
+      "global_time_stop_frames": 340.0,
+      "raw_text": "大招2-全局时停 | 10 | 地面 | 全局时停 | 0 | 1 | 340 | 0 | 1 | 340",
+      "warnings": []
+    },
+    {
+      "reason": "resonance_liberation_already_handled",
+      "classification": "resonance_liberation",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2800,
+      "character_scope": "aemeath",
+      "source_action_name": "大招2-隐藏HUD",
+      "candidate_action_id": "aemeath_heavenfall_finale",
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        338.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        338.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "大招2-隐藏HUD | 338 | 10 | 地面",
+      "warnings": []
+    },
+    {
+      "reason": "resonance_liberation_already_handled",
+      "classification": "resonance_liberation",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2801,
+      "character_scope": "aemeath",
+      "source_action_name": "大招2-伤害",
+      "candidate_action_id": "aemeath_heavenfall_finale",
+      "hit_frames": [
+        260.0
+      ],
+      "candidate_action_time_frames": [
+        340.0
+      ],
+      "derivation_frames": [
+        340.0
+      ],
+      "action_end_frames": [
+        344.0
+      ],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "大招2-伤害 | 260 | 12 | 342 | 340 | 28 | 344 | √ | √ | 400 | 840 | 20 | 0 | 10,0 | 地面 | 目标 | 爱弥斯 | (0,0,500) | 圆柱(3000,0,3000)",
+      "warnings": []
+    },
+    {
+      "reason": "instant_response_or_sequence_review_only",
+      "classification": "timing_only",
+      "mapped_action_id": "aemeath_heavy_aemeath_charged_2",
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2764,
+      "character_scope": "aemeath",
+      "source_action_name": "强化重击-C3聚爆",
+      "candidate_action_id": "aemeath_heavy_aemeath_charged_2",
+      "hit_frames": [
+        1.0
+      ],
+      "candidate_action_time_frames": [
+        6.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        6.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化重击-C3聚爆 | 速蓄时生成，命中后赋予聚爆效应 | 1 | 6 | × | √ | 4 | 地面 | 目标 | 爱弥斯 | (600,0,50) | 圆柱(1200,0,400)",
+      "warnings": []
+    },
+    {
+      "reason": "instant_response_or_sequence_review_only",
+      "classification": "timing_only",
+      "mapped_action_id": "aemeath_heavy_mech_charged_2",
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2906,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "强化重击-C3聚爆",
+      "candidate_action_id": "aemeath_heavy_mech_charged_2",
+      "hit_frames": [
+        1.0
+      ],
+      "candidate_action_time_frames": [
+        6.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        6.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化重击-C3聚爆 | 速蓄时生成，命中后赋予聚爆效应 | 1 | 6 | × | √ | 4 | 地面 | 目标 | 机兵 | (200,0,50) | 圆柱(1200,0,400)",
+      "warnings": []
+    },
+    {
+      "reason": "resonance_liberation_already_handled",
+      "classification": "resonance_liberation",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2793,
+      "character_scope": "aemeath",
+      "source_action_name": "大招1-前置",
+      "candidate_action_id": "aemeath_liberation_overdrive",
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        262.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        262.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "14 | 大招1-前置 | 无敌期间不能切人，第238F移除流光增幅状态\n第1F切换至机兵，获得30点同步率、1点共鸣率\n第1F获得2层30秒强化E增幅次数，获得60秒【大招2解锁前置】 | 1 | 262 | 20 | 30 | 0 | 10 | 地面 | 时停 | 0 | 1 | 262 | 0 | 1 | 262",
+      "warnings": [
+        "Row text contains unrelated action keyword(s) ignored for mapping: 大招2, 强化E"
+      ]
+    },
+    {
+      "reason": "resonance_liberation_already_handled",
+      "classification": "resonance_liberation",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2794,
+      "character_scope": "aemeath",
+      "source_action_name": "大招1-全局时停",
+      "candidate_action_id": "aemeath_liberation_overdrive",
+      "hit_frames": [],
+      "candidate_action_time_frames": [],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [],
+      "global_time_stop_frames": 262.0,
+      "raw_text": "大招1-全局时停 | 10 | 地面 | 全局时停 | 0 | 1 | 262 | 0 | 1 | 262",
+      "warnings": []
+    },
+    {
+      "reason": "resonance_liberation_already_handled",
+      "classification": "resonance_liberation",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2795,
+      "character_scope": "aemeath",
+      "source_action_name": "大招1-隐藏HUD",
+      "candidate_action_id": "aemeath_liberation_overdrive",
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        260.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        260.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "大招1-隐藏HUD | 260 | 10 | 地面",
+      "warnings": []
+    },
+    {
+      "reason": "resonance_liberation_already_handled",
+      "classification": "resonance_liberation",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2796,
+      "character_scope": "aemeath",
+      "source_action_name": "大招1-1",
+      "candidate_action_id": "aemeath_liberation_overdrive",
+      "hit_frames": [
+        214.0
+      ],
+      "candidate_action_time_frames": [
+        12.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "大招1-1 | 第1F获得30秒轨迹无消耗状态 | 214 | 12 | √ | √ | 80 | 168 | 0 | 0 | 10 | 地面 | 目标 | 机兵 | (0,0,400) | 圆柱(1200,0,600)",
+      "warnings": []
+    },
+    {
+      "reason": "resonance_liberation_already_handled",
+      "classification": "resonance_liberation",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2797,
+      "character_scope": "aemeath",
+      "source_action_name": "大招1-2",
+      "candidate_action_id": "aemeath_liberation_overdrive",
+      "hit_frames": [
+        238.0
+      ],
+      "candidate_action_time_frames": [
+        262.0
+      ],
+      "derivation_frames": [
+        262.0
+      ],
+      "action_end_frames": [
+        320.0
+      ],
+      "duration_frames": [
+        15.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "大招1-2 | 持续帧内每7F进行一次判定，最多3次 | 238 | 15 | 264 | 262 | 84 | 320 | √ | √ | 106.67 | 224 | 0 | 0 | 10,0 | 地面 | 目标 | 机兵 | (0,0,400) | 圆柱(1200,0,600)",
+      "warnings": []
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2886,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "A1",
+      "candidate_action_id": "aemeath_mech_basic_stage_1",
+      "hit_frames": [
+        12.0
+      ],
+      "candidate_action_time_frames": [
+        30.0
+      ],
+      "derivation_frames": [
+        30.0
+      ],
+      "action_end_frames": [
+        61.0
+      ],
+      "duration_frames": [
+        16.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "机兵爱弥斯 | 1 | A1 | 持续帧内每8F进行一次判定，最多3次 | 12 | 16 | 0 | 0 | 32 | 30 | 89 | 61 | √ | √ | 16.67 | 13.34 | 0.42 | 0.84 | 2.15 | 0.75 | 2,1 | 地面 | 攻击顿帧 | 0.01 | 1 | 0.01 | 1 | 目标 | 机兵 | (300,0,200) | 矩形(500,300,500)",
+      "warnings": []
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2887,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "A2-1",
+      "candidate_action_id": "aemeath_mech_basic_stage_2",
+      "hit_frames": [
+        10.0
+      ],
+      "candidate_action_time_frames": [
+        9.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        9.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "2 | A2-1 | 第30F～180F可派生E2 | 10 | 9 | 3 | 3 | √ | √ | 13.34 | 10.68 | 0.34 | 0.67 | 1.92 | 0.5625 | 2 | 地面 | 攻击顿帧 | 0.1 | 4 | 0.1 | 4 | 目标 | 机兵 | 根 | (0,0,250) | 矩形(600,600,300)",
+      "warnings": []
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2888,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "A2-2",
+      "candidate_action_id": "aemeath_mech_basic_stage_2",
+      "hit_frames": [
+        28.0
+      ],
+      "candidate_action_time_frames": [
+        40.0
+      ],
+      "derivation_frames": [
+        40.0
+      ],
+      "action_end_frames": [
+        82.0
+      ],
+      "duration_frames": [
+        18.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "A2-2 | 28 | 18 | 3 | 3 | 42 | 40 | 50 | 82 | √ | √ | 53.36 | 42.69 | 1.34 | 2.67 | 7.68 | 2,1 | 地面 | 攻击顿帧 | 0.01 | 4 | 0.01 | 4 | 目标 | 机兵 | 根 | (0,0,250) | 矩形(600,600,300)",
+      "warnings": []
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2889,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "A3-1",
+      "candidate_action_id": "aemeath_mech_basic_stage_3",
+      "hit_frames": [
+        1.0
+      ],
+      "candidate_action_time_frames": [
+        24.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        24.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "3 | A3-1 | 1 | 24 | √ | √ | √ | 8.37 | 6.7 | 0.21 | 0.42 | 1.99 | 0.5625 | 2 | 地转空 | 8 | 目标 | 机兵 | (150,0,200) | 球形(1200,0,0)",
+      "warnings": []
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2890,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "A3-2",
+      "candidate_action_id": "aemeath_mech_basic_stage_3",
+      "hit_frames": [
+        10.0
+      ],
+      "candidate_action_time_frames": [
+        18.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        18.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "A3-2 | 持续帧内每9F进行一次判定，最多3次 | 10 | 18 | 1 | 1 | √ | √ | 2.79 | 2.24 | 0.07 | 0.14 | 0.67 | 2 | 空中 | 攻击顿帧 | 0.2 | 2 | 0.02 | 2 | 目标 | 机兵 | (600,0,0) | 球形(1100,0,0)",
+      "warnings": []
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2891,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "A3-3",
+      "candidate_action_id": "aemeath_mech_basic_stage_3",
+      "hit_frames": [
+        16.0
+      ],
+      "candidate_action_time_frames": [
+        18.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        18.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "A3-3 | 16 | 18 | 1 | 1 | √ | √ | 2.79 | 2.24 | 0.07 | 0.14 | 0.67 | 2 | 空中 | 攻击顿帧 | 0.2 | 2 | 0.02 | 2 | 目标 | 机兵 | 球形(1100,0,0)",
+      "warnings": []
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2892,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "A3-4",
+      "candidate_action_id": "aemeath_mech_basic_stage_3",
+      "hit_frames": [
+        42.0
+      ],
+      "candidate_action_time_frames": [
+        50.0
+      ],
+      "derivation_frames": [
+        50.0
+      ],
+      "action_end_frames": [
+        80.0
+      ],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "A3-4 | 第120F前可派生E2 | 42 | 12 | 5 | 5 | 52 | 50 | 70 | 80 | √ | √ | 58.59 | 46.88 | 1.47 | 2.93 | 13.87 | 2,1 | 空中 | 攻击顿帧 | 0.01 | 6 | 0.01 | 6 | 目标 | 机兵 | (1050,0,0) | 球形(1100,0,0)",
+      "warnings": []
+    },
+    {
+      "reason": "dodge_counter_out_of_scope",
+      "classification": "dodge_counter",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2893,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "A3-1D",
+      "candidate_action_id": "aemeath_mech_basic_stage_3",
+      "hit_frames": [
+        1.0
+      ],
+      "candidate_action_time_frames": [
+        24.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        24.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "4 | A3-1D | 机兵闪避反击 | 1 | 24 | 1 | 50 | 1 | √ | √ | √ | 20.37 | 11.5 | 0.36 | 0.72 | 3.22 | 0.178 | 8,2 | 地转空 | 8 | 目标 | 机兵 | (150,0,200) | 球形(1200,0,0)",
+      "warnings": []
+    },
+    {
+      "reason": "dodge_counter_out_of_scope",
+      "classification": "dodge_counter",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2894,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "A3-2D",
+      "candidate_action_id": "aemeath_mech_basic_stage_3",
+      "hit_frames": [
+        10.0
+      ],
+      "candidate_action_time_frames": [
+        18.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        18.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "技能类型 | A3-2D | 10 | 18 | 1 | 1 | √ | √ | 6.79 | 3.84 | 0.12 | 0.24 | 1.08 | 2 | 空中 | 攻击顿帧 | 0.2 | 2 | 0.02 | 2 | 目标 | 机兵 | (600,0,0) | 球形(1100,0,0)",
+      "warnings": []
+    },
+    {
+      "reason": "dodge_counter_out_of_scope",
+      "classification": "dodge_counter",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2895,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "A3-3D",
+      "candidate_action_id": "aemeath_mech_basic_stage_3",
+      "hit_frames": [
+        16.0
+      ],
+      "candidate_action_time_frames": [
+        18.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        18.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "偏谐机制 | A3-3D | 16 | 18 | 1 | 1 | √ | √ | 6.79 | 3.84 | 0.12 | 0.24 | 1.08 | 2 | 空中 | 攻击顿帧 | 0.2 | 2 | 0.02 | 2 | 目标 | 机兵 | 球形(1100,0,0)",
+      "warnings": []
+    },
+    {
+      "reason": "dodge_counter_out_of_scope",
+      "classification": "dodge_counter",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2896,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "A3-4D",
+      "candidate_action_id": "aemeath_mech_basic_stage_3",
+      "hit_frames": [
+        42.0
+      ],
+      "candidate_action_time_frames": [
+        50.0
+      ],
+      "derivation_frames": [
+        50.0
+      ],
+      "action_end_frames": [
+        70.0
+      ],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "伤害计算 | A3-4D | 42 | 12 | 5 | 5 | 52 | 50 | 70 | 70 | √ | √ | 142.59 | 80.48 | 2.52 | 5.03 | 22.5 | 2,1 | 空中 | 攻击顿帧 | 0.01 | 6 | 0.01 | 6 | 目标 | 机兵 | (1050,0,0) | 球形(1100,0,0)",
+      "warnings": []
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2897,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "A4-1",
+      "candidate_action_id": "aemeath_mech_basic_stage_4",
+      "hit_frames": [
+        38.0
+      ],
+      "candidate_action_time_frames": [
+        36.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        36.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "输入缓存 | 5 | A4-1 | 获得【强化E解锁前置】，持续5秒；第240F前可派生E2 | 38 | 36 | 3 | 3 | √ | √ | 29.01 | 23.21 | 0.73 | 1.46 | 6.99 | 0.4219 | 2 | 空中 | 攻击顿帧 | 0.01 | 4 | 0.01 | 4 | 目标 | 机兵 | (1050,0,0) | 矩形(750,1200,600)",
+      "warnings": [
+        "Row text contains unrelated action keyword(s) ignored for mapping: 强化E"
+      ]
+    },
+    {
+      "reason": "basic_attack_out_of_scope",
+      "classification": "basic_attack",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2898,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "A4-2",
+      "candidate_action_id": "aemeath_mech_basic_stage_4",
+      "hit_frames": [
+        71.0
+      ],
+      "candidate_action_time_frames": [
+        58.0
+      ],
+      "derivation_frames": [
+        58.0
+      ],
+      "action_end_frames": [
+        90.0
+      ],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "牵引 | A4-2 | A4-1脱手后自行生成 | 71 | 12 | 5 | 5 | 60 | 58 | 182 | 90 | √ | √ | 67.69 | 54.16 | 1.7 | 3.39 | 16.29 | 2,1 | 空转地 | 44 | 攻击顿帧 | 0.01 | 6 | 0.01 | 6 | 目标 | 机兵 | (575,0,0) | 矩形(650,1200,600)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2921,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "强化E-登台",
+      "candidate_action_id": "aemeath_seraphic_duet_encore",
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        145.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        145.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "12 | 强化E-登台 | 立即切换至爱弥斯，无敌期间不能切人\n减少100点同步率，获得1点共鸣率\n移除轨迹无消耗状态，技能结束后移除1层强化E增幅次数 | 1 | 145 | -100 | 0.2373 | 10 | 地面 | 时停 | 0 | 1 | 65 | 0 | 1 | 65",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2922,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "强化E-全局时停",
+      "candidate_action_id": "aemeath_seraphic_duet_encore",
+      "hit_frames": [],
+      "candidate_action_time_frames": [],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [],
+      "global_time_stop_frames": 65.0,
+      "raw_text": "强化E-全局时停 | 10 | 地面 | 全局时停 | 0 | 1 | 65 | 0 | 1 | 65",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2923,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "强化E-隐藏HUD",
+      "candidate_action_id": "aemeath_seraphic_duet_encore",
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        144.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        144.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-隐藏HUD | 144 | 10 | 地面",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2924,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "强化E-停滞",
+      "candidate_action_id": "aemeath_seraphic_duet_encore",
+      "hit_frames": [
+        1.0
+      ],
+      "candidate_action_time_frames": [
+        145.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        145.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-停滞 | 命中非受击动作目标，顿帧优先级50 | 1 | 145 | 145 | × | × | 10 | 地面 | 攻击顿帧 | 0 | 145 | 目标 | 爱弥斯 | (0,0,1000) | 圆柱(2500,0,2000)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2925,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "强化E-1",
+      "candidate_action_id": "aemeath_seraphic_duet_encore",
+      "hit_frames": [
+        1.0
+      ],
+      "candidate_action_time_frames": [
+        7.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        7.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-1 | 持续帧内每6F进行一次判定，最多2次 | 1 | 7 | √ | √ | 10 | 8 | 0.25 | 0.5 | 10 | 地面 | 目标 | 爱弥斯 | (600,-300,100) | (0,-200,0) | 圆柱(1500,0,300)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2926,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "强化E-2",
+      "candidate_action_id": "aemeath_seraphic_duet_encore",
+      "hit_frames": [
+        68.0
+      ],
+      "candidate_action_time_frames": [
+        13.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        13.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-2 | 持续帧内每12F进行一次判定，最多2次 | 68 | 13 | 0 | 0 | √ | √ | 20 | 16 | 0.5 | 1 | 10 | 地面 | 攻击顿帧 | 0.1 | 1 | 0.1 | 1 | 目标 | 爱弥斯 | (600,-300,250) | 圆柱(1000,0,450)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2927,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "强化E-3",
+      "candidate_action_id": "aemeath_seraphic_duet_encore",
+      "hit_frames": [
+        89.0
+      ],
+      "candidate_action_time_frames": [
+        13.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        13.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-3 | 持续帧内每12F进行一次判定，最多2次 | 89 | 13 | 0 | 0 | √ | √ | 10 | 8 | 0.25 | 0.5 | 10 | 地面 | 攻击顿帧 | 0.1 | 1 | 0.1 | 1 | 目标 | 爱弥斯 | (600,-300,250) | 圆柱(1000,0,450)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2928,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "强化E-4",
+      "candidate_action_id": "aemeath_seraphic_duet_encore",
+      "hit_frames": [
+        120.0
+      ],
+      "candidate_action_time_frames": [
+        12.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-4 | 120 | 12 | √ | √ | 100 | 80 | 2.5 | 5 | 10 | 地面 | 目标 | 爱弥斯 | (600,-300,250) | 圆柱(1000,0,450)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2929,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "强化E-5",
+      "candidate_action_id": "aemeath_seraphic_duet_encore",
+      "hit_frames": [
+        124.0
+      ],
+      "candidate_action_time_frames": [
+        12.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-5 | 124 | 12 | √ | √ | 20 | 16 | 0.5 | 1 | 10 | 地面 | 目标 | 爱弥斯 | (250,-150,120) | (0,-200,0) | 圆柱(1000,0,300)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2930,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "强化E-模态增益",
+      "candidate_action_id": "aemeath_seraphic_duet_encore",
+      "hit_frames": [
+        133.0
+      ],
+      "candidate_action_time_frames": [
+        6.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        6.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-模态增益 | C6时赋予目标10层震谐/聚爆轨迹；移除目标震谐轨迹 | 133 | 6 | × | √ | 10 | 地面 | 目标 | 爱弥斯 | (600,-150,200) | (0,-200,0) | 圆柱(1000,0,450)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2931,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "强化E-震谐",
+      "candidate_action_id": "aemeath_seraphic_duet_encore",
+      "hit_frames": [
+        139.0
+      ],
+      "candidate_action_time_frames": [
+        19.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        19.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-震谐 | 持续帧内每4F进行一次判定，最多5次，每次随机命中1个目标 | 139 | 19 | 0 | 0 | × | √ | 16.2 | 0 | 0 | 0 | 10 | 地面 | 攻击顿帧 | 0.01 | 1 | 0.01 | 1 | 目标 | 爱弥斯 | (600,-150,200) | (0,-200,0) | 圆柱(1000,0,450)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2932,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "强化E-震谐增幅",
+      "candidate_action_id": "aemeath_seraphic_duet_encore",
+      "hit_frames": [
+        139.0
+      ],
+      "candidate_action_time_frames": [
+        19.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        19.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-震谐增幅 | 持续帧内每2F进行一次判定，最多10次，每次随机命中1个目标 | 139 | 19 | 0 | 0 | × | √ | 16.2 | 0 | 0 | 0 | 10 | 地面 | 攻击顿帧 | 0.01 | 1 | 0.01 | 1 | 目标 | 爱弥斯 | (600,-150,200) | (0,-200,0) | 圆柱(1000,0,450)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2933,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "强化E-聚爆模态",
+      "candidate_action_id": "aemeath_seraphic_duet_encore",
+      "hit_frames": [
+        144.0
+      ],
+      "candidate_action_time_frames": [
+        145.0
+      ],
+      "derivation_frames": [
+        145.0
+      ],
+      "action_end_frames": [
+        190.0
+      ],
+      "duration_frames": [
+        6.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-聚爆模态 | 命中目标持有聚爆轨迹时，结算上限层数的聚爆效应伤害 | 144 | 6 | 146 | 145 | 104 | 190 | × | √ | 10,2 | 地面 | 目标 | 爱弥斯 | (600,-150,200) | (0,-200,0) | 球形(1000,0,0)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2776,
+      "character_scope": "aemeath",
+      "source_action_name": "强化E-降临",
+      "candidate_action_id": "aemeath_seraphic_duet_overturn",
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        180.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        180.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "12 | 强化E-降临 | 立即切换至机兵，无敌期间不能切人\n减少100点同步率，获得1点共鸣率\n移除轨迹无消耗状态，技能结束后移除1层强化E增幅次数 | 1 | 180 | -100 | 0.2373 | 10 | 地面 | 时停 | 0 | 1 | 101 | 0 | 1 | 101",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2777,
+      "character_scope": "aemeath",
+      "source_action_name": "强化E-全局时停",
+      "candidate_action_id": "aemeath_seraphic_duet_overturn",
+      "hit_frames": [],
+      "candidate_action_time_frames": [],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [],
+      "global_time_stop_frames": 101.0,
+      "raw_text": "强化E-全局时停 | 10 | 地面 | 全局时停 | 0 | 1 | 101 | 0 | 1 | 101",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2778,
+      "character_scope": "aemeath",
+      "source_action_name": "强化E-隐藏HUD",
+      "candidate_action_id": "aemeath_seraphic_duet_overturn",
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        180.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        180.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-隐藏HUD | 180 | 10 | 地面",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2779,
+      "character_scope": "aemeath",
+      "source_action_name": "强化E-停滞",
+      "candidate_action_id": "aemeath_seraphic_duet_overturn",
+      "hit_frames": [
+        1.0
+      ],
+      "candidate_action_time_frames": [
+        180.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        180.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-停滞 | 命中非受击动作目标，顿帧优先级50 | 1 | 180 | 180 | × | × | 10 | 地面 | 攻击顿帧 | 0 | 180 | 目标 | 机兵 | (0,0,1000) | 圆柱(2500,0,2000)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2780,
+      "character_scope": "aemeath",
+      "source_action_name": "强化E-1",
+      "candidate_action_id": "aemeath_seraphic_duet_overturn",
+      "hit_frames": [
+        1.0
+      ],
+      "candidate_action_time_frames": [
+        12.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-1 | 1 | 12 | √ | √ | 10 | 8 | 0.25 | 0.5 | 10 | 地面 | 目标 | 机兵 | (600,0,150) | 球形(1500,0,0)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2781,
+      "character_scope": "aemeath",
+      "source_action_name": "强化E-2",
+      "candidate_action_id": "aemeath_seraphic_duet_overturn",
+      "hit_frames": [
+        40.0
+      ],
+      "candidate_action_time_frames": [
+        20.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        20.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-2 | 持续帧内每4F进行一次判定，最多6次 | 40 | 20 | 1 | 1 | √ | √ | 8.34 | 6.67 | 0.21 | 0.42 | 10 | 地面 | 攻击顿帧 | 0.2 | 2 | 0.2 | 2 | 目标 | 机兵 | (600,0,0) | 球形(1000,0,0)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2782,
+      "character_scope": "aemeath",
+      "source_action_name": "强化E-3",
+      "candidate_action_id": "aemeath_seraphic_duet_overturn",
+      "hit_frames": [
+        120.0
+      ],
+      "candidate_action_time_frames": [
+        12.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-3 | 持续帧内每4F进行一次判定，最多3次 | 120 | 12 | √ | √ | 53.34 | 10.67 | 0.34 | 0.67 | 10 | 地面 | 目标 | 机兵 | (-500,0,0) | 矩形(1200,1200,1000)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2783,
+      "character_scope": "aemeath",
+      "source_action_name": "强化E-4",
+      "candidate_action_id": "aemeath_seraphic_duet_overturn",
+      "hit_frames": [
+        153.0
+      ],
+      "candidate_action_time_frames": [
+        13.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        13.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-4 | 持续帧内每6F进行一次判定，最多3次 | 153 | 13 | 3 | √ | √ | 33.34 | 26.67 | 0.84 | 1.67 | 10 | 地面 | 攻击顿帧 | 0.05 | 4 | 目标 | 机兵 | (600,0,0) | 球形(1000,0,0)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2784,
+      "character_scope": "aemeath",
+      "source_action_name": "强化E-模态增益",
+      "candidate_action_id": "aemeath_seraphic_duet_overturn",
+      "hit_frames": [
+        160.0
+      ],
+      "candidate_action_time_frames": [
+        6.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        6.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-模态增益 | C6时赋予目标10层震谐/聚爆轨迹；移除目标震谐轨迹 | 160 | 6 | × | √ | 10 | 地面 | 目标 | 机兵 | (600,0,0) | (0,-200,0) | 球形(1000,0,0)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2785,
+      "character_scope": "aemeath",
+      "source_action_name": "强化E-小削韧",
+      "candidate_action_id": "aemeath_seraphic_duet_overturn",
+      "hit_frames": [
+        165.0
+      ],
+      "candidate_action_time_frames": [
+        6.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        6.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-小削韧 | 强化E-4持续帧结束后自行生成 | 165 | 6 | 0 | 0 | × | √ | 5 | 0 | 0 | 0 | 10 | 地面 | 攻击顿帧 | 0.01 | 1 | 0.01 | 1 | 目标 | 机兵 | (600,0,0) | 球形(1000,0,0)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2786,
+      "character_scope": "aemeath",
+      "source_action_name": "强化E-震谐",
+      "candidate_action_id": "aemeath_seraphic_duet_overturn",
+      "hit_frames": [
+        166.0
+      ],
+      "candidate_action_time_frames": [
+        19.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        19.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-震谐 | 持续帧内每4F进行一次判定，最多5次，每次随机命中1个目标 | 166 | 19 | 0 | 0 | × | √ | 16.2 | 0 | 0 | 0 | 10 | 地面 | 攻击顿帧 | 0.01 | 1 | 0.01 | 1 | 目标 | 机兵 | (600,0,0) | (0,-200,0) | 球形(1000,0,0)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2787,
+      "character_scope": "aemeath",
+      "source_action_name": "强化E-震谐增幅",
+      "candidate_action_id": "aemeath_seraphic_duet_overturn",
+      "hit_frames": [
+        166.0
+      ],
+      "candidate_action_time_frames": [
+        19.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        19.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-震谐增幅 | 持续帧内每2F进行一次判定，最多10次，每次随机命中1个目标 | 166 | 19 | 0 | 0 | × | √ | 16.2 | 0 | 0 | 0 | 10 | 地面 | 攻击顿帧 | 0.01 | 1 | 0.01 | 1 | 目标 | 机兵 | (600,0,0) | (0,-200,0) | 球形(1000,0,0)",
+      "warnings": []
+    },
+    {
+      "reason": "seraphic_duet_already_handled",
+      "classification": "seraphic_duet",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2788,
+      "character_scope": "aemeath",
+      "source_action_name": "强化E-聚爆模态",
+      "candidate_action_id": "aemeath_seraphic_duet_overturn",
+      "hit_frames": [
+        178.0
+      ],
+      "candidate_action_time_frames": [
+        180.0
+      ],
+      "derivation_frames": [
+        180.0
+      ],
+      "action_end_frames": [
+        258.0
+      ],
+      "duration_frames": [
+        6.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "强化E-聚爆模态 | 命中目标持有聚爆轨迹时，结算上限层数的聚爆效应伤害 | 178 | 6 | 183 | 180 | 112 | 258 | × | √ | 10,2 | 地面 | 目标 | 机兵 | (600,-300,0) | (0,-200,0) | 球形(1000,0,0)",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2756,
+      "character_scope": "aemeath",
+      "source_action_name": "蓄力-C1聚怪1",
+      "candidate_action_id": null,
+      "hit_frames": [
+        26.0
+      ],
+      "candidate_action_time_frames": [
+        30.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        30.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "6 | 蓄力-C1聚怪1 | 处于速蓄状态时生成 | 26 | 30 | × | √ | 0.3164 | 3 | 地面 | 目标 | 爱弥斯 | 圆柱(1200,0,400)",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2757,
+      "character_scope": "aemeath",
+      "source_action_name": "蓄力-C3震谐",
+      "candidate_action_id": null,
+      "hit_frames": [
+        28.0
+      ],
+      "candidate_action_time_frames": [
+        6.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        6.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "蓄力-C3震谐 | 处于速蓄状态时生成，命中后赋予目标震谐偏移 | 28 | 6 | × | √ | 3 | 地面 | 目标 | 爱弥斯 | (600,0,50) | 圆柱(1200,0,400)",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2758,
+      "character_scope": "aemeath",
+      "source_action_name": "蓄力-C1聚怪2",
+      "candidate_action_id": null,
+      "hit_frames": [
+        32.0
+      ],
+      "candidate_action_time_frames": [
+        12.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "蓄力-C1聚怪2 | C1聚怪1脱手后自行生成 | 32 | 12 | × | √ | 3 | 地面 | 目标 | 爱弥斯 | (600,0,50) | 圆柱(1200,0,400)",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2759,
+      "character_scope": "aemeath",
+      "source_action_name": "蓄力-一段",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        40.0
+      ],
+      "derivation_frames": [
+        40.0
+      ],
+      "action_end_frames": [
+        94.0
+      ],
+      "duration_frames": [
+        54.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "蓄力-一段 | 可跳转重击，处于速蓄状态时自动跳转强化重击 | 40 | 54 | 94 | 3 | 地面",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2760,
+      "character_scope": "aemeath",
+      "source_action_name": "蓄力-二段",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        94.0
+      ],
+      "derivation_frames": [
+        94.0
+      ],
+      "action_end_frames": [
+        94.0
+      ],
+      "duration_frames": [],
+      "global_time_stop_frames": null,
+      "raw_text": "蓄力-二段 | 结束帧后跳转强化重击 | 94 | 94 | 3 | 地面",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2768,
+      "character_scope": "aemeath",
+      "source_action_name": "空中攻击-下落",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        40.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [
+        40.0
+      ],
+      "duration_frames": [],
+      "global_time_stop_frames": null,
+      "raw_text": "9 | 空中攻击-下落 | 40 | 0.3164 | 6 | 空中",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2769,
+      "character_scope": "aemeath",
+      "source_action_name": "空中攻击-落地",
+      "candidate_action_id": null,
+      "hit_frames": [
+        2.0
+      ],
+      "candidate_action_time_frames": [
+        10.0
+      ],
+      "derivation_frames": [
+        10.0
+      ],
+      "action_end_frames": [
+        80.0
+      ],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "空中攻击-落地 | 2 | 12 | 1 | 1 | 8,12 | 10 | 73 | 80 | √ | √ | 62 | 49.6 | 1.55 | 3.1 | 11.71 | 6,2,1 | 地面 | 攻击顿帧 | 0.3 | 2 | 0.3 | 2 | 目标 | 爱弥斯 | (50,0,200) | 圆柱(400,0,200)",
+      "warnings": []
+    },
+    {
+      "reason": "qte_intro_excluded",
+      "classification": "qte_intro",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2771,
+      "character_scope": "aemeath",
+      "source_action_name": "E1-QTE切换机兵",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [],
+      "global_time_stop_frames": null,
+      "raw_text": "10* | E1-QTE切换机兵 | 切换形态共享冷却1秒，立即施放机兵A3 | 0.75 | 2 | 地转漂浮 | 1",
+      "warnings": []
+    },
+    {
+      "reason": "qte_intro_excluded",
+      "classification": "qte_intro",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2789,
+      "character_scope": "aemeath",
+      "source_action_name": "QTE",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        60.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        60.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "13 | QTE | 无敌期间不能切人\n第48F触发上一角色延奏\n第1F获得流光增幅状态，持续15秒\n流光增幅状态期间施放大招1，可额外获得1点共鸣率 | 1 | 60 | 10 | 40 | 0.3164 | 11 | 地面 | 时停 | 0 | 1 | 50 | 0 | 1 | 50",
+      "warnings": [
+        "QTE row intentionally excluded from normal form-switch/sync mapping."
+      ]
+    },
+    {
+      "reason": "qte_intro_excluded",
+      "classification": "qte_intro",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2790,
+      "character_scope": "aemeath",
+      "source_action_name": "QTE-1",
+      "candidate_action_id": null,
+      "hit_frames": [
+        52.0
+      ],
+      "candidate_action_time_frames": [
+        12.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "QTE-1 | 52 | 12 | 1 | 1 | √ | √ | 9.67 | 7.74 | 1 | 0 | 11 | 地面 | 攻击顿帧 | 0.01 | 2 | 0.01 | 2 | 目标 | 爱弥斯 | 根 | (100,0,100) | 矩形(550,550,350)",
+      "warnings": [
+        "QTE row intentionally excluded from normal form-switch/sync mapping."
+      ]
+    },
+    {
+      "reason": "qte_intro_excluded",
+      "classification": "qte_intro",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2791,
+      "character_scope": "aemeath",
+      "source_action_name": "QTE-2",
+      "candidate_action_id": null,
+      "hit_frames": [
+        54.0
+      ],
+      "candidate_action_time_frames": [
+        12.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "QTE-2 | 54 | 12 | 1 | 1 | √ | √ | 9.67 | 7.74 | 1 | 0 | 11 | 地面 | 攻击顿帧 | 0.01 | 2 | 0.01 | 2 | 目标 | 爱弥斯 | 根 | (100,0,100) | 矩形(550,550,350)",
+      "warnings": [
+        "QTE row intentionally excluded from normal form-switch/sync mapping."
+      ]
+    },
+    {
+      "reason": "qte_intro_excluded",
+      "classification": "qte_intro",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2792,
+      "character_scope": "aemeath",
+      "source_action_name": "QTE-3",
+      "candidate_action_id": null,
+      "hit_frames": [
+        56.0
+      ],
+      "candidate_action_time_frames": [
+        58.0
+      ],
+      "derivation_frames": [
+        58.0
+      ],
+      "action_end_frames": [
+        80.0
+      ],
+      "duration_frames": [
+        57.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "QTE-3 | 56 | 57 | 11 | 11 | 60 | 58 | 88 | 80 | √ | √ | 77.36 | 61.89 | 8 | 0 | 11,2 | 地面 | 攻击顿帧 | 0.01 | 12 | 0.01 | 12 | 目标 | 爱弥斯 | 根 | (100,0,100) | 矩形(550,550,350)",
+      "warnings": [
+        "QTE row intentionally excluded from normal form-switch/sync mapping."
+      ]
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2802,
+      "character_scope": "aemeath",
+      "source_action_name": "谐度破坏-时停",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        90.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        90.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "16 | 谐度破坏-时停 | 无敌期间不能切人 | 1 | 90 | 1 | 11 | 地面 | 时停 | 0 | 1 | 70 | 0 | 1 | 70",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2803,
+      "character_scope": "aemeath",
+      "source_action_name": "谐度破坏-全局时停",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [],
+      "global_time_stop_frames": 90.0,
+      "raw_text": "谐度破坏-全局时停 | 11 | 地面 | 全局时停 | 0 | 1 | 90 | 0 | 1 | 90",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2804,
+      "character_scope": "aemeath",
+      "source_action_name": "谐度破坏-1",
+      "candidate_action_id": null,
+      "hit_frames": [
+        30.0
+      ],
+      "candidate_action_time_frames": [
+        30.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        30.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "谐度破坏-1 | 30 | 30 | × | √ | 0 | 0 | 0 | 0 | 11 | 地面 | 目标 | 爱弥斯 | (350,0,120) | (0,0,-120) | 圆柱(550,0,1200)",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2805,
+      "character_scope": "aemeath",
+      "source_action_name": "谐度破坏-2",
+      "candidate_action_id": null,
+      "hit_frames": [
+        72.0
+      ],
+      "candidate_action_time_frames": [
+        90.0
+      ],
+      "derivation_frames": [
+        90.0
+      ],
+      "action_end_frames": [
+        100.0
+      ],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "谐度破坏-2 | 命中可被谐破的目标后，赋予其对应【偏移】的【干涉】 | 72 | 12 | 90 | 29 | 100 | × | √ | 0 | 0 | 0 | 0 | 11 | 地面 | 目标 | 爱弥斯 | (350,0,120) | (0,0,-120) | 圆柱(1500,0,1200)",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2844,
+      "character_scope": null,
+      "source_action_name": "共鸣模态·爱弥斯",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [],
+      "global_time_stop_frames": null,
+      "raw_text": "18 | 共鸣模态·爱弥斯 | 为寂静赋形：\n·以下技能造成的伤害时，根据当前模态赋予目标1层震谐偏移或聚爆效应，冷却3秒，每个技能对每个目标独立计算冷却：\n    爱弥斯A3、爱弥斯A4、爱弥斯E2、爱弥斯QTE\n    机兵A3、机兵A4、机兵E2、机兵QTE\n\n\n共鸣模态·震谐：\n震谐轨迹：\n·上限30层\n·队伍中角色造成子类型为震谐响应的伤害时，赋予目标10层震谐轨迹，持续30秒\n·施放强化E期间，移除目标震谐轨迹层数，每移除1...",
+      "warnings": [
+        "Row text contains unrelated action keyword(s) ignored for mapping: 强化E"
+      ]
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2880,
+      "character_scope": null,
+      "source_action_name": "震谐响应",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [],
+      "global_time_stop_frames": null,
+      "raw_text": "19 | 震谐响应 | 赋予目标8秒【爱弥斯震谐响应冷却】 | × | × | 0 | 0 | 0 | 0 | 1 | 0 | 地面 | 指定目标 | 指定目标",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2899,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "蓄力-C1聚怪1",
+      "candidate_action_id": null,
+      "hit_frames": [
+        8.0
+      ],
+      "candidate_action_time_frames": [
+        30.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        30.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "6 | 蓄力-C1聚怪1 | 处于速蓄状态时生成 | 8 | 30 | × | √ | 0.3164 | 3 | 地面 | 目标 | 机兵 | 圆柱(1200,0,400)",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2900,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "蓄力-C3震谐",
+      "candidate_action_id": null,
+      "hit_frames": [
+        10.0
+      ],
+      "candidate_action_time_frames": [
+        6.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        6.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "蓄力-C3震谐 | 处于速蓄状态时生成，命中后赋予目标震谐偏移 | 10 | 6 | × | √ | 3 | 地面 | 目标 | 机兵 | (200,0,50) | 圆柱(1200,0,400)",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2901,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "蓄力-C1聚怪2",
+      "candidate_action_id": null,
+      "hit_frames": [
+        14.0
+      ],
+      "candidate_action_time_frames": [
+        12.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "蓄力-C1聚怪2 | C1聚怪1脱手后自行生成 | 14 | 12 | × | √ | 3 | 地面 | 目标 | 机兵 | (200,0,50) | 圆柱(1200,0,400)",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2902,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "蓄力-一段",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        40.0
+      ],
+      "derivation_frames": [
+        40.0
+      ],
+      "action_end_frames": [
+        100.0
+      ],
+      "duration_frames": [
+        60.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "蓄力-一段 | 可跳转重击，处于速蓄状态时自动跳转强化重击 | 40 | 60 | 100 | 3 | 地面",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2903,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "蓄力-二段",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        100.0
+      ],
+      "derivation_frames": [
+        100.0
+      ],
+      "action_end_frames": [
+        100.0
+      ],
+      "duration_frames": [],
+      "global_time_stop_frames": null,
+      "raw_text": "蓄力-二段 | 结束帧后跳转强化重击 | 100 | 100 | 3 | 地面",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2908,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "空中攻击-下落",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        42.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [
+        42.0
+      ],
+      "duration_frames": [],
+      "global_time_stop_frames": null,
+      "raw_text": "9 | 空中攻击-下落 | 1 | 42 | 0.3164 | 2,6 | 空中",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2909,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "空中攻击-落地1",
+      "candidate_action_id": null,
+      "hit_frames": [
+        1.0
+      ],
+      "candidate_action_time_frames": [
+        12.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "空中攻击-落地1 | 1 | 12 | 7 | 7 | 1 | √ | √ | 52.7 | 42.16 | 1.32 | 2.64 | 9.96 | 6,5 | 地面 | 攻击顿帧 | 0.03 | 8 | 0.03 | 8 | 目标 | 机兵 | (350,0,225) | 圆柱(650,0,250)",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2910,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "空中攻击-落地2",
+      "candidate_action_id": null,
+      "hit_frames": [
+        8.0
+      ],
+      "candidate_action_time_frames": [
+        7.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        7.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "空中攻击-落地2 | 8 | 7 | 3 | 3 | √ | √ | 3.1 | 2.48 | 0.08 | 0.16 | 0.59 | 5 | 地面 | 攻击顿帧 | 0.01 | 4 | 0.01 | 4 | 目标 | 机兵 | (200,0,225) | 矩形(400,400,250)",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2911,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "空中攻击-落地3",
+      "candidate_action_id": null,
+      "hit_frames": [
+        14.0
+      ],
+      "candidate_action_time_frames": [
+        7.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        7.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "空中攻击-落地3 | 14 | 7 | 0 | 0 | √ | √ | 3.1 | 2.48 | 0.08 | 0.16 | 0.59 | 5 | 地面 | 攻击顿帧 | 0.01 | 1 | 0.01 | 1 | 目标 | 机兵 | (200,0,225) | 矩形(400,400,250)",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2912,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "空中攻击-落地4",
+      "candidate_action_id": null,
+      "hit_frames": [
+        22.0
+      ],
+      "candidate_action_time_frames": [
+        6.0
+      ],
+      "derivation_frames": [
+        6.0
+      ],
+      "action_end_frames": [
+        26.0
+      ],
+      "duration_frames": [
+        7.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "空中攻击-落地4 | 22 | 7 | 0 | 0 | 24 | 6 | 70 | 26 | √ | √ | 3.1 | 2.48 | 0.08 | 0.16 | 0.59 | 5,2 | 地面 | 攻击顿帧 | 0.05 | 1 | 0.05 | 1 | 目标 | 机兵 | (200,0,225) | 矩形(400,400,250)",
+      "warnings": []
+    },
+    {
+      "reason": "resonance_liberation_already_handled",
+      "classification": "resonance_liberation",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2914,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "E1-大招1切换爱弥斯",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [],
+      "global_time_stop_frames": null,
+      "raw_text": "10* | E1-大招1切换爱弥斯 | 切换形态共享冷却1秒，立即施放爱弥斯A2 | 0.75 | 1 | 地面",
+      "warnings": []
+    },
+    {
+      "reason": "qte_intro_excluded",
+      "classification": "qte_intro",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2915,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "E1-QTE切换爱弥斯",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [],
+      "global_time_stop_frames": null,
+      "raw_text": "10* | E1-QTE切换爱弥斯 | 切换形态共享冷却1秒，立即施放爱弥斯A3 | 0.75 | 2 | 地面",
+      "warnings": []
+    },
+    {
+      "reason": "qte_intro_excluded",
+      "classification": "qte_intro",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2934,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "QTE",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        72.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        72.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "13 | QTE | 无敌期间不能切人，第40F触发上一角色延奏\n第1F获得流光增幅状态，持续15秒\n流光增幅状态期间施放大招1，可额外获得1点共鸣率 | 1 | 72 | 10 | 40 | 0.3164 | 11 | 地面 | 时停 | 0 | 1 | 46 | 0 | 1 | 46",
+      "warnings": [
+        "QTE row intentionally excluded from normal form-switch/sync mapping."
+      ]
+    },
+    {
+      "reason": "qte_intro_excluded",
+      "classification": "qte_intro",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2935,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "QTE-1",
+      "candidate_action_id": null,
+      "hit_frames": [
+        42.0
+      ],
+      "candidate_action_time_frames": [
+        12.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "QTE-1 | 42 | 12 | 3 | 3 | √ | √ | 46.92 | 37.54 | 4 | 0 | 11 | 地面 | 攻击顿帧 | 0.1 | 4 | 0.1 | 4 | 目标 | 机兵 | (200,0,150) | 矩形(850,650,400)",
+      "warnings": [
+        "QTE row intentionally excluded from normal form-switch/sync mapping."
+      ]
+    },
+    {
+      "reason": "qte_intro_excluded",
+      "classification": "qte_intro",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2936,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "QTE-2",
+      "candidate_action_id": null,
+      "hit_frames": [
+        60.0
+      ],
+      "candidate_action_time_frames": [
+        70.0
+      ],
+      "derivation_frames": [
+        70.0
+      ],
+      "action_end_frames": [
+        80.0
+      ],
+      "duration_frames": [
+        18.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "QTE-2 | 60 | 18 | 3 | 3 | 72 | 70 | 92 | 80 | √ | √ | 70.38 | 56.31 | 6 | 0 | 11,2 | 地面 | 攻击顿帧 | 0.01 | 4 | 0.01 | 4 | 目标 | 机兵 | (200,0,0) | 矩形(1000,650,400)",
+      "warnings": [
+        "QTE row intentionally excluded from normal form-switch/sync mapping."
+      ]
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2937,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "谐度破坏-时停",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        94.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        94.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "14 | 谐度破坏-时停 | 无敌期间不能切人 | 1 | 94 | 1 | 11 | 地面 | 时停 | 0 | 1 | 64 | 0 | 1 | 64",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2938,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "谐度破坏-全局时停",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [],
+      "global_time_stop_frames": 94.0,
+      "raw_text": "谐度破坏-全局时停 | 11 | 地面 | 全局时停 | 0 | 1 | 94 | 0 | 1 | 94",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2939,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "谐度破坏-1",
+      "candidate_action_id": null,
+      "hit_frames": [
+        4.0
+      ],
+      "candidate_action_time_frames": [
+        12.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "谐度破坏-1 | 4 | 12 | × | √ | 0 | 0 | 0 | 0 | 11 | 地面 | 目标 | 机兵 | (300,0,160) | (0,0,-160) | 矩形(500,500,1200)",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2940,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "谐度破坏-2",
+      "candidate_action_id": null,
+      "hit_frames": [
+        48.0
+      ],
+      "candidate_action_time_frames": [
+        12.0
+      ],
+      "derivation_frames": [],
+      "action_end_frames": [],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "谐度破坏-2 | 48 | 12 | × | √ | 0 | 0 | 0 | 0 | 11 | 地面 | 目标 | 机兵 | (300,0,160) | (0,0,-160) | 矩形(700,750,1200)",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2941,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "谐度破坏-3",
+      "candidate_action_id": null,
+      "hit_frames": [
+        74.0
+      ],
+      "candidate_action_time_frames": [
+        94.0
+      ],
+      "derivation_frames": [
+        94.0
+      ],
+      "action_end_frames": [
+        94.0
+      ],
+      "duration_frames": [
+        12.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "谐度破坏-3 | 命中可被谐破的目标后，赋予其对应【偏移】的【干涉】 | 74 | 12 | 94 | 29 | 94 | × | √ | 0 | 0 | 0 | 0 | 11 | 地面 | 目标 | 机兵 | (300,0,160) | (0,0,-160) | 圆柱(1500,0,1200)",
+      "warnings": []
+    },
+    {
+      "reason": "dodge_counter_out_of_scope",
+      "classification": "dodge_counter",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2942,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "地面闪避-前",
+      "candidate_action_id": null,
+      "hit_frames": [
+        1.0
+      ],
+      "candidate_action_time_frames": [
+        16.0
+      ],
+      "derivation_frames": [
+        16.0
+      ],
+      "action_end_frames": [
+        16.0
+      ],
+      "duration_frames": [
+        21.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "15 | 地面闪避-前 | 1 | 21 | 1 | 21 | 12 | 16 | 46 | 16 | × | √ | 1 | 6,0 | 地面 | 目标子弹 | 机兵 | 跟随拉伸 | 跟随拉伸 | 矩形(250,250,250)",
+      "warnings": []
+    },
+    {
+      "reason": "dodge_counter_out_of_scope",
+      "classification": "dodge_counter",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2943,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "地面闪避-后",
+      "candidate_action_id": null,
+      "hit_frames": [
+        1.0
+      ],
+      "candidate_action_time_frames": [
+        16.0
+      ],
+      "derivation_frames": [
+        16.0
+      ],
+      "action_end_frames": [
+        16.0
+      ],
+      "duration_frames": [
+        21.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "地面闪避-后 | 1 | 21 | 1 | 21 | 12 | 16 | 46 | 16 | × | √ | 1 | 6,0 | 地面 | 目标子弹 | 机兵 | 跟随拉伸 | 跟随拉伸 | 矩形(250,250,250)",
+      "warnings": []
+    },
+    {
+      "reason": "dodge_counter_out_of_scope",
+      "classification": "dodge_counter",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2944,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "空中闪避-前",
+      "candidate_action_id": null,
+      "hit_frames": [
+        1.0
+      ],
+      "candidate_action_time_frames": [
+        16.0
+      ],
+      "derivation_frames": [
+        16.0
+      ],
+      "action_end_frames": [
+        16.0
+      ],
+      "duration_frames": [
+        21.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "16 | 空中闪避-前 | 1 | 21 | 1 | 21 | 12 | 16 | 46 | 16 | × | √ | 1 | 7,0 | 空中 | 目标子弹 | 机兵 | 跟随拉伸 | 跟随拉伸 | 矩形(250,250,250)",
+      "warnings": []
+    },
+    {
+      "reason": "dodge_counter_out_of_scope",
+      "classification": "dodge_counter",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2945,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "空中闪避-后",
+      "candidate_action_id": null,
+      "hit_frames": [
+        1.0
+      ],
+      "candidate_action_time_frames": [
+        16.0
+      ],
+      "derivation_frames": [
+        16.0
+      ],
+      "action_end_frames": [
+        16.0
+      ],
+      "duration_frames": [
+        21.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "空中闪避-后 | 1 | 21 | 1 | 21 | 12 | 16 | 46 | 16 | × | √ | 1 | 7,0 | 空中 | 目标子弹 | 机兵 | 跟随拉伸 | 跟随拉伸 | 矩形(250,250,250)",
+      "warnings": []
+    },
+    {
+      "reason": "dodge_counter_out_of_scope",
+      "classification": "dodge_counter",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2946,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "极限闪避-前",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        35.0
+      ],
+      "derivation_frames": [
+        35.0
+      ],
+      "action_end_frames": [
+        50.0
+      ],
+      "duration_frames": [
+        54.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "17 | 极限闪避-前 | 第23F前不能闪避 | 1 | 54 | 35 | 35 | -1 | 50 | √ | 1 | 8,0 | 地面 | 极限闪避顿帧 | 0.6 | 8 | 38 | 0.4 | 8 | 66",
+      "warnings": []
+    },
+    {
+      "reason": "dodge_counter_out_of_scope",
+      "classification": "dodge_counter",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2947,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "极限闪避-后",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        35.0
+      ],
+      "derivation_frames": [
+        35.0
+      ],
+      "action_end_frames": [
+        50.0
+      ],
+      "duration_frames": [
+        54.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "极限闪避-后 | 第23F前不能闪避 | 1 | 54 | 35 | 35 | -1 | 50 | √ | 1 | 8,0 | 地面 | 极限闪避顿帧 | 0.6 | 8 | 38 | 0.4 | 8 | 66",
+      "warnings": []
+    },
+    {
+      "reason": "ambiguous_group_context",
+      "classification": "timing_only",
+      "mapped_action_id": null,
+      "sheet": "角色-女",
+      "sheet_role": "frame_sheet",
+      "row_number": 2948,
+      "character_scope": "aemeath_mech",
+      "source_action_name": "探索工具-流光突进",
+      "candidate_action_id": null,
+      "hit_frames": [],
+      "candidate_action_time_frames": [
+        30.0
+      ],
+      "derivation_frames": [
+        30.0
+      ],
+      "action_end_frames": [
+        59.0
+      ],
+      "duration_frames": [
+        -1.0
+      ],
+      "global_time_stop_frames": null,
+      "raw_text": "18 | 探索工具-流光突进 | 1,30 | 30 | -1 | 59 | 1 | 2,8,2 | 空中",
+      "warnings": []
+    }
+  ]
+}

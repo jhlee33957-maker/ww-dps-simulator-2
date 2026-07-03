@@ -11,6 +11,9 @@ from extract_aemeath_excel_data import (
     DEFAULT_OUTPUT,
     DEFAULT_REPORT,
     DEFAULT_REVIEW_REPORT,
+    DEFAULT_TIMING_CANDIDATES,
+    DEFAULT_TIMING_REPORT,
+    DEFAULT_TIMING_UNRESOLVED,
     DEFAULT_UNMAPPED,
     DEFAULT_UNRESOLVED,
     SOURCE_DIR,
@@ -42,6 +45,9 @@ def main() -> int:
         candidates=str(DEFAULT_CANDIDATES),
         coeff_resource_unresolved=str(DEFAULT_UNRESOLVED),
         review_report=str(DEFAULT_REVIEW_REPORT),
+        timing_candidates=str(DEFAULT_TIMING_CANDIDATES),
+        timing_unresolved=str(DEFAULT_TIMING_UNRESOLVED),
+        timing_report=str(DEFAULT_TIMING_REPORT),
     )
     extract(args)
 
@@ -51,6 +57,9 @@ def main() -> int:
     assert DEFAULT_CANDIDATES.exists(), f"Expected coefficient/resource candidate JSON at {DEFAULT_CANDIDATES}"
     assert DEFAULT_UNRESOLVED.exists(), f"Expected coefficient/resource unresolved JSON at {DEFAULT_UNRESOLVED}"
     assert DEFAULT_REVIEW_REPORT.exists(), f"Expected coefficient/resource review markdown at {DEFAULT_REVIEW_REPORT}"
+    assert DEFAULT_TIMING_CANDIDATES.exists(), f"Expected timing candidate JSON at {DEFAULT_TIMING_CANDIDATES}"
+    assert DEFAULT_TIMING_UNRESOLVED.exists(), f"Expected timing unresolved JSON at {DEFAULT_TIMING_UNRESOLVED}"
+    assert DEFAULT_TIMING_REPORT.exists(), f"Expected timing review markdown at {DEFAULT_TIMING_REPORT}"
 
     extracted = json.loads(DEFAULT_OUTPUT.read_text(encoding="utf-8"))
     unmapped = json.loads(DEFAULT_UNMAPPED.read_text(encoding="utf-8"))

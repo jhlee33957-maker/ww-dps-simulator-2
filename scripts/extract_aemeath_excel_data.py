@@ -20,6 +20,9 @@ DEFAULT_REPORT = Path("reports/aemeath_excel_diff.md")
 DEFAULT_CANDIDATES = Path("data/extracted/aemeath_coeff_resource_candidates.json")
 DEFAULT_UNRESOLVED = Path("data/extracted/aemeath_coeff_resource_unresolved.json")
 DEFAULT_REVIEW_REPORT = Path("reports/aemeath_coeff_resource_review.md")
+DEFAULT_TIMING_CANDIDATES = Path("data/extracted/aemeath_timing_candidates.json")
+DEFAULT_TIMING_UNRESOLVED = Path("data/extracted/aemeath_timing_unresolved.json")
+DEFAULT_TIMING_REPORT = Path("reports/aemeath_timing_review.md")
 
 AEMEATH_HUMAN = "\u7231\u5f25\u65af"
 AEMEATH_MECH = "\u673a\u5175\u7231\u5f25\u65af"
@@ -1866,6 +1869,618 @@ def compact_raw_text(row: dict[str, Any], limit: int = 220) -> str:
     return text[:limit] + ("..." if len(text) > limit else "")
 
 
+def timing_row_classification(row: dict[str, Any]) -> tuple[str, str | None]:
+    source = str(row.get("source_action_name") or "")
+    source_norm = normalize(source)
+    raw_text = row_text(row)
+    combined = f"{source} {raw_text}"
+
+    if is_qte_source_action(source) or any(token in source_norm for token in ("qte", "intro")):
+        return "qte_intro", "qte_intro_excluded"
+    if "outro" in source_norm or "\u5ef6\u594f" in combined:
+        return "outro", "outro_excluded"
+    if re.search(r"^A[1-4]-\d+D$", source, re.IGNORECASE) or any(token in source_norm for token in ("dodge", "counter")):
+        return "dodge_counter", "dodge_counter_out_of_scope"
+    if any(token in source for token in ["\u95ea\u907f", "\u53cd\u51fb"]):
+        return "dodge_counter", "dodge_counter_out_of_scope"
+    if ENHANCED in source and "E" in source:
+        return "seraphic_duet", "seraphic_duet_already_handled"
+    if LIBERATION in source or row.get("candidate_action_id") in {
+        "aemeath_liberation_overdrive",
+        "aemeath_heavenfall_finale",
+    }:
+        return "resonance_liberation", "resonance_liberation_already_handled"
+    if re.match(r"^A[1-4](?:-\d+)?$", source):
+        return "basic_attack", "basic_attack_out_of_scope"
+
+    if source.startswith("E1"):
+        if "QTE" in source.upper():
+            return "qte_intro", "qte_intro_excluded"
+        if f"{LIBERATION}1" in source or LIBERATION in source:
+            return "timing_only", "ambiguous_group_context"
+        if FORM_SWITCH in source or "\u5207\u6362" in source:
+            return "normal_form_switch", None
+        return "timing_only", "ambiguous_group_context"
+    if source.startswith("E2"):
+        return "sync_strike", None
+
+    if HEAVY_ATTACK in source:
+        if PRELUDE in source:
+            return "heavy_charge", None
+        if "C3" in source or "\u901f\u84c4" in combined:
+            return "timing_only", "instant_response_or_sequence_review_only"
+        return "heavy_release", None
+
+    if row.get("raw_by_header"):
+        return "timing_only", "ambiguous_group_context"
+    return "unknown", "ambiguous_group_context"
+
+
+def timing_action_id_for_row(row: dict[str, Any], classification: str) -> str | None:
+    source = str(row.get("source_action_name") or "")
+    character = row.get("character_scope")
+    mapped = row.get("candidate_action_id")
+    if mapped in {
+        "aemeath_heavy_aemeath_charged_1",
+        "aemeath_heavy_aemeath_charged_2",
+        "aemeath_heavy_mech_charged_1",
+        "aemeath_heavy_mech_charged_2",
+        "aemeath_form_switch_to_mech_normal",
+        "aemeath_form_switch_to_aemeath_normal",
+        "aemeath_sync_strike_armament_merge",
+        "aemeath_sync_strike_call_of_dawn",
+    }:
+        return mapped
+
+    if classification in {"heavy_charge", "heavy_release"}:
+        if character == "aemeath":
+            if source == f"{HEAVY_ATTACK}-1":
+                return "aemeath_heavy_aemeath_charged_1"
+            if source == f"{HEAVY_ATTACK}-2" or source.startswith(f"{ENHANCED}{HEAVY_ATTACK}"):
+                return "aemeath_heavy_aemeath_charged_2"
+        if character == "aemeath_mech":
+            if source == HEAVY_ATTACK:
+                return "aemeath_heavy_mech_charged_1"
+            if source.startswith(f"{ENHANCED}{HEAVY_ATTACK}"):
+                return "aemeath_heavy_mech_charged_2"
+    if classification == "normal_form_switch":
+        if character == "aemeath" and "\u673a\u5175" in source:
+            return "aemeath_form_switch_to_mech_normal"
+        if character == "aemeath_mech" and AEMEATH_HUMAN in source:
+            return "aemeath_form_switch_to_aemeath_normal"
+    if classification == "sync_strike":
+        if character == "aemeath":
+            return "aemeath_sync_strike_armament_merge"
+        if character == "aemeath_mech":
+            return "aemeath_sync_strike_call_of_dawn"
+    return None
+
+
+def timing_row_frame_data(row: dict[str, Any]) -> dict[str, Any]:
+    frame_data, warnings = extract_frame_data(row, row.get("source_action_name"))
+    if warnings:
+        frame_data["warnings"] = merge_unique(frame_data.get("warnings", []), warnings)
+    return frame_data
+
+
+def row_source_summary(row: dict[str, Any], classification: str) -> dict[str, Any]:
+    frame_data = row.get("timing_frame_data") or timing_row_frame_data(row)
+    return {
+        "sheet": row.get("sheet"),
+        "sheet_role": row.get("sheet_role"),
+        "row_number": row.get("row_number"),
+        "character_scope": row.get("character_scope"),
+        "source_action_name": row.get("source_action_name"),
+        "classification": classification,
+        "candidate_action_id": row.get("candidate_action_id"),
+        "hit_frames": frame_data.get("hit_frames", []),
+        "candidate_action_time_frames": frame_data.get("candidate_action_time_frames", []),
+        "derivation_frames": frame_data.get("derivation_frames", []),
+        "action_end_frames": frame_data.get("action_end_frames", []),
+        "duration_frames": frame_data.get("duration_frames", []),
+        "global_time_stop_frames": frame_data.get("global_time_stop_frames"),
+        "raw_text": compact_raw_text(row),
+        "warnings": row.get("warnings", []) + frame_data.get("warnings", []),
+    }
+
+
+def note_frame_candidates(row: dict[str, Any]) -> list[float]:
+    text = " ".join(
+        str(value)
+        for key, value in (row.get("raw_by_header") or {}).items()
+        if normalize(key) in {normalize("\u5907\u6ce8"), "note", "notes"} and value not in (None, "")
+    )
+    frames = []
+    for match in re.findall(r"\u7b2c\s*(\d+(?:\.\d+)?)\s*F", text, flags=re.IGNORECASE):
+        frames.append(float(match))
+    for start, end in re.findall(r"(\d+(?:\.\d+)?)\s*F\s*[~\uff5e-]\s*(\d+(?:\.\d+)?)\s*F", text, flags=re.IGNORECASE):
+        frames.extend([float(start), float(end)])
+    return sorted(set(frames))
+
+
+def state_conversion_frames(row: dict[str, Any]) -> float | None:
+    key, value = get_field(row, ["\u72b6\u6001\u8f6c\u6362\u65f6\u95f4", "state conversion"])
+    if not key:
+        return None
+    numbers, warning = parse_numbers(value)
+    if warning or not numbers:
+        return None
+    value_number = numbers[0]
+    return value_number * FPS if value_number <= 10 else value_number
+
+
+def candidate_current_comparison(
+    action_id: str,
+    candidate_frames: float | None,
+    combat_frames: float | None,
+    current_actions: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    current = current_actions.get(action_id)
+    if not current:
+        return {
+            "current_action_time": None,
+            "current_combat_time_cost": None,
+            "candidate_action_time": seconds(candidate_frames),
+            "candidate_combat_time_cost": seconds(combat_frames),
+            "difference_summary": "missing_action_id",
+        }
+    current_action_time = current.get("action_time", current.get("duration"))
+    current_combat_time = current.get("combat_time_cost", current_action_time)
+    candidate_action_time = seconds(candidate_frames)
+    candidate_combat_time = seconds(combat_frames)
+    differences = []
+    if candidate_action_time is not None and current_action_time != candidate_action_time:
+        differences.append(f"action_time current={current_action_time} candidate={candidate_action_time}")
+    if candidate_combat_time is not None and current_combat_time != candidate_combat_time:
+        differences.append(f"combat_time_cost current={current_combat_time} candidate={candidate_combat_time}")
+    return {
+        "current_action_time": current_action_time,
+        "current_combat_time_cost": current_combat_time,
+        "candidate_action_time": candidate_action_time,
+        "candidate_combat_time_cost": candidate_combat_time,
+        "difference_summary": "; ".join(differences) if differences else "matches current timing",
+    }
+
+
+def timing_candidate_from_group(
+    action_id: str,
+    character: str,
+    category: str,
+    rows: list[dict[str, Any]],
+    excluded_rows: list[dict[str, Any]],
+    current_actions: dict[str, dict[str, Any]],
+    existing_action_ids: set[str],
+) -> dict[str, Any]:
+    warnings: list[str] = []
+    safe_reasons: list[str] = []
+    frame_values: list[float] = []
+    hit_frames: list[float] = []
+    global_stop_frames = 0.0
+    charge_rows: list[dict[str, Any]] = []
+    attack_rows: list[dict[str, Any]] = []
+    instant_rows: list[dict[str, Any]] = []
+
+    for row in rows:
+        classification = row["timing_classification"]
+        frame_data = row["timing_frame_data"]
+        row_frames = [
+            float(frame)
+            for frame in frame_data.get("candidate_action_time_frames", [])
+            if frame is not None
+        ]
+        row_frames.extend(note_frame_candidates(row))
+        row_frames = sorted(set(row_frames))
+        frame_values.extend(row_frames)
+        hit_frames.extend(float(frame) for frame in frame_data.get("hit_frames", []) if frame is not None)
+        if frame_data.get("global_time_stop_frames") is not None:
+            global_stop_frames = max(global_stop_frames, float(frame_data["global_time_stop_frames"]))
+        if classification == "heavy_charge":
+            charge_rows.append(row_source_summary(row, classification))
+        elif classification in {"heavy_release", "sync_strike", "normal_form_switch"}:
+            attack_rows.append(row_source_summary(row, classification))
+        else:
+            instant_rows.append(row_source_summary(row, classification))
+
+    for row in excluded_rows:
+        if row.get("timing_exclusion_reason") == "instant_response_or_sequence_review_only":
+            instant_rows.append(row_source_summary(row, row.get("timing_classification", "timing_only")))
+
+    if category == "form_switch":
+        for row in rows:
+            conversion_frames = state_conversion_frames(row)
+            if conversion_frames is not None:
+                frame_values.append(conversion_frames)
+                warnings.append("Used explicit state conversion time because no derivation/end frame was present.")
+
+    frame_values = sorted(set(frame_values))
+    max_hit_frame = max(hit_frames) if hit_frames else None
+    candidate_max = max(frame_values) if frame_values else None
+    candidate_sum = sum(frame_values) if frame_values else None
+    selected_frames = candidate_max
+    selection_reason = "max_explicit_frame"
+    frame_interpretation_ambiguous = False
+
+    if category == "heavy":
+        if charge_rows and attack_rows:
+            frame_interpretation_ambiguous = True
+            selection_reason = "max_frame_selected_because_charge_and_release_coordinates_may_be_cumulative"
+            warnings.append("Heavy candidate includes charge and release rows; sum-vs-max frame interpretation requires manual review.")
+        elif not charge_rows:
+            safe_reasons.append("heavy_candidate_without_charge_rows")
+            warnings.append("Heavy candidate lacks explicit charge/preparation rows.")
+        if selected_frames is not None and seconds(selected_frames) is not None and seconds(selected_frames) < 0.5:
+            safe_reasons.append("suspiciously_short_timing")
+            warnings.append("Heavy action_time is below 0.50s and is not treated as normal charged timing.")
+        if frame_interpretation_ambiguous:
+            safe_reasons.append("ambiguous_frame_coordinate_interpretation")
+    elif category == "form_switch":
+        if not frame_values:
+            safe_reasons.append("missing_action_time_frame")
+            warnings.append("Normal Form Switch row has no derivation/end/action timing field.")
+        if any(str(row.get("source_action_name") or "").startswith("E2") for row in rows):
+            safe_reasons.append("e2_contamination")
+            warnings.append("E2 row was present in a Form Switch candidate.")
+    elif category == "sync_strike":
+        if not frame_values:
+            safe_reasons.append("missing_action_time_frame")
+            warnings.append("Sync Strike group has no derivation/end/action timing field.")
+        if any(str(row.get("source_action_name") or "").startswith("E1") for row in rows):
+            safe_reasons.append("e1_contamination")
+            warnings.append("E1 row was present in a Sync Strike candidate.")
+
+    if action_id not in existing_action_ids:
+        safe_reasons.append("missing_action_id")
+        warnings.append(f"{action_id} is missing from data/actions.json.")
+    if selected_frames is not None and max_hit_frame is not None and selected_frames < max_hit_frame:
+        safe_reasons.append("action_time_less_than_hit_frame")
+        warnings.append("Candidate action_time is earlier than the latest hit frame.")
+
+    contamination_reasons = {
+        row.get("timing_exclusion_reason")
+        for row in excluded_rows
+        if row.get("timing_exclusion_reason") in {
+            "qte_intro_excluded",
+            "outro_excluded",
+            "seraphic_duet_already_handled",
+            "dodge_counter_out_of_scope",
+        }
+    }
+    for reason in sorted(contamination_reasons):
+        warnings.append(f"Excluded nearby row(s) with reason {reason}.")
+
+    combat_frames = selected_frames
+    if selected_frames is not None and global_stop_frames:
+        combat_frames = max(0.0, selected_frames - global_stop_frames)
+
+    confidence = "high"
+    if safe_reasons:
+        confidence = "medium" if selected_frames is not None else "low"
+    if category == "form_switch" and any("state conversion" in warning.lower() for warning in warnings):
+        confidence = "medium"
+        safe_reasons.append("state_conversion_time_requires_review")
+
+    safe_reasons = merge_unique([], safe_reasons)
+    safe_to_patch = confidence == "high" and not safe_reasons and selected_frames is not None
+    source_rows = [row_source_summary(row, row["timing_classification"]) for row in rows]
+    excluded_summaries = [
+        row_source_summary(row, row.get("timing_classification", "unknown"))
+        for row in excluded_rows
+        if row.get("timing_exclusion_reason")
+    ]
+    instant_frames = sorted(
+        {
+            frame
+            for row in instant_rows
+            for frame in (row.get("candidate_action_time_frames") or row.get("duration_frames") or [])
+            if frame is not None
+        }
+    )
+
+    return {
+        "action_id": action_id,
+        "character": character,
+        "category": category,
+        "timing_candidate": {
+            "safe_to_patch": safe_to_patch,
+            "confidence": confidence,
+            "source_rows": source_rows,
+            "grouped_source_action_names": sorted({row.get("source_action_name") for row in rows if row.get("source_action_name")}),
+            "action_time_frames": selected_frames,
+            "action_time_seconds": seconds(selected_frames),
+            "combat_time_cost_frames": combat_frames,
+            "combat_time_cost_seconds": seconds(combat_frames),
+            "max_hit_frame": max_hit_frame,
+            "max_hit_time": seconds(max_hit_frame),
+            "global_time_stop_frames": global_stop_frames or None,
+            "hit_frames": sorted(set(hit_frames)),
+            "charge_rows": charge_rows,
+            "attack_rows": attack_rows,
+            "excluded_rows": excluded_summaries,
+            "warnings": merge_unique([], warnings),
+            "safe_to_patch_reasons": safe_reasons,
+            "action_time_frames_candidate_sum": candidate_sum,
+            "action_time_frames_candidate_max": candidate_max,
+            "selected_action_time_frames": selected_frames,
+            "selection_reason": selection_reason,
+            "instant_response_action_time_frames": max(instant_frames) if instant_frames else None,
+            "instant_response_action_time_seconds": seconds(max(instant_frames)) if instant_frames else None,
+            "instant_response_confidence": "low" if instant_frames else None,
+            "instant_response_source_rows": instant_rows,
+        },
+        "current_actions_comparison": candidate_current_comparison(
+            action_id,
+            selected_frames,
+            combat_frames,
+            current_actions,
+        ),
+    }
+
+
+def timing_candidate_sort_key(candidate: dict[str, Any]) -> tuple[int, str]:
+    order = {"heavy": 0, "form_switch": 1, "sync_strike": 2}
+    return (order.get(candidate.get("category"), 99), candidate.get("action_id", ""))
+
+
+def build_timing_outputs(
+    actions: list[dict[str, Any]],
+    unmapped_rows: list[dict[str, Any]],
+    current_actions: dict[str, dict[str, Any]],
+    workbook_path: Path,
+    generated_at: str,
+    candidate_row_count: int,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    existing_action_ids = set(current_actions)
+    frame_rows: list[dict[str, Any]] = []
+    for action in actions:
+        for row in action.get("source_rows", []):
+            if row.get("sheet_role") == "frame_sheet":
+                item = dict(row)
+                item["candidate_action_id"] = action.get("action_id")
+                frame_rows.append(item)
+    for row in unmapped_rows:
+        if row.get("sheet_role") == "frame_sheet":
+            frame_rows.append(dict(row))
+
+    groups: dict[str, dict[str, Any]] = {}
+    unresolved_rows: list[dict[str, Any]] = []
+    qte_rows = 0
+    for row in frame_rows:
+        classification, exclusion_reason = timing_row_classification(row)
+        row["timing_classification"] = classification
+        row["timing_exclusion_reason"] = exclusion_reason
+        row["timing_frame_data"] = timing_row_frame_data(row)
+        if classification == "qte_intro":
+            qte_rows += 1
+        action_id = timing_action_id_for_row(row, classification)
+        if classification in {"heavy_charge", "heavy_release", "normal_form_switch", "sync_strike"} and action_id:
+            category = "heavy" if classification.startswith("heavy") else "form_switch" if classification == "normal_form_switch" else "sync_strike"
+            group = groups.setdefault(
+                action_id,
+                {
+                    "action_id": action_id,
+                    "character": row.get("character_scope") or "any",
+                    "category": category,
+                    "rows": [],
+                    "excluded_rows": [],
+                },
+            )
+            group["rows"].append(row)
+        else:
+            unresolved_rows.append(
+                {
+                    "reason": exclusion_reason or "ambiguous_group_context",
+                    "classification": classification,
+                    "mapped_action_id": action_id,
+                    **row_source_summary(row, classification),
+                }
+            )
+            if action_id and classification == "timing_only":
+                groups.setdefault(
+                    action_id,
+                    {
+                        "action_id": action_id,
+                        "character": row.get("character_scope") or "any",
+                        "category": "heavy" if "heavy" in action_id else "form_switch" if "form_switch" in action_id else "sync_strike",
+                        "rows": [],
+                        "excluded_rows": [],
+                    },
+                )["excluded_rows"].append(row)
+
+    for row in frame_rows:
+        source = str(row.get("source_action_name") or "")
+        if "C3" in source or "\u901f\u84c4" in row_text(row):
+            action_id = timing_action_id_for_row(row, "heavy_release")
+            if action_id in groups:
+                groups[action_id]["excluded_rows"].append(row)
+
+    candidates = [
+        timing_candidate_from_group(
+            group["action_id"],
+            group["character"],
+            group["category"],
+            group["rows"],
+            group["excluded_rows"],
+            current_actions,
+            existing_action_ids,
+        )
+        for group in groups.values()
+        if group["rows"]
+    ]
+    candidates.sort(key=timing_candidate_sort_key)
+
+    confidence_counts = {
+        level: sum(1 for candidate in candidates if candidate["timing_candidate"].get("confidence") == level)
+        for level in ("high", "medium", "low")
+    }
+    summary = {
+        "candidate_rows_scanned": candidate_row_count,
+        "timing_candidates_created": len(candidates),
+        "high_confidence_count": confidence_counts["high"],
+        "medium_confidence_count": confidence_counts["medium"],
+        "low_confidence_count": confidence_counts["low"],
+        "safe_to_patch_count": sum(1 for candidate in candidates if candidate["timing_candidate"].get("safe_to_patch")),
+        "unresolved_count": len(unresolved_rows),
+        "heavy_candidates_count": sum(1 for candidate in candidates if candidate.get("category") == "heavy"),
+        "form_switch_candidates_count": sum(1 for candidate in candidates if candidate.get("category") == "form_switch"),
+        "sync_strike_candidates_count": sum(1 for candidate in candidates if candidate.get("category") == "sync_strike"),
+        "excluded_qte_rows_count": qte_rows,
+    }
+    payload = {
+        "generated_at": generated_at,
+        "source_workbook": str(workbook_path),
+        "fps": FPS,
+        "safe_to_patch": False,
+        "notes": [
+            "Review-only timing candidates. data/actions.json is not modified.",
+            "combat_time_cost defaults to action_time unless a true global time-stop segment is detected.",
+            "Hitstop rows are preserved as metadata and are not subtracted.",
+        ],
+        "summary": summary,
+        "actions": candidates,
+    }
+    unresolved_payload = {
+        "generated_at": generated_at,
+        "source_workbook": str(workbook_path),
+        "fps": FPS,
+        "summary": summary,
+        "rows": unresolved_rows,
+    }
+    return payload, unresolved_payload
+
+
+def write_timing_review_report(
+    report_path: Path,
+    timing_payload: dict[str, Any],
+    unresolved_payload: dict[str, Any],
+) -> None:
+    summary = timing_payload.get("summary", {})
+    actions = timing_payload.get("actions", [])
+    unresolved_rows = unresolved_payload.get("rows", [])
+    lines = [
+        "# Aemeath Timing Review",
+        "",
+        "## Summary",
+        "",
+        f"- Workbook path: `{display_path(Path(timing_payload.get('source_workbook', '')))}`",
+        f"- Candidate rows scanned: {summary.get('candidate_rows_scanned', 0)}",
+        f"- Timing candidates created: {summary.get('timing_candidates_created', 0)}",
+        f"- High confidence: {summary.get('high_confidence_count', 0)}",
+        f"- Medium confidence: {summary.get('medium_confidence_count', 0)}",
+        f"- Low confidence: {summary.get('low_confidence_count', 0)}",
+        f"- safe_to_patch count: {summary.get('safe_to_patch_count', 0)}",
+        f"- Unresolved count: {summary.get('unresolved_count', 0)}",
+        f"- Heavy candidates count: {summary.get('heavy_candidates_count', 0)}",
+        f"- Form Switch candidates count: {summary.get('form_switch_candidates_count', 0)}",
+        f"- Sync Strike candidates count: {summary.get('sync_strike_candidates_count', 0)}",
+        f"- Excluded QTE rows count: {summary.get('excluded_qte_rows_count', 0)}",
+        "",
+        "This report is review-only and does not modify `data/actions.json`.",
+        "",
+    ]
+
+    def add_candidate_table(title: str, category: str) -> None:
+        lines.extend(
+            [
+                f"## {title}",
+                "",
+                "| action_id | character | source rows | charge rows included | attack rows included | action_time_seconds | combat_time_cost_seconds | max_hit_time | current action_time | confidence | safe_to_patch | warnings |",
+                "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+            ]
+        )
+        selected = [action for action in actions if action.get("category") == category]
+        if not selected:
+            lines.append("|  |  |  |  |  |  |  |  |  |  |  |  |")
+        for action in selected:
+            timing = action["timing_candidate"]
+            comparison = action.get("current_actions_comparison", {})
+            source_rows = [
+                f"{row.get('row_number')}:{row.get('source_action_name')}"
+                for row in timing.get("source_rows", [])
+            ]
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        action["action_id"],
+                        markdown_value(action.get("character")),
+                        markdown_value(source_rows),
+                        markdown_value(bool(timing.get("charge_rows"))),
+                        markdown_value(bool(timing.get("attack_rows"))),
+                        markdown_value(timing.get("action_time_seconds")),
+                        markdown_value(timing.get("combat_time_cost_seconds")),
+                        markdown_value(timing.get("max_hit_time")),
+                        markdown_value(comparison.get("current_action_time")),
+                        markdown_value(timing.get("confidence")),
+                        markdown_value(timing.get("safe_to_patch")),
+                        markdown_value(timing.get("warnings", [])),
+                    ]
+                )
+                + " |"
+            )
+        lines.append("")
+
+    add_candidate_table("Heavy Attack Timing Candidates", "heavy")
+    add_candidate_table("Form Switch Timing Candidates", "form_switch")
+    add_candidate_table("Sync Strike Timing Candidates", "sync_strike")
+
+    reason_counts: dict[str, int] = {}
+    for row in unresolved_rows:
+        reason = row.get("reason", "unknown")
+        reason_counts[reason] = reason_counts.get(reason, 0) + 1
+    lines.extend(["## Unresolved / Excluded Rows", ""])
+    if reason_counts:
+        for reason, count in sorted(reason_counts.items()):
+            lines.append(f"- {reason}: {count}")
+    else:
+        lines.append("- No unresolved or excluded timing rows.")
+    lines.append("")
+
+    lines.extend(["## Critical Warnings", ""])
+    critical = []
+    for action in actions:
+        timing = action["timing_candidate"]
+        for reason in timing.get("safe_to_patch_reasons", []):
+            if reason in {
+                "heavy_candidate_without_charge_rows",
+                "suspiciously_short_timing",
+                "action_time_less_than_hit_frame",
+                "e1_contamination",
+                "e2_contamination",
+                "missing_action_id",
+                "ambiguous_frame_coordinate_interpretation",
+            }:
+                critical.append(f"`{action['action_id']}`: {reason}")
+    if critical:
+        for warning in critical:
+            lines.append(f"- {warning}")
+    else:
+        lines.append("- No critical timing warnings.")
+    lines.append("")
+
+    lines.extend(["## Patch recommendation", ""])
+    recommended = [action for action in actions if action["timing_candidate"].get("safe_to_patch")]
+    if recommended:
+        for action in recommended:
+            timing = action["timing_candidate"]
+            lines.append(
+                f"- `{action['action_id']}`: action_time={timing.get('action_time_seconds')}s, "
+                f"combat_time_cost={timing.get('combat_time_cost_seconds')}s"
+            )
+    else:
+        lines.append("- No timing candidates are recommended for immediate patching.")
+    lines.extend(
+        [
+            "",
+            "This report does not modify `data/actions.json`.",
+            "A future whitelist patch should apply only manually reviewed values.",
+            "",
+        ]
+    )
+
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    report_path.write_text("\n".join(lines), encoding="utf-8")
+
+
 def current_damage_multipliers(action_id: str, current_actions: dict[str, dict[str, Any]]) -> list[float]:
     return [
         hit.get("damage_multiplier")
@@ -2948,6 +3563,9 @@ def extract(args: argparse.Namespace) -> int:
     candidates_path = Path(getattr(args, "candidates", DEFAULT_CANDIDATES))
     unresolved_review_path = Path(getattr(args, "coeff_resource_unresolved", DEFAULT_UNRESOLVED))
     review_report_path = Path(getattr(args, "review_report", DEFAULT_REVIEW_REPORT))
+    timing_candidates_path = Path(getattr(args, "timing_candidates", DEFAULT_TIMING_CANDIDATES))
+    timing_unresolved_path = Path(getattr(args, "timing_unresolved", DEFAULT_TIMING_UNRESOLVED))
+    timing_report_path = Path(getattr(args, "timing_report", DEFAULT_TIMING_REPORT))
 
     workbook = load_workbook_or_exit(workbook_path)
     sheet_names = list(workbook.sheetnames)
@@ -3052,6 +3670,14 @@ def extract(args: argparse.Namespace) -> int:
         repeat_join_summary,
         repeat_join_unresolved,
     )
+    timing_payload, timing_unresolved_payload = build_timing_outputs(
+        actions,
+        unmapped_rows,
+        current_actions,
+        workbook_path,
+        generated_at,
+        candidate_row_count,
+    )
     output_payload = {
         "source_workbook": str(workbook_path),
         "generated_at": generated_at,
@@ -3068,6 +3694,12 @@ def extract(args: argparse.Namespace) -> int:
             "candidates": str(candidates_path),
             "unresolved": str(unresolved_review_path),
             "report": str(review_report_path),
+            "safe_to_patch": False,
+        },
+        "timing_review": {
+            "candidates": str(timing_candidates_path),
+            "unresolved": str(timing_unresolved_path),
+            "report": str(timing_report_path),
             "safe_to_patch": False,
         },
         "actions": actions,
@@ -3087,7 +3719,10 @@ def extract(args: argparse.Namespace) -> int:
     write_json(unmapped_path, unmapped_payload)
     write_json(candidates_path, candidates_payload)
     write_json(unresolved_review_path, unresolved_review_payload)
+    write_json(timing_candidates_path, timing_payload)
+    write_json(timing_unresolved_path, timing_unresolved_payload)
     write_coeff_resource_review_report(review_report_path, candidates_payload, unresolved_review_payload)
+    write_timing_review_report(timing_report_path, timing_payload, timing_unresolved_payload)
     generate_report(
         report_path,
         workbook_path,
@@ -3112,6 +3747,9 @@ def extract(args: argparse.Namespace) -> int:
     print(f"Wrote {candidates_path}")
     print(f"Wrote {unresolved_review_path}")
     print(f"Wrote {review_report_path}")
+    print(f"Wrote {timing_candidates_path}")
+    print(f"Wrote {timing_unresolved_path}")
+    print(f"Wrote {timing_report_path}")
     print(f"Wrote {report_path}")
     return 0
 
@@ -3127,6 +3765,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--candidates", default=str(DEFAULT_CANDIDATES))
     parser.add_argument("--coeff-resource-unresolved", default=str(DEFAULT_UNRESOLVED))
     parser.add_argument("--review-report", default=str(DEFAULT_REVIEW_REPORT))
+    parser.add_argument("--timing-candidates", default=str(DEFAULT_TIMING_CANDIDATES))
+    parser.add_argument("--timing-unresolved", default=str(DEFAULT_TIMING_UNRESOLVED))
+    parser.add_argument("--timing-report", default=str(DEFAULT_TIMING_REPORT))
     return parser
 
 

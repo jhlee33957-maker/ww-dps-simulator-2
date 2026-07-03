@@ -158,10 +158,15 @@ Resource extraction is conservative. The extractor records raw resource cells, p
 - `data/extracted/aemeath_excel_unmapped_rows.json`
 - `data/extracted/aemeath_coeff_resource_candidates.json`
 - `data/extracted/aemeath_coeff_resource_unresolved.json`
+- `data/extracted/aemeath_timing_candidates.json`
+- `data/extracted/aemeath_timing_unresolved.json`
 - `reports/aemeath_excel_diff.md`
 - `reports/aemeath_coeff_resource_review.md`
+- `reports/aemeath_timing_review.md`
 
-Later patches may apply confirmed coefficients or resource values after the coefficient/resource review is manually reviewed.
+Heavy/Form Switch/Sync Strike timing extraction is review-only and does not modify `data/actions.json`. Heavy Attack `action_time` candidates must include charge/preparation rows instead of only direct hit rows. Normal Form Switch timing uses normal E1 rows, while Sync Strike timing uses E2/合击 rows and keeps human and mech sections separate. QTE, Intro, Outro, Seraphic Duet, dodge/counter, and already-handled liberation rows are excluded from timing candidates and preserved in unresolved review output.
+
+Later patches may apply confirmed coefficients, resource values, or timing values after the review files are manually reviewed.
 
 Field meanings:
 
@@ -321,6 +326,7 @@ python scripts/aemeath_mechanics_correction_smoke_test.py
 python scripts/aemeath_lite_smoke_test.py
 python scripts/extract_aemeath_excel_data.py
 python scripts/extract_aemeath_excel_data_smoke_test.py
+python scripts/aemeath_action_timing_extraction_smoke_test.py
 python scripts/aemeath_coeff_resource_extraction_smoke_test.py
 python scripts/party_selection_smoke_test.py
 python scripts/character_selection_smoke_test.py

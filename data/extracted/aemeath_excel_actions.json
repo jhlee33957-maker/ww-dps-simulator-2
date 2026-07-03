@@ -1,6 +1,6 @@
 {
   "source_workbook": "data\\source\\鸣潮动作数据汇总.xlsx",
-  "generated_at": "2026-07-03T08:10:56.096849+00:00",
+  "generated_at": "2026-07-03T08:27:27.929204+00:00",
   "fps": 60,
   "sheets": {
     "frame_sheet": "角色-女",
@@ -273,6 +273,12 @@
     "candidates": "data\\extracted\\aemeath_coeff_resource_candidates.json",
     "unresolved": "data\\extracted\\aemeath_coeff_resource_unresolved.json",
     "report": "reports\\aemeath_coeff_resource_review.md",
+    "safe_to_patch": false
+  },
+  "timing_review": {
+    "candidates": "data\\extracted\\aemeath_timing_candidates.json",
+    "unresolved": "data\\extracted\\aemeath_timing_unresolved.json",
+    "report": "reports\\aemeath_timing_review.md",
     "safe_to_patch": false
   },
   "actions": [
