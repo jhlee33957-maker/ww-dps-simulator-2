@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import json
 import sys
 from pathlib import Path
 
@@ -13,6 +14,8 @@ from simulator.simulation import Simulation
 
 
 DATA_DIR = PROJECT_ROOT / "data"
+QTE_REVIEW_PATH = DATA_DIR / "extracted" / "aemeath_qte_intro_outro_candidates.json"
+QTE_ACTION_CANDIDATE_PATH = DATA_DIR / "extracted" / "aemeath_qte_action_candidates.json"
 
 
 def assert_close(actual: float, expected: float, label: str, tolerance: float = 1e-6) -> None:
@@ -24,8 +27,25 @@ def assert_close(actual: float, expected: float, label: str, tolerance: float = 
 def main() -> None:
     sim = Simulation.from_json(DATA_DIR, party="aemeath_test_party")
     assert sim.transition_config["characters"]["aemeath"]["intro_qte"]["enabled"] is False
+    assert sim.transition_config["characters"]["aemeath"]["intro_qte"]["implementation_status"] == "review_only"
     assert sim.transition_config["characters"]["aemeath"]["outro"]["enabled"] is False
     assert all("qte" not in action_id.lower() for action_id in sim.get_policy_action_ids())
+    if QTE_REVIEW_PATH.exists():
+        qte_review = json.loads(QTE_REVIEW_PATH.read_text(encoding="utf-8"))
+        assert qte_review["review_only"] is True
+        assert qte_review["simulation_applied"] is False
+        assert qte_review["candidate_count"] > 0
+        assert any("qte" in group["group_id"] for group in qte_review["groups"])
+    if QTE_ACTION_CANDIDATE_PATH.exists():
+        qte_action_candidates = json.loads(QTE_ACTION_CANDIDATE_PATH.read_text(encoding="utf-8"))
+        assert qte_action_candidates["review_only"] is True
+        assert qte_action_candidates["simulation_applied"] is False
+        assert qte_action_candidates["simulation_executable"] is False
+        assert qte_action_candidates["executable_policy_action_count"] == 0
+        assert all(
+            candidate["proposed_action_id"] not in sim.get_policy_action_ids()
+            for candidate in qte_action_candidates["candidates"]
+        )
     assert_close(sim.actions["swap_to_aemeath"].action_time or 0.0, 0.5, "swap_to_aemeath action_time")
     assert_close(sim.actions["swap_to_aemeath"].combat_time_cost or 0.0, 0.5, "swap_to_aemeath combat_time_cost")
 

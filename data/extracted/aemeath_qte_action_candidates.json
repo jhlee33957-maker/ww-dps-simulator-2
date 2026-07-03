@@ -1,0 +1,675 @@
+{
+  "generated_at": "2026-07-03T15:09:23.421093+00:00",
+  "source_workbook": "C:\\Users\\coree\\OneDrive\\Documents\\GitHub\\ww-dps-simulator-2\\ww-dps-simulator-2\\data\\source\\鸣潮动作数据汇总.xlsx",
+  "review_only": true,
+  "simulation_applied": false,
+  "simulation_executable": false,
+  "raw_source_row_count": 24,
+  "action_candidate_count": 1,
+  "executable_policy_action_count": 0,
+  "candidates": [
+    {
+      "candidate_id": "aemeath_qte_intro",
+      "proposed_action_id": "aemeath_qte_intro",
+      "character": "aemeath",
+      "group_type": "qte_intro",
+      "implementation_status": "action_ready_review_candidate",
+      "simulation_executable": false,
+      "policy_selectable": false,
+      "source_rows": [
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2789,
+          "character": "aemeath",
+          "category": "qte_notice",
+          "source_action_name": "QTE",
+          "raw_row_text": "13 | QTE | 无敌期间不能切人\n第48F触发上一角色延奏\n第1F获得流光增幅状态，持续15秒\n流光增幅状态期间施放大招1，可额外获得1点共鸣率 | 1 | 60 | 10 | 40 | 0.3164 | 11 | 地面 | 时停 | 0 | 1 | 50 | 0 | 1 | 50"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2790,
+          "character": "aemeath",
+          "category": "qte_hit",
+          "source_action_name": "QTE-1",
+          "raw_row_text": "QTE-1 | 52 | 12 | 1 | 1 | √ | √ | 9.67 | 7.74 | 1 | 0 | 11 | 地面 | 攻击顿帧 | 0.01 | 2 | 0.01 | 2 | 目标 | 爱弥斯 | 根 | (100,0,100) | 矩形(550,550,350)"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2791,
+          "character": "aemeath",
+          "category": "qte_hit",
+          "source_action_name": "QTE-2",
+          "raw_row_text": "QTE-2 | 54 | 12 | 1 | 1 | √ | √ | 9.67 | 7.74 | 1 | 0 | 11 | 地面 | 攻击顿帧 | 0.01 | 2 | 0.01 | 2 | 目标 | 爱弥斯 | 根 | (100,0,100) | 矩形(550,550,350)"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2792,
+          "character": "aemeath",
+          "category": "qte_hit",
+          "source_action_name": "QTE-3",
+          "raw_row_text": "QTE-3 | 56 | 57 | 11 | 11 | 60 | 58 | 88 | 80 | √ | √ | 77.36 | 61.89 | 8 | 0 | 11,2 | 地面 | 攻击顿帧 | 0.01 | 12 | 0.01 | 12 | 目标 | 爱弥斯 | 根 | (100,0,100) | 矩形(550,550,350)"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2934,
+          "character": "aemeath_mech",
+          "category": "qte_notice",
+          "source_action_name": "QTE",
+          "raw_row_text": "13 | QTE | 无敌期间不能切人，第40F触发上一角色延奏\n第1F获得流光增幅状态，持续15秒\n流光增幅状态期间施放大招1，可额外获得1点共鸣率 | 1 | 72 | 10 | 40 | 0.3164 | 11 | 地面 | 时停 | 0 | 1 | 46 | 0 | 1 | 46"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2935,
+          "character": "aemeath_mech",
+          "category": "qte_hit",
+          "source_action_name": "QTE-1",
+          "raw_row_text": "QTE-1 | 42 | 12 | 3 | 3 | √ | √ | 46.92 | 37.54 | 4 | 0 | 11 | 地面 | 攻击顿帧 | 0.1 | 4 | 0.1 | 4 | 目标 | 机兵 | (200,0,150) | 矩形(850,650,400)"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2936,
+          "character": "aemeath_mech",
+          "category": "qte_hit",
+          "source_action_name": "QTE-2",
+          "raw_row_text": "QTE-2 | 60 | 18 | 3 | 3 | 72 | 70 | 92 | 80 | √ | √ | 70.38 | 56.31 | 6 | 0 | 11,2 | 地面 | 攻击顿帧 | 0.01 | 4 | 0.01 | 4 | 目标 | 机兵 | (200,0,0) | 矩形(1000,650,400)"
+        },
+        {
+          "sheet": "角色技能类型",
+          "sheet_role": "skill_type_sheet",
+          "row_number": 2726,
+          "character": "aemeath",
+          "category": "qte_coefficient",
+          "source_action_name": "QTE-1",
+          "raw_row_text": "QTE-1 | 热熔 | 伤害 | 变奏 | 变奏伤害 | 0 | 攻击 | 0.1346 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 9.67 | 7.74 | - | - | - | - | - | - | - | - | - | - | 0"
+        },
+        {
+          "sheet": "角色技能类型",
+          "sheet_role": "skill_type_sheet",
+          "row_number": 2727,
+          "character": "aemeath",
+          "category": "qte_coefficient",
+          "source_action_name": "QTE-2",
+          "raw_row_text": "QTE-2 | 热熔 | 伤害 | 变奏 | 变奏伤害 | 0 | 攻击 | 0.1346 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 9.67 | 7.74 | - | - | - | - | - | - | - | - | - | - | 0"
+        },
+        {
+          "sheet": "角色技能类型",
+          "sheet_role": "skill_type_sheet",
+          "row_number": 2728,
+          "character": "aemeath",
+          "category": "qte_coefficient",
+          "source_action_name": "QTE-3",
+          "raw_row_text": "QTE-3 | 热熔 | 伤害 | 变奏 | 变奏伤害 | 0 | 攻击 | 1.0766 | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 77.36 | 61.89 | - | - | - | - | - | - | - | - | - | - | 0"
+        },
+        {
+          "sheet": "角色技能类型",
+          "sheet_role": "skill_type_sheet",
+          "row_number": 2781,
+          "character": "aemeath_mech",
+          "category": "qte_coefficient",
+          "source_action_name": "QTE-1",
+          "raw_row_text": "QTE-1 | 热熔 | 伤害 | 共鸣技能 | 变奏伤害 | 0 | 攻击 | 0.653 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 46.92 | 37.54 | - | - | - | - | - | - | - | - | - | - | 0"
+        },
+        {
+          "sheet": "角色技能类型",
+          "sheet_role": "skill_type_sheet",
+          "row_number": 2782,
+          "character": "aemeath_mech",
+          "category": "qte_coefficient",
+          "source_action_name": "QTE-2",
+          "raw_row_text": "QTE-2 | 热熔 | 伤害 | 共鸣技能 | 变奏伤害 | 0 | 攻击 | 0.9795 | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 70.38 | 56.31 | - | - | - | - | - | - | - | - | - | - | 0"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2771,
+          "character": "aemeath",
+          "category": "intro_candidate",
+          "source_action_name": "E1-QTE切换机兵",
+          "raw_row_text": "10* | E1-QTE切换机兵 | 切换形态共享冷却1秒，立即施放机兵A3 | 0.75 | 2 | 地转漂浮 | 1"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2806,
+          "character": "aemeath",
+          "category": "state_grant_note",
+          "source_action_name": "特殊能量",
+          "raw_row_text": "17 | 特殊能量 | 同步率：\n·上限200点\n·A、空中攻击、E2命中时获取；\n·施放QTE、大招1后，分别获取40、30点同步率；\n·施放强化E时，减少100点同步率；\n·施放大招2后清空同步率。\n\n共鸣率：\n·上限4点\n·施放强化E、大招1后，分别获得1点共鸣率；\n·施放大招2后清空共鸣率。\n\n流光增幅状态：\n·施放QTE后获得，持续15秒，触发获得刷新持续时间；\n·状态期间施放大招1后，移除状态，额外获得1点共鸣率。\n\n强化E解锁前置：\n·施放A4获得，持续5秒，触发获得刷新持续时间；\n·【前置】持续期间，同步率>=100点时解锁强化E；\n·施放强化E后移除。\n\n强化E增幅次数：\n·施放大招1后获得2层，持续30秒，触发获得刷新持续时间；\n·施放强化E时消耗1层，使 强化E-震谐 替换为 强化E-震谐增幅、强化E-聚爆 替换为 强化E-聚爆增幅。\n\n轨迹无消耗状态：\n·施放大招1后获得，持续30秒，触发获得刷新持续时间；\n·状态期间，施放强化E不会移除目标持有的震谐轨迹/聚爆轨迹\n·施放强化E后，移除该状态。\n\n大招2解锁前置：\n·施放大招1后获得，持续60秒，触发获得刷新持续时间；\n·速蓄状态期间，施放强化重击后获得200点同步率；\n·【前置】持续期间，同步率和共鸣率达到上限时解锁大招2；\n·施放大招2后移除。\n\n速蓄状态：\n·【大招2解锁前置】持续期间，共鸣率达到上限时获得；\n·状态期间，蓄力达到一段派生帧后自动施放强化重击；\n·施放强化重击、施放大招2、【前置】持续结束后移除该状态。\n\nC1速蓄状态：\n·解锁C1后，在非战斗状态下不处于重击/强化重击/大招2动作中超过4秒时获得；\n·获得后覆盖常规速蓄状态，且不会因【前置】结束而移除；\n·状态期间，蓄力达到一段派生帧后自动施放强化重击；\n·状态期间未持有【前置】时，施放强化重击后获得100点同步率\n·施放强化重击、施放大招2后，移除该状态。"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2915,
+          "character": "aemeath_mech",
+          "category": "intro_candidate",
+          "source_action_name": "E1-QTE切换爱弥斯",
+          "raw_row_text": "10* | E1-QTE切换爱弥斯 | 切换形态共享冷却1秒，立即施放爱弥斯A3 | 0.75 | 2 | 地面"
+        },
+        {
+          "sheet": "角色技能类型",
+          "sheet_role": "skill_type_sheet",
+          "row_number": 2712,
+          "character": "aemeath",
+          "category": "intro_candidate",
+          "source_action_name": "E1-QTE切换机兵",
+          "raw_row_text": "E1-QTE切换机兵 | - | - | 共鸣技能 | -"
+        },
+        {
+          "sheet": "角色技能类型",
+          "sheet_role": "skill_type_sheet",
+          "row_number": 2764,
+          "character": "aemeath_mech",
+          "category": "intro_candidate",
+          "source_action_name": "E1-QTE切换爱弥斯",
+          "raw_row_text": "E1-QTE切换爱弥斯 | - | - | 共鸣技能 | -"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2772,
+          "character": "aemeath",
+          "category": "timing_only",
+          "source_action_name": "E2-合击",
+          "raw_row_text": "11 | E2-合击 | 立即切换至机兵 | 1 | 0.3164 | 4 | 地面"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2776,
+          "character": "aemeath",
+          "category": "swap_restriction_note",
+          "source_action_name": "强化E-降临",
+          "raw_row_text": "12 | 强化E-降临 | 立即切换至机兵，无敌期间不能切人\n减少100点同步率，获得1点共鸣率\n移除轨迹无消耗状态，技能结束后移除1层强化E增幅次数 | 1 | 180 | -100 | 0.2373 | 10 | 地面 | 时停 | 0 | 1 | 101 | 0 | 1 | 101"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2793,
+          "character": "aemeath",
+          "category": "state_grant_note",
+          "source_action_name": "大招1-前置",
+          "raw_row_text": "14 | 大招1-前置 | 无敌期间不能切人，第238F移除流光增幅状态\n第1F切换至机兵，获得30点同步率、1点共鸣率\n第1F获得2层30秒强化E增幅次数，获得60秒【大招2解锁前置】 | 1 | 262 | 20 | 30 | 0 | 10 | 地面 | 时停 | 0 | 1 | 262 | 0 | 1 | 262"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2798,
+          "character": "aemeath",
+          "category": "swap_restriction_note",
+          "source_action_name": "大招2-前置",
+          "raw_row_text": "15 | 大招2-前置 | 无敌期间不能切人\n第1F切换至爱弥斯，移除速蓄状态、强化E解锁状态\n第1F清空同步率、共鸣率，技能结束后移除【大招2解锁前置】 | 1 | 340 | 20 | -200 | 0 | 10 | 地面 | 时停 | 0 | 1 | 340 | 0 | 1 | 340"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2802,
+          "character": "aemeath",
+          "category": "swap_restriction_note",
+          "source_action_name": "谐度破坏-时停",
+          "raw_row_text": "16 | 谐度破坏-时停 | 无敌期间不能切人 | 1 | 90 | 1 | 11 | 地面 | 时停 | 0 | 1 | 70 | 0 | 1 | 70"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2921,
+          "character": "aemeath_mech",
+          "category": "swap_restriction_note",
+          "source_action_name": "强化E-登台",
+          "raw_row_text": "12 | 强化E-登台 | 立即切换至爱弥斯，无敌期间不能切人\n减少100点同步率，获得1点共鸣率\n移除轨迹无消耗状态，技能结束后移除1层强化E增幅次数 | 1 | 145 | -100 | 0.2373 | 10 | 地面 | 时停 | 0 | 1 | 65 | 0 | 1 | 65"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2937,
+          "character": "aemeath_mech",
+          "category": "swap_restriction_note",
+          "source_action_name": "谐度破坏-时停",
+          "raw_row_text": "14 | 谐度破坏-时停 | 无敌期间不能切人 | 1 | 94 | 1 | 11 | 地面 | 时停 | 0 | 1 | 64 | 0 | 1 | 64"
+        }
+      ],
+      "executable_source_rows": [
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2789,
+          "character": "aemeath",
+          "category": "qte_notice",
+          "source_action_name": "QTE",
+          "raw_row_text": "13 | QTE | 无敌期间不能切人\n第48F触发上一角色延奏\n第1F获得流光增幅状态，持续15秒\n流光增幅状态期间施放大招1，可额外获得1点共鸣率 | 1 | 60 | 10 | 40 | 0.3164 | 11 | 地面 | 时停 | 0 | 1 | 50 | 0 | 1 | 50"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2790,
+          "character": "aemeath",
+          "category": "qte_hit",
+          "source_action_name": "QTE-1",
+          "raw_row_text": "QTE-1 | 52 | 12 | 1 | 1 | √ | √ | 9.67 | 7.74 | 1 | 0 | 11 | 地面 | 攻击顿帧 | 0.01 | 2 | 0.01 | 2 | 目标 | 爱弥斯 | 根 | (100,0,100) | 矩形(550,550,350)"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2791,
+          "character": "aemeath",
+          "category": "qte_hit",
+          "source_action_name": "QTE-2",
+          "raw_row_text": "QTE-2 | 54 | 12 | 1 | 1 | √ | √ | 9.67 | 7.74 | 1 | 0 | 11 | 地面 | 攻击顿帧 | 0.01 | 2 | 0.01 | 2 | 目标 | 爱弥斯 | 根 | (100,0,100) | 矩形(550,550,350)"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2792,
+          "character": "aemeath",
+          "category": "qte_hit",
+          "source_action_name": "QTE-3",
+          "raw_row_text": "QTE-3 | 56 | 57 | 11 | 11 | 60 | 58 | 88 | 80 | √ | √ | 77.36 | 61.89 | 8 | 0 | 11,2 | 地面 | 攻击顿帧 | 0.01 | 12 | 0.01 | 12 | 目标 | 爱弥斯 | 根 | (100,0,100) | 矩形(550,550,350)"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2934,
+          "character": "aemeath_mech",
+          "category": "qte_notice",
+          "source_action_name": "QTE",
+          "raw_row_text": "13 | QTE | 无敌期间不能切人，第40F触发上一角色延奏\n第1F获得流光增幅状态，持续15秒\n流光增幅状态期间施放大招1，可额外获得1点共鸣率 | 1 | 72 | 10 | 40 | 0.3164 | 11 | 地面 | 时停 | 0 | 1 | 46 | 0 | 1 | 46"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2935,
+          "character": "aemeath_mech",
+          "category": "qte_hit",
+          "source_action_name": "QTE-1",
+          "raw_row_text": "QTE-1 | 42 | 12 | 3 | 3 | √ | √ | 46.92 | 37.54 | 4 | 0 | 11 | 地面 | 攻击顿帧 | 0.1 | 4 | 0.1 | 4 | 目标 | 机兵 | (200,0,150) | 矩形(850,650,400)"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2936,
+          "character": "aemeath_mech",
+          "category": "qte_hit",
+          "source_action_name": "QTE-2",
+          "raw_row_text": "QTE-2 | 60 | 18 | 3 | 3 | 72 | 70 | 92 | 80 | √ | √ | 70.38 | 56.31 | 6 | 0 | 11,2 | 地面 | 攻击顿帧 | 0.01 | 4 | 0.01 | 4 | 目标 | 机兵 | (200,0,0) | 矩形(1000,650,400)"
+        },
+        {
+          "sheet": "角色技能类型",
+          "sheet_role": "skill_type_sheet",
+          "row_number": 2726,
+          "character": "aemeath",
+          "category": "qte_coefficient",
+          "source_action_name": "QTE-1",
+          "raw_row_text": "QTE-1 | 热熔 | 伤害 | 变奏 | 变奏伤害 | 0 | 攻击 | 0.1346 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 9.67 | 7.74 | - | - | - | - | - | - | - | - | - | - | 0"
+        },
+        {
+          "sheet": "角色技能类型",
+          "sheet_role": "skill_type_sheet",
+          "row_number": 2727,
+          "character": "aemeath",
+          "category": "qte_coefficient",
+          "source_action_name": "QTE-2",
+          "raw_row_text": "QTE-2 | 热熔 | 伤害 | 变奏 | 变奏伤害 | 0 | 攻击 | 0.1346 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 9.67 | 7.74 | - | - | - | - | - | - | - | - | - | - | 0"
+        },
+        {
+          "sheet": "角色技能类型",
+          "sheet_role": "skill_type_sheet",
+          "row_number": 2728,
+          "character": "aemeath",
+          "category": "qte_coefficient",
+          "source_action_name": "QTE-3",
+          "raw_row_text": "QTE-3 | 热熔 | 伤害 | 变奏 | 变奏伤害 | 0 | 攻击 | 1.0766 | 8 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 77.36 | 61.89 | - | - | - | - | - | - | - | - | - | - | 0"
+        },
+        {
+          "sheet": "角色技能类型",
+          "sheet_role": "skill_type_sheet",
+          "row_number": 2781,
+          "character": "aemeath_mech",
+          "category": "qte_coefficient",
+          "source_action_name": "QTE-1",
+          "raw_row_text": "QTE-1 | 热熔 | 伤害 | 共鸣技能 | 变奏伤害 | 0 | 攻击 | 0.653 | 4 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 46.92 | 37.54 | - | - | - | - | - | - | - | - | - | - | 0"
+        },
+        {
+          "sheet": "角色技能类型",
+          "sheet_role": "skill_type_sheet",
+          "row_number": 2782,
+          "character": "aemeath_mech",
+          "category": "qte_coefficient",
+          "source_action_name": "QTE-2",
+          "raw_row_text": "QTE-2 | 热熔 | 伤害 | 共鸣技能 | 变奏伤害 | 0 | 攻击 | 0.9795 | 6 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 70.38 | 56.31 | - | - | - | - | - | - | - | - | - | - | 0"
+        }
+      ],
+      "metadata_source_rows": [
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2771,
+          "character": "aemeath",
+          "category": "intro_candidate",
+          "source_action_name": "E1-QTE切换机兵",
+          "raw_row_text": "10* | E1-QTE切换机兵 | 切换形态共享冷却1秒，立即施放机兵A3 | 0.75 | 2 | 地转漂浮 | 1"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2789,
+          "character": "aemeath",
+          "category": "qte_notice",
+          "source_action_name": "QTE",
+          "raw_row_text": "13 | QTE | 无敌期间不能切人\n第48F触发上一角色延奏\n第1F获得流光增幅状态，持续15秒\n流光增幅状态期间施放大招1，可额外获得1点共鸣率 | 1 | 60 | 10 | 40 | 0.3164 | 11 | 地面 | 时停 | 0 | 1 | 50 | 0 | 1 | 50"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2806,
+          "character": "aemeath",
+          "category": "state_grant_note",
+          "source_action_name": "特殊能量",
+          "raw_row_text": "17 | 特殊能量 | 同步率：\n·上限200点\n·A、空中攻击、E2命中时获取；\n·施放QTE、大招1后，分别获取40、30点同步率；\n·施放强化E时，减少100点同步率；\n·施放大招2后清空同步率。\n\n共鸣率：\n·上限4点\n·施放强化E、大招1后，分别获得1点共鸣率；\n·施放大招2后清空共鸣率。\n\n流光增幅状态：\n·施放QTE后获得，持续15秒，触发获得刷新持续时间；\n·状态期间施放大招1后，移除状态，额外获得1点共鸣率。\n\n强化E解锁前置：\n·施放A4获得，持续5秒，触发获得刷新持续时间；\n·【前置】持续期间，同步率>=100点时解锁强化E；\n·施放强化E后移除。\n\n强化E增幅次数：\n·施放大招1后获得2层，持续30秒，触发获得刷新持续时间；\n·施放强化E时消耗1层，使 强化E-震谐 替换为 强化E-震谐增幅、强化E-聚爆 替换为 强化E-聚爆增幅。\n\n轨迹无消耗状态：\n·施放大招1后获得，持续30秒，触发获得刷新持续时间；\n·状态期间，施放强化E不会移除目标持有的震谐轨迹/聚爆轨迹\n·施放强化E后，移除该状态。\n\n大招2解锁前置：\n·施放大招1后获得，持续60秒，触发获得刷新持续时间；\n·速蓄状态期间，施放强化重击后获得200点同步率；\n·【前置】持续期间，同步率和共鸣率达到上限时解锁大招2；\n·施放大招2后移除。\n\n速蓄状态：\n·【大招2解锁前置】持续期间，共鸣率达到上限时获得；\n·状态期间，蓄力达到一段派生帧后自动施放强化重击；\n·施放强化重击、施放大招2、【前置】持续结束后移除该状态。\n\nC1速蓄状态：\n·解锁C1后，在非战斗状态下不处于重击/强化重击/大招2动作中超过4秒时获得；\n·获得后覆盖常规速蓄状态，且不会因【前置】结束而移除；\n·状态期间，蓄力达到一段派生帧后自动施放强化重击；\n·状态期间未持有【前置】时，施放强化重击后获得100点同步率\n·施放强化重击、施放大招2后，移除该状态。"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2915,
+          "character": "aemeath_mech",
+          "category": "intro_candidate",
+          "source_action_name": "E1-QTE切换爱弥斯",
+          "raw_row_text": "10* | E1-QTE切换爱弥斯 | 切换形态共享冷却1秒，立即施放爱弥斯A3 | 0.75 | 2 | 地面"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2934,
+          "character": "aemeath_mech",
+          "category": "qte_notice",
+          "source_action_name": "QTE",
+          "raw_row_text": "13 | QTE | 无敌期间不能切人，第40F触发上一角色延奏\n第1F获得流光增幅状态，持续15秒\n流光增幅状态期间施放大招1，可额外获得1点共鸣率 | 1 | 72 | 10 | 40 | 0.3164 | 11 | 地面 | 时停 | 0 | 1 | 46 | 0 | 1 | 46"
+        },
+        {
+          "sheet": "角色技能类型",
+          "sheet_role": "skill_type_sheet",
+          "row_number": 2712,
+          "character": "aemeath",
+          "category": "intro_candidate",
+          "source_action_name": "E1-QTE切换机兵",
+          "raw_row_text": "E1-QTE切换机兵 | - | - | 共鸣技能 | -"
+        },
+        {
+          "sheet": "角色技能类型",
+          "sheet_role": "skill_type_sheet",
+          "row_number": 2764,
+          "character": "aemeath_mech",
+          "category": "intro_candidate",
+          "source_action_name": "E1-QTE切换爱弥斯",
+          "raw_row_text": "E1-QTE切换爱弥斯 | - | - | 共鸣技能 | -"
+        }
+      ],
+      "excluded_source_rows": [
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2772,
+          "character": "aemeath",
+          "category": "timing_only",
+          "source_action_name": "E2-合击",
+          "raw_row_text": "11 | E2-合击 | 立即切换至机兵 | 1 | 0.3164 | 4 | 地面",
+          "excluded_reason": "qte_followup_form_switch_note"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2776,
+          "character": "aemeath",
+          "category": "swap_restriction_note",
+          "source_action_name": "强化E-降临",
+          "raw_row_text": "12 | 强化E-降临 | 立即切换至机兵，无敌期间不能切人\n减少100点同步率，获得1点共鸣率\n移除轨迹无消耗状态，技能结束后移除1层强化E增幅次数 | 1 | 180 | -100 | 0.2373 | 10 | 地面 | 时停 | 0 | 1 | 101 | 0 | 1 | 101",
+          "excluded_reason": "seraphic_duet_notice"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2793,
+          "character": "aemeath",
+          "category": "state_grant_note",
+          "source_action_name": "大招1-前置",
+          "raw_row_text": "14 | 大招1-前置 | 无敌期间不能切人，第238F移除流光增幅状态\n第1F切换至机兵，获得30点同步率、1点共鸣率\n第1F获得2层30秒强化E增幅次数，获得60秒【大招2解锁前置】 | 1 | 262 | 20 | 30 | 0 | 10 | 地面 | 时停 | 0 | 1 | 262 | 0 | 1 | 262",
+          "excluded_reason": "overdrive_notice"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2798,
+          "character": "aemeath",
+          "category": "swap_restriction_note",
+          "source_action_name": "大招2-前置",
+          "raw_row_text": "15 | 大招2-前置 | 无敌期间不能切人\n第1F切换至爱弥斯，移除速蓄状态、强化E解锁状态\n第1F清空同步率、共鸣率，技能结束后移除【大招2解锁前置】 | 1 | 340 | 20 | -200 | 0 | 10 | 地面 | 时停 | 0 | 1 | 340 | 0 | 1 | 340",
+          "excluded_reason": "finale_notice"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2802,
+          "character": "aemeath",
+          "category": "swap_restriction_note",
+          "source_action_name": "谐度破坏-时停",
+          "raw_row_text": "16 | 谐度破坏-时停 | 无敌期间不能切人 | 1 | 90 | 1 | 11 | 地面 | 时停 | 0 | 1 | 70 | 0 | 1 | 70",
+          "excluded_reason": "tune_break_notice"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2921,
+          "character": "aemeath_mech",
+          "category": "swap_restriction_note",
+          "source_action_name": "强化E-登台",
+          "raw_row_text": "12 | 强化E-登台 | 立即切换至爱弥斯，无敌期间不能切人\n减少100点同步率，获得1点共鸣率\n移除轨迹无消耗状态，技能结束后移除1层强化E增幅次数 | 1 | 145 | -100 | 0.2373 | 10 | 地面 | 时停 | 0 | 1 | 65 | 0 | 1 | 65",
+          "excluded_reason": "seraphic_duet_notice"
+        },
+        {
+          "sheet": "角色-女",
+          "sheet_role": "frame_sheet",
+          "row_number": 2937,
+          "character": "aemeath_mech",
+          "category": "swap_restriction_note",
+          "source_action_name": "谐度破坏-时停",
+          "raw_row_text": "14 | 谐度破坏-时停 | 无敌期间不能切人 | 1 | 94 | 1 | 11 | 地面 | 时停 | 0 | 1 | 64 | 0 | 1 | 64",
+          "excluded_reason": "tune_break_notice"
+        }
+      ],
+      "timing_candidate": {
+        "action_time_frames": null,
+        "action_time_seconds": null,
+        "action_time_frame_candidates": [
+          60.0,
+          72.0
+        ],
+        "combat_time_cost_frames": null,
+        "combat_time_cost_seconds": null,
+        "confirmed_time_stop_frame_candidates": [
+          46.0,
+          50.0
+        ],
+        "hit_frames": [
+          52.0,
+          54.0,
+          56.0,
+          42.0,
+          60.0
+        ],
+        "hit_times_seconds": [
+          0.8667,
+          0.9,
+          0.9333,
+          0.7,
+          1.0
+        ],
+        "previous_outro_trigger_frame": null,
+        "previous_outro_trigger_frames": [
+          40.0,
+          48.0
+        ],
+        "confidence": "low",
+        "warnings": [
+          "Multiple parent QTE action-time candidates found; selected action_time left unresolved.",
+          "Previous-character Outro trigger frame is ambiguous or unresolved.",
+          "Confirmed time-stop metadata exists; combat_time_cost requires manual review."
+        ]
+      },
+      "damage_candidate": {
+        "skill_category": "变奏",
+        "damage_type": "变奏伤害",
+        "raw_coefficients": [
+          0.1346,
+          0.1346,
+          1.0766,
+          0.653,
+          0.9795
+        ],
+        "parsed_multipliers": [
+          0.1346,
+          0.1346,
+          1.0766,
+          0.653,
+          0.9795
+        ],
+        "hit_count": 5,
+        "confidence": "high",
+        "warnings": []
+      },
+      "notice_metadata": {
+        "previous_character_outro_trigger_frame": null,
+        "previous_outro_trigger_frames": [
+          40.0,
+          48.0
+        ],
+        "previous_character_outro_trigger_source": [
+          "13 | QTE | 无敌期间不能切人\n第48F触发上一角色延奏\n第1F获得流光增幅状态，持续15秒\n流光增幅状态期间施放大招1，可额外获得1点共鸣率 | 1 | 60 | 10 | 40 | 0.3164 | 11 | 地面 | 时停 | 0 | 1 | 50 | 0 | 1 | 50",
+          "13 | QTE | 无敌期间不能切人，第40F触发上一角色延奏\n第1F获得流光增幅状态，持续15秒\n流光增幅状态期间施放大招1，可额外获得1点共鸣率 | 1 | 72 | 10 | 40 | 0.3164 | 11 | 地面 | 时停 | 0 | 1 | 46 | 0 | 1 | 46"
+        ],
+        "cannot_switch_during_invulnerable": true,
+        "cannot_switch_source": [
+          "13 | QTE | 无敌期间不能切人\n第48F触发上一角色延奏\n第1F获得流光增幅状态，持续15秒\n流光增幅状态期间施放大招1，可额外获得1点共鸣率 | 1 | 60 | 10 | 40 | 0.3164 | 11 | 地面 | 时停 | 0 | 1 | 50 | 0 | 1 | 50",
+          "13 | QTE | 无敌期间不能切人，第40F触发上一角色延奏\n第1F获得流光增幅状态，持续15秒\n流光增幅状态期间施放大招1，可额外获得1点共鸣率 | 1 | 72 | 10 | 40 | 0.3164 | 11 | 地面 | 时停 | 0 | 1 | 46 | 0 | 1 | 46"
+        ],
+        "state_grants": [
+          {
+            "state_name_raw": "流光增幅",
+            "start_frame": 1.0,
+            "duration_seconds": 15.0,
+            "source_text": "第1F获得流光增幅状态，持续15秒"
+          }
+        ],
+        "qte_followup_form_switch_notes": [
+          {
+            "sheet": "角色-女",
+            "sheet_role": "frame_sheet",
+            "row_number": 2771,
+            "character": "aemeath",
+            "category": "intro_candidate",
+            "source_action_name": "E1-QTE切换机兵",
+            "raw_row_text": "10* | E1-QTE切换机兵 | 切换形态共享冷却1秒，立即施放机兵A3 | 0.75 | 2 | 地转漂浮 | 1"
+          },
+          {
+            "sheet": "角色-女",
+            "sheet_role": "frame_sheet",
+            "row_number": 2915,
+            "character": "aemeath_mech",
+            "category": "intro_candidate",
+            "source_action_name": "E1-QTE切换爱弥斯",
+            "raw_row_text": "10* | E1-QTE切换爱弥斯 | 切换形态共享冷却1秒，立即施放爱弥斯A3 | 0.75 | 2 | 地面"
+          },
+          {
+            "sheet": "角色技能类型",
+            "sheet_role": "skill_type_sheet",
+            "row_number": 2712,
+            "character": "aemeath",
+            "category": "intro_candidate",
+            "source_action_name": "E1-QTE切换机兵",
+            "raw_row_text": "E1-QTE切换机兵 | - | - | 共鸣技能 | -"
+          },
+          {
+            "sheet": "角色技能类型",
+            "sheet_role": "skill_type_sheet",
+            "row_number": 2764,
+            "character": "aemeath_mech",
+            "category": "intro_candidate",
+            "source_action_name": "E1-QTE切换爱弥斯",
+            "raw_row_text": "E1-QTE切换爱弥斯 | - | - | 共鸣技能 | -"
+          }
+        ],
+        "raw_notice_text": [
+          "13 | QTE | 无敌期间不能切人\n第48F触发上一角色延奏\n第1F获得流光增幅状态，持续15秒\n流光增幅状态期间施放大招1，可额外获得1点共鸣率 | 1 | 60 | 10 | 40 | 0.3164 | 11 | 地面 | 时停 | 0 | 1 | 50 | 0 | 1 | 50",
+          "13 | QTE | 无敌期间不能切人，第40F触发上一角色延奏\n第1F获得流光增幅状态，持续15秒\n流光增幅状态期间施放大招1，可额外获得1点共鸣率 | 1 | 72 | 10 | 40 | 0.3164 | 11 | 地面 | 时停 | 0 | 1 | 46 | 0 | 1 | 46",
+          "10* | E1-QTE切换机兵 | 切换形态共享冷却1秒，立即施放机兵A3 | 0.75 | 2 | 地转漂浮 | 1",
+          "17 | 特殊能量 | 同步率：\n·上限200点\n·A、空中攻击、E2命中时获取；\n·施放QTE、大招1后，分别获取40、30点同步率；\n·施放强化E时，减少100点同步率；\n·施放大招2后清空同步率。\n\n共鸣率：\n·上限4点\n·施放强化E、大招1后，分别获得1点共鸣率；\n·施放大招2后清空共鸣率。\n\n流光增幅状态：\n·施放QTE后获得，持续15秒，触发获得刷新持续时间；\n·状态期间施放大招1后，移除状态，额外获得1点共鸣率。\n\n强化E解锁前置：\n·施放A4获得，持续5秒，触发获得刷新持续时间；\n·【前置】持续期间，同步率>=100点时解锁强化E；\n·施放强化E后移除。\n\n强化E增幅次数：\n·施放大招1后获得2层，持续30秒，触发获得刷新持续时间；\n·施放强化E时消耗1层，使 强化E-震谐 替换为 强化E-震谐增幅、强化E-聚爆 替换为 强化E-聚爆增幅。\n\n轨迹无消耗状态：\n·施放大招1后获得，持续30秒，触发获得刷新持续时间；\n·状态期间，施放强化E不会移除目标持有的震谐轨迹/聚爆轨迹\n·施放强化E后，移除该状态。\n\n大招2解锁前置：\n·施放大招1后获得，持续60秒，触发获得刷新持续时间；\n·速蓄状态期间，施放强化重击后获得200点同步率；\n·【前置】持续期间，同步率和共鸣率达到上限时解锁大招2；\n·施放大招2后移除。\n\n速蓄状态：\n·【大招2解锁前置】持续期间，共鸣率达到上限时获得；\n·状态期间，蓄力达到一段派生帧后自动施放强化重击；\n·施放强化重击、施放大招2、【前置】持续结束后移除该状态。\n\nC1速蓄状态：\n·解锁C1后，在非战斗状态下不处于重击/强化重击/大招2动作中超过4秒时获得；\n·获得后覆盖常规速蓄状态，且不会因【前置】结束而移除；\n·状态期间，蓄力达到一段派生帧后自动施放强化重击；\n·状态期间未持有【前置】时，施放强化重击后获得100点同步率\n·施放强化重击、施放大招2后，移除该状态。",
+          "10* | E1-QTE切换爱弥斯 | 切换形态共享冷却1秒，立即施放爱弥斯A3 | 0.75 | 2 | 地面",
+          "E1-QTE切换机兵 | - | - | 共鸣技能 | -",
+          "E1-QTE切换爱弥斯 | - | - | 共鸣技能 | -"
+        ],
+        "warnings": [
+          "Multiple previous-character Outro trigger frames found; selected value left null."
+        ]
+      },
+      "action_stub_preview": {
+        "id": "aemeath_qte_intro",
+        "character_id": "aemeath",
+        "action_type": "swap",
+        "policy_selectable": false,
+        "review_only": true,
+        "action_time": null,
+        "combat_time_cost": null,
+        "hits": [
+          {
+            "damage_multiplier": 0.1346
+          },
+          {
+            "damage_multiplier": 0.1346
+          },
+          {
+            "damage_multiplier": 1.0766
+          },
+          {
+            "damage_multiplier": 0.653
+          },
+          {
+            "damage_multiplier": 0.9795
+          }
+        ],
+        "tags": [
+          "qte",
+          "intro",
+          "variation"
+        ],
+        "notes": [
+          "This is not applied to simulation yet."
+        ]
+      },
+      "safe_to_implement_later": false,
+      "safe_to_implement_reasons": [
+        "Aemeath QTE transition execution is not implemented.",
+        "Timing needs manual review before data/actions.json can be patched.",
+        "Notice metadata includes state and Outro behavior that must be modeled in the transition pipeline first."
+      ],
+      "warnings": [
+        "This is an action-ready review candidate only.",
+        "Aemeath QTE is not executable and is not policy-selectable.",
+        "Action time is unresolved because human/mech QTE parent timing differs."
+      ]
+    }
+  ],
+  "excluded_summary": {
+    "excluded_metadata_only_rows": 7,
+    "excluded_unrelated_aemeath_rows": 7,
+    "excluded_other_character_rows": 524,
+    "excluded_header_rows": 2
+  },
+  "warnings": [
+    "Action candidate output is review-only and is not applied to simulation.",
+    "data/actions.json is not modified by this extraction."
+  ]
+}

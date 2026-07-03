@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -12,20 +13,35 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SOURCE_DIR = PROJECT_ROOT / "data" / "source"
 DEFAULT_OUTPUT = PROJECT_ROOT / "data" / "extracted" / "aemeath_qte_intro_outro_candidates.json"
 DEFAULT_REPORT = PROJECT_ROOT / "reports" / "aemeath_qte_intro_outro_review.md"
+DEFAULT_ACTION_CANDIDATES_OUTPUT = PROJECT_ROOT / "data" / "extracted" / "aemeath_qte_action_candidates.json"
+DEFAULT_ACTION_CANDIDATE_REPORT = PROJECT_ROOT / "reports" / "aemeath_qte_action_candidate_review.md"
 
-MOJIBAKE_HINTS = ["?\uc107\uca95", "\uf978\ub739\uca95"]
-KEYWORDS = [
-    "QTE",
-    "INTRO",
-    "OUTRO",
-    "\u5165\u573a",
-    "\u767b\u573a",
-    "\u9000\u573a",
-    "\u53d8\u594f",
-    "\u8b8a\u594f",
-    "\u5ef6\u594f",
-    "\u534f\u594f",
-]
+AEMEATH = "\u7231\u5f25\u65af"
+AEMEATH_MECH = "\u673a\u5175\u7231\u5f25\u65af"
+VARIATION = "\u53d8\u594f"
+OUTRO = "\u5ef6\u594f"
+INTRO = "\u767b\u53f0"
+INVULNERABLE_SWAP_LOCK = "\u65e0\u654c\u671f\u95f4\u4e0d\u80fd\u5207\u4eba"
+FLOW_LIGHT_AMP = "\u6d41\u5149\u589e\u5e45"
+NON_CHARACTER_SECTION_LABELS = {
+    "\u504f\u8c10\u673a\u5236",
+    "\u6280\u80fd\u7c7b\u578b",
+    "\u4f24\u5bb3\u8ba1\u7b97",
+    "\u8f93\u5165\u7f13\u5b58",
+    "\u7275\u5f15",
+}
+
+SELECTED_SHEETS = {
+    "frame_sheet": "\u89d2\u8272-\u5973",
+    "skill_type_sheet": "\u89d2\u8272\u6280\u80fd\u7c7b\u578b",
+}
+
+QTE_LABEL_RE = re.compile(r"^QTE(?:-\d+)?(?:$|[^A-Za-z0-9])", re.IGNORECASE)
+ACTION_LABEL_RE = re.compile(
+    r"^(?:QTE(?:-\d+)?|E\d(?:-.+)?|A\d(?:-.+)?|C\d+|"
+    r"\u5927\u62db\d.*|\u5f3a\u5316E.*|\u91cd\u51fb.*|\u8c10\u5ea6\u7834\u574f.*)$",
+    re.IGNORECASE,
+)
 
 
 def resolve_workbook_path(path: str | Path | None = None) -> Path:
@@ -41,31 +57,49 @@ def extract(
     workbook_path: str | Path | None = None,
     output_path: str | Path = DEFAULT_OUTPUT,
     report_path: str | Path = DEFAULT_REPORT,
+    action_output_path: str | Path = DEFAULT_ACTION_CANDIDATES_OUTPUT,
+    action_report_path: str | Path = DEFAULT_ACTION_CANDIDATE_REPORT,
 ) -> dict[str, Any]:
-    workbook = load_workbook(resolve_workbook_path(workbook_path), data_only=False, read_only=True)
+    source_workbook = resolve_workbook_path(workbook_path)
+    workbook = load_workbook(source_workbook, data_only=True, read_only=True)
     candidates: list[dict[str, Any]] = []
-    for sheet_name in workbook.sheetnames:
-        sheet = workbook[sheet_name]
-        for row_number, row in enumerate(sheet.iter_rows(values_only=True), start=1):
-            values = [cell for cell in row if cell is not None]
-            if not values:
-                continue
-            raw_text = " | ".join(_cell_text(value) for value in values)
-            if not _is_candidate(raw_text):
-                continue
-            candidates.append(_candidate(sheet_name, row_number, values, raw_text))
+    excluded_summary = {
+        "excluded_other_character_rows": 0,
+        "excluded_header_rows": 0,
+        "excluded_unrelated_rows": 0,
+    }
+
+    for sheet_role, sheet_name in SELECTED_SHEETS.items():
+        if sheet_name not in workbook.sheetnames:
+            continue
+        candidates.extend(_collect_sheet_candidates(workbook[sheet_name], sheet_role, sheet_name, excluded_summary))
+
+    groups = [_build_qte_group(candidates)] if candidates else []
+    action_candidate_artifact = _build_action_candidate_artifact(source_workbook, candidates, excluded_summary)
+    action_output = Path(action_output_path)
+    action_report = Path(action_report_path)
 
     artifact = {
-        "review_status": "review_only_not_executable",
-        "notice": (
-            "Aemeath QTE / Intro / Outro candidates are extracted for review only. "
-            "They are not applied to simulator actions, rewards, PPO training, or party DPS."
-        ),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "source_workbook": str(source_workbook),
+        "selected_sheets": SELECTED_SHEETS,
+        "review_only": True,
+        "simulation_applied": False,
+        "raw_candidate_row_count": len(candidates),
+        "action_candidate_count": action_candidate_artifact["action_candidate_count"],
+        "executable_candidate_count": action_candidate_artifact["executable_policy_action_count"],
+        "action_candidate_output": str(action_output),
+        "action_candidate_report": str(action_report),
         "candidate_count": len(candidates),
-        "keywords": KEYWORDS,
-        "mojibake_hints": MOJIBAKE_HINTS,
+        "groups": groups,
         "candidates": candidates,
+        "excluded_summary": excluded_summary,
+        "warnings": [
+            "Review-only. Not applied to simulation.",
+            "Aemeath QTE remains disabled in transition_config.json.",
+        ],
     }
+
     output = Path(output_path)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(artifact, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -73,154 +107,897 @@ def extract(
     report = Path(report_path)
     report.parent.mkdir(parents=True, exist_ok=True)
     report.write_text(_report_markdown(artifact), encoding="utf-8")
+
+    action_output.parent.mkdir(parents=True, exist_ok=True)
+    action_output.write_text(json.dumps(action_candidate_artifact, ensure_ascii=False, indent=2), encoding="utf-8")
+    action_report.parent.mkdir(parents=True, exist_ok=True)
+    action_report.write_text(_action_candidate_report_markdown(action_candidate_artifact), encoding="utf-8")
     return artifact
 
 
+def _collect_sheet_candidates(ws: Any, sheet_role: str, sheet_name: str, excluded_summary: dict[str, int]) -> list[dict[str, Any]]:
+    headers: list[str] = []
+    current_character: str | None = None
+    candidates: list[dict[str, Any]] = []
+
+    for row_number, values_tuple in enumerate(ws.iter_rows(values_only=True), start=1):
+        values = list(values_tuple)
+        non_empty = [(index + 1, value) for index, value in enumerate(values) if value not in (None, "")]
+        if not non_empty:
+            continue
+        if row_number == 1:
+            headers = [_cell_text(value) if value not in (None, "") else f"column_{index + 1}" for index, value in enumerate(values)]
+            excluded_summary["excluded_header_rows"] += 1
+            continue
+
+        section = _section_from_row(non_empty)
+        if section in {"aemeath", "aemeath_mech"}:
+            current_character = section
+        elif section == "other":
+            current_character = "other"
+
+        row = _row_payload(sheet_role, sheet_name, row_number, values, headers, current_character)
+        category = _classify_row(row)
+        if current_character in {"aemeath", "aemeath_mech"} and category != "unrelated":
+            row["category"] = category
+            row["character"] = current_character
+            candidates.append(row)
+        elif _qte_related(row["source_action_name"], row["raw_row_text"]):
+            if current_character == "other":
+                excluded_summary["excluded_other_character_rows"] += 1
+            else:
+                excluded_summary["excluded_unrelated_rows"] += 1
+        else:
+            excluded_summary["excluded_unrelated_rows"] += 1
+    return candidates
+
+
+def _row_payload(
+    sheet_role: str,
+    sheet_name: str,
+    row_number: int,
+    values: list[Any],
+    headers: list[str],
+    current_character: str | None,
+) -> dict[str, Any]:
+    raw_by_header = {
+        headers[index] if index < len(headers) else f"column_{index + 1}": _json_value(value)
+        for index, value in enumerate(values)
+        if value not in (None, "")
+    }
+    raw_by_index = {
+        str(index + 1): _json_value(value)
+        for index, value in enumerate(values)
+        if value not in (None, "")
+    }
+    source_action_name = _source_action_name(values, sheet_role)
+    return {
+        "sheet": sheet_name,
+        "sheet_role": sheet_role,
+        "row_number": row_number,
+        "character": current_character,
+        "source_action_name": source_action_name,
+        "raw_row_text": _row_text(values),
+        "raw_by_header": raw_by_header,
+        "raw_by_index": raw_by_index,
+    }
+
+
+def _section_from_row(non_empty: list[tuple[int, Any]]) -> str | None:
+    first = _cell_text(non_empty[0][1])
+    if first == AEMEATH:
+        return "aemeath"
+    if first == AEMEATH_MECH:
+        return "aemeath_mech"
+    if _looks_like_other_character_header(non_empty):
+        return "other"
+    return None
+
+
+def _looks_like_other_character_header(non_empty: list[tuple[int, Any]]) -> bool:
+    first = _cell_text(non_empty[0][1])
+    if not first or first in {AEMEATH, AEMEATH_MECH}:
+        return False
+    if ACTION_LABEL_RE.match(first) or first in {"-", "0", "1", "2", "3", "4"}:
+        return False
+    if first in NON_CHARACTER_SECTION_LABELS:
+        return False
+    if not re.search(r"[\u3400-\u9fff]", first):
+        return False
+    if len(first) > 16:
+        return False
+    if len(non_empty) == 1:
+        return True
+    if len(non_empty) >= 3 and ACTION_LABEL_RE.match(_cell_text(non_empty[2][1])):
+        return True
+    return False
+
+
+def _source_action_name(values: list[Any], sheet_role: str) -> str | None:
+    if sheet_role == "frame_sheet":
+        preferred_indexes = [2, 0, 1]
+    else:
+        preferred_indexes = [0, 3]
+    for index in preferred_indexes:
+        if index < len(values) and values[index] not in (None, ""):
+            text = _cell_text(values[index])
+            if text and text not in {AEMEATH, AEMEATH_MECH}:
+                return text
+    for value in values:
+        text = _cell_text(value)
+        if ACTION_LABEL_RE.match(text):
+            return text
+    return None
+
+
+def _classify_row(row: dict[str, Any]) -> str:
+    label = row.get("source_action_name") or ""
+    text = row.get("raw_row_text") or ""
+    sheet_role = row.get("sheet_role")
+    if not _qte_related(label, text):
+        return "unrelated"
+    if sheet_role == "skill_type_sheet" and QTE_LABEL_RE.match(label):
+        return "qte_coefficient"
+    if sheet_role == "frame_sheet" and QTE_LABEL_RE.match(label):
+        if label.upper() == "QTE":
+            return "qte_notice"
+        return "qte_hit"
+    if "QTE" in label.upper() and "\u5207\u6362" in label:
+        return "intro_candidate"
+    if OUTRO in text:
+        return "previous_outro_trigger_note"
+    if FLOW_LIGHT_AMP in text or "15\u79d2" in text:
+        return "state_grant_note"
+    if INVULNERABLE_SWAP_LOCK in text:
+        return "swap_restriction_note"
+    if _frame_values(row):
+        return "timing_only"
+    if _coefficient_value(row) is not None:
+        return "coefficient_only"
+    return "unrelated"
+
+
+def _qte_related(label: str | None, text: str) -> bool:
+    combined = f"{label or ''} {text}"
+    return any(
+        token in combined
+        for token in (
+            "QTE",
+            VARIATION,
+            OUTRO,
+            INTRO,
+            "\u5207\u6362",
+            FLOW_LIGHT_AMP,
+            INVULNERABLE_SWAP_LOCK,
+        )
+    )
+
+
+def _build_action_candidate_artifact(
+    source_workbook: Path,
+    rows: list[dict[str, Any]],
+    excluded_summary: dict[str, int],
+) -> dict[str, Any]:
+    executable_rows = [row for row in rows if _is_executable_candidate_row(row)]
+    metadata_rows = [row for row in rows if _is_metadata_row(row)]
+    excluded_rows = [row for row in rows if row not in executable_rows and row not in metadata_rows]
+    candidate = _build_action_candidate(executable_rows, metadata_rows, excluded_rows)
+    candidates = [candidate] if candidate is not None else []
+    return {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "source_workbook": str(source_workbook),
+        "review_only": True,
+        "simulation_applied": False,
+        "simulation_executable": False,
+        "raw_source_row_count": len(rows),
+        "action_candidate_count": len(candidates),
+        "executable_policy_action_count": 0,
+        "candidates": candidates,
+        "excluded_summary": {
+            "excluded_metadata_only_rows": len(metadata_rows),
+            "excluded_unrelated_aemeath_rows": len(excluded_rows),
+            "excluded_other_character_rows": excluded_summary.get("excluded_other_character_rows", 0),
+            "excluded_header_rows": excluded_summary.get("excluded_header_rows", 0),
+        },
+        "warnings": [
+            "Action candidate output is review-only and is not applied to simulation.",
+            "data/actions.json is not modified by this extraction.",
+        ],
+    }
+
+
+def _is_executable_candidate_row(row: dict[str, Any]) -> bool:
+    label = row.get("source_action_name") or ""
+    return label in {"QTE", "QTE-1", "QTE-2", "QTE-3"} and row.get("category") in {
+        "qte_notice",
+        "qte_hit",
+        "qte_coefficient",
+    }
+
+
+def _is_metadata_row(row: dict[str, Any]) -> bool:
+    if row.get("category") in {"intro_candidate", "qte_notice"}:
+        return True
+    label = row.get("source_action_name") or ""
+    text = row.get("raw_row_text") or ""
+    return (
+        label == "特殊能量"
+        or (label.startswith("E1-QTE") and "切换" in label)
+        or (label == "QTE" and row.get("category") == "qte_notice")
+    )
+
+
+def _build_action_candidate(
+    executable_rows: list[dict[str, Any]],
+    metadata_rows: list[dict[str, Any]],
+    excluded_rows: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    if not executable_rows:
+        return None
+
+    qte_parent_rows = [row for row in executable_rows if row.get("source_action_name") == "QTE"]
+    hit_rows = [row for row in executable_rows if row.get("category") == "qte_hit"]
+    coefficient_rows = [row for row in executable_rows if row.get("category") == "qte_coefficient"]
+    combined_source_rows = _unique_rows(executable_rows + metadata_rows + excluded_rows)
+    unique_metadata_rows = _unique_rows(metadata_rows)
+    notice_texts = [
+        row["raw_row_text"]
+        for row in _unique_rows(qte_parent_rows + unique_metadata_rows)
+        if row.get("raw_row_text")
+    ]
+    notice_metadata = _action_notice_metadata(qte_parent_rows, metadata_rows, notice_texts)
+    timing_candidate = _action_timing_candidate(qte_parent_rows, hit_rows, notice_metadata)
+    damage_candidate = _action_damage_candidate(coefficient_rows)
+    action_warnings = [
+        "This is an action-ready review candidate only.",
+        "Aemeath QTE is not executable and is not policy-selectable.",
+    ]
+    if timing_candidate["action_time_frames"] is None:
+        action_warnings.append("Action time is unresolved because human/mech QTE parent timing differs.")
+    safe_reasons = [
+        "Aemeath QTE transition execution is not implemented.",
+        "Timing needs manual review before data/actions.json can be patched.",
+        "Notice metadata includes state and Outro behavior that must be modeled in the transition pipeline first.",
+    ]
+    return {
+        "candidate_id": "aemeath_qte_intro",
+        "proposed_action_id": "aemeath_qte_intro",
+        "character": "aemeath",
+        "group_type": "qte_intro",
+        "implementation_status": "action_ready_review_candidate",
+        "simulation_executable": False,
+        "policy_selectable": False,
+        "source_rows": [_row_ref(row) for row in combined_source_rows],
+        "executable_source_rows": [_row_ref(row) for row in executable_rows],
+        "metadata_source_rows": [_row_ref(row) for row in unique_metadata_rows],
+        "excluded_source_rows": [_excluded_row_ref(row) for row in excluded_rows],
+        "timing_candidate": timing_candidate,
+        "damage_candidate": damage_candidate,
+        "notice_metadata": notice_metadata,
+        "action_stub_preview": {
+            "id": "aemeath_qte_intro",
+            "character_id": "aemeath",
+            "action_type": "swap",
+            "policy_selectable": False,
+            "review_only": True,
+            "action_time": timing_candidate["action_time_seconds"],
+            "combat_time_cost": timing_candidate["combat_time_cost_seconds"],
+            "hits": [
+                {"damage_multiplier": multiplier}
+                for multiplier in damage_candidate["parsed_multipliers"]
+            ],
+            "tags": ["qte", "intro", "variation"],
+            "notes": ["This is not applied to simulation yet."],
+        },
+        "safe_to_implement_later": False,
+        "safe_to_implement_reasons": safe_reasons,
+        "warnings": action_warnings,
+    }
+
+
+def _action_timing_candidate(
+    qte_parent_rows: list[dict[str, Any]],
+    hit_rows: list[dict[str, Any]],
+    notice_metadata: dict[str, Any],
+) -> dict[str, Any]:
+    parent_action_time_candidates = [
+        _numeric(row.get("raw_by_index", {}).get("10"))
+        for row in qte_parent_rows
+    ]
+    parent_action_time_candidates = [value for value in parent_action_time_candidates if value is not None]
+    parent_time_stop_candidates = [
+        _numeric(row.get("raw_by_index", {}).get("35"))
+        for row in qte_parent_rows
+        if row.get("raw_by_index", {}).get("29") == "时停"
+    ]
+    parent_time_stop_candidates = [value for value in parent_time_stop_candidates if value is not None]
+    hit_payloads = _hit_frame_payloads(hit_rows)
+    hit_frames = [
+        payload["hit_frame"]
+        for payload in hit_payloads
+        if payload.get("hit_frame") is not None
+    ]
+    hit_times_seconds = [_seconds(frame) for frame in hit_frames]
+    warnings: list[str] = []
+    action_time_frames = None
+    combat_time_cost_frames = None
+    confidence = "low"
+
+    unique_parent_times = sorted(set(parent_action_time_candidates))
+    if len(unique_parent_times) == 1:
+        action_time_frames = unique_parent_times[0]
+        confidence = "medium"
+        unique_time_stops = sorted(set(parent_time_stop_candidates))
+        if len(unique_time_stops) == 1:
+            combat_time_cost_frames = max(0.0, action_time_frames - unique_time_stops[0])
+        elif unique_time_stops:
+            warnings.append("Multiple confirmed time-stop candidates found; combat_time_cost left unresolved.")
+    elif unique_parent_times:
+        warnings.append(
+            "Multiple parent QTE action-time candidates found; selected action_time left unresolved."
+        )
+    else:
+        warnings.append("No parent QTE action-time candidate found.")
+
+    if not hit_frames:
+        warnings.append("No QTE hit frames found.")
+    if notice_metadata.get("previous_character_outro_trigger_frame") is None:
+        warnings.append("Previous-character Outro trigger frame is ambiguous or unresolved.")
+    if combat_time_cost_frames is None and parent_time_stop_candidates:
+        warnings.append("Confirmed time-stop metadata exists; combat_time_cost requires manual review.")
+
+    return {
+        "action_time_frames": action_time_frames,
+        "action_time_seconds": _seconds(action_time_frames),
+        "action_time_frame_candidates": unique_parent_times,
+        "combat_time_cost_frames": combat_time_cost_frames,
+        "combat_time_cost_seconds": _seconds(combat_time_cost_frames),
+        "confirmed_time_stop_frame_candidates": sorted(set(parent_time_stop_candidates)),
+        "hit_frames": hit_frames,
+        "hit_times_seconds": hit_times_seconds,
+        "previous_outro_trigger_frame": notice_metadata.get("previous_character_outro_trigger_frame"),
+        "previous_outro_trigger_frames": notice_metadata.get("previous_outro_trigger_frames", []),
+        "confidence": confidence,
+        "warnings": warnings,
+    }
+
+
+def _action_damage_candidate(coefficient_rows: list[dict[str, Any]]) -> dict[str, Any]:
+    raw_coefficients = [_coefficient_raw(row) for row in coefficient_rows]
+    parsed_multipliers = [_coefficient_value(row) for row in coefficient_rows]
+    parsed_multipliers = [value for value in parsed_multipliers if value is not None]
+    warnings: list[str] = []
+    if not parsed_multipliers:
+        warnings.append("No QTE multipliers parsed.")
+    skill_category = _first_skill_index_value(coefficient_rows, "4")
+    damage_type = _first_skill_index_value(coefficient_rows, "5")
+    if skill_category != VARIATION:
+        warnings.append(f"Skill category is {skill_category!r}; expected {VARIATION!r} or equivalent.")
+    if damage_type != "\u53d8\u594f\u4f24\u5bb3":
+        warnings.append("Damage type is not the expected variation damage label.")
+    return {
+        "skill_category": skill_category,
+        "damage_type": damage_type,
+        "raw_coefficients": raw_coefficients,
+        "parsed_multipliers": parsed_multipliers,
+        "hit_count": len(parsed_multipliers),
+        "confidence": "high" if parsed_multipliers and not warnings else "medium" if parsed_multipliers else "low",
+        "warnings": warnings,
+    }
+
+
+def _action_notice_metadata(
+    qte_parent_rows: list[dict[str, Any]],
+    metadata_rows: list[dict[str, Any]],
+    raw_notice_text: list[str],
+) -> dict[str, Any]:
+    previous_frames: list[float] = []
+    previous_sources: list[str] = []
+    for row in qte_parent_rows:
+        text = row.get("raw_row_text", "")
+        for match in re.finditer(r"\u7b2c\s*(\d+(?:\.\d+)?)\s*F[^\n]*\u89e6\u53d1[^\n]*\u5ef6\u594f", text):
+            frame = _number(match.group(1))
+            if frame is not None:
+                previous_frames.append(frame)
+                previous_sources.append(text)
+
+    unique_previous_frames = sorted(set(previous_frames))
+    selected_previous_frame = unique_previous_frames[0] if len(unique_previous_frames) == 1 else None
+    warnings = []
+    if len(unique_previous_frames) > 1:
+        warnings.append("Multiple previous-character Outro trigger frames found; selected value left null.")
+
+    state_grants = []
+    for text in raw_notice_text:
+        for match in re.finditer(r"\u7b2c\s*(\d+(?:\.\d+)?)\s*F\u83b7\u5f97(.+?)\u72b6\u6001[^\n]*?\u6301\u7eed\s*(\d+(?:\.\d+)?)\s*\u79d2", text):
+            state_grants.append(
+                {
+                    "state_name_raw": match.group(2).strip(),
+                    "start_frame": _number(match.group(1)),
+                    "duration_seconds": _number(match.group(3)),
+                    "source_text": match.group(0),
+                }
+            )
+    state_grants = _unique_state_grants(state_grants)
+
+    followup_rows = [
+        row for row in metadata_rows
+        if (row.get("source_action_name") or "").startswith("E1-QTE")
+    ]
+    cannot_switch_sources = [
+        text for text in raw_notice_text
+        if INVULNERABLE_SWAP_LOCK in text
+    ]
+    return {
+        "previous_character_outro_trigger_frame": selected_previous_frame,
+        "previous_outro_trigger_frames": unique_previous_frames,
+        "previous_character_outro_trigger_source": previous_sources[0] if len(unique_previous_frames) == 1 else previous_sources,
+        "cannot_switch_during_invulnerable": bool(cannot_switch_sources),
+        "cannot_switch_source": cannot_switch_sources,
+        "state_grants": state_grants,
+        "qte_followup_form_switch_notes": [_row_ref(row) for row in followup_rows],
+        "raw_notice_text": list(dict.fromkeys(raw_notice_text)),
+        "warnings": warnings,
+    }
+
+
+def _unique_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    unique: list[dict[str, Any]] = []
+    seen: set[tuple[str, int, str | None]] = set()
+    for row in rows:
+        key = (row.get("sheet", ""), int(row.get("row_number", 0)), row.get("source_action_name"))
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(row)
+    return unique
+
+
+def _unique_state_grants(state_grants: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    unique: list[dict[str, Any]] = []
+    seen: set[tuple[Any, Any, Any, Any]] = set()
+    for grant in state_grants:
+        key = (
+            grant.get("state_name_raw"),
+            grant.get("start_frame"),
+            grant.get("duration_seconds"),
+            grant.get("source_text"),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(grant)
+    return unique
+
+
+def _excluded_row_ref(row: dict[str, Any]) -> dict[str, Any]:
+    ref = _row_ref(row)
+    ref["excluded_reason"] = _excluded_reason(row)
+    return ref
+
+
+def _excluded_reason(row: dict[str, Any]) -> str:
+    label = row.get("source_action_name") or ""
+    if "\u5927\u62db1" in label:
+        return "overdrive_notice"
+    if "\u5927\u62db2" in label:
+        return "finale_notice"
+    if "\u8c10\u5ea6\u7834\u574f" in label:
+        return "tune_break_notice"
+    if label.startswith("\u5f3a\u5316E"):
+        return "seraphic_duet_notice"
+    if label == "E2-\u5408\u51fb":
+        return "qte_followup_form_switch_note"
+    return "unrelated"
+
+
+def _build_qte_group(candidates: list[dict[str, Any]]) -> dict[str, Any]:
+    frame_rows = [row for row in candidates if row["sheet_role"] == "frame_sheet"]
+    skill_rows = [row for row in candidates if row["sheet_role"] == "skill_type_sheet"]
+    notice_rows = [
+        row for row in candidates
+        if row["category"] in {
+            "qte_notice",
+            "previous_outro_trigger_note",
+            "state_grant_note",
+            "swap_restriction_note",
+        }
+    ]
+    coefficient_rows = [row for row in skill_rows if row["category"] == "qte_coefficient"]
+    hit_rows = [row for row in frame_rows if row["category"] == "qte_hit"]
+    notice_texts = [row["raw_row_text"] for row in notice_rows]
+    parsed_notice = _parse_notice_fields(notice_texts)
+    parsed_multipliers = [_coefficient_value(row) for row in coefficient_rows]
+    parsed_multipliers = [value for value in parsed_multipliers if value is not None]
+
+    return {
+        "group_id": "aemeath_qte_intro",
+        "character": "aemeath",
+        "implementation_status": "review_only",
+        "source_rows": [_row_ref(row) for row in candidates],
+        "notice": {
+            "source_rows": [_row_ref(row) for row in notice_rows],
+            "previous_outro_trigger_frame": parsed_notice["previous_outro_trigger_frame"],
+            "cannot_switch_during_invulnerable": parsed_notice["cannot_switch_during_invulnerable"],
+            "state_grants": parsed_notice["state_grants"],
+            "raw_text": notice_texts,
+            "warnings": parsed_notice["warnings"],
+        },
+        "frame_data": {
+            "source_rows": [_row_ref(row) for row in frame_rows],
+            "qte_hit_rows": [_row_ref(row) for row in hit_rows],
+            "action_time_frames": _first_numeric_from_headers(notice_rows, ["动作结束帧"]),
+            "action_time_seconds": _seconds(_first_numeric_from_headers(notice_rows, ["动作结束帧"])),
+            "hit_frames": _hit_frame_payloads(hit_rows),
+            "warnings": _frame_warnings(hit_rows),
+        },
+        "skill_data": {
+            "source_rows": [_row_ref(row) for row in coefficient_rows],
+            "raw_coefficients": [_coefficient_raw(row) for row in coefficient_rows],
+            "parsed_multipliers": parsed_multipliers,
+            "damage_type": _first_skill_index_value(coefficient_rows, "5"),
+            "skill_category": _first_skill_index_value(coefficient_rows, "4") or VARIATION,
+            "warnings": _skill_warnings(coefficient_rows),
+        },
+        "warnings": [
+            "Review-only. Not applied to simulation.",
+            "Future implementation must wire this group into the transition pipeline explicitly.",
+        ],
+    }
+
+
+def _parse_notice_fields(raw_texts: list[str]) -> dict[str, Any]:
+    joined = "\n".join(raw_texts)
+    warnings: list[str] = []
+    outro_frame = None
+    outro_match = re.search(r"\u7b2c\s*(\d+(?:\.\d+)?)\s*F[^\n]*\u89e6\u53d1[^\n]*\u5ef6\u594f", joined)
+    if outro_match:
+        outro_frame = _number(outro_match.group(1))
+    elif OUTRO in joined:
+        warnings.append("Found previous-character outro text but could not parse trigger frame.")
+
+    state_grants = []
+    for match in re.finditer(r"\u7b2c\s*(\d+(?:\.\d+)?)\s*F\u83b7\u5f97(.+?)\u72b6\u6001[^\n]*?\u6301\u7eed\s*(\d+(?:\.\d+)?)\s*\u79d2", joined):
+        state_grants.append(
+            {
+                "state": "starlume_acceleration_or_flow_light_amp_candidate",
+                "state_name_raw": match.group(2).strip(),
+                "start_frame": _number(match.group(1)),
+                "duration_seconds": _number(match.group(3)),
+                "source_text": match.group(0),
+            }
+        )
+    state_grants = _unique_state_grants(state_grants)
+    if "15\u79d2" in joined and not state_grants:
+        warnings.append("Found 15s state text but could not parse state grant fields.")
+
+    return {
+        "previous_outro_trigger_frame": outro_frame,
+        "cannot_switch_during_invulnerable": INVULNERABLE_SWAP_LOCK in joined,
+        "state_grants": state_grants,
+        "warnings": warnings,
+    }
+
+
+def _hit_frame_payloads(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    payloads: list[dict[str, Any]] = []
+    for row in rows:
+        raw_by_header = row.get("raw_by_header", {})
+        payloads.append(
+            {
+                "source_row": _row_ref(row),
+                "hit_frame": _numeric(raw_by_header.get("\u53d1\u751f\u5e27")),
+                "duration_frames": _numeric(raw_by_header.get("\u6301\u7eed\u5e27")),
+                "derivation_frames": _numeric(raw_by_header.get("\u6d3e\u751f\u5e27")),
+                "derivation_duration_frames": _numeric(raw_by_header.get("\u6d3e\u751f\u6301\u7eed\u5e27")),
+                "action_end_frames": _numeric(raw_by_header.get("\u52a8\u4f5c\u7ed3\u675f\u5e27")),
+                "raw_numeric_frame_values": _frame_values(row),
+            }
+        )
+    return payloads
+
+
+def _frame_values(row: dict[str, Any]) -> list[float]:
+    frame_headers = {
+        "\u53d1\u751f\u5e27",
+        "\u6301\u7eed\u5e27",
+        "\u6d3e\u751f\u5e27",
+        "\u6d3e\u751f\u6301\u7eed\u5e27",
+        "\u52a8\u4f5c\u7ed3\u675f\u5e27",
+        "\u65e0\u654c\u542f\u52a8\u5e27",
+        "\u65e0\u654c\u6301\u7eed\u5e27",
+    }
+    values = []
+    for header, value in row.get("raw_by_header", {}).items():
+        if header in frame_headers:
+            numeric = _numeric(value)
+            if numeric is not None:
+                values.append(numeric)
+    return values
+
+
+def _coefficient_value(row: dict[str, Any]) -> float | None:
+    raw = _coefficient_raw(row)
+    if raw is None:
+        return None
+    if isinstance(raw, str) and raw.strip().endswith("%"):
+        numeric = _number(raw.strip()[:-1])
+        return None if numeric is None else numeric / 100.0
+    return _numeric(raw)
+
+
+def _coefficient_raw(row: dict[str, Any]) -> Any:
+    # In the skill/type sheet, QTE coefficient rows place the base multiplier in column 9.
+    return row.get("raw_by_index", {}).get("9")
+
+
+def _frame_warnings(rows: list[dict[str, Any]]) -> list[str]:
+    warnings = []
+    if not rows:
+        warnings.append("No QTE hit frame rows found under the Aemeath section.")
+    for row in rows:
+        if not _frame_values(row):
+            warnings.append(f"No numeric frame fields found for row {row['row_number']}.")
+    return warnings
+
+
+def _skill_warnings(rows: list[dict[str, Any]]) -> list[str]:
+    warnings = []
+    if not rows:
+        warnings.append("No QTE coefficient rows found under the Aemeath section.")
+    for row in rows:
+        if _coefficient_value(row) is None:
+            warnings.append(f"No parsed multiplier found for row {row['row_number']}.")
+    return warnings
+
+
+def _first_numeric_from_headers(rows: list[dict[str, Any]], headers: list[str]) -> float | None:
+    for row in rows:
+        for header in headers:
+            value = _numeric(row.get("raw_by_header", {}).get(header))
+            if value is not None:
+                return value
+    return None
+
+
+def _first_skill_index_value(rows: list[dict[str, Any]], index: str) -> Any:
+    for row in rows:
+        value = row.get("raw_by_index", {}).get(index)
+        if value not in (None, ""):
+            return value
+    return None
+
+
+def _row_ref(row: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "sheet": row["sheet"],
+        "sheet_role": row["sheet_role"],
+        "row_number": row["row_number"],
+        "character": row["character"],
+        "category": row["category"],
+        "source_action_name": row.get("source_action_name"),
+        "raw_row_text": row.get("raw_row_text"),
+    }
+
+
+def _report_markdown(artifact: dict[str, Any]) -> str:
+    group = artifact["groups"][0] if artifact["groups"] else None
+    excluded = artifact["excluded_summary"]
+    lines = [
+        "# Aemeath QTE / Intro / Outro Review",
+        "",
+        "## A. Summary",
+        "",
+        f"- Source workbook path: `{artifact['source_workbook']}`",
+        f"- Selected sheets: `{artifact['selected_sheets']}`",
+        f"- Total Aemeath QTE/Intro/Outro candidate rows: {artifact['candidate_count']}",
+        f"- Groups created: {len(artifact['groups'])}",
+        f"- Excluded other-character rows: {excluded['excluded_other_character_rows']}",
+        f"- Excluded header rows: {excluded['excluded_header_rows']}",
+        f"- Excluded unrelated rows: {excluded['excluded_unrelated_rows']}",
+        f"- review_only = {str(artifact['review_only']).lower()}",
+        f"- simulation_applied = {str(artifact['simulation_applied']).lower()}",
+        f"- Action candidate output: `{artifact['action_candidate_output']}`",
+        f"- Action candidate report: `{artifact['action_candidate_report']}`",
+        "",
+    ]
+    if group:
+        notice = group["notice"]
+        skill_data = group["skill_data"]
+        frame_data = group["frame_data"]
+        lines.extend(
+            [
+                "## B. Aemeath QTE Group",
+                "",
+                f"- Group ID: `{group['group_id']}`",
+                f"- Source rows: `{[(row['sheet'], row['row_number']) for row in group['source_rows']]}`",
+                f"- Source action labels: `{[row['source_action_name'] for row in group['source_rows']]}`",
+                f"- previous-character outro trigger frame: `{notice['previous_outro_trigger_frame']}`",
+                f"- Cannot-switch note parsed: `{notice['cannot_switch_during_invulnerable']}`",
+                f"- State grants: `{notice['state_grants']}`",
+                f"- QTE hit rows: `{[(row['source_action_name'], row['row_number']) for row in frame_data['qte_hit_rows']]}`",
+                f"- QTE coefficient rows: `{[(row['source_action_name'], row['row_number']) for row in skill_data['source_rows']]}`",
+                f"- Parsed multipliers: `{skill_data['parsed_multipliers']}`",
+                f"- Damage type: `{skill_data['damage_type']}`",
+                f"- Skill category: `{skill_data['skill_category']}`",
+                f"- Warnings: `{group['warnings'] + notice['warnings'] + frame_data['warnings'] + skill_data['warnings']}`",
+                "",
+                "### Notice Text",
+                "",
+            ]
+        )
+        for text in notice["raw_text"]:
+            lines.append(f"- {text}")
+        lines.append("")
+    lines.extend(
+        [
+            "## C. Excluded Row Summary",
+            "",
+            f"- Other-character QTE-like rows excluded: {excluded['excluded_other_character_rows']}",
+            f"- Header rows excluded: {excluded['excluded_header_rows']}",
+            f"- Unrelated rows excluded: {excluded['excluded_unrelated_rows']}",
+            "",
+            "## D. Implementation Note",
+            "",
+            "- Aemeath QTE data exists in the workbook.",
+            "- It is not yet applied to simulation.",
+            "- Current party swap uses transition/fallback placeholder timing unless real QTE/Intro/Outro is implemented.",
+            "- Future implementation should wire this QTE group into the transition pipeline.",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def _action_candidate_report_markdown(artifact: dict[str, Any]) -> str:
+    lines = [
+        "# Aemeath QTE Action Candidate Review",
+        "",
+        "## A. Summary",
+        "",
+        f"- Raw source rows: {artifact['raw_source_row_count']}",
+        f"- Action candidates: {artifact['action_candidate_count']}",
+        f"- Executable candidates: {artifact['executable_policy_action_count']}",
+        f"- simulation applied: {str(artifact['simulation_applied']).lower()}",
+        f"- review only: {str(artifact['review_only']).lower()}",
+        f"- simulation executable: {str(artifact['simulation_executable']).lower()}",
+        "",
+        "## B. Action Candidate Table",
+        "",
+        "| candidate_id | proposed_action_id | character | action_time | combat_time_cost | hit count | parsed multipliers | skill category | damage type | previous Outro trigger frame | implementation status | safe_to_implement_later |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    ]
+    for candidate in artifact["candidates"]:
+        timing = candidate["timing_candidate"]
+        damage = candidate["damage_candidate"]
+        notice = candidate["notice_metadata"]
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    candidate["candidate_id"],
+                    candidate["proposed_action_id"],
+                    candidate["character"],
+                    _md(timing["action_time_seconds"]),
+                    _md(timing["combat_time_cost_seconds"]),
+                    _md(damage["hit_count"]),
+                    _md(damage["parsed_multipliers"]),
+                    _md(damage["skill_category"]),
+                    _md(damage["damage_type"]),
+                    _md(notice["previous_character_outro_trigger_frame"] or notice["previous_outro_trigger_frames"]),
+                    candidate["implementation_status"],
+                    str(candidate["safe_to_implement_later"]).lower(),
+                ]
+            )
+            + " |"
+        )
+
+    lines.extend(["", "## C. Candidate Details", ""])
+    for candidate in artifact["candidates"]:
+        lines.extend(
+            [
+                f"### {candidate['candidate_id']}",
+                "",
+                f"- Executable rows used: `{[(row['source_action_name'], row['row_number']) for row in candidate['executable_source_rows']]}`",
+                f"- Metadata rows used: `{[(row['source_action_name'], row['row_number']) for row in candidate['metadata_source_rows']]}`",
+                f"- Excluded rows: `{[(row['source_action_name'], row['row_number'], row['excluded_reason']) for row in candidate['excluded_source_rows']]}`",
+                f"- Timing candidate: `{candidate['timing_candidate']}`",
+                f"- Damage candidate: `{candidate['damage_candidate']}`",
+                f"- Notice metadata: `{candidate['notice_metadata']}`",
+                f"- Action stub preview: `{candidate['action_stub_preview']}`",
+                "",
+            ]
+        )
+
+    lines.extend(
+        [
+            "## D. Metadata Separated From Action",
+            "",
+        ]
+    )
+    for candidate in artifact["candidates"]:
+        notice = candidate["notice_metadata"]
+        lines.extend(
+            [
+                f"- Previous-character Outro trigger: `{notice['previous_character_outro_trigger_frame'] or notice['previous_outro_trigger_frames']}`",
+                f"- Cannot-switch note: `{notice['cannot_switch_during_invulnerable']}`",
+                f"- Flow Light / 15s state grants: `{notice['state_grants']}`",
+                f"- E1-QTE switch notes: `{[(row['source_action_name'], row['row_number']) for row in notice['qte_followup_form_switch_notes']]}`",
+                "",
+            ]
+        )
+
+    excluded = artifact["excluded_summary"]
+    lines.extend(
+        [
+            "## E. Excluded Rows",
+            "",
+            "- Seraphic Duet / enhanced E rows are excluded from QTE executable rows.",
+            "- Overdrive and Finale rows are excluded from QTE executable rows.",
+            "- Tune-break rows are excluded from QTE executable rows.",
+            "- E1-QTE switch rows are metadata only and do not contribute damage or timing.",
+            f"- Metadata-only rows: {excluded['excluded_metadata_only_rows']}",
+            f"- Unrelated Aemeath rows: {excluded['excluded_unrelated_aemeath_rows']}",
+            f"- Other-character rows excluded: {excluded['excluded_other_character_rows']}",
+            "",
+            "## F. Implementation Note",
+            "",
+            "- This report produces action-ready review candidates.",
+            "- It does not modify data/actions.json.",
+            "- Aemeath QTE remains disabled and non-policy.",
+            "- A future patch can turn `aemeath_qte_intro` into a real transition action after review.",
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def _md(value: Any) -> str:
+    return "`" + str(value).replace("|", "\\|") + "`"
+
+
+def _json_value(value: Any) -> Any:
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    return str(value)
+
+
 def _cell_text(value: Any) -> str:
+    if value is None:
+        return ""
     if isinstance(value, float):
         return f"{value:g}"
     return str(value).strip()
 
 
-def _is_candidate(text: str) -> bool:
-    upper = text.upper()
-    return any(keyword in upper or keyword in text for keyword in KEYWORDS)
+def _row_text(values: list[Any]) -> str:
+    return " | ".join(_cell_text(value) for value in values if value not in (None, ""))
 
 
-def _candidate(sheet_name: str, row_number: int, values: list[Any], raw_text: str) -> dict[str, Any]:
-    source_action_name = _cell_text(values[0]) if values else None
-    coefficient_candidates = _coefficient_candidates(raw_text)
-    frame_candidates = _frame_candidates(raw_text)
-    action_time_candidates = _action_time_candidates(raw_text)
-    warnings: list[str] = [
-        "Review-only extraction; candidate is not executable.",
-        "Mapping to Intro/Outro/QTE behavior requires manual validation.",
-    ]
-    if not coefficient_candidates:
-        warnings.append("No coefficient-like value detected in row text.")
-    if not frame_candidates and not action_time_candidates:
-        warnings.append("No frame/action-time candidate detected in row text.")
-
-    return {
-        "sheet": sheet_name,
-        "row_number": row_number,
-        "source_action_name": source_action_name,
-        "raw_row_text": raw_text,
-        "coefficients": coefficient_candidates,
-        "frame_candidates": frame_candidates,
-        "action_time_candidates": action_time_candidates,
-        "notice_text": raw_text,
-        "previous_character_outro_trigger_frame": _outro_trigger_frame(raw_text),
-        "state_grant_notes_15s": _state_grant_notes(raw_text),
-        "confidence": _confidence(raw_text, coefficient_candidates, frame_candidates, action_time_candidates),
-        "warnings": warnings,
-    }
+def _numeric(value: Any) -> float | None:
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return float(value)
+    if isinstance(value, str):
+        return _number(value)
+    return None
 
 
-def _coefficient_candidates(text: str) -> list[dict[str, Any]]:
-    candidates: list[dict[str, Any]] = []
-    for match in re.finditer(r"(?<![\w.])(\d+(?:\.\d+)?)\s*%", text):
-        candidates.append({"raw": match.group(0), "value": float(match.group(1)) / 100.0})
-    for match in re.finditer(r"(?<![\w.])(\d+\.\d{2,})(?![\w.%])", text):
-        value = float(match.group(1))
-        if value > 0.0:
-            candidates.append({"raw": match.group(0), "value": value})
-    return candidates
-
-
-def _frame_candidates(text: str) -> list[dict[str, Any]]:
-    candidates: list[dict[str, Any]] = []
-    for match in re.finditer(r"(\d+(?:\.\d+)?)\s*(?:F|f|\u5e27|\u5e40)", text):
-        frames = float(match.group(1))
-        candidates.append({"raw": match.group(0), "frames": frames, "seconds_at_60fps": round(frames / 60.0, 4)})
-    return candidates
-
-
-def _action_time_candidates(text: str) -> list[dict[str, Any]]:
-    candidates: list[dict[str, Any]] = []
-    for match in re.finditer(r"(\d+(?:\.\d+)?)\s*(?:s|S|\u79d2)", text):
-        candidates.append({"raw": match.group(0), "seconds": float(match.group(1))})
-    return candidates
-
-
-def _outro_trigger_frame(text: str) -> float | None:
-    if not any(keyword in text for keyword in ("\u4e0a\u4e00", "\u524d\u4e00", "previous", "outro", "OUTRO")):
+def _number(text: str) -> float | None:
+    try:
+        return float(text)
+    except (TypeError, ValueError):
         return None
-    frames = _frame_candidates(text)
-    return frames[0]["frames"] if frames else None
 
 
-def _state_grant_notes(text: str) -> list[str]:
-    if "15" not in text:
-        return []
-    if any(token in text for token in ("15s", "15S", "15\u79d2")):
-        return [text]
-    return []
-
-
-def _confidence(
-    text: str,
-    coefficients: list[dict[str, Any]],
-    frames: list[dict[str, Any]],
-    action_times: list[dict[str, Any]],
-) -> str:
-    score = 0
-    upper = text.upper()
-    if any(keyword in upper or keyword in text for keyword in ("QTE", "INTRO", "OUTRO", "\u53d8\u594f", "\u5ef6\u594f")):
-        score += 2
-    if coefficients:
-        score += 1
-    if frames or action_times:
-        score += 1
-    if score >= 4:
-        return "medium"
-    if score >= 2:
-        return "low"
-    return "very_low"
-
-
-def _report_markdown(artifact: dict[str, Any]) -> str:
-    lines = [
-        "# Aemeath QTE / Intro / Outro Review",
-        "",
-        "Status: review-only, not applied, not executable.",
-        "",
-        f"Mojibake hints retained for reviewer search: {', '.join(MOJIBAKE_HINTS)}",
-        "",
-        f"Candidate rows: {artifact['candidate_count']}",
-        "",
-        "## Review Notes",
-        "",
-        "- These rows are not mapped into simulator actions.",
-        "- Aemeath QTE/Intro/Outro remains disabled in transition_config.json.",
-        "- Generic party swap fallback timing remains placeholder-only.",
-        "",
-        "## Candidates",
-        "",
-    ]
-    for item in artifact["candidates"][:80]:
-        lines.extend(
-            [
-                f"### {item['sheet']} row {item['row_number']}",
-                "",
-                f"- Source action: `{item.get('source_action_name')}`",
-                f"- Confidence: {item['confidence']}",
-                f"- Coefficients: `{item['coefficients']}`",
-                f"- Frame candidates: `{item['frame_candidates']}`",
-                f"- Action-time candidates: `{item['action_time_candidates']}`",
-                f"- 15s state notes: `{item['state_grant_notes_15s']}`",
-                f"- Raw row: {item['raw_row_text']}",
-                "",
-            ]
-        )
-    if artifact["candidate_count"] > 80:
-        lines.append(f"... {artifact['candidate_count'] - 80} additional candidates omitted from report preview.")
-    return "\n".join(lines) + "\n"
+def _seconds(frames: float | None) -> float | None:
+    if frames is None:
+        return None
+    return round(frames / 60.0, 4)
 
 
 def main() -> int:
     artifact = extract()
-    print(f"Wrote {artifact['candidate_count']} review-only QTE/Intro/Outro candidates.")
+    print(f"Wrote {artifact['candidate_count']} review-only Aemeath QTE/Intro/Outro candidate rows.")
     return 0
 
 
