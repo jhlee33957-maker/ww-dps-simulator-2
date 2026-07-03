@@ -12,6 +12,7 @@ import streamlit as st
 from simulator.models import CharacterData
 from simulator.roster import is_dummy_character, parse_character_ids
 from simulator.simulation import Simulation
+from ui.mechanics_reference import render_mechanics_reference
 
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -248,14 +249,18 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
 
 st.set_page_config(page_title="Wuwa DPS RL Simulator Prototype", layout="wide")
 st.title("Wuwa DPS RL Simulator Prototype")
-settings = enemy_settings()
-selected_character_ids = party_selection()
-with st.expander("Active Anomaly System"):
-    st.write("Actions apply anomaly stacks to enemy-wide combat state. Aero/Spectro/Electro deal tick damage during later action durations. Havoc Bane deals no direct damage and contributes defense reduction while active. Current durations and tick intervals are simplified assumptions.")
-with st.expander("Hit Timing Model"):
-    st.write("action_time is internal action lock and hit timing progression. combat_time_cost is the timed-combat timer cost; it defaults to action_time when omitted. Buffs and Havoc Bane are evaluated at each hit time. Animation-only duration and a general cancel system are not modeled.")
+mode = st.sidebar.radio("Mode", ["Demo Sequence", "PPO Model", "Character Mechanics"])
 
-mode = st.radio("Mode", ["Demo Sequence", "PPO Model"], horizontal=True)
+if mode == "Character Mechanics":
+    character_id = st.selectbox("Character", options=["aemeath"], format_func=lambda item: "Aemeath")
+    render_mechanics_reference(character_id)
+else:
+    settings = enemy_settings()
+    selected_character_ids = party_selection()
+    with st.expander("Active Anomaly System"):
+        st.write("Actions apply anomaly stacks to enemy-wide combat state. Aero/Spectro/Electro deal tick damage during later action durations. Havoc Bane deals no direct damage and contributes defense reduction while active. Current durations and tick intervals are simplified assumptions.")
+    with st.expander("Hit Timing Model"):
+        st.write("action_time is internal action lock and hit timing progression. combat_time_cost is the timed-combat timer cost; it defaults to action_time when omitted. Buffs and Havoc Bane are evaluated at each hit time. Animation-only duration and a general cancel system are not modeled.")
 
 if mode == "Demo Sequence":
     preview_sim = Simulation.from_json(DATA_DIR, selected_character_ids=selected_character_ids)
@@ -271,7 +276,7 @@ if mode == "Demo Sequence":
         sequence = ["short_wait"] if "short_wait" in policy_action_ids else policy_action_ids[:1]
     sim = run_repeating_sequence(sequence, settings, selected_character_ids)
     render_simulation(sim.summary(), simulation=sim)
-else:
+elif mode == "PPO Model":
     model_path_text = st.text_input("PPO model path", value=str(DEFAULT_PPO_MODEL_PATH))
     model_path = Path(model_path_text)
     if not model_path.exists():

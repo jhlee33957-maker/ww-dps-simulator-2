@@ -10,7 +10,7 @@ This project is a Wuthering Waves-style DPS simulation tool focused on Maskable 
 - If an action starts before 120.0 seconds, its full damage counts even if it ends after 120.0.
 - Final DPS is always total_damage / 120.0.
 - Gymnasium environment for Maskable PPO training.
-- Streamlit UI with Demo Sequence and PPO Model evaluation modes.
+- Streamlit UI with Demo Sequence, PPO Model evaluation, and Character Mechanics reference modes.
 - Dummy character, action, enemy, and buff data are included. No real game data is used.
 
 ## Character Mechanics Architecture
@@ -338,12 +338,19 @@ Evaluation writes results/ppo_evaluation_summary.json and results/ppo_timeline.c
 streamlit run app.py
 ```
 
-Streamlit supports Demo Sequence and PPO Model modes. PPO Model mode loads and evaluates a saved model; it does not train.
+Streamlit supports Demo Sequence, PPO Model, and Character Mechanics modes. PPO Model mode loads and evaluates a saved model; it does not train.
+
+## Character Mechanics Reference UI
+
+The Streamlit app includes a Character Mechanics page. It currently supports Aemeath and documents the simulator's implemented interpretation rather than a complete game-client recreation. The page is data-driven from `data/mechanics/aemeath_mechanics.json` and covers modeled scope, omitted systems, resources, states, action resolution priority, timing, form switching, Heavy Attack, Sync Strike, Seraphic Duet, Overdrive / Finale, sync_delta values, and known limitations.
+
+This reference page does not affect simulation results or PPO training. Update the mechanics JSON when character mechanics change.
 
 ## Checks
 
 ```bash
 python -m compileall .
+python scripts/aemeath_mechanics_reference_smoke_test.py
 python scripts/aemeath_source_aligned_coefficients_smoke_test.py
 python scripts/aemeath_time_stop_timing_smoke_test.py
 python scripts/aemeath_client_mechanics_smoke_test.py
@@ -370,7 +377,7 @@ streamlit run app.py
 
 ## Project Layout
 
-- app.py: Streamlit prototype UI with demo, anomaly notes, formula settings, and PPO model evaluation modes.
+- app.py: Streamlit prototype UI with demo, anomaly notes, formula settings, PPO model evaluation, and character mechanics reference modes.
 - characters/: Character mechanics plugin interface, default no-op mechanic, registry, and Aemeath-lite mechanic.
 - data/: Dummy JSON data for characters, actions, enemy context, and buffs.
 - simulator/: Core deterministic simulation logic, anomaly state system, and reusable damage formula layer.

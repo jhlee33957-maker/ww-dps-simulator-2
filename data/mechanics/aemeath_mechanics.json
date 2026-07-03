@@ -1,0 +1,236 @@
+{
+  "character_id": "aemeath",
+  "display_name": "Aemeath",
+  "scope": {
+    "title": "Aemeath-lite Scope",
+    "included": [
+      "Human / Mech form switching",
+      "Basic attack chains",
+      "Normal Form Switch",
+      "Sync Strike",
+      "Seraphic Duo / Seraphic Duet",
+      "Overdrive / Unbound / Finale",
+      "Synchronization Rate",
+      "Resonance Rate",
+      "Instant Response",
+      "Heavy Attack normal timing and Instant Response timing override",
+      "action_time / combat_time_cost separation",
+      "Aemeath solo/party selection structure"
+    ],
+    "excluded": [
+      "Starflux utility system",
+      "Tune Rupture / Fusion Burst / Trail systems",
+      "QTE / Intro / Outro",
+      "aerial attack",
+      "dodge counter",
+      "hitstop in DPS calculation",
+      "full enemy behavior / hit loss / movement",
+      "sequence/chain variants",
+      "full team buff system"
+    ]
+  },
+  "resources": [
+    {
+      "name": "Synchronization Rate",
+      "cap": 200,
+      "modeled_behavior": [
+        "Gained from Basic attacks, Sync Strike, Form Switch A1/A2 equivalents, and Overdrive +30.",
+        "Seraphic Duet costs 100 Synchronization Rate.",
+        "Finale clears Synchronization Rate."
+      ]
+    },
+    {
+      "name": "Resonance Rate",
+      "cap": 4,
+      "modeled_behavior": [
+        "Overdrive grants +1 Resonance Rate.",
+        "Seraphic Duet grants +1 Resonance Rate.",
+        "Finale requires 4 Resonance Rate and clears it."
+      ]
+    },
+    {
+      "name": "Resonance Energy",
+      "modeled_behavior": [
+        "Starts full in the current Nightmare/Matrix context.",
+        "Overdrive costs 125 if modeled by action data."
+      ]
+    },
+    {
+      "name": "Concerto",
+      "modeled_behavior": [
+        "Preserved when present in action data.",
+        "Not central to current Aemeath-lite logic."
+      ]
+    }
+  ],
+  "states": [
+    {
+      "name": "Seraphic Duo",
+      "modeled_behavior": [
+        "Entered by Human Basic Stage 4 or Mech Basic Stage 4.",
+        "Lasts 5 seconds.",
+        "Enables Seraphic Duet when Synchronization Rate is at least 100."
+      ]
+    },
+    {
+      "name": "Stardust Resonance",
+      "modeled_behavior": [
+        "Granted by Overdrive.",
+        "Currently simplified in Aemeath-lite."
+      ]
+    },
+    {
+      "name": "Heavenfall Edict: Unbound",
+      "modeled_behavior": [
+        "Granted by Overdrive.",
+        "Enables Finale condition tracking."
+      ]
+    },
+    {
+      "name": "Instant Response",
+      "modeled_behavior": [
+        "Active when Unbound is active and Resonance Rate reaches 4.",
+        "Makes Charged II use Charged I timing.",
+        "Charged II during Instant Response recovers Synchronization Rate through the current implemented instant_response_sync_delta behavior.",
+        "Consumed or cleared after applicable Charged II / Finale behavior according to current code."
+      ]
+    },
+    {
+      "name": "Overdrive follow-up window",
+      "modeled_behavior": [
+        "After Overdrive, the next normal E1 switch to Aemeath resolves to a special Aemeath A2 form switch if no higher-priority skill resolves.",
+        "The window lasts one action decision and clears when consumed or when another resolved action occurs."
+      ]
+    }
+  ],
+  "action_resolution_priority": [
+    {"priority": 1, "rule": "Finale if ready"},
+    {"priority": 2, "rule": "Seraphic Duet if Seraphic Duo is active and Synchronization Rate is at least 100"},
+    {"priority": 3, "rule": "Sync Strike if a sync-strike window is active"},
+    {"priority": 4, "rule": "Special Overdrive E1 form switch if the Overdrive follow-up window is active"},
+    {"priority": 5, "rule": "Normal Form Switch"},
+    {"priority": 6, "rule": "Normal fallback behavior"}
+  ],
+  "timing_model": [
+    {"name": "action_time", "action_time": null, "combat_time_cost": null, "notes": "Action lock, internal action progression, hit timing progression, cooldown ticking, buffs, anomalies, and mechanic state duration ticking."},
+    {"name": "combat_time_cost", "action_time": null, "combat_time_cost": null, "notes": "Timed combat clock cost. If omitted from an action, it falls back to action_time."},
+    {"name": "Overdrive", "action_time": 4.3667, "combat_time_cost": 0.0},
+    {"name": "Finale", "action_time": 5.6667, "combat_time_cost": 0.0},
+    {"name": "Seraphic Duet Overturn/Ouverture", "action_time": 3.0, "combat_time_cost": 1.3167},
+    {"name": "Seraphic Duet Encore", "action_time": 2.4167, "combat_time_cost": 1.3333},
+    {"name": "Sync Strike Armament Merge", "action_time": 1.1667, "combat_time_cost": 1.1667},
+    {"name": "Sync Strike Call of Dawn", "action_time": 0.9667, "combat_time_cost": 0.9667},
+    {"name": "Heavy Human Charged I", "action_time": 1.8333, "combat_time_cost": 1.8333},
+    {"name": "Human Charged II", "action_time": 3.6667, "combat_time_cost": 3.6667},
+    {"name": "Instant Response Human Charged II", "action_time": 1.8333, "combat_time_cost": 1.8333},
+    {"name": "Heavy Mech Charged I", "action_time": 1.0333, "combat_time_cost": 1.0333},
+    {"name": "Heavy Mech Charged II", "action_time": 2.0667, "combat_time_cost": 2.0667},
+    {"name": "Instant Response Mech Charged II", "action_time": 1.0333, "combat_time_cost": 1.0333}
+  ],
+  "form_switch": [
+    "Normal Human -> Mech Form Switch immediately casts Mech Basic Stage 1.",
+    "Normal Mech -> Human Form Switch immediately casts Human Basic Stage 1.",
+    "Both normal form switches share a 1s form-switch cooldown.",
+    "Special post-Overdrive E1 switch to Human immediately casts Human Basic Stage 2.",
+    "Normal Form Switch sets the next opposite-form Basic stage appropriately."
+  ],
+  "heavy_attack": [
+    "Outside Instant Response, the policy action resolves to Charged I in the current form.",
+    "During Instant Response, the policy action resolves to Charged II in the current form.",
+    "Instant Response Charged II uses the corresponding Charged I timing override.",
+    "Heavy attacks do not receive notice-aligned sync_delta in the current implementation."
+  ],
+  "sync_strike": [
+    {
+      "name": "Armament Merge",
+      "modeled_behavior": [
+        "Human-side Sync Strike.",
+        "Switches to Mech.",
+        "Sets the next Mech Basic Attack to Stage 2."
+      ]
+    },
+    {
+      "name": "Call of Dawn",
+      "modeled_behavior": [
+        "Mech-side Sync Strike.",
+        "Switches to Human.",
+        "Sets the next Human Basic Attack to Stage 2."
+      ]
+    }
+  ],
+  "seraphic_duet": [
+    {
+      "name": "Overturn/Ouverture",
+      "modeled_behavior": [
+        "Human-side Seraphic Duet.",
+        "Requires Seraphic Duo and Synchronization Rate at least 100.",
+        "Costs 100 Synchronization Rate.",
+        "Adds Resonance Rate.",
+        "Switches to Mech."
+      ]
+    },
+    {
+      "name": "Encore",
+      "modeled_behavior": [
+        "Mech-side Seraphic Duet.",
+        "Requires Seraphic Duo and Synchronization Rate at least 100.",
+        "Costs 100 Synchronization Rate.",
+        "Adds Resonance Rate.",
+        "Switches to Human."
+      ]
+    },
+    {
+      "name": "Priority",
+      "modeled_behavior": [
+        "Seraphic Duet takes priority over normal Form Switch."
+      ]
+    }
+  ],
+  "overdrive_finale": [
+    {
+      "name": "Overdrive",
+      "modeled_behavior": [
+        "Grants Unbound.",
+        "Grants Stardust Resonance in the current implementation.",
+        "Adds 30 Synchronization Rate.",
+        "Adds 1 Resonance Rate.",
+        "Switches to Mech.",
+        "Opens the special E1 follow-up window.",
+        "Costs 0 timed combat seconds."
+      ]
+    },
+    {
+      "name": "Finale",
+      "modeled_behavior": [
+        "Requires Unbound, Synchronization Rate 200, and Resonance Rate 4.",
+        "Clears Synchronization Rate and Resonance Rate.",
+        "Ends Unbound and Seraphic Duo.",
+        "Switches to Human.",
+        "Costs 0 timed combat seconds."
+      ]
+    }
+  ],
+  "sync_delta_table": [
+    {"name": "Human Basic 1", "sync_delta": 3.29},
+    {"name": "Human Basic 2", "sync_delta": 6.44},
+    {"name": "Human Basic 3", "sync_delta": 16.66},
+    {"name": "Human Basic 4", "sync_delta": 23.31},
+    {"name": "Mech Basic 1", "sync_delta": 6.45},
+    {"name": "Mech Basic 2", "sync_delta": 9.60},
+    {"name": "Mech Basic 3", "sync_delta": 18.54},
+    {"name": "Mech Basic 4", "sync_delta": 23.28},
+    {"name": "Armament Merge", "sync_delta": 18.29},
+    {"name": "Call of Dawn", "sync_delta": 22.18},
+    {"name": "Form Switch to Mech Normal", "sync_delta": 6.45},
+    {"name": "Form Switch to Aemeath Normal", "sync_delta": 3.29},
+    {"name": "Form Switch to Aemeath After Overdrive", "sync_delta": 6.44},
+    {"name": "Overdrive", "sync_delta": 30},
+    {"name": "Seraphic Duet", "sync_delta": -100},
+    {"name": "Finale", "sync_delta": null, "notes": "Clears Synchronization Rate."}
+  ],
+  "known_limitations": [
+    "This page describes the simulator's modeled interpretation, not a complete game-client recreation.",
+    "The current goal is 2-minute DPS and balance comparison, not exact frame-perfect combat reproduction.",
+    "Several utility, trail, QTE, aerial, dodge, movement, hit loss, and full team systems remain outside Aemeath-lite scope."
+  ]
+}
