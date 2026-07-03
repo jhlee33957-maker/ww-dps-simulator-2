@@ -6,10 +6,13 @@ from pathlib import Path
 
 from extract_aemeath_excel_data import (
     DEFAULT_ACTIONS,
+    DEFAULT_CANDIDATES,
     DEFAULT_MAPPING,
     DEFAULT_OUTPUT,
     DEFAULT_REPORT,
+    DEFAULT_REVIEW_REPORT,
     DEFAULT_UNMAPPED,
+    DEFAULT_UNRESOLVED,
     SOURCE_DIR,
     extract,
     resolve_workbook_path,
@@ -36,12 +39,18 @@ def main() -> int:
         output=str(DEFAULT_OUTPUT),
         unmapped=str(DEFAULT_UNMAPPED),
         report=str(DEFAULT_REPORT),
+        candidates=str(DEFAULT_CANDIDATES),
+        coeff_resource_unresolved=str(DEFAULT_UNRESOLVED),
+        review_report=str(DEFAULT_REVIEW_REPORT),
     )
     extract(args)
 
     assert DEFAULT_OUTPUT.exists(), f"Expected output JSON at {DEFAULT_OUTPUT}"
     assert DEFAULT_UNMAPPED.exists(), f"Expected unmapped JSON at {DEFAULT_UNMAPPED}"
     assert DEFAULT_REPORT.exists(), f"Expected report markdown at {DEFAULT_REPORT}"
+    assert DEFAULT_CANDIDATES.exists(), f"Expected coefficient/resource candidate JSON at {DEFAULT_CANDIDATES}"
+    assert DEFAULT_UNRESOLVED.exists(), f"Expected coefficient/resource unresolved JSON at {DEFAULT_UNRESOLVED}"
+    assert DEFAULT_REVIEW_REPORT.exists(), f"Expected coefficient/resource review markdown at {DEFAULT_REVIEW_REPORT}"
 
     extracted = json.loads(DEFAULT_OUTPUT.read_text(encoding="utf-8"))
     unmapped = json.loads(DEFAULT_UNMAPPED.read_text(encoding="utf-8"))

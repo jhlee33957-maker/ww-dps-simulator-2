@@ -1,12 +1,12 @@
 {
   "source_workbook": "data\\source\\鸣潮动作数据汇总.xlsx",
-  "generated_at": "2026-07-03T04:59:03.662414+00:00",
+  "generated_at": "2026-07-03T07:28:01.649038+00:00",
   "fps": 60,
   "candidate_row_count": 229,
   "validation_summary": {
     "frame_corrections": 8,
     "frame_inconsistencies_remaining": 0,
-    "variant_rows_excluded_from_base": 24,
+    "variant_rows_excluded_from_base": 12,
     "qte_rows_excluded": 12,
     "low_confidence_resource_fields": 32
   },

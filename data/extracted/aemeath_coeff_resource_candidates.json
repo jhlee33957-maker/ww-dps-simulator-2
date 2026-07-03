@@ -1,0 +1,2634 @@
+{
+  "generated_at": "2026-07-03T07:28:01.649038+00:00",
+  "source": "data\\source\\鸣潮动作数据汇总.xlsx",
+  "safe_to_patch": false,
+  "notes": [
+    "This file is for review only. It does not modify actions.json.",
+    "Time-stop timing was handled separately; this file is coefficient/resource extraction review."
+  ],
+  "actions": [
+    {
+      "action_id": "aemeath_basic_form_stage_1",
+      "coefficient_candidate": {
+        "safe_to_patch": true,
+        "safe_to_patch_reasons": [],
+        "confidence": "high",
+        "base_source_rows": [
+          {
+            "row_number": 2687,
+            "source_action_name": "A1",
+            "raw_coefficients": 0.4635,
+            "parsed_multipliers": [
+              0.4635
+            ],
+            "repeat_metadata": {
+              "raw_text": "A1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.4635 | 0.84 | 0 | 3.29 | 0 | 0 | 0 | 1.67 | 1 | 33.3 | 26.64 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.4635 | 大招能量 | 0.84 | 核心能量1 | 0 | 核心能量2 | 3.29 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 1.67 | 共振系数 | 1 | 削韧值 | 33.3 | 偏谐值 | 26.64 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          }
+        ],
+        "segments": [
+          {
+            "source_row_number": 2687,
+            "source_action_name": "A1",
+            "raw_coefficient": 0.4635,
+            "parsed_values_before_repeat": [
+              0.4635
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.4635
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          }
+        ],
+        "raw_coefficients": [
+          0.4635
+        ],
+        "parsed_multipliers": [
+          0.4635
+        ],
+        "current_actions_comparison": {
+          "current_hit_count": 1,
+          "candidate_hit_count": 1,
+          "same_hit_count": true,
+          "shape_status": "exact_match",
+          "max_abs_diff": 0.0,
+          "warnings": []
+        },
+        "critical_warnings": [],
+        "excluded_variants_count": 0,
+        "excluded_unrelated_rows_count": 0,
+        "repeat_expansions_applied": 0,
+        "warnings": []
+      },
+      "resource_candidate": {
+        "safe_to_patch": false,
+        "confidence": "high",
+        "parsed_resource_candidates": {
+          "concerto_energy_gain": 1.67
+        },
+        "raw_resources": {
+          "大招能量": 0.84,
+          "核心能量1": 0,
+          "核心能量2": 3.29,
+          "核心能量3": 0,
+          "核心能量4": 0,
+          "核心能量5": 0,
+          "协奏能量": 1.67,
+          "削韧值": 33.3,
+          "偏谐值": 26.64,
+          "共振削减": 0
+        },
+        "resource_confidence": {
+          "resonance_energy_gain": "medium",
+          "core_energy_raw": "low",
+          "concerto_energy_gain": "high",
+          "toughness_value": "medium",
+          "tune_value": "medium",
+          "resonance_reduction_raw": "low"
+        },
+        "warnings": [
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Resonance-reduction fields are raw-only until the simulator mechanic is confirmed."
+        ]
+      },
+      "current_actions_json_multipliers": [
+        0.4635
+      ]
+    },
+    {
+      "action_id": "aemeath_basic_form_stage_2",
+      "coefficient_candidate": {
+        "safe_to_patch": true,
+        "safe_to_patch_reasons": [],
+        "confidence": "high",
+        "base_source_rows": [
+          {
+            "row_number": 2688,
+            "source_action_name": "A2-1",
+            "raw_coefficients": 0.1389,
+            "parsed_multipliers": [
+              0.1389
+            ],
+            "repeat_metadata": {
+              "raw_text": "A2-1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.1389 | 0.25 | 0 | 1.29 | 0 | 0 | 0 | 0.5 | 1 | 9.98 | 7.99 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A2-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.1389 | 大招能量 | 0.25 | 核心能量1 | 0 | 核心能量2 | 1.29 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.5 | 共振系数 | 1 | 削韧值 | 9.98 | 偏谐值 | 7.99 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2689,
+            "source_action_name": "A2-2",
+            "raw_coefficients": 0.2084,
+            "parsed_multipliers": [
+              0.2084
+            ],
+            "repeat_metadata": {
+              "raw_text": "A2-2 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.2084 | 0.38 | 0 | 1.93 | 0 | 0 | 0 | 0.75 | 1 | 14.97 | 11.98 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A2-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.2084 | 大招能量 | 0.38 | 核心能量1 | 0 | 核心能量2 | 1.93 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.75 | 共振系数 | 1 | 削韧值 | 14.97 | 偏谐值 | 11.98 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2690,
+            "source_action_name": "A2-3",
+            "raw_coefficients": 0.3473,
+            "parsed_multipliers": [
+              0.3473
+            ],
+            "repeat_metadata": {
+              "raw_text": "A2-3 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.3473 | 0.63 | 0 | 3.22 | 0 | 0 | 0 | 1.25 | 1 | 24.95 | 19.96 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A2-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.3473 | 大招能量 | 0.63 | 核心能量1 | 0 | 核心能量2 | 3.22 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 1.25 | 共振系数 | 1 | 削韧值 | 24.95 | 偏谐值 | 19.96 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          }
+        ],
+        "segments": [
+          {
+            "source_row_number": 2688,
+            "source_action_name": "A2-1",
+            "raw_coefficient": 0.1389,
+            "parsed_values_before_repeat": [
+              0.1389
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.1389
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2689,
+            "source_action_name": "A2-2",
+            "raw_coefficient": 0.2084,
+            "parsed_values_before_repeat": [
+              0.2084
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.2084
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2690,
+            "source_action_name": "A2-3",
+            "raw_coefficient": 0.3473,
+            "parsed_values_before_repeat": [
+              0.3473
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.3473
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          }
+        ],
+        "raw_coefficients": [
+          0.1389,
+          0.2084,
+          0.3473
+        ],
+        "parsed_multipliers": [
+          0.1389,
+          0.2084,
+          0.3473
+        ],
+        "current_actions_comparison": {
+          "current_hit_count": 3,
+          "candidate_hit_count": 3,
+          "same_hit_count": true,
+          "shape_status": "exact_match",
+          "max_abs_diff": 0.0,
+          "warnings": []
+        },
+        "critical_warnings": [],
+        "excluded_variants_count": 0,
+        "excluded_unrelated_rows_count": 0,
+        "repeat_expansions_applied": 0,
+        "warnings": []
+      },
+      "resource_candidate": {
+        "safe_to_patch": false,
+        "confidence": "high",
+        "parsed_resource_candidates": {
+          "concerto_energy_gain": 1.25
+        },
+        "raw_resources": {
+          "大招能量": 0.63,
+          "核心能量1": 0,
+          "核心能量2": 3.22,
+          "核心能量3": 0,
+          "核心能量4": 0,
+          "核心能量5": 0,
+          "协奏能量": 1.25,
+          "削韧值": 24.95,
+          "偏谐值": 19.96,
+          "共振削减": 0
+        },
+        "resource_confidence": {
+          "resonance_energy_gain": "medium",
+          "core_energy_raw": "low",
+          "concerto_energy_gain": "high",
+          "toughness_value": "medium",
+          "tune_value": "medium",
+          "resonance_reduction_raw": "low"
+        },
+        "warnings": [
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Resonance-reduction fields are raw-only until the simulator mechanic is confirmed."
+        ]
+      },
+      "current_actions_json_multipliers": [
+        0.1389,
+        0.2084,
+        0.3473
+      ]
+    },
+    {
+      "action_id": "aemeath_basic_form_stage_3",
+      "coefficient_candidate": {
+        "safe_to_patch": true,
+        "safe_to_patch_reasons": [],
+        "confidence": "high",
+        "base_source_rows": [
+          {
+            "row_number": 2691,
+            "source_action_name": "A3-1",
+            "raw_coefficients": 0.0932,
+            "parsed_multipliers": [
+              0.0932
+            ],
+            "repeat_metadata": {
+              "raw_text": "A3-1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0932 | 0.17 | 0 | 1.67 | 0 | 0 | 0 | 0.34 | 1 | 6.69 | 5.36 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0932 | 大招能量 | 0.17 | 核心能量1 | 0 | 核心能量2 | 1.67 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.34 | 共振系数 | 1 | 削韧值 | 6.69 | 偏谐值 | 5.36 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2692,
+            "source_action_name": "A3-2",
+            "raw_coefficients": 0.0932,
+            "parsed_multipliers": [
+              0.0932
+            ],
+            "repeat_metadata": {
+              "raw_text": "A3-2 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0932 | 0.17 | 0 | 1.67 | 0 | 0 | 0 | 0.34 | 1 | 6.69 | 5.36 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0932 | 大招能量 | 0.17 | 核心能量1 | 0 | 核心能量2 | 1.67 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.34 | 共振系数 | 1 | 削韧值 | 6.69 | 偏谐值 | 5.36 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2693,
+            "source_action_name": "A3-3",
+            "raw_coefficients": 0.0932,
+            "parsed_multipliers": [
+              0.0932
+            ],
+            "repeat_metadata": {
+              "raw_text": "A3-3 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0932 | 0.17 | 0 | 1.67 | 0 | 0 | 0 | 0.34 | 1 | 6.69 | 5.36 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0932 | 大招能量 | 0.17 | 核心能量1 | 0 | 核心能量2 | 1.67 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.34 | 共振系数 | 1 | 削韧值 | 6.69 | 偏谐值 | 5.36 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2694,
+            "source_action_name": "A3-4",
+            "raw_coefficients": 0.1863,
+            "parsed_multipliers": [
+              0.1863
+            ],
+            "repeat_metadata": {
+              "raw_text": "A3-4 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.1863 | 0.34 | 0 | 3.33 | 0 | 0 | 0 | 0.67 | 1 | 13.38 | 10.71 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-4 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.1863 | 大招能量 | 0.34 | 核心能量1 | 0 | 核心能量2 | 3.33 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.67 | 共振系数 | 1 | 削韧值 | 13.38 | 偏谐值 | 10.71 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2695,
+            "source_action_name": "A3-5",
+            "raw_coefficients": 0.4656,
+            "parsed_multipliers": [
+              0.4656
+            ],
+            "repeat_metadata": {
+              "raw_text": "A3-5 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.4656 | 0.84 | 0 | 8.32 | 0 | 0 | 0 | 1.68 | 1 | 33.45 | 26.76 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-5 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.4656 | 大招能量 | 0.84 | 核心能量1 | 0 | 核心能量2 | 8.32 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 1.68 | 共振系数 | 1 | 削韧值 | 33.45 | 偏谐值 | 26.76 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          }
+        ],
+        "segments": [
+          {
+            "source_row_number": 2691,
+            "source_action_name": "A3-1",
+            "raw_coefficient": 0.0932,
+            "parsed_values_before_repeat": [
+              0.0932
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.0932
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2692,
+            "source_action_name": "A3-2",
+            "raw_coefficient": 0.0932,
+            "parsed_values_before_repeat": [
+              0.0932
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.0932
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2693,
+            "source_action_name": "A3-3",
+            "raw_coefficient": 0.0932,
+            "parsed_values_before_repeat": [
+              0.0932
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.0932
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2694,
+            "source_action_name": "A3-4",
+            "raw_coefficient": 0.1863,
+            "parsed_values_before_repeat": [
+              0.1863
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.1863
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2695,
+            "source_action_name": "A3-5",
+            "raw_coefficient": 0.4656,
+            "parsed_values_before_repeat": [
+              0.4656
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.4656
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          }
+        ],
+        "raw_coefficients": [
+          0.0932,
+          0.0932,
+          0.0932,
+          0.1863,
+          0.4656
+        ],
+        "parsed_multipliers": [
+          0.0932,
+          0.0932,
+          0.0932,
+          0.1863,
+          0.4656
+        ],
+        "current_actions_comparison": {
+          "current_hit_count": 5,
+          "candidate_hit_count": 5,
+          "same_hit_count": true,
+          "shape_status": "exact_match",
+          "max_abs_diff": 0.0,
+          "warnings": []
+        },
+        "critical_warnings": [],
+        "excluded_variants_count": 0,
+        "excluded_unrelated_rows_count": 5,
+        "repeat_expansions_applied": 0,
+        "warnings": []
+      },
+      "resource_candidate": {
+        "safe_to_patch": false,
+        "confidence": "high",
+        "parsed_resource_candidates": {
+          "concerto_energy_gain": 3.18
+        },
+        "raw_resources": {
+          "大招能量": 1.59,
+          "核心能量1": 0,
+          "核心能量2": 14.49,
+          "核心能量3": 0,
+          "核心能量4": 0,
+          "核心能量5": 0,
+          "协奏能量": 3.18,
+          "削韧值": 93.45,
+          "偏谐值": 50.76,
+          "共振削减": 0
+        },
+        "resource_confidence": {
+          "resonance_energy_gain": "medium",
+          "core_energy_raw": "low",
+          "concerto_energy_gain": "high",
+          "toughness_value": "medium",
+          "tune_value": "medium",
+          "resonance_reduction_raw": "low"
+        },
+        "warnings": [
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Resonance-reduction fields are raw-only until the simulator mechanic is confirmed."
+        ]
+      },
+      "current_actions_json_multipliers": [
+        0.0932,
+        0.0932,
+        0.0932,
+        0.1863,
+        0.4656
+      ]
+    },
+    {
+      "action_id": "aemeath_basic_form_stage_4",
+      "coefficient_candidate": {
+        "safe_to_patch": false,
+        "safe_to_patch_reasons": [
+          "candidate_shorter_than_current",
+          "shape_status_shorter_than_current",
+          "critical_warnings_present"
+        ],
+        "confidence": "low",
+        "base_source_rows": [
+          {
+            "row_number": 2701,
+            "source_action_name": "A4-1",
+            "raw_coefficients": 0.0673,
+            "parsed_multipliers": [
+              0.0673
+            ],
+            "repeat_metadata": {
+              "raw_text": "A4-1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0673 | 0.13 | 0 | 1.17 | 0 | 0 | 0 | 0.25 | 1 | 4.84 | 3.87 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A4-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0673 | 大招能量 | 0.13 | 核心能量1 | 0 | 核心能量2 | 1.17 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.25 | 共振系数 | 1 | 削韧值 | 4.84 | 偏谐值 | 3.87 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2702,
+            "source_action_name": "A4-2",
+            "raw_coefficients": 0.0673,
+            "parsed_multipliers": [
+              0.0673
+            ],
+            "repeat_metadata": {
+              "raw_text": "A4-2 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0673 | 0.13 | 0 | 1.17 | 0 | 0 | 0 | 0.25 | 1 | 4.84 | 3.87 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A4-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0673 | 大招能量 | 0.13 | 核心能量1 | 0 | 核心能量2 | 1.17 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.25 | 共振系数 | 1 | 削韧值 | 4.84 | 偏谐值 | 3.87 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2703,
+            "source_action_name": "A4-3",
+            "raw_coefficients": 1.0094,
+            "parsed_multipliers": [
+              1.0094
+            ],
+            "repeat_metadata": {
+              "raw_text": "A4-3 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 1.0094 | 1.82 | 0 | 17.46 | 0 | 0 | 0 | 3.63 | 1 | 72.53 | 58.02 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A4-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 1.0094 | 大招能量 | 1.82 | 核心能量1 | 0 | 核心能量2 | 17.46 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 3.63 | 共振系数 | 1 | 削韧值 | 72.53 | 偏谐值 | 58.02 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          }
+        ],
+        "segments": [
+          {
+            "source_row_number": 2701,
+            "source_action_name": "A4-1",
+            "raw_coefficient": 0.0673,
+            "parsed_values_before_repeat": [
+              0.0673
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.0673
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2702,
+            "source_action_name": "A4-2",
+            "raw_coefficient": 0.0673,
+            "parsed_values_before_repeat": [
+              0.0673
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.0673
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2703,
+            "source_action_name": "A4-3",
+            "raw_coefficient": 1.0094,
+            "parsed_values_before_repeat": [
+              1.0094
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              1.0094
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          }
+        ],
+        "raw_coefficients": [
+          0.0673,
+          0.0673,
+          1.0094
+        ],
+        "parsed_multipliers": [
+          0.0673,
+          0.0673,
+          1.0094
+        ],
+        "current_actions_comparison": {
+          "current_hit_count": 6,
+          "candidate_hit_count": 3,
+          "same_hit_count": false,
+          "shape_status": "shorter_than_current",
+          "max_abs_diff": 0.9421,
+          "warnings": [
+            "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+          ]
+        },
+        "critical_warnings": [
+          "Coefficient candidate has fewer hits than current actions.json and is likely compressed.",
+          "Aemeath Basic Stage 4 candidate is shorter than expected shape (3 < 6); repeat expansion may be unresolved."
+        ],
+        "excluded_variants_count": 0,
+        "excluded_unrelated_rows_count": 0,
+        "repeat_expansions_applied": 0,
+        "warnings": [
+          {
+            "severity": "critical",
+            "message": "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+          },
+          {
+            "severity": "critical",
+            "message": "Aemeath Basic Stage 4 candidate is shorter than expected shape (3 < 6); repeat expansion may be unresolved."
+          }
+        ]
+      },
+      "resource_candidate": {
+        "safe_to_patch": false,
+        "confidence": "medium",
+        "parsed_resource_candidates": {
+          "resonance_energy_gain": 1.82,
+          "core_energy_raw": 0,
+          "concerto_energy_gain": 3.63,
+          "toughness_value": 72.53,
+          "tune_value": 58.02,
+          "resonance_reduction_raw": 0
+        },
+        "raw_resources": {
+          "大招能量": 1.82,
+          "核心能量1": 0,
+          "核心能量2": 17.46,
+          "核心能量3": 0,
+          "核心能量4": 0,
+          "核心能量5": 0,
+          "协奏能量": 3.63,
+          "削韧值": 72.53,
+          "偏谐值": 58.02,
+          "共振削减": 0
+        },
+        "resource_confidence": {
+          "resonance_energy_gain": "medium",
+          "core_energy_raw": "low",
+          "concerto_energy_gain": "high",
+          "toughness_value": "medium",
+          "tune_value": "medium",
+          "resonance_reduction_raw": "low"
+        },
+        "warnings": [
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Resonance-reduction fields are raw-only until the simulator mechanic is confirmed."
+        ]
+      },
+      "current_actions_json_multipliers": [
+        0.0673,
+        0.0673,
+        0.0673,
+        0.0673,
+        0.0673,
+        1.0094
+      ]
+    },
+    {
+      "action_id": "aemeath_form_switch_to_mech_normal",
+      "coefficient_candidate": {
+        "safe_to_patch": false,
+        "safe_to_patch_reasons": [
+          "no_clear_base_coefficient_rows",
+          "empty_candidate",
+          "candidate_shorter_than_current",
+          "shape_status_empty_candidate",
+          "critical_warnings_present"
+        ],
+        "confidence": "low",
+        "base_source_rows": [],
+        "segments": [],
+        "raw_coefficients": [],
+        "parsed_multipliers": [],
+        "current_actions_comparison": {
+          "current_hit_count": 3,
+          "candidate_hit_count": 0,
+          "same_hit_count": false,
+          "shape_status": "empty_candidate",
+          "max_abs_diff": null,
+          "warnings": [
+            "Coefficient candidate is empty."
+          ]
+        },
+        "critical_warnings": [
+          "Coefficient candidate is empty."
+        ],
+        "excluded_variants_count": 0,
+        "excluded_unrelated_rows_count": 0,
+        "repeat_expansions_applied": 0,
+        "warnings": [
+          {
+            "severity": "critical",
+            "message": "Coefficient candidate is empty."
+          }
+        ]
+      },
+      "resource_candidate": {
+        "safe_to_patch": false,
+        "confidence": "low",
+        "parsed_resource_candidates": {},
+        "raw_resources": {},
+        "resource_confidence": {},
+        "warnings": []
+      },
+      "current_actions_json_multipliers": [
+        0.232,
+        0.232,
+        0.232
+      ]
+    },
+    {
+      "action_id": "aemeath_heavenfall_finale",
+      "coefficient_candidate": {
+        "safe_to_patch": true,
+        "safe_to_patch_reasons": [],
+        "confidence": "high",
+        "base_source_rows": [
+          {
+            "row_number": 2733,
+            "source_action_name": "C0大招2-伤害",
+            "raw_coefficients": 17.8929,
+            "parsed_multipliers": [
+              17.8929
+            ],
+            "repeat_metadata": {
+              "raw_text": "C0大招2-伤害 | 热熔 | 伤害 | 共鸣解放 | 共鸣解放伤害 | 0 | 攻击 | 17.8929 | 20 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 400 | 840 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0大招2-伤害 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣解放 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 17.8929 | 大招能量 | 20 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0 | 共振系数 | 1 | 削韧值 | 400 | 偏谐值 | 840 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          }
+        ],
+        "segments": [
+          {
+            "source_row_number": 2733,
+            "source_action_name": "C0大招2-伤害",
+            "raw_coefficient": 17.8929,
+            "parsed_values_before_repeat": [
+              17.8929
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              17.8929
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          }
+        ],
+        "raw_coefficients": [
+          17.8929
+        ],
+        "parsed_multipliers": [
+          17.8929
+        ],
+        "current_actions_comparison": {
+          "current_hit_count": 1,
+          "candidate_hit_count": 1,
+          "same_hit_count": true,
+          "shape_status": "exact_match",
+          "max_abs_diff": 0.0,
+          "warnings": []
+        },
+        "critical_warnings": [],
+        "excluded_variants_count": 1,
+        "excluded_unrelated_rows_count": 0,
+        "repeat_expansions_applied": 0,
+        "warnings": []
+      },
+      "resource_candidate": {
+        "safe_to_patch": false,
+        "confidence": "high",
+        "parsed_resource_candidates": {
+          "concerto_energy_gain": 0.0
+        },
+        "raw_resources": {
+          "大招能量": 20,
+          "核心能量1": 0,
+          "核心能量2": 0,
+          "核心能量3": 0,
+          "核心能量4": 0,
+          "核心能量5": 0,
+          "协奏能量": 0,
+          "削韧值": 400,
+          "偏谐值": 840,
+          "共振削减": 0
+        },
+        "resource_confidence": {
+          "resonance_energy_gain": "medium",
+          "core_energy_raw": "low",
+          "concerto_energy_gain": "high",
+          "toughness_value": "medium",
+          "tune_value": "medium",
+          "resonance_reduction_raw": "low"
+        },
+        "warnings": [
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Resonance-reduction fields are raw-only until the simulator mechanic is confirmed."
+        ]
+      },
+      "current_actions_json_multipliers": [
+        17.8929
+      ]
+    },
+    {
+      "action_id": "aemeath_heavy_aemeath_charged_1",
+      "coefficient_candidate": {
+        "safe_to_patch": false,
+        "safe_to_patch_reasons": [
+          "candidate_shorter_than_current",
+          "shape_status_shorter_than_current",
+          "critical_warnings_present"
+        ],
+        "confidence": "low",
+        "base_source_rows": [
+          {
+            "row_number": 2705,
+            "source_action_name": "重击-1",
+            "raw_coefficients": 0.1857,
+            "parsed_multipliers": [
+              0.1857
+            ],
+            "repeat_metadata": {
+              "raw_text": "重击-1 | 热熔 | 伤害 | 重击 | 共鸣解放伤害 | 0 | 攻击 | 0.1857 | 0.34 | 0 | 0 | 0 | 0 | 0 | 0.67 | 1 | 13.34 | 10.68 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | 重击-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 重击 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.1857 | 大招能量 | 0.34 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.67 | 共振系数 | 1 | 削韧值 | 13.34 | 偏谐值 | 10.68 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          }
+        ],
+        "segments": [
+          {
+            "source_row_number": 2705,
+            "source_action_name": "重击-1",
+            "raw_coefficient": 0.1857,
+            "parsed_values_before_repeat": [
+              0.1857
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.1857
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          }
+        ],
+        "raw_coefficients": [
+          0.1857
+        ],
+        "parsed_multipliers": [
+          0.1857
+        ],
+        "current_actions_comparison": {
+          "current_hit_count": 2,
+          "candidate_hit_count": 1,
+          "same_hit_count": false,
+          "shape_status": "shorter_than_current",
+          "max_abs_diff": 0.0,
+          "warnings": [
+            "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+          ]
+        },
+        "critical_warnings": [
+          "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+        ],
+        "excluded_variants_count": 0,
+        "excluded_unrelated_rows_count": 0,
+        "repeat_expansions_applied": 0,
+        "warnings": [
+          {
+            "severity": "critical",
+            "message": "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+          }
+        ]
+      },
+      "resource_candidate": {
+        "safe_to_patch": false,
+        "confidence": "medium",
+        "parsed_resource_candidates": {
+          "resonance_energy_gain": 0.34,
+          "core_energy_raw": 0,
+          "concerto_energy_gain": 0.67,
+          "toughness_value": 13.34,
+          "tune_value": 10.68,
+          "resonance_reduction_raw": 0
+        },
+        "raw_resources": {
+          "大招能量": 0.34,
+          "核心能量1": 0,
+          "核心能量2": 0,
+          "核心能量3": 0,
+          "核心能量4": 0,
+          "核心能量5": 0,
+          "协奏能量": 0.67,
+          "削韧值": 13.34,
+          "偏谐值": 10.68,
+          "共振削减": 0
+        },
+        "resource_confidence": {
+          "resonance_energy_gain": "medium",
+          "core_energy_raw": "low",
+          "concerto_energy_gain": "high",
+          "toughness_value": "medium",
+          "tune_value": "medium",
+          "resonance_reduction_raw": "low"
+        },
+        "warnings": [
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Resonance-reduction fields are raw-only until the simulator mechanic is confirmed."
+        ]
+      },
+      "current_actions_json_multipliers": [
+        0.1857,
+        0.7426
+      ]
+    },
+    {
+      "action_id": "aemeath_heavy_aemeath_charged_2",
+      "coefficient_candidate": {
+        "safe_to_patch": false,
+        "safe_to_patch_reasons": [
+          "candidate_shorter_than_current",
+          "shape_status_shorter_than_current",
+          "critical_warnings_present"
+        ],
+        "confidence": "low",
+        "base_source_rows": [
+          {
+            "row_number": 2706,
+            "source_action_name": "重击-2",
+            "raw_coefficients": 0.7426,
+            "parsed_multipliers": [
+              0.7426
+            ],
+            "repeat_metadata": {
+              "raw_text": "重击-2 | 热熔 | 伤害 | 重击 | 共鸣解放伤害 | 0 | 攻击 | 0.7426 | 1.34 | 0 | 0 | 0 | 0 | 0 | 2.67 | 1 | 53.36 | 42.69 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | 重击-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 重击 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.7426 | 大招能量 | 1.34 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 2.67 | 共振系数 | 1 | 削韧值 | 53.36 | 偏谐值 | 42.69 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2707,
+            "source_action_name": "强化重击-1",
+            "raw_coefficients": 0.116,
+            "parsed_multipliers": [
+              0.116
+            ],
+            "repeat_metadata": {
+              "raw_text": "强化重击-1 | 热熔 | 伤害 | 重击 | 共鸣解放伤害 | 0 | 攻击 | 0.116 | 0.21 | 0 | 0 | 0 | 0 | 0 | 0.42 | 1 | 48.34 | 6.67 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | 强化重击-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 重击 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.116 | 大招能量 | 0.21 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.42 | 共振系数 | 1 | 削韧值 | 48.34 | 偏谐值 | 6.67 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2708,
+            "source_action_name": "强化重击-2",
+            "raw_coefficients": 0.116,
+            "parsed_multipliers": [
+              0.116
+            ],
+            "repeat_metadata": {
+              "raw_text": "强化重击-2 | 热熔 | 伤害 | 重击 | 共鸣解放伤害 | 0 | 攻击 | 0.116 | 0.21 | 0 | 0 | 0 | 0 | 0 | 0.42 | 1 | 48.34 | 6.67 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | 强化重击-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 重击 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.116 | 大招能量 | 0.21 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.42 | 共振系数 | 1 | 削韧值 | 48.34 | 偏谐值 | 6.67 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2709,
+            "source_action_name": "强化重击-3",
+            "raw_coefficients": 1.856,
+            "parsed_multipliers": [
+              1.856
+            ],
+            "repeat_metadata": {
+              "raw_text": "强化重击-3 | 热熔 | 伤害 | 重击 | 共鸣解放伤害 | 0 | 攻击 | 1.856 | 3.34 | 0 | 0 | 0 | 0 | 0 | 6.67 | 1 | 133.36 | 106.69 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | 强化重击-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 重击 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 1.856 | 大招能量 | 3.34 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 6.67 | 共振系数 | 1 | 削韧值 | 133.36 | 偏谐值 | 106.69 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          }
+        ],
+        "segments": [
+          {
+            "source_row_number": 2706,
+            "source_action_name": "重击-2",
+            "raw_coefficient": 0.7426,
+            "parsed_values_before_repeat": [
+              0.7426
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.7426
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2707,
+            "source_action_name": "强化重击-1",
+            "raw_coefficient": 0.116,
+            "parsed_values_before_repeat": [
+              0.116
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.116
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2708,
+            "source_action_name": "强化重击-2",
+            "raw_coefficient": 0.116,
+            "parsed_values_before_repeat": [
+              0.116
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.116
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2709,
+            "source_action_name": "强化重击-3",
+            "raw_coefficient": 1.856,
+            "parsed_values_before_repeat": [
+              1.856
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              1.856
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          }
+        ],
+        "raw_coefficients": [
+          0.7426,
+          0.116,
+          0.116,
+          1.856
+        ],
+        "parsed_multipliers": [
+          0.7426,
+          0.116,
+          0.116,
+          1.856
+        ],
+        "current_actions_comparison": {
+          "current_hit_count": 5,
+          "candidate_hit_count": 4,
+          "same_hit_count": false,
+          "shape_status": "shorter_than_current",
+          "max_abs_diff": 1.74,
+          "warnings": [
+            "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+          ]
+        },
+        "critical_warnings": [
+          "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+        ],
+        "excluded_variants_count": 0,
+        "excluded_unrelated_rows_count": 0,
+        "repeat_expansions_applied": 0,
+        "warnings": [
+          {
+            "severity": "critical",
+            "message": "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+          }
+        ]
+      },
+      "resource_candidate": {
+        "safe_to_patch": false,
+        "confidence": "medium",
+        "parsed_resource_candidates": {
+          "resonance_energy_gain": 3.34,
+          "core_energy_raw": 0,
+          "concerto_energy_gain": 6.67,
+          "toughness_value": 133.36,
+          "tune_value": 106.69,
+          "resonance_reduction_raw": 0
+        },
+        "raw_resources": {
+          "大招能量": 3.34,
+          "核心能量1": 0,
+          "核心能量2": 0,
+          "核心能量3": 0,
+          "核心能量4": 0,
+          "核心能量5": 0,
+          "协奏能量": 6.67,
+          "削韧值": 133.36,
+          "偏谐值": 106.69,
+          "共振削减": 0
+        },
+        "resource_confidence": {
+          "resonance_energy_gain": "medium",
+          "core_energy_raw": "low",
+          "concerto_energy_gain": "high",
+          "toughness_value": "medium",
+          "tune_value": "medium",
+          "resonance_reduction_raw": "low"
+        },
+        "warnings": [
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Resonance-reduction fields are raw-only until the simulator mechanic is confirmed."
+        ]
+      },
+      "current_actions_json_multipliers": [
+        0.116,
+        0.116,
+        0.116,
+        0.116,
+        1.856
+      ]
+    },
+    {
+      "action_id": "aemeath_heavy_mech_charged_1",
+      "coefficient_candidate": {
+        "safe_to_patch": true,
+        "safe_to_patch_reasons": [],
+        "confidence": "high",
+        "base_source_rows": [
+          {
+            "row_number": 2756,
+            "source_action_name": "重击",
+            "raw_coefficients": 0.9283,
+            "parsed_multipliers": [
+              0.9283
+            ],
+            "repeat_metadata": {
+              "raw_text": "重击 | 热熔 | 伤害 | 重击 | 共鸣解放伤害 | 0 | 攻击 | 0.9283 | 1.67 | 0 | 0 | 0 | 0 | 0 | 3.34 | 1 | 66.7 | 53.36 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | 重击 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 重击 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.9283 | 大招能量 | 1.67 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 3.34 | 共振系数 | 1 | 削韧值 | 66.7 | 偏谐值 | 53.36 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          }
+        ],
+        "segments": [
+          {
+            "source_row_number": 2756,
+            "source_action_name": "重击",
+            "raw_coefficient": 0.9283,
+            "parsed_values_before_repeat": [
+              0.9283
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.9283
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          }
+        ],
+        "raw_coefficients": [
+          0.9283
+        ],
+        "parsed_multipliers": [
+          0.9283
+        ],
+        "current_actions_comparison": {
+          "current_hit_count": 1,
+          "candidate_hit_count": 1,
+          "same_hit_count": true,
+          "shape_status": "exact_match",
+          "max_abs_diff": 0.0,
+          "warnings": []
+        },
+        "critical_warnings": [],
+        "excluded_variants_count": 0,
+        "excluded_unrelated_rows_count": 0,
+        "repeat_expansions_applied": 0,
+        "warnings": []
+      },
+      "resource_candidate": {
+        "safe_to_patch": false,
+        "confidence": "high",
+        "parsed_resource_candidates": {
+          "concerto_energy_gain": 3.34
+        },
+        "raw_resources": {
+          "大招能量": 1.67,
+          "核心能量1": 0,
+          "核心能量2": 0,
+          "核心能量3": 0,
+          "核心能量4": 0,
+          "核心能量5": 0,
+          "协奏能量": 3.34,
+          "削韧值": 66.7,
+          "偏谐值": 53.36,
+          "共振削减": 0
+        },
+        "resource_confidence": {
+          "resonance_energy_gain": "medium",
+          "core_energy_raw": "low",
+          "concerto_energy_gain": "high",
+          "toughness_value": "medium",
+          "tune_value": "medium",
+          "resonance_reduction_raw": "low"
+        },
+        "warnings": [
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Resonance-reduction fields are raw-only until the simulator mechanic is confirmed."
+        ]
+      },
+      "current_actions_json_multipliers": [
+        0.9283
+      ]
+    },
+    {
+      "action_id": "aemeath_heavy_mech_charged_2",
+      "coefficient_candidate": {
+        "safe_to_patch": true,
+        "safe_to_patch_reasons": [],
+        "confidence": "high",
+        "base_source_rows": [
+          {
+            "row_number": 2757,
+            "source_action_name": "强化重击",
+            "raw_coefficients": 2.32,
+            "parsed_multipliers": [
+              2.32
+            ],
+            "repeat_metadata": {
+              "raw_text": "强化重击 | 热熔 | 伤害 | 重击 | 共鸣解放伤害 | 0 | 攻击 | 2.32 | 4.17 | 0 | 0 | 0 | 0 | 0 | 8.34 | 1 | 166.7 | 133.36 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | 强化重击 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 重击 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 2.32 | 大招能量 | 4.17 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 8.34 | 共振系数 | 1 | 削韧值 | 166.7 | 偏谐值 | 133.36 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          }
+        ],
+        "segments": [
+          {
+            "source_row_number": 2757,
+            "source_action_name": "强化重击",
+            "raw_coefficient": 2.32,
+            "parsed_values_before_repeat": [
+              2.32
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              2.32
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          }
+        ],
+        "raw_coefficients": [
+          2.32
+        ],
+        "parsed_multipliers": [
+          2.32
+        ],
+        "current_actions_comparison": {
+          "current_hit_count": 1,
+          "candidate_hit_count": 1,
+          "same_hit_count": true,
+          "shape_status": "exact_match",
+          "max_abs_diff": 0.0,
+          "warnings": []
+        },
+        "critical_warnings": [],
+        "excluded_variants_count": 0,
+        "excluded_unrelated_rows_count": 0,
+        "repeat_expansions_applied": 0,
+        "warnings": []
+      },
+      "resource_candidate": {
+        "safe_to_patch": false,
+        "confidence": "high",
+        "parsed_resource_candidates": {
+          "concerto_energy_gain": 8.34
+        },
+        "raw_resources": {
+          "大招能量": 4.17,
+          "核心能量1": 0,
+          "核心能量2": 0,
+          "核心能量3": 0,
+          "核心能量4": 0,
+          "核心能量5": 0,
+          "协奏能量": 8.34,
+          "削韧值": 166.7,
+          "偏谐值": 133.36,
+          "共振削减": 0
+        },
+        "resource_confidence": {
+          "resonance_energy_gain": "medium",
+          "core_energy_raw": "low",
+          "concerto_energy_gain": "high",
+          "toughness_value": "medium",
+          "tune_value": "medium",
+          "resonance_reduction_raw": "low"
+        },
+        "warnings": [
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Resonance-reduction fields are raw-only until the simulator mechanic is confirmed."
+        ]
+      },
+      "current_actions_json_multipliers": [
+        2.32
+      ]
+    },
+    {
+      "action_id": "aemeath_liberation_overdrive",
+      "coefficient_candidate": {
+        "safe_to_patch": false,
+        "safe_to_patch_reasons": [
+          "candidate_shorter_than_current",
+          "shape_status_shorter_than_current",
+          "critical_warnings_present"
+        ],
+        "confidence": "low",
+        "base_source_rows": [
+          {
+            "row_number": 2729,
+            "source_action_name": "C0大招1-1",
+            "raw_coefficients": 2.008,
+            "parsed_multipliers": [
+              2.008
+            ],
+            "repeat_metadata": {
+              "raw_text": "C0大招1-1 | 热熔 | 伤害 | 共鸣解放 | 共鸣解放伤害 | 0 | 攻击 | 2.008 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 80 | 168 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0大招1-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣解放 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 2.008 | 大招能量 | 0 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0 | 共振系数 | 1 | 削韧值 | 80 | 偏谐值 | 168 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2730,
+            "source_action_name": "C0大招1-2",
+            "raw_coefficients": 2.6774,
+            "parsed_multipliers": [
+              2.6774
+            ],
+            "repeat_metadata": {
+              "raw_text": "C0大招1-2 | 热熔 | 伤害 | 共鸣解放 | 共鸣解放伤害 | 0 | 攻击 | 2.6774 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 106.67 | 224 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0大招1-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣解放 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 2.6774 | 大招能量 | 0 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0 | 共振系数 | 1 | 削韧值 | 106.67 | 偏谐值 | 224 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          }
+        ],
+        "segments": [
+          {
+            "source_row_number": 2729,
+            "source_action_name": "C0大招1-1",
+            "raw_coefficient": 2.008,
+            "parsed_values_before_repeat": [
+              2.008
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              2.008
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2730,
+            "source_action_name": "C0大招1-2",
+            "raw_coefficient": 2.6774,
+            "parsed_values_before_repeat": [
+              2.6774
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              2.6774
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          }
+        ],
+        "raw_coefficients": [
+          2.008,
+          2.6774
+        ],
+        "parsed_multipliers": [
+          2.008,
+          2.6774
+        ],
+        "current_actions_comparison": {
+          "current_hit_count": 4,
+          "candidate_hit_count": 2,
+          "same_hit_count": false,
+          "shape_status": "shorter_than_current",
+          "max_abs_diff": 0.003,
+          "warnings": [
+            "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+          ]
+        },
+        "critical_warnings": [
+          "Coefficient candidate has fewer hits than current actions.json and is likely compressed.",
+          "Overdrive candidate is shorter than expected shape (2 < 4); repeat expansion may be unresolved."
+        ],
+        "excluded_variants_count": 2,
+        "excluded_unrelated_rows_count": 0,
+        "repeat_expansions_applied": 0,
+        "warnings": [
+          {
+            "severity": "critical",
+            "message": "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+          },
+          {
+            "severity": "critical",
+            "message": "Overdrive candidate is shorter than expected shape (2 < 4); repeat expansion may be unresolved."
+          }
+        ]
+      },
+      "resource_candidate": {
+        "safe_to_patch": false,
+        "confidence": "medium",
+        "parsed_resource_candidates": {
+          "resonance_energy_gain": 0.0,
+          "core_energy_raw": 0,
+          "concerto_energy_gain": 0.0,
+          "toughness_value": 106.67,
+          "tune_value": 224.0,
+          "resonance_reduction_raw": 0
+        },
+        "raw_resources": {
+          "大招能量": 0,
+          "核心能量1": 0,
+          "核心能量2": 0,
+          "核心能量3": 0,
+          "核心能量4": 0,
+          "核心能量5": 0,
+          "协奏能量": 0,
+          "削韧值": 106.67,
+          "偏谐值": 224,
+          "共振削减": 0
+        },
+        "resource_confidence": {
+          "resonance_energy_gain": "medium",
+          "core_energy_raw": "low",
+          "concerto_energy_gain": "high",
+          "toughness_value": "medium",
+          "tune_value": "medium",
+          "resonance_reduction_raw": "low"
+        },
+        "warnings": [
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Resonance-reduction fields are raw-only until the simulator mechanic is confirmed."
+        ]
+      },
+      "current_actions_json_multipliers": [
+        2.008,
+        2.6744,
+        2.6744,
+        2.6744
+      ]
+    },
+    {
+      "action_id": "aemeath_mech_basic_stage_1",
+      "coefficient_candidate": {
+        "safe_to_patch": false,
+        "safe_to_patch_reasons": [
+          "candidate_shorter_than_current",
+          "shape_status_shorter_than_current",
+          "critical_warnings_present"
+        ],
+        "confidence": "low",
+        "base_source_rows": [
+          {
+            "row_number": 2743,
+            "source_action_name": "A1",
+            "raw_coefficients": 0.232,
+            "parsed_multipliers": [
+              0.232
+            ],
+            "repeat_metadata": {
+              "raw_text": "A1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.232 | 0.42 | 0 | 2.15 | 0 | 0 | 0 | 0.84 | 1 | 16.67 | 13.34 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.232 | 大招能量 | 0.42 | 核心能量1 | 0 | 核心能量2 | 2.15 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.84 | 共振系数 | 1 | 削韧值 | 16.67 | 偏谐值 | 13.34 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          }
+        ],
+        "segments": [
+          {
+            "source_row_number": 2743,
+            "source_action_name": "A1",
+            "raw_coefficient": 0.232,
+            "parsed_values_before_repeat": [
+              0.232
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.232
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          }
+        ],
+        "raw_coefficients": [
+          0.232
+        ],
+        "parsed_multipliers": [
+          0.232
+        ],
+        "current_actions_comparison": {
+          "current_hit_count": 3,
+          "candidate_hit_count": 1,
+          "same_hit_count": false,
+          "shape_status": "shorter_than_current",
+          "max_abs_diff": 0.0,
+          "warnings": [
+            "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+          ]
+        },
+        "critical_warnings": [
+          "Coefficient candidate has fewer hits than current actions.json and is likely compressed.",
+          "Mech Basic Stage 1 candidate is shorter than expected shape (1 < 3); repeat expansion may be unresolved."
+        ],
+        "excluded_variants_count": 0,
+        "excluded_unrelated_rows_count": 0,
+        "repeat_expansions_applied": 0,
+        "warnings": [
+          {
+            "severity": "critical",
+            "message": "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+          },
+          {
+            "severity": "critical",
+            "message": "Mech Basic Stage 1 candidate is shorter than expected shape (1 < 3); repeat expansion may be unresolved."
+          }
+        ]
+      },
+      "resource_candidate": {
+        "safe_to_patch": false,
+        "confidence": "medium",
+        "parsed_resource_candidates": {
+          "resonance_energy_gain": 0.42,
+          "core_energy_raw": 0,
+          "concerto_energy_gain": 0.84,
+          "toughness_value": 16.67,
+          "tune_value": 13.34,
+          "resonance_reduction_raw": 0
+        },
+        "raw_resources": {
+          "大招能量": 0.42,
+          "核心能量1": 0,
+          "核心能量2": 2.15,
+          "核心能量3": 0,
+          "核心能量4": 0,
+          "核心能量5": 0,
+          "协奏能量": 0.84,
+          "削韧值": 16.67,
+          "偏谐值": 13.34,
+          "共振削减": 0
+        },
+        "resource_confidence": {
+          "resonance_energy_gain": "medium",
+          "core_energy_raw": "low",
+          "concerto_energy_gain": "high",
+          "toughness_value": "medium",
+          "tune_value": "medium",
+          "resonance_reduction_raw": "low"
+        },
+        "warnings": [
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Resonance-reduction fields are raw-only until the simulator mechanic is confirmed."
+        ]
+      },
+      "current_actions_json_multipliers": [
+        0.232,
+        0.232,
+        0.232
+      ]
+    },
+    {
+      "action_id": "aemeath_mech_basic_stage_2",
+      "coefficient_candidate": {
+        "safe_to_patch": true,
+        "safe_to_patch_reasons": [],
+        "confidence": "high",
+        "base_source_rows": [
+          {
+            "row_number": 2744,
+            "source_action_name": "A2-1",
+            "raw_coefficients": 0.1857,
+            "parsed_multipliers": [
+              0.1857
+            ],
+            "repeat_metadata": {
+              "raw_text": "A2-1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.1857 | 0.34 | 0 | 1.92 | 0 | 0 | 0 | 0.67 | 1 | 13.34 | 10.68 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A2-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.1857 | 大招能量 | 0.34 | 核心能量1 | 0 | 核心能量2 | 1.92 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.67 | 共振系数 | 1 | 削韧值 | 13.34 | 偏谐值 | 10.68 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2745,
+            "source_action_name": "A2-2",
+            "raw_coefficients": 0.7426,
+            "parsed_multipliers": [
+              0.7426
+            ],
+            "repeat_metadata": {
+              "raw_text": "A2-2 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.7426 | 1.34 | 0 | 7.68 | 0 | 0 | 0 | 2.67 | 1 | 53.36 | 42.69 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A2-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.7426 | 大招能量 | 1.34 | 核心能量1 | 0 | 核心能量2 | 7.68 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 2.67 | 共振系数 | 1 | 削韧值 | 53.36 | 偏谐值 | 42.69 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          }
+        ],
+        "segments": [
+          {
+            "source_row_number": 2744,
+            "source_action_name": "A2-1",
+            "raw_coefficient": 0.1857,
+            "parsed_values_before_repeat": [
+              0.1857
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.1857
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2745,
+            "source_action_name": "A2-2",
+            "raw_coefficient": 0.7426,
+            "parsed_values_before_repeat": [
+              0.7426
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.7426
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          }
+        ],
+        "raw_coefficients": [
+          0.1857,
+          0.7426
+        ],
+        "parsed_multipliers": [
+          0.1857,
+          0.7426
+        ],
+        "current_actions_comparison": {
+          "current_hit_count": 2,
+          "candidate_hit_count": 2,
+          "same_hit_count": true,
+          "shape_status": "exact_match",
+          "max_abs_diff": 0.0,
+          "warnings": []
+        },
+        "critical_warnings": [],
+        "excluded_variants_count": 0,
+        "excluded_unrelated_rows_count": 0,
+        "repeat_expansions_applied": 0,
+        "warnings": []
+      },
+      "resource_candidate": {
+        "safe_to_patch": false,
+        "confidence": "high",
+        "parsed_resource_candidates": {
+          "concerto_energy_gain": 2.67
+        },
+        "raw_resources": {
+          "大招能量": 1.34,
+          "核心能量1": 0,
+          "核心能量2": 7.68,
+          "核心能量3": 0,
+          "核心能量4": 0,
+          "核心能量5": 0,
+          "协奏能量": 2.67,
+          "削韧值": 53.36,
+          "偏谐值": 42.69,
+          "共振削减": 0
+        },
+        "resource_confidence": {
+          "resonance_energy_gain": "medium",
+          "core_energy_raw": "low",
+          "concerto_energy_gain": "high",
+          "toughness_value": "medium",
+          "tune_value": "medium",
+          "resonance_reduction_raw": "low"
+        },
+        "warnings": [
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Resonance-reduction fields are raw-only until the simulator mechanic is confirmed."
+        ]
+      },
+      "current_actions_json_multipliers": [
+        0.1857,
+        0.7426
+      ]
+    },
+    {
+      "action_id": "aemeath_mech_basic_stage_3",
+      "coefficient_candidate": {
+        "safe_to_patch": false,
+        "safe_to_patch_reasons": [
+          "candidate_shorter_than_current",
+          "shape_status_shorter_than_current",
+          "critical_warnings_present"
+        ],
+        "confidence": "low",
+        "base_source_rows": [
+          {
+            "row_number": 2746,
+            "source_action_name": "A3-1",
+            "raw_coefficients": 0.1165,
+            "parsed_multipliers": [
+              0.1165
+            ],
+            "repeat_metadata": {
+              "raw_text": "A3-1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.1165 | 0.21 | 0 | 1.99 | 0 | 0 | 0 | 0.42 | 1 | 8.37 | 6.7 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.1165 | 大招能量 | 0.21 | 核心能量1 | 0 | 核心能量2 | 1.99 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.42 | 共振系数 | 1 | 削韧值 | 8.37 | 偏谐值 | 6.7 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2747,
+            "source_action_name": "A3-2",
+            "raw_coefficients": 0.0389,
+            "parsed_multipliers": [
+              0.0389
+            ],
+            "repeat_metadata": {
+              "raw_text": "A3-2 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0389 | 0.07 | 0 | 0.67 | 0 | 0 | 0 | 0.14 | 1 | 2.79 | 2.24 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0389 | 大招能量 | 0.07 | 核心能量1 | 0 | 核心能量2 | 0.67 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.14 | 共振系数 | 1 | 削韧值 | 2.79 | 偏谐值 | 2.24 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2748,
+            "source_action_name": "A3-3",
+            "raw_coefficients": 0.0389,
+            "parsed_multipliers": [
+              0.0389
+            ],
+            "repeat_metadata": {
+              "raw_text": "A3-3 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0389 | 0.07 | 0 | 0.67 | 0 | 0 | 0 | 0.14 | 1 | 2.79 | 2.24 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0389 | 大招能量 | 0.07 | 核心能量1 | 0 | 核心能量2 | 0.67 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.14 | 共振系数 | 1 | 削韧值 | 2.79 | 偏谐值 | 2.24 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2749,
+            "source_action_name": "A3-4",
+            "raw_coefficients": 0.8154,
+            "parsed_multipliers": [
+              0.8154
+            ],
+            "repeat_metadata": {
+              "raw_text": "A3-4 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.8154 | 1.47 | 0 | 13.87 | 0 | 0 | 0 | 2.93 | 1 | 58.59 | 46.88 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-4 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.8154 | 大招能量 | 1.47 | 核心能量1 | 0 | 核心能量2 | 13.87 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 2.93 | 共振系数 | 1 | 削韧值 | 58.59 | 偏谐值 | 46.88 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          }
+        ],
+        "segments": [
+          {
+            "source_row_number": 2746,
+            "source_action_name": "A3-1",
+            "raw_coefficient": 0.1165,
+            "parsed_values_before_repeat": [
+              0.1165
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.1165
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2747,
+            "source_action_name": "A3-2",
+            "raw_coefficient": 0.0389,
+            "parsed_values_before_repeat": [
+              0.0389
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.0389
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2748,
+            "source_action_name": "A3-3",
+            "raw_coefficient": 0.0389,
+            "parsed_values_before_repeat": [
+              0.0389
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.0389
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2749,
+            "source_action_name": "A3-4",
+            "raw_coefficient": 0.8154,
+            "parsed_values_before_repeat": [
+              0.8154
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.8154
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          }
+        ],
+        "raw_coefficients": [
+          0.1165,
+          0.0389,
+          0.0389,
+          0.8154
+        ],
+        "parsed_multipliers": [
+          0.1165,
+          0.0389,
+          0.0389,
+          0.8154
+        ],
+        "current_actions_comparison": {
+          "current_hit_count": 8,
+          "candidate_hit_count": 4,
+          "same_hit_count": false,
+          "shape_status": "shorter_than_current",
+          "max_abs_diff": 0.7765,
+          "warnings": [
+            "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+          ]
+        },
+        "critical_warnings": [
+          "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+        ],
+        "excluded_variants_count": 0,
+        "excluded_unrelated_rows_count": 4,
+        "repeat_expansions_applied": 0,
+        "warnings": [
+          {
+            "severity": "critical",
+            "message": "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+          }
+        ]
+      },
+      "resource_candidate": {
+        "safe_to_patch": false,
+        "confidence": "medium",
+        "parsed_resource_candidates": {
+          "resonance_energy_gain": 2.52,
+          "core_energy_raw": 0,
+          "concerto_energy_gain": 5.03,
+          "toughness_value": 142.59,
+          "tune_value": 80.48,
+          "resonance_reduction_raw": 0
+        },
+        "raw_resources": {
+          "大招能量": 2.52,
+          "核心能量1": 0,
+          "核心能量2": 22.5,
+          "核心能量3": 0,
+          "核心能量4": 0,
+          "核心能量5": 0,
+          "协奏能量": 5.03,
+          "削韧值": 142.59,
+          "偏谐值": 80.48,
+          "共振削减": 0
+        },
+        "resource_confidence": {
+          "resonance_energy_gain": "medium",
+          "core_energy_raw": "low",
+          "concerto_energy_gain": "high",
+          "toughness_value": "medium",
+          "tune_value": "medium",
+          "resonance_reduction_raw": "low"
+        },
+        "warnings": [
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Resonance-reduction fields are raw-only until the simulator mechanic is confirmed."
+        ]
+      },
+      "current_actions_json_multipliers": [
+        0.0389,
+        0.0389,
+        0.0389,
+        0.0389,
+        0.0389,
+        0.0389,
+        0.8154,
+        0.6165
+      ]
+    },
+    {
+      "action_id": "aemeath_mech_basic_stage_4",
+      "coefficient_candidate": {
+        "safe_to_patch": true,
+        "safe_to_patch_reasons": [],
+        "confidence": "high",
+        "base_source_rows": [
+          {
+            "row_number": 2754,
+            "source_action_name": "A4-1",
+            "raw_coefficients": 0.4038,
+            "parsed_multipliers": [
+              0.4038
+            ],
+            "repeat_metadata": {
+              "raw_text": "A4-1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.4038 | 0.73 | 0 | 6.99 | 0 | 0 | 0 | 1.46 | 1 | 29.01 | 23.21 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A4-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.4038 | 大招能量 | 0.73 | 核心能量1 | 0 | 核心能量2 | 6.99 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 1.46 | 共振系数 | 1 | 削韧值 | 29.01 | 偏谐值 | 23.21 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2755,
+            "source_action_name": "A4-2",
+            "raw_coefficients": 0.9421,
+            "parsed_multipliers": [
+              0.9421
+            ],
+            "repeat_metadata": {
+              "raw_text": "A4-2 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.9421 | 1.7 | 0 | 16.29 | 0 | 0 | 0 | 3.39 | 1 | 67.69 | 54.16 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A4-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.9421 | 大招能量 | 1.7 | 核心能量1 | 0 | 核心能量2 | 16.29 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 3.39 | 共振系数 | 1 | 削韧值 | 67.69 | 偏谐值 | 54.16 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          }
+        ],
+        "segments": [
+          {
+            "source_row_number": 2754,
+            "source_action_name": "A4-1",
+            "raw_coefficient": 0.4038,
+            "parsed_values_before_repeat": [
+              0.4038
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.4038
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2755,
+            "source_action_name": "A4-2",
+            "raw_coefficient": 0.9421,
+            "parsed_values_before_repeat": [
+              0.9421
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.9421
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          }
+        ],
+        "raw_coefficients": [
+          0.4038,
+          0.9421
+        ],
+        "parsed_multipliers": [
+          0.4038,
+          0.9421
+        ],
+        "current_actions_comparison": {
+          "current_hit_count": 2,
+          "candidate_hit_count": 2,
+          "same_hit_count": true,
+          "shape_status": "exact_match",
+          "max_abs_diff": 0.0,
+          "warnings": []
+        },
+        "critical_warnings": [],
+        "excluded_variants_count": 0,
+        "excluded_unrelated_rows_count": 0,
+        "repeat_expansions_applied": 0,
+        "warnings": []
+      },
+      "resource_candidate": {
+        "safe_to_patch": false,
+        "confidence": "high",
+        "parsed_resource_candidates": {
+          "concerto_energy_gain": 3.39
+        },
+        "raw_resources": {
+          "大招能量": 1.7,
+          "核心能量1": 0,
+          "核心能量2": 16.29,
+          "核心能量3": 0,
+          "核心能量4": 0,
+          "核心能量5": 0,
+          "协奏能量": 3.39,
+          "削韧值": 67.69,
+          "偏谐值": 54.16,
+          "共振削减": 0
+        },
+        "resource_confidence": {
+          "resonance_energy_gain": "medium",
+          "core_energy_raw": "low",
+          "concerto_energy_gain": "high",
+          "toughness_value": "medium",
+          "tune_value": "medium",
+          "resonance_reduction_raw": "low"
+        },
+        "warnings": [
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Resonance-reduction fields are raw-only until the simulator mechanic is confirmed."
+        ]
+      },
+      "current_actions_json_multipliers": [
+        0.4038,
+        0.9421
+      ]
+    },
+    {
+      "action_id": "aemeath_seraphic_duet_encore",
+      "coefficient_candidate": {
+        "safe_to_patch": false,
+        "safe_to_patch_reasons": [
+          "candidate_shorter_than_current",
+          "shape_status_shorter_than_current",
+          "critical_warnings_present"
+        ],
+        "confidence": "low",
+        "base_source_rows": [
+          {
+            "row_number": 2769,
+            "source_action_name": "C0强化E-1",
+            "raw_coefficients": 0.179,
+            "parsed_multipliers": [
+              0.179
+            ],
+            "repeat_metadata": {
+              "raw_text": "C0强化E-1 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.179 | 0.25 | 0 | 0 | 0 | 0 | 0 | 0.5 | 1 | 10 | 8 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.179 | 大招能量 | 0.25 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.5 | 共振系数 | 1 | 削韧值 | 10 | 偏谐值 | 8 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2770,
+            "source_action_name": "C0强化E-2",
+            "raw_coefficients": 0.3579,
+            "parsed_multipliers": [
+              0.3579
+            ],
+            "repeat_metadata": {
+              "raw_text": "C0强化E-2 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.3579 | 0.5 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 20 | 16 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.3579 | 大招能量 | 0.5 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 1 | 共振系数 | 1 | 削韧值 | 20 | 偏谐值 | 16 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2771,
+            "source_action_name": "C0强化E-3",
+            "raw_coefficients": 0.179,
+            "parsed_multipliers": [
+              0.179
+            ],
+            "repeat_metadata": {
+              "raw_text": "C0强化E-3 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.179 | 0.25 | 0 | 0 | 0 | 0 | 0 | 0.5 | 1 | 10 | 8 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.179 | 大招能量 | 0.25 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.5 | 共振系数 | 1 | 削韧值 | 10 | 偏谐值 | 8 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2772,
+            "source_action_name": "C0强化E-4",
+            "raw_coefficients": 1.7893,
+            "parsed_multipliers": [
+              1.7893
+            ],
+            "repeat_metadata": {
+              "raw_text": "C0强化E-4 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 1.7893 | 2.5 | 0 | 0 | 0 | 0 | 0 | 5 | 1 | 100 | 80 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-4 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 1.7893 | 大招能量 | 2.5 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 5 | 共振系数 | 1 | 削韧值 | 100 | 偏谐值 | 80 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2773,
+            "source_action_name": "C0强化E-5",
+            "raw_coefficients": 0.3579,
+            "parsed_multipliers": [
+              0.3579
+            ],
+            "repeat_metadata": {
+              "raw_text": "C0强化E-5 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.3579 | 0.5 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 20 | 16 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-5 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.3579 | 大招能量 | 0.5 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 1 | 共振系数 | 1 | 削韧值 | 20 | 偏谐值 | 16 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          }
+        ],
+        "segments": [
+          {
+            "source_row_number": 2769,
+            "source_action_name": "C0强化E-1",
+            "raw_coefficient": 0.179,
+            "parsed_values_before_repeat": [
+              0.179
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.179
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2770,
+            "source_action_name": "C0强化E-2",
+            "raw_coefficient": 0.3579,
+            "parsed_values_before_repeat": [
+              0.3579
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.3579
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2771,
+            "source_action_name": "C0强化E-3",
+            "raw_coefficient": 0.179,
+            "parsed_values_before_repeat": [
+              0.179
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.179
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2772,
+            "source_action_name": "C0强化E-4",
+            "raw_coefficient": 1.7893,
+            "parsed_values_before_repeat": [
+              1.7893
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              1.7893
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2773,
+            "source_action_name": "C0强化E-5",
+            "raw_coefficient": 0.3579,
+            "parsed_values_before_repeat": [
+              0.3579
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.3579
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          }
+        ],
+        "raw_coefficients": [
+          0.179,
+          0.3579,
+          0.179,
+          1.7893,
+          0.3579
+        ],
+        "parsed_multipliers": [
+          0.179,
+          0.3579,
+          0.179,
+          1.7893,
+          0.3579
+        ],
+        "current_actions_comparison": {
+          "current_hit_count": 8,
+          "candidate_hit_count": 5,
+          "same_hit_count": false,
+          "shape_status": "shorter_than_current",
+          "max_abs_diff": 1.6103,
+          "warnings": [
+            "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+          ]
+        },
+        "critical_warnings": [
+          "Coefficient candidate has fewer hits than current actions.json and is likely compressed.",
+          "Seraphic Duet Encore candidate is shorter than expected shape (5 < 8); repeat expansion may be unresolved."
+        ],
+        "excluded_variants_count": 5,
+        "excluded_unrelated_rows_count": 2,
+        "repeat_expansions_applied": 0,
+        "warnings": [
+          {
+            "severity": "critical",
+            "message": "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+          },
+          {
+            "severity": "critical",
+            "message": "Seraphic Duet Encore candidate is shorter than expected shape (5 < 8); repeat expansion may be unresolved."
+          }
+        ]
+      },
+      "resource_candidate": {
+        "safe_to_patch": false,
+        "confidence": "medium",
+        "parsed_resource_candidates": {
+          "resonance_energy_gain": 0.0,
+          "core_energy_raw": 0,
+          "concerto_energy_gain": 0.0,
+          "toughness_value": 16.2,
+          "tune_value": 0.0,
+          "resonance_reduction_raw": 0
+        },
+        "raw_resources": {
+          "大招能量": 0,
+          "核心能量1": 0,
+          "核心能量2": 0,
+          "核心能量3": 0,
+          "核心能量4": 0,
+          "核心能量5": 0,
+          "协奏能量": 0,
+          "削韧值": 16.2,
+          "偏谐值": 0,
+          "共振削减": 0
+        },
+        "resource_confidence": {
+          "resonance_energy_gain": "medium",
+          "core_energy_raw": "low",
+          "concerto_energy_gain": "high",
+          "toughness_value": "medium",
+          "tune_value": "medium",
+          "resonance_reduction_raw": "low"
+        },
+        "warnings": [
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Resonance-reduction fields are raw-only until the simulator mechanic is confirmed."
+        ]
+      },
+      "current_actions_json_multipliers": [
+        0.179,
+        0.179,
+        0.179,
+        0.179,
+        0.3579,
+        0.3579,
+        0.3579,
+        1.7893
+      ]
+    },
+    {
+      "action_id": "aemeath_seraphic_duet_overturn",
+      "coefficient_candidate": {
+        "safe_to_patch": false,
+        "safe_to_patch_reasons": [
+          "candidate_shorter_than_current",
+          "shape_status_shorter_than_current",
+          "critical_warnings_present"
+        ],
+        "confidence": "low",
+        "base_source_rows": [
+          {
+            "row_number": 2716,
+            "source_action_name": "C0强化E-1",
+            "raw_coefficients": 0.179,
+            "parsed_multipliers": [
+              0.179
+            ],
+            "repeat_metadata": {
+              "raw_text": "C0强化E-1 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.179 | 0.25 | 0 | 0 | 0 | 0 | 0 | 0.5 | 1 | 10 | 8 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.179 | 大招能量 | 0.25 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.5 | 共振系数 | 1 | 削韧值 | 10 | 偏谐值 | 8 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2717,
+            "source_action_name": "C0强化E-2",
+            "raw_coefficients": 0.1492,
+            "parsed_multipliers": [
+              0.1492
+            ],
+            "repeat_metadata": {
+              "raw_text": "C0强化E-2 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.1492 | 0.21 | 0 | 0 | 0 | 0 | 0 | 0.42 | 1 | 8.34 | 6.67 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.1492 | 大招能量 | 0.21 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.42 | 共振系数 | 1 | 削韧值 | 8.34 | 偏谐值 | 6.67 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2718,
+            "source_action_name": "C0强化E-3",
+            "raw_coefficients": 0.2386,
+            "parsed_multipliers": [
+              0.2386
+            ],
+            "repeat_metadata": {
+              "raw_text": "C0强化E-3 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.2386 | 0.34 | 0 | 0 | 0 | 0 | 0 | 0.67 | 1 | 53.34 | 10.67 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.2386 | 大招能量 | 0.34 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.67 | 共振系数 | 1 | 削韧值 | 53.34 | 偏谐值 | 10.67 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          },
+          {
+            "row_number": 2719,
+            "source_action_name": "C0强化E-4",
+            "raw_coefficients": 0.5965,
+            "parsed_multipliers": [
+              0.5965
+            ],
+            "repeat_metadata": {
+              "raw_text": "C0强化E-4 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.5965 | 0.84 | 0 | 0 | 0 | 0 | 0 | 1.67 | 1 | 33.34 | 26.67 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-4 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.5965 | 大招能量 | 0.84 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 1.67 | 共振系数 | 1 | 削韧值 | 33.34 | 偏谐值 | 26.67 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+              "repeat_count": null,
+              "repeat_source": null,
+              "expanded_from_repeat": false,
+              "repeat_warning": null
+            }
+          }
+        ],
+        "segments": [
+          {
+            "source_row_number": 2716,
+            "source_action_name": "C0强化E-1",
+            "raw_coefficient": 0.179,
+            "parsed_values_before_repeat": [
+              0.179
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.179
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2717,
+            "source_action_name": "C0强化E-2",
+            "raw_coefficient": 0.1492,
+            "parsed_values_before_repeat": [
+              0.1492
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.1492
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2718,
+            "source_action_name": "C0强化E-3",
+            "raw_coefficient": 0.2386,
+            "parsed_values_before_repeat": [
+              0.2386
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.2386
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          },
+          {
+            "source_row_number": 2719,
+            "source_action_name": "C0强化E-4",
+            "raw_coefficient": 0.5965,
+            "parsed_values_before_repeat": [
+              0.5965
+            ],
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_values": [
+              0.5965
+            ],
+            "expanded_from_repeat": false,
+            "warnings": []
+          }
+        ],
+        "raw_coefficients": [
+          0.179,
+          0.1492,
+          0.2386,
+          0.5965
+        ],
+        "parsed_multipliers": [
+          0.179,
+          0.1492,
+          0.2386,
+          0.5965
+        ],
+        "current_actions_comparison": {
+          "current_hit_count": 13,
+          "candidate_hit_count": 4,
+          "same_hit_count": false,
+          "shape_status": "shorter_than_current",
+          "max_abs_diff": 0.4473,
+          "warnings": [
+            "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+          ]
+        },
+        "critical_warnings": [
+          "Coefficient candidate has fewer hits than current actions.json and is likely compressed.",
+          "Seraphic Duet Overturn candidate is shorter than expected shape (4 < 13); repeat expansion may be unresolved."
+        ],
+        "excluded_variants_count": 4,
+        "excluded_unrelated_rows_count": 2,
+        "repeat_expansions_applied": 0,
+        "warnings": [
+          {
+            "severity": "critical",
+            "message": "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+          },
+          {
+            "severity": "critical",
+            "message": "Seraphic Duet Overturn candidate is shorter than expected shape (4 < 13); repeat expansion may be unresolved."
+          }
+        ]
+      },
+      "resource_candidate": {
+        "safe_to_patch": false,
+        "confidence": "medium",
+        "parsed_resource_candidates": {
+          "resonance_energy_gain": 0.0,
+          "core_energy_raw": 0,
+          "concerto_energy_gain": 0.0,
+          "toughness_value": 16.2,
+          "tune_value": 0.0,
+          "resonance_reduction_raw": 0
+        },
+        "raw_resources": {
+          "大招能量": 0,
+          "核心能量1": 0,
+          "核心能量2": 0,
+          "核心能量3": 0,
+          "核心能量4": 0,
+          "核心能量5": 0,
+          "协奏能量": 0,
+          "削韧值": 16.2,
+          "偏谐值": 0,
+          "共振削减": 0
+        },
+        "resource_confidence": {
+          "resonance_energy_gain": "medium",
+          "core_energy_raw": "low",
+          "concerto_energy_gain": "high",
+          "toughness_value": "medium",
+          "tune_value": "medium",
+          "resonance_reduction_raw": "low"
+        },
+        "warnings": [
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Core-energy fields are preserved as raw source values because simulator resource semantics are not confirmed.",
+          "Resonance-reduction fields are raw-only until the simulator mechanic is confirmed."
+        ]
+      },
+      "current_actions_json_multipliers": [
+        0.179,
+        0.1492,
+        0.1492,
+        0.1492,
+        0.1492,
+        0.1492,
+        0.1492,
+        0.2386,
+        0.2386,
+        0.2386,
+        0.5965,
+        0.5965,
+        0.5965
+      ]
+    }
+  ]
+}

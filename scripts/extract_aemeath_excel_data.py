@@ -17,6 +17,9 @@ DEFAULT_MAPPING = Path("data/aemeath_action_mapping.json")
 DEFAULT_OUTPUT = Path("data/extracted/aemeath_excel_actions.json")
 DEFAULT_UNMAPPED = Path("data/extracted/aemeath_excel_unmapped_rows.json")
 DEFAULT_REPORT = Path("reports/aemeath_excel_diff.md")
+DEFAULT_CANDIDATES = Path("data/extracted/aemeath_coeff_resource_candidates.json")
+DEFAULT_UNRESOLVED = Path("data/extracted/aemeath_coeff_resource_unresolved.json")
+DEFAULT_REVIEW_REPORT = Path("reports/aemeath_coeff_resource_review.md")
 
 AEMEATH_HUMAN = "\u7231\u5f25\u65af"
 AEMEATH_MECH = "\u673a\u5175\u7231\u5f25\u65af"
@@ -807,32 +810,140 @@ def extract_frame_data(row: dict[str, Any], source_action_name: str | None) -> t
     )
 
 
-def parse_coefficients(value: Any) -> tuple[list[float], list[str], str | None]:
+REPEAT_OPERATOR_PATTERN = r"[*xX\u00d7\u4e58\ud69e]"
+REPEAT_WORD_PATTERN = r"(?:hits?|hit|times?|time|\u6b21|\u6bb5|\u4e0b|\u8fde\u51fb|\u8fde\u6253|F|f)"
+COEFFICIENT_TERM_PATTERN = re.compile(
+    rf"(?P<number>[-+]?\d+(?:\.\d+)?)\s*(?P<percent>%)?\s*"
+    rf"(?:(?P<op>{REPEAT_OPERATOR_PATTERN})\s*(?P<count>\d+)|(?P<count_before>\d+)\s*{REPEAT_WORD_PATTERN})?"
+)
+
+
+def parse_repeat_count(text: str) -> tuple[int | None, str | None, str | None]:
+    explicit = re.search(
+        rf"(?:{REPEAT_OPERATOR_PATTERN}\s*(?P<count>\d+)|(?P<count_before>\d+)\s*{REPEAT_WORD_PATTERN})",
+        text,
+    )
+    if explicit:
+        count_text = explicit.group("count") or explicit.group("count_before")
+        return int(count_text), explicit.group(0), None
+
+    possible_repeat = any(
+        token in text for token in ["\u8fde\u51fb", "\u591a\u6bb5", "\u6bcf\u6bb5", "\u6b21", "\u6bb5", "\ud69e"]
+    )
+    if possible_repeat:
+        return None, None, "Possible repeat metadata found, but no unambiguous repeat count was parsed."
+    return None, None, None
+
+
+def parse_coefficient_terms(value: Any) -> tuple[list[dict[str, Any]], list[str], str | None]:
     if value in (None, ""):
         return [], [], None
     if isinstance(value, (int, float)):
         number = float(value)
         if number == 0:
             return [], [], "decimal_multiplier"
-        return [round(number, 6)], [], "decimal_multiplier"
+        parsed = round(number, 6)
+        return [
+            {
+                "raw_coefficient": value,
+                "parsed_values_before_repeat": [parsed],
+                "repeat_count": None,
+                "repeat_source": None,
+                "expanded_values": [parsed],
+                "expanded_from_repeat": False,
+                "warnings": [],
+            }
+        ], [], "decimal_multiplier"
     text = str(value)
     category_words = [NORMAL_ATTACK, HEAVY_ATTACK, RESONANCE_SKILL, RESONANCE_LIBERATION, DAMAGE, SKILL_TYPE]
     if "%" not in text and not re.search(r"\d", text):
         return [], [f"Coefficient cell {text!r} is non-numeric and was preserved only as raw data."], "non_numeric"
     if any(word in text for word in category_words) and not re.search(r"\d", text):
         return [], [f"Coefficient candidate {text!r} looks like a category, not a multiplier."], "non_numeric"
-    multipliers: list[float] = []
-    for number, repeat in re.findall(r"(\d+(?:\.\d+)?)\s*%\s*(?:[*xX\u00d7]\s*(\d+))?", text):
-        count = int(repeat) if repeat else 1
-        multipliers.extend([round(float(number) / 100.0, 6)] * count)
-    if multipliers:
-        return multipliers, [], "percent_string"
-    numeric_terms = re.findall(r"[-+]?\d+(?:\.\d+)?", text)
-    if numeric_terms and "%" not in text:
-        return [round(float(term), 6) for term in numeric_terms], [], "decimal_multiplier"
+    terms: list[dict[str, Any]] = []
+    unit = "percent_string" if "%" in text else "decimal_multiplier"
+    for match in COEFFICIENT_TERM_PATTERN.finditer(text):
+        raw_number = match.group("number")
+        if not raw_number:
+            continue
+        count_text = match.group("count") or match.group("count_before")
+        repeat_count = int(count_text) if count_text else None
+        parsed = round(float(raw_number) / 100.0, 6) if match.group("percent") else round(float(raw_number), 6)
+        if parsed == 0:
+            continue
+        expanded = [parsed] * repeat_count if repeat_count and repeat_count > 1 else [parsed]
+        terms.append(
+            {
+                "raw_coefficient": match.group(0).strip(),
+                "parsed_values_before_repeat": [parsed],
+                "repeat_count": repeat_count,
+                "repeat_source": match.group(0).strip() if repeat_count else None,
+                "expanded_values": expanded,
+                "expanded_from_repeat": bool(repeat_count and repeat_count > 1),
+                "warnings": [],
+            }
+        )
+    if terms:
+        return terms, [], unit
     if "%" in text:
         return [], [f"Could not parse coefficient string {text!r}."], "percent_string"
-    return multipliers, [], None
+    return [], [], None
+
+
+def parse_coefficients(value: Any) -> tuple[list[float], list[str], str | None]:
+    terms, warnings, coefficient_unit = parse_coefficient_terms(value)
+    multipliers: list[float] = []
+    for term in terms:
+        multipliers.extend(term.get("expanded_values", []))
+    return multipliers, warnings, coefficient_unit
+
+
+def extract_repeat_metadata(
+    text: str,
+    parsed_multipliers: list[float],
+    terms: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    repeat_metadata: dict[str, Any] = {
+        "raw_text": text,
+        "repeat_count": None,
+        "repeat_source": None,
+        "expanded_from_repeat": False,
+        "repeat_warning": None,
+    }
+    if not parsed_multipliers:
+        return repeat_metadata
+
+    explicit_terms = [term for term in terms or [] if term.get("repeat_count")]
+    if explicit_terms:
+        counts = sorted({int(term["repeat_count"]) for term in explicit_terms if term.get("repeat_count")})
+        repeat_count = counts[0] if len(counts) == 1 else None
+        repeat_metadata["repeat_count"] = repeat_count
+        repeat_metadata["repeat_source"] = "coefficient_cell"
+        repeat_metadata["expanded_from_repeat"] = any(term.get("expanded_from_repeat") for term in explicit_terms)
+        if len(counts) > 1:
+            repeat_metadata["repeat_warning"] = "Multiple explicit repeat counts were present in one coefficient cell."
+        return repeat_metadata
+
+    repeat_count, repeat_source, repeat_warning = parse_repeat_count(text)
+    if repeat_count:
+        repeat_metadata["repeat_count"] = repeat_count
+        repeat_metadata["repeat_source"] = repeat_source
+        if len(parsed_multipliers) == 1 and repeat_count > 1:
+            repeat_metadata["expanded_from_repeat"] = True
+        elif len(parsed_multipliers) > 1:
+            repeat_metadata["repeat_warning"] = "Repeat metadata was present but coefficient string already had multiple terms."
+        return repeat_metadata
+
+    if repeat_warning:
+        repeat_metadata["repeat_warning"] = repeat_warning
+    return repeat_metadata
+
+
+def apply_repeat_expansion(parsed_multipliers: list[float], repeat_metadata: dict[str, Any]) -> list[float]:
+    repeat_count = repeat_metadata.get("repeat_count")
+    if repeat_metadata.get("expanded_from_repeat") and repeat_count and len(parsed_multipliers) == 1:
+        return [parsed_multipliers[0]] * int(repeat_count)
+    return list(parsed_multipliers)
 
 
 def find_coefficient_value(row: dict[str, Any]) -> tuple[str | None, Any]:
@@ -963,7 +1074,10 @@ def coefficient_variant_label(source_action_name: str | None, row_text_value: st
 
 def extract_skill_data(row: dict[str, Any], source_action_name: str | None = None) -> tuple[dict[str, Any], list[str]]:
     coeff_key, coeff_value = find_coefficient_value(row)
-    multipliers, warnings, coefficient_unit = parse_coefficients(coeff_value)
+    coefficient_terms, warnings, coefficient_unit = parse_coefficient_terms(coeff_value)
+    values_before_repeat: list[float] = []
+    for term in coefficient_terms:
+        values_before_repeat.extend(term.get("parsed_values_before_repeat", []))
     raw = row.get("raw_by_header", {})
     damage_type_key = next((key for key in raw if DAMAGE_TYPE in str(key)), None)
     skill_category_key = next((key for key in raw if SKILL_TYPE in str(key)), None)
@@ -972,6 +1086,34 @@ def extract_skill_data(row: dict[str, Any], source_action_name: str | None = Non
     damage_type = raw.get(damage_type_key) if damage_type_key else None
     skill_category = raw.get(skill_category_key) if skill_category_key else None
     variant = coefficient_variant_label(source_action_name, row_text(row))
+    repeat_metadata = extract_repeat_metadata(row_text(row), values_before_repeat, coefficient_terms)
+    if repeat_metadata.get("repeat_source") == "coefficient_cell":
+        expanded_multipliers = []
+        for term in coefficient_terms:
+            expanded_multipliers.extend(term.get("expanded_values", []))
+    else:
+        expanded_multipliers = apply_repeat_expansion(values_before_repeat, repeat_metadata)
+    segments: list[dict[str, Any]] = []
+    for term in coefficient_terms:
+        segment = {
+            "source_row_number": row.get("row_number"),
+            "source_action_name": source_action_name,
+            "raw_coefficient": term.get("raw_coefficient"),
+            "parsed_values_before_repeat": term.get("parsed_values_before_repeat", []),
+            "repeat_count": term.get("repeat_count"),
+            "repeat_source": term.get("repeat_source"),
+            "expanded_values": term.get("expanded_values", []),
+            "expanded_from_repeat": term.get("expanded_from_repeat", False),
+            "warnings": term.get("warnings", []),
+        }
+        if repeat_metadata.get("repeat_source") != "coefficient_cell" and len(coefficient_terms) == 1:
+            segment["repeat_count"] = repeat_metadata.get("repeat_count")
+            segment["repeat_source"] = repeat_metadata.get("repeat_source")
+            segment["expanded_values"] = expanded_multipliers
+            segment["expanded_from_repeat"] = repeat_metadata.get("expanded_from_repeat", False)
+            if repeat_metadata.get("repeat_warning"):
+                segment["warnings"] = merge_unique(segment["warnings"], [repeat_metadata["repeat_warning"]])
+        segments.append(segment)
     coefficient_row = {
         "source_action_name": source_action_name,
         "row_number": row.get("row_number"),
@@ -979,10 +1121,14 @@ def extract_skill_data(row: dict[str, Any], source_action_name: str | None = Non
         "coefficient_source_column": coeff_key,
         "coefficient_unit": coefficient_unit,
         "raw_coefficients": coeff_value,
-        "parsed_multipliers": multipliers,
+        "parsed_multipliers": expanded_multipliers,
+        "unexpanded_multipliers": values_before_repeat,
+        "repeat_metadata": repeat_metadata,
+        "segments": segments,
         "damage_type": damage_type,
         "skill_category": skill_category,
         "warnings": warnings,
+        "raw_by_header": raw,
     }
     return (
         {
@@ -994,8 +1140,8 @@ def extract_skill_data(row: dict[str, Any], source_action_name: str | None = Non
             "coefficient_source_column": coeff_key,
             "coefficient_unit": coefficient_unit,
             "raw_coefficients": coeff_value,
-            "parsed_multipliers": multipliers,
-            "coefficient_rows": [coefficient_row] if coeff_value not in (None, "", "-") or multipliers else [],
+            "parsed_multipliers": expanded_multipliers,
+            "coefficient_rows": [coefficient_row] if coeff_value not in (None, "", "-") or expanded_multipliers else [],
             "damage_type": damage_type,
             "skill_category": skill_category,
             "raw_damage_type": damage_type,
@@ -1128,13 +1274,116 @@ def non_empty_multiplier_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]
     return [row for row in rows if row.get("parsed_multipliers")]
 
 
+def natural_source_key(source_action_name: str | None) -> list[Any]:
+    parts = re.split(r"(\d+)", str(source_action_name or ""))
+    return [int(part) if part.isdigit() else part for part in parts]
+
+
+def coefficient_row_sort_key(row: dict[str, Any]) -> tuple[Any, list[Any]]:
+    row_number = row.get("row_number")
+    return (row_number if row_number is not None else 10**9, natural_source_key(row.get("source_action_name")))
+
+
+def coefficient_row_classification(action_id: str, row: dict[str, Any]) -> tuple[str, list[str]]:
+    source = str(row.get("source_action_name") or "")
+    source_norm = normalize(source)
+    warnings = list(row.get("warnings", []))
+
+    if is_qte_source_action(source) or any(token in source_norm for token in ["intro", "outro", "qte"]):
+        return "qte_intro", warnings
+    if re.search(r"^A[1-4]-\d+D$", source, re.IGNORECASE) or any(token in source_norm for token in ["dodge", "counter"]):
+        return "dodge_counter", warnings
+    if any(token in source for token in ["\u95ea\u907f", "\u53cd\u51fb"]):
+        return "dodge_counter", warnings
+    if any(token in source for token in [GLOBAL_TIME_STOP_LABEL, PRELUDE, "HUD"]) or "time stop" in source_norm:
+        return "timing_only", warnings
+    if any(token in source_norm for token in ["bonus", "enhance", "amplification", "effect"]):
+        return "bonus_effect", warnings
+    if any(token in source for token in ["\u9707\u8c10", "\u589e\u5e45", "\u88c2\u53d8", "\u6548\u679c", "\u89e6\u53d1"]):
+        return "bonus_effect", warnings
+    if source.startswith("E") or FORM_SWITCH in source:
+        return "form_switch", warnings
+    if "\u964d\u4e34" in source or "\u767b\u53f0" in source:
+        if action_id not in {"aemeath_seraphic_duet_overturn", "aemeath_seraphic_duet_overture", "aemeath_seraphic_duet_encore"}:
+            return "sync_strike", warnings
+
+    c_match = re.match(r"^C([0-6])", source, re.IGNORECASE)
+    c_rank = c_match.group(1) if c_match else None
+    if c_rank and c_rank != "0":
+        return "sequence_variant", warnings
+    if any(token in source_norm for token in ["sequence", "resonance chain"]):
+        return "sequence_variant", warnings
+    if any(token in source for token in ["\u5171\u9e23\u94fe", "\u5e8f\u5217"]):
+        return "sequence_variant", warnings
+
+    if not row.get("parsed_multipliers"):
+        if row.get("raw_by_header"):
+            return "resource_only", warnings
+        return "unknown", warnings
+
+    if action_id.startswith("aemeath_basic_form_stage_"):
+        stage = action_id.rsplit("_", 1)[-1]
+        if source == f"A{stage}" or re.match(rf"^A{stage}-\d+$", source):
+            return "base_damage", warnings
+        return "unknown", warnings
+
+    if action_id.startswith("aemeath_mech_basic_stage_"):
+        stage = action_id.rsplit("_", 1)[-1]
+        if source == f"A{stage}" or re.match(rf"^A{stage}-\d+$", source):
+            return "base_damage", warnings
+        return "unknown", warnings
+
+    if action_id == "aemeath_liberation_overdrive":
+        if re.match(r"^(?:C0)?大招1-[12]$", source):
+            if c_rank == "0":
+                warnings.append("C0-labelled direct damage row used as base fallback for this workbook.")
+            return "base_damage", warnings
+        return "unknown", warnings
+
+    if action_id == "aemeath_heavenfall_finale":
+        if re.match(r"^(?:C0)?大招2-伤害$", source):
+            if c_rank == "0":
+                warnings.append("C0-labelled direct damage row used as base fallback for this workbook.")
+            return "base_damage", warnings
+        return "unknown", warnings
+
+    if action_id in {"aemeath_seraphic_duet_overturn", "aemeath_seraphic_duet_overture", "aemeath_seraphic_duet_encore"}:
+        if re.match(r"^(?:C0)?强化E-\d+$", source):
+            if c_rank == "0":
+                warnings.append("C0-labelled direct damage row used as base fallback for this workbook.")
+            return "base_damage", warnings
+        return "unknown", warnings
+
+    if action_id.startswith("aemeath_heavy_"):
+        if HEAVY_ATTACK in source:
+            return "base_damage", warnings
+        return "unknown", warnings
+
+    if action_id.startswith("aemeath_form_switch_"):
+        return "form_switch", warnings
+    if action_id.startswith("aemeath_sync_strike_"):
+        return "sync_strike", warnings
+    return "base_damage", warnings
+
+
+def classify_coefficient_rows(action_id: str, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    classified: list[dict[str, Any]] = []
+    for row in rows:
+        item = dict(row)
+        classification, warnings = coefficient_row_classification(action_id, item)
+        item["row_classification"] = classification
+        item["classification_warnings"] = merge_unique(item.get("classification_warnings", []), warnings)
+        classified.append(item)
+    return classified
+
+
 def summarize_coefficient_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
     multipliers: list[float] = []
     raw_values: list[Any] = []
     source_rows: list[dict[str, Any]] = []
     units: list[str] = []
-    for row in rows:
-        multipliers = merge_unique(multipliers, row.get("parsed_multipliers", []))
+    for row in sorted(rows, key=coefficient_row_sort_key):
+        multipliers.extend(row.get("parsed_multipliers", []))
         raw = row.get("raw_coefficients")
         if raw not in (None, "", "-"):
             raw_values = merge_unique(raw_values, [raw])
@@ -1144,7 +1393,9 @@ def summarize_coefficient_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
                     "source_action_name": row.get("source_action_name"),
                     "row_number": row.get("row_number"),
                     "variant": row.get("variant"),
+                    "row_classification": row.get("row_classification"),
                     "coefficient_source_column": row.get("coefficient_source_column"),
+                    "repeat_metadata": row.get("repeat_metadata"),
                 }
             )
         unit = row.get("coefficient_unit")
@@ -1158,22 +1409,22 @@ def summarize_coefficient_rows(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def finalize_skill_data(skill_data: dict[str, Any]) -> dict[str, Any]:
+def finalize_skill_data(skill_data: dict[str, Any], action_id: str) -> dict[str, Any]:
     if not skill_data:
         return skill_data
     finalized = dict(skill_data)
     warnings = list(finalized.get("warnings", []))
-    coefficient_rows = list(finalized.get("coefficient_rows", []))
+    coefficient_rows = classify_coefficient_rows(action_id, list(finalized.get("coefficient_rows", [])))
+    coefficient_rows = sorted(coefficient_rows, key=coefficient_row_sort_key)
+    finalized["coefficient_rows"] = coefficient_rows
     usable_rows = non_empty_multiplier_rows(coefficient_rows)
-    non_variant_rows = [row for row in usable_rows if not row.get("variant")]
-    c0_rows = [row for row in usable_rows if row.get("variant") == "C0"]
-    base_rows = non_variant_rows if non_variant_rows else c0_rows
-    if not non_variant_rows and c0_rows:
-        warnings.append("Base coefficients use C0 rows because no non-variant coefficient rows were found.")
+    base_rows = [row for row in usable_rows if row.get("row_classification") == "base_damage"]
+    if base_rows and any(str(row.get("source_action_name") or "").startswith("C0") for row in base_rows):
+        warnings.append("Base coefficients include C0-labelled direct damage rows as workbook base fallback.")
 
     variant_groups: dict[str, list[dict[str, Any]]] = {}
     for row in usable_rows:
-        variant = row.get("variant")
+        variant = row.get("variant") if row.get("row_classification") != "base_damage" else None
         if variant:
             variant_groups.setdefault(variant, []).append(row)
 
@@ -1189,7 +1440,19 @@ def finalize_skill_data(skill_data: dict[str, Any]) -> dict[str, Any]:
     }
     finalized["base"] = base
     finalized["variants"] = variants
-    finalized["variant_rows_excluded_from_base"] = len([row for row in usable_rows if row.get("variant")])
+    finalized["variant_rows_excluded_from_base"] = len(
+        [row for row in usable_rows if row.get("row_classification") == "sequence_variant"]
+    )
+    finalized["excluded_rows_from_base"] = [
+        {
+            "source_action_name": row.get("source_action_name"),
+            "row_number": row.get("row_number"),
+            "reason": row.get("row_classification"),
+            "parsed_multipliers": row.get("parsed_multipliers"),
+        }
+        for row in usable_rows
+        if row.get("row_classification") != "base_damage"
+    ]
     finalized["parsed_multipliers"] = base.get("parsed_multipliers", [])
     finalized["raw_coefficients"] = base.get("raw_coefficients")
     finalized["warnings"] = merge_unique([], warnings + finalized.get("resource_warnings", []))
@@ -1219,7 +1482,7 @@ def finalize_actions(actions: list[dict[str, Any]], unmapped_rows: list[dict[str
         if max_hit is not None and action_time is not None and action_time < max_hit:
             validation["frame_inconsistencies_remaining"] += 1
 
-        action["skill_data"] = finalize_skill_data(action.get("skill_data", {}))
+        action["skill_data"] = finalize_skill_data(action.get("skill_data", {}), action.get("action_id", ""))
         skill_data = action.get("skill_data", {})
         validation["variant_rows_excluded_from_base"] += skill_data.get("variant_rows_excluded_from_base", 0)
         validation["low_confidence_resource_fields"] += sum(
@@ -1320,6 +1583,665 @@ def compact_raw_text(row: dict[str, Any], limit: int = 220) -> str:
     return text[:limit] + ("..." if len(text) > limit else "")
 
 
+def current_damage_multipliers(action_id: str, current_actions: dict[str, dict[str, Any]]) -> list[float]:
+    return [
+        hit.get("damage_multiplier")
+        for hit in current_actions.get(action_id, {}).get("hits", [])
+        if hit.get("damage_multiplier") not in (None, 0)
+    ]
+
+
+def coeff_raw_values(rows: list[dict[str, Any]]) -> list[Any]:
+    values: list[Any] = []
+    for row in rows:
+        raw = row.get("raw_coefficients")
+        if raw not in (None, "", "-"):
+            values.append(raw)
+    return values
+
+
+def has_damage_category_raw(rows: list[dict[str, Any]]) -> bool:
+    category_tokens = [
+        DAMAGE_TYPE,
+        SKILL_TYPE,
+        NORMAL_ATTACK,
+        HEAVY_ATTACK,
+        RESONANCE_SKILL,
+        RESONANCE_LIBERATION,
+        "\u4f24\u5bb3",
+    ]
+    for value in coeff_raw_values(rows):
+        if isinstance(value, str) and any(token in value for token in category_tokens):
+            return True
+    return False
+
+
+def compare_candidate_to_current(
+    action_id: str,
+    candidate: list[float],
+    current_actions: dict[str, dict[str, Any]],
+    tolerance: float = 1e-3,
+) -> dict[str, Any]:
+    current = current_damage_multipliers(action_id, current_actions)
+    current_hit_count = len(current)
+    candidate_hit_count = len(candidate)
+    max_abs_diff = None
+    if current and candidate:
+        aligned_diffs = [abs(float(left) - float(right)) for left, right in zip(candidate, current)]
+        max_abs_diff = max(aligned_diffs) if aligned_diffs else None
+
+    if candidate_hit_count == 0:
+        shape_status = "empty_candidate"
+    elif current_hit_count and candidate_hit_count < current_hit_count:
+        shape_status = "shorter_than_current"
+    elif current_hit_count and candidate_hit_count > current_hit_count:
+        shape_status = "longer_than_current"
+    elif current_hit_count and candidate_hit_count == current_hit_count:
+        shape_status = "exact_match" if (max_abs_diff or 0.0) <= tolerance else "same_length_diff_values"
+    else:
+        shape_status = "suspicious"
+
+    warnings: list[str] = []
+    if shape_status == "empty_candidate":
+        warnings.append("Coefficient candidate is empty.")
+    elif shape_status == "shorter_than_current":
+        warnings.append("Coefficient candidate has fewer hits than current actions.json and is likely compressed.")
+    elif shape_status == "longer_than_current":
+        warnings.append("Coefficient candidate has more hits than current actions.json; review before applying.")
+    elif shape_status == "same_length_diff_values":
+        warnings.append("Coefficient candidate hit count matches current actions.json but values differ.")
+    elif shape_status == "suspicious":
+        warnings.append("No usable current actions.json multiplier reference was available for shape comparison.")
+
+    return {
+        "current_hit_count": current_hit_count,
+        "candidate_hit_count": candidate_hit_count,
+        "same_hit_count": bool(current_hit_count and current_hit_count == candidate_hit_count),
+        "shape_status": shape_status,
+        "max_abs_diff": round(max_abs_diff, 6) if max_abs_diff is not None else None,
+        "warnings": warnings,
+    }
+
+
+EXPECTED_SHAPE_HINTS: dict[str, dict[str, Any]] = {
+    "aemeath_liberation_overdrive": {"hit_count": 4, "label": "Overdrive"},
+    "aemeath_heavenfall_finale": {"hit_count": 1, "label": "Finale"},
+    "aemeath_seraphic_duet_overturn": {"hit_count": 13, "label": "Seraphic Duet Overturn"},
+    "aemeath_seraphic_duet_overture": {"hit_count": 13, "label": "Seraphic Duet Overture"},
+    "aemeath_seraphic_duet_encore": {"hit_count": 8, "label": "Seraphic Duet Encore"},
+    "aemeath_mech_basic_stage_1": {"hit_count": 3, "label": "Mech Basic Stage 1"},
+    "aemeath_basic_form_stage_4": {"hit_count": 6, "label": "Aemeath Basic Stage 4"},
+}
+
+
+def coefficient_sanity_warnings(
+    action_id: str,
+    multipliers: list[float],
+    rows: list[dict[str, Any]],
+    current_actions: dict[str, dict[str, Any]],
+    comparison: dict[str, Any],
+) -> list[dict[str, Any]]:
+    warnings: list[dict[str, Any]] = []
+    if has_damage_category_raw(rows):
+        warnings.append({"severity": "critical", "message": "A damage/category string was present in coefficient raw values."})
+    if any(row.get("row_classification") != "base_damage" for row in rows):
+        warnings.append({"severity": "critical", "message": "Non-base row classification was included in base rows."})
+    if action_id == "aemeath_heavenfall_finale" and not any(abs(value - 17.8929) < 0.0001 for value in multipliers):
+        warnings.append({"severity": "critical", "message": "Finale coefficient is not approximately 17.8929."})
+    if comparison.get("shape_status") in {"empty_candidate", "shorter_than_current", "suspicious"}:
+        warnings.append(
+            {
+                "severity": "critical",
+                "message": "; ".join(comparison.get("warnings", [])) or "Coefficient candidate shape is not safe.",
+            }
+        )
+    elif comparison.get("shape_status") in {"longer_than_current", "same_length_diff_values"}:
+        warnings.append(
+            {
+                "severity": "warning",
+                "message": "; ".join(comparison.get("warnings", [])) or "Coefficient candidate differs from current actions.json.",
+            }
+        )
+
+    expected = EXPECTED_SHAPE_HINTS.get(action_id)
+    if expected and len(multipliers) < expected["hit_count"]:
+        warnings.append(
+            {
+                "severity": "critical",
+                "message": f"{expected['label']} candidate is shorter than expected shape ({len(multipliers)} < {expected['hit_count']}); repeat expansion may be unresolved.",
+            }
+        )
+    elif expected and len(multipliers) > expected["hit_count"]:
+        warnings.append(
+            {
+                "severity": "warning",
+                "message": f"{expected['label']} candidate is longer than expected shape ({len(multipliers)} > {expected['hit_count']}); review order and grouping.",
+            }
+        )
+
+    repeat_warnings = [
+        row.get("repeat_metadata", {}).get("repeat_warning")
+        for row in rows
+        if row.get("repeat_metadata", {}).get("repeat_warning")
+    ]
+    for warning in repeat_warnings:
+        warnings.append({"severity": "critical", "message": warning})
+    return warnings
+
+
+def candidate_confidence(has_base_rows: bool, warnings: list[dict[str, Any]], comparison: dict[str, Any]) -> str:
+    if not has_base_rows:
+        return "low"
+    if any(warning.get("severity") == "critical" for warning in warnings):
+        return "low"
+    if comparison.get("shape_status") == "exact_match":
+        return "high"
+    if warnings or comparison.get("shape_status") in {"same_length_diff_values", "longer_than_current"}:
+        return "medium"
+    return "low"
+
+
+def build_coefficient_candidate(action: dict[str, Any], current_actions: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    skill_data = action.get("skill_data", {})
+    rows = list(skill_data.get("coefficient_rows", []))
+    base_rows = [row for row in rows if row.get("row_classification") == "base_damage" and row.get("parsed_multipliers")]
+    multipliers = list(skill_data.get("base", {}).get("parsed_multipliers", []))
+    comparison = compare_candidate_to_current(action["action_id"], multipliers, current_actions)
+    warnings = coefficient_sanity_warnings(action["action_id"], multipliers, base_rows, current_actions, comparison)
+    has_base_rows = bool(base_rows)
+    confidence = candidate_confidence(has_base_rows, warnings, comparison)
+    critical_warnings = [warning.get("message") for warning in warnings if warning.get("severity") == "critical"]
+    safe_to_patch_reasons: list[str] = []
+    if not has_base_rows:
+        safe_to_patch_reasons.append("no_clear_base_coefficient_rows")
+    if not multipliers:
+        safe_to_patch_reasons.append("empty_candidate")
+    if has_damage_category_raw(base_rows):
+        safe_to_patch_reasons.append("damage_category_string_used_as_coefficient")
+    if any(row.get("row_classification") != "base_damage" for row in base_rows):
+        safe_to_patch_reasons.append("non_base_row_included")
+    if any(row.get("repeat_metadata", {}).get("repeat_warning") for row in base_rows):
+        safe_to_patch_reasons.append("repeat_metadata_unresolved")
+    if comparison.get("current_hit_count") and comparison.get("candidate_hit_count", 0) < comparison.get("current_hit_count", 0):
+        safe_to_patch_reasons.append("candidate_shorter_than_current")
+    if comparison.get("shape_status") in {"empty_candidate", "shorter_than_current", "suspicious"}:
+        safe_to_patch_reasons.append(f"shape_status_{comparison.get('shape_status')}")
+    if comparison.get("shape_status") == "same_length_diff_values":
+        safe_to_patch_reasons.append("candidate_values_differ_from_current")
+    if comparison.get("shape_status") == "longer_than_current":
+        safe_to_patch_reasons.append("candidate_longer_than_current_requires_review")
+    if critical_warnings:
+        safe_to_patch_reasons.append("critical_warnings_present")
+
+    safe_to_patch = bool(confidence == "high" and not safe_to_patch_reasons and comparison.get("shape_status") == "exact_match")
+    if not safe_to_patch and not safe_to_patch_reasons:
+        safe_to_patch_reasons.append("manual_review_required")
+
+    segments: list[dict[str, Any]] = []
+    for row in sorted(base_rows, key=coefficient_row_sort_key):
+        for segment in row.get("segments", []):
+            segments.append(segment)
+    return {
+        "safe_to_patch": safe_to_patch,
+        "safe_to_patch_reasons": safe_to_patch_reasons,
+        "confidence": confidence,
+        "base_source_rows": [
+            {
+                "row_number": row.get("row_number"),
+                "source_action_name": row.get("source_action_name"),
+                "raw_coefficients": row.get("raw_coefficients"),
+                "parsed_multipliers": row.get("parsed_multipliers"),
+                "repeat_metadata": row.get("repeat_metadata"),
+            }
+            for row in sorted(base_rows, key=coefficient_row_sort_key)
+        ],
+        "segments": segments,
+        "raw_coefficients": coeff_raw_values(base_rows),
+        "parsed_multipliers": multipliers,
+        "current_actions_comparison": comparison,
+        "critical_warnings": critical_warnings,
+        "excluded_variants_count": len([row for row in rows if row.get("row_classification") == "sequence_variant"]),
+        "excluded_unrelated_rows_count": len([row for row in rows if row.get("row_classification") not in {"base_damage", "sequence_variant"}]),
+        "repeat_expansions_applied": sum(
+            1 for segment in segments if segment.get("expanded_from_repeat")
+        ),
+        "warnings": warnings,
+    }
+
+
+def build_resource_candidate(action: dict[str, Any], coefficient_candidate: dict[str, Any]) -> dict[str, Any]:
+    skill_data = action.get("skill_data", {})
+    confidence_by_field = skill_data.get("resource_confidence", {})
+    parsed = skill_data.get("parsed_resource_candidates", {})
+    high_candidates = {
+        key: value
+        for key, value in parsed.items()
+        if confidence_by_field.get(key) == "high"
+    }
+    warnings = list(skill_data.get("resource_warnings", []))
+    confidence = "high" if high_candidates and coefficient_candidate.get("safe_to_patch") else "medium" if parsed else "low"
+    return {
+        "safe_to_patch": bool(high_candidates and coefficient_candidate.get("safe_to_patch") and not warnings),
+        "confidence": confidence,
+        "parsed_resource_candidates": high_candidates if confidence == "high" else parsed,
+        "raw_resources": skill_data.get("raw_resources", {}),
+        "resource_confidence": confidence_by_field,
+        "warnings": warnings,
+    }
+
+
+def build_unresolved_rows(
+    actions: list[dict[str, Any]],
+    unmapped_rows: list[dict[str, Any]],
+    candidate_actions: list[dict[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
+    unresolved: list[dict[str, Any]] = []
+    for action in actions:
+        for row in action.get("skill_data", {}).get("coefficient_rows", []):
+            reason = row.get("row_classification")
+            if reason != "base_damage":
+                unresolved.append(
+                    {
+                        "action_id": action["action_id"],
+                        "row_number": row.get("row_number"),
+                        "source_action_name": row.get("source_action_name"),
+                        "reason": reason or "unknown",
+                        "raw_coefficients": row.get("raw_coefficients"),
+                        "parsed_multipliers": row.get("parsed_multipliers"),
+                        "repeat_metadata": row.get("repeat_metadata"),
+                    }
+                )
+            elif row.get("repeat_metadata", {}).get("repeat_warning"):
+                unresolved.append(
+                    {
+                        "action_id": action["action_id"],
+                        "row_number": row.get("row_number"),
+                        "source_action_name": row.get("source_action_name"),
+                        "reason": "repeat_parsing_uncertain",
+                        "repeat_metadata": row.get("repeat_metadata"),
+                    }
+                )
+        resource_confidence = action.get("skill_data", {}).get("resource_confidence", {})
+        if any(confidence in {"low", "medium"} for confidence in resource_confidence.values()):
+            unresolved.append(
+                {
+                    "action_id": action["action_id"],
+                    "reason": "resource_ambiguity",
+                    "raw_resources": action.get("skill_data", {}).get("raw_resources", {}),
+                    "resource_confidence": resource_confidence,
+                    "warnings": action.get("skill_data", {}).get("resource_warnings", []),
+                }
+            )
+    for candidate_action in candidate_actions or []:
+        action_id = candidate_action["action_id"]
+        coeff = candidate_action.get("coefficient_candidate", {})
+        comparison = coeff.get("current_actions_comparison", {})
+        context = {
+            "action_id": action_id,
+            "candidate_hit_count": comparison.get("candidate_hit_count"),
+            "current_hit_count": comparison.get("current_hit_count"),
+            "shape_status": comparison.get("shape_status"),
+            "safe_to_patch": coeff.get("safe_to_patch"),
+            "safe_to_patch_reasons": coeff.get("safe_to_patch_reasons", []),
+            "critical_warnings": coeff.get("critical_warnings", []),
+            "base_source_rows": coeff.get("base_source_rows", []),
+        }
+        if comparison.get("shape_status") == "shorter_than_current":
+            unresolved.append({"reason": "compressed_multihit_candidate", **context})
+            unresolved.append({"reason": "candidate_shorter_than_current", **context})
+        if any(reason == "repeat_metadata_unresolved" for reason in coeff.get("safe_to_patch_reasons", [])):
+            unresolved.append({"reason": "repeat_metadata_unresolved", **context})
+        if not coeff.get("safe_to_patch") and coeff.get("safe_to_patch_reasons"):
+            unresolved.append({"reason": "unsafe_candidate_prevented", **context})
+        if action_id == "aemeath_liberation_overdrive" and comparison.get("shape_status") == "shorter_than_current":
+            unresolved.append({"reason": "overdrive_repeat_unresolved", **context})
+        if action_id in {"aemeath_basic_form_stage_4", "aemeath_mech_basic_stage_1", "aemeath_mech_basic_stage_3"} and comparison.get("shape_status") == "shorter_than_current":
+            unresolved.append({"reason": "basic_repeat_unresolved", **context})
+        if action_id in {"aemeath_seraphic_duet_overturn", "aemeath_seraphic_duet_overture", "aemeath_seraphic_duet_encore"} and comparison.get("shape_status") == "shorter_than_current":
+            unresolved.append({"reason": "seraphic_group_ambiguous", **context})
+    for row in unmapped_rows:
+        method = row.get("mapping", {}).get("method")
+        reason = "qte_intro" if method == "excluded_qte" else "unmapped"
+        unresolved.append(
+            {
+                "action_id": row.get("candidate_action_id"),
+                "row_number": row.get("row_number"),
+                "source_action_name": row.get("source_action_name"),
+                "reason": reason,
+                "raw": row.get("raw"),
+                "warnings": row.get("warnings", []),
+            }
+        )
+    return unresolved
+
+
+def build_coeff_resource_outputs(
+    actions: list[dict[str, Any]],
+    unmapped_rows: list[dict[str, Any]],
+    current_actions: dict[str, dict[str, Any]],
+    workbook_path: Path,
+    generated_at: str,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    candidate_actions = []
+    for action in actions:
+        coefficient_candidate = build_coefficient_candidate(action, current_actions)
+        resource_candidate = build_resource_candidate(action, coefficient_candidate)
+        candidate_actions.append(
+            {
+                "action_id": action["action_id"],
+                "coefficient_candidate": coefficient_candidate,
+                "resource_candidate": resource_candidate,
+                "current_actions_json_multipliers": current_damage_multipliers(action["action_id"], current_actions),
+            }
+        )
+
+    unresolved_rows = build_unresolved_rows(actions, unmapped_rows, candidate_actions)
+    candidates = {
+        "generated_at": generated_at,
+        "source": str(workbook_path),
+        "safe_to_patch": False,
+        "notes": [
+            "This file is for review only. It does not modify actions.json.",
+            "Time-stop timing was handled separately; this file is coefficient/resource extraction review.",
+        ],
+        "actions": candidate_actions,
+    }
+    unresolved = {
+        "generated_at": generated_at,
+        "source": str(workbook_path),
+        "rows": unresolved_rows,
+    }
+    return candidates, unresolved
+
+
+def unresolved_reason_counts(unresolved: dict[str, Any]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for row in unresolved.get("rows", []):
+        reason = row.get("reason") or "unknown"
+        counts[reason] = counts.get(reason, 0) + 1
+    return counts
+
+
+def write_coeff_resource_review_report(
+    review_path: Path,
+    candidates: dict[str, Any],
+    unresolved: dict[str, Any],
+) -> None:
+    actions = candidates.get("actions", [])
+    unresolved_counts = unresolved_reason_counts(unresolved)
+    coeff_safe = sum(1 for action in actions if action["coefficient_candidate"].get("safe_to_patch"))
+    resource_safe = sum(1 for action in actions if action["resource_candidate"].get("safe_to_patch"))
+    repeat_expansions = sum(action["coefficient_candidate"].get("repeat_expansions_applied", 0) for action in actions)
+    repeat_warnings = sum(
+        1
+        for action in actions
+        for warning in action["coefficient_candidate"].get("warnings", [])
+        if "repeat" in warning.get("message", "").lower()
+    )
+    resource_confidence_counts: dict[str, int] = {"high": 0, "medium": 0, "low": 0}
+    for action in actions:
+        for confidence in action["resource_candidate"].get("resource_confidence", {}).values():
+            if confidence in resource_confidence_counts:
+                resource_confidence_counts[confidence] += 1
+    compressed_candidates = sum(
+        1
+        for action in actions
+        if action["coefficient_candidate"].get("current_actions_comparison", {}).get("shape_status") == "shorter_than_current"
+    )
+    unsafe_prevented = sum(
+        1
+        for action in actions
+        if not action["coefficient_candidate"].get("safe_to_patch")
+        and action["coefficient_candidate"].get("safe_to_patch_reasons")
+    )
+    shorter_than_current = compressed_candidates
+
+    lines = [
+        "# Aemeath Coefficient/Resource Review",
+        "",
+        "## Summary",
+        "",
+        f"- Candidate actions: {len(actions)}",
+        f"- Coefficient safe_to_patch count: {coeff_safe}",
+        f"- Resource safe_to_patch count: {resource_safe}",
+        f"- Unresolved row count: {len(unresolved.get('rows', []))}",
+        f"- Variant rows excluded: {unresolved_counts.get('sequence_variant', 0)}",
+        f"- Dodge/counter rows excluded: {unresolved_counts.get('dodge_counter', 0)}",
+        f"- QTE/Intro rows excluded: {unresolved_counts.get('qte_intro', 0)}",
+        f"- Repeat expansions applied: {repeat_expansions}",
+        f"- Repeat expansion warnings: {repeat_warnings}",
+        f"- Resource confidence counts: {markdown_value(resource_confidence_counts)}",
+        "",
+        "## Multihit reconstruction summary",
+        "",
+        f"- Repeat expansions applied: {repeat_expansions}",
+        f"- Repeat warnings: {repeat_warnings}",
+        f"- Compressed candidates detected: {compressed_candidates}",
+        f"- Candidates shorter than current actions: {shorter_than_current}",
+        f"- Candidates prevented from safe_to_patch: {unsafe_prevented}",
+        "",
+        "## Candidate vs current shape table",
+        "",
+        "| action_id | candidate_hit_count | current_hit_count | shape_status | safe_to_patch | reason if false | max_abs_diff | repeat expansion notes |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- |",
+    ]
+    for action in actions:
+        coeff = action["coefficient_candidate"]
+        comparison = coeff.get("current_actions_comparison", {})
+        repeat_notes = [
+            segment
+            for segment in coeff.get("segments", [])
+            if segment.get("repeat_count") or segment.get("warnings")
+        ]
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    action["action_id"],
+                    markdown_value(comparison.get("candidate_hit_count")),
+                    markdown_value(comparison.get("current_hit_count")),
+                    markdown_value(comparison.get("shape_status")),
+                    markdown_value(coeff.get("safe_to_patch")),
+                    markdown_value(coeff.get("safe_to_patch_reasons", [])),
+                    markdown_value(comparison.get("max_abs_diff")),
+                    markdown_value(repeat_notes),
+                ]
+            )
+            + " |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Expanded coefficient segments",
+            "",
+            "| action_id | source row | source action | raw coefficient | parsed before repeat | repeat metadata | expanded values | warnings |",
+            "| --- | --- | --- | --- | --- | --- | --- | --- |",
+        ]
+    )
+    for action in actions:
+        for segment in action["coefficient_candidate"].get("segments", []):
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        action["action_id"],
+                        markdown_value(segment.get("source_row_number")),
+                        markdown_value(segment.get("source_action_name")),
+                        markdown_value(segment.get("raw_coefficient")),
+                        markdown_value(segment.get("parsed_values_before_repeat")),
+                        markdown_value(
+                            {
+                                "repeat_count": segment.get("repeat_count"),
+                                "repeat_source": segment.get("repeat_source"),
+                                "expanded_from_repeat": segment.get("expanded_from_repeat"),
+                            }
+                        ),
+                        markdown_value(segment.get("expanded_values")),
+                        markdown_value(segment.get("warnings")),
+                    ]
+                )
+                + " |"
+            )
+
+    lines.extend(["", "## Critical warnings", ""])
+    found_critical = False
+    for action in actions:
+        for warning in action["coefficient_candidate"].get("warnings", []):
+            if warning.get("severity") != "critical":
+                continue
+            found_critical = True
+            lines.append(f"- `{action['action_id']}`: {warning.get('message')}")
+    if not found_critical:
+        lines.append("- No critical coefficient warnings.")
+
+    lines.extend(
+        [
+            "",
+            "## Safe-to-patch table",
+            "",
+            "| action_id | confidence | hit_count | max_abs_diff | parsed multipliers |",
+            "| --- | --- | --- | --- | --- |",
+        ]
+    )
+    safe_actions = [action for action in actions if action["coefficient_candidate"].get("safe_to_patch")]
+    if safe_actions:
+        for action in safe_actions:
+            coeff = action["coefficient_candidate"]
+            comparison = coeff.get("current_actions_comparison", {})
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        action["action_id"],
+                        markdown_value(coeff.get("confidence")),
+                        markdown_value(comparison.get("candidate_hit_count")),
+                        markdown_value(comparison.get("max_abs_diff")),
+                        markdown_value(coeff.get("parsed_multipliers")),
+                    ]
+                )
+                + " |"
+            )
+    else:
+        lines.append("|  |  |  |  |  |")
+    lines.extend(
+        [
+        "",
+        "## Coefficient candidate table",
+        "",
+        "| action_id | confidence | safe_to_patch | base source rows | raw coefficient source | parsed multipliers | repeat expansion notes | excluded rows count | warnings |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        ]
+    )
+    for action in actions:
+        coeff = action["coefficient_candidate"]
+        repeat_notes = [
+            row.get("repeat_metadata")
+            for row in coeff.get("base_source_rows", [])
+            if row.get("repeat_metadata", {}).get("repeat_count") or row.get("repeat_metadata", {}).get("repeat_warning")
+        ]
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    action["action_id"],
+                    markdown_value(coeff.get("confidence")),
+                    markdown_value(coeff.get("safe_to_patch")),
+                    markdown_value(coeff.get("base_source_rows")),
+                    markdown_value(coeff.get("raw_coefficients")),
+                    markdown_value(coeff.get("parsed_multipliers")),
+                    markdown_value(repeat_notes),
+                    markdown_value(coeff.get("excluded_variants_count", 0) + coeff.get("excluded_unrelated_rows_count", 0)),
+                    markdown_value(coeff.get("warnings")),
+                ]
+            )
+            + " |"
+        )
+
+    lines.extend(
+        [
+            "",
+            "## Resource candidate table",
+            "",
+            "| action_id | confidence | safe_to_patch | parsed resource candidates | raw resource columns | warnings |",
+            "| --- | --- | --- | --- | --- | --- |",
+        ]
+    )
+    for action in actions:
+        resource = action["resource_candidate"]
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    action["action_id"],
+                    markdown_value(resource.get("confidence")),
+                    markdown_value(resource.get("safe_to_patch")),
+                    markdown_value(resource.get("parsed_resource_candidates")),
+                    markdown_value(resource.get("raw_resources")),
+                    markdown_value(resource.get("warnings")),
+                ]
+            )
+            + " |"
+        )
+
+    lines.extend(["", "## Excluded / unresolved rows", ""])
+    for reason, count in sorted(unresolved_counts.items()):
+        lines.append(f"### {reason}")
+        shown = 0
+        for row in unresolved.get("rows", []):
+            if row.get("reason") != reason:
+                continue
+            lines.append(
+                f"- action={markdown_value(row.get('action_id'))} row={markdown_value(row.get('row_number'))} "
+                f"source={markdown_value(row.get('source_action_name'))}"
+            )
+            shown += 1
+            if shown >= 20 and count > shown:
+                lines.append(f"- ... {count - shown} more")
+                break
+        lines.append("")
+
+    lines.extend(["## Sanity warnings", ""])
+    found_warning = False
+    for action in actions:
+        for warning in action["coefficient_candidate"].get("warnings", []):
+            found_warning = True
+            lines.append(f"- `{action['action_id']}` [{warning.get('severity')}]: {warning.get('message')}")
+    if not found_warning:
+        lines.append("- No coefficient sanity warnings.")
+
+    lines.extend(
+        [
+            "",
+            "## Current actions.json comparison",
+            "",
+            "| action_id | current multipliers | extracted candidate multipliers | difference summary | confidence |",
+            "| --- | --- | --- | --- | --- |",
+        ]
+    )
+    for action in actions:
+        coeff = action["coefficient_candidate"]
+        current = action.get("current_actions_json_multipliers", [])
+        extracted = coeff.get("parsed_multipliers", [])
+        difference = "matches" if current == extracted else f"current_len={len(current)}, extracted_len={len(extracted)}"
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    action["action_id"],
+                    markdown_value(current),
+                    markdown_value(extracted),
+                    markdown_value(difference),
+                    markdown_value(coeff.get("confidence")),
+                ]
+            )
+            + " |"
+        )
+
+    review_path.parent.mkdir(parents=True, exist_ok=True)
+    review_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def generate_report(
     report_path: Path,
     workbook_path: Path,
@@ -1357,6 +2279,10 @@ def generate_report(
         f"- Variant coefficient rows excluded from base: {validation_summary.get('variant_rows_excluded_from_base', 0)}",
         f"- QTE rows excluded: {validation_summary.get('qte_rows_excluded', 0)}",
         f"- Low-confidence resource fields: {validation_summary.get('low_confidence_resource_fields', 0)}",
+        "",
+        "Time-stop timing has already been handled separately.",
+        f"Coefficient/resource candidates are in `{display_path(DEFAULT_REVIEW_REPORT)}`.",
+        "Extraction does not modify gameplay `data/actions.json`.",
         "",
         "Resource caution: extracted resource fields are audit candidates only. Do not treat low- or medium-confidence resource candidates as patch recommendations without manual confirmation.",
         "",
@@ -1609,6 +2535,9 @@ def extract(args: argparse.Namespace) -> int:
     output_path = Path(args.output)
     unmapped_path = Path(args.unmapped)
     report_path = Path(args.report)
+    candidates_path = Path(getattr(args, "candidates", DEFAULT_CANDIDATES))
+    unresolved_review_path = Path(getattr(args, "coeff_resource_unresolved", DEFAULT_UNRESOLVED))
+    review_report_path = Path(getattr(args, "review_report", DEFAULT_REVIEW_REPORT))
 
     workbook = load_workbook_or_exit(workbook_path)
     sheet_names = list(workbook.sheetnames)
@@ -1696,6 +2625,13 @@ def extract(args: argparse.Namespace) -> int:
         )
 
     generated_at = datetime.now(timezone.utc).isoformat()
+    candidates_payload, unresolved_review_payload = build_coeff_resource_outputs(
+        actions,
+        unmapped_rows,
+        current_actions,
+        workbook_path,
+        generated_at,
+    )
     output_payload = {
         "source_workbook": str(workbook_path),
         "generated_at": generated_at,
@@ -1706,6 +2642,12 @@ def extract(args: argparse.Namespace) -> int:
         "mapped_action_count": len(actions),
         "unmapped_row_count": len(unmapped_rows),
         "validation_summary": validation_summary,
+        "coefficient_resource_review": {
+            "candidates": str(candidates_path),
+            "unresolved": str(unresolved_review_path),
+            "report": str(review_report_path),
+            "safe_to_patch": False,
+        },
         "actions": actions,
         "warnings": global_warnings,
     }
@@ -1721,6 +2663,9 @@ def extract(args: argparse.Namespace) -> int:
 
     write_json(output_path, output_payload)
     write_json(unmapped_path, unmapped_payload)
+    write_json(candidates_path, candidates_payload)
+    write_json(unresolved_review_path, unresolved_review_payload)
+    write_coeff_resource_review_report(review_report_path, candidates_payload, unresolved_review_payload)
     generate_report(
         report_path,
         workbook_path,
@@ -1742,6 +2687,9 @@ def extract(args: argparse.Namespace) -> int:
     print(f"Unmapped candidate rows: {len(unmapped_rows)}")
     print(f"Wrote {output_path}")
     print(f"Wrote {unmapped_path}")
+    print(f"Wrote {candidates_path}")
+    print(f"Wrote {unresolved_review_path}")
+    print(f"Wrote {review_report_path}")
     print(f"Wrote {report_path}")
     return 0
 
@@ -1754,6 +2702,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
     parser.add_argument("--unmapped", default=str(DEFAULT_UNMAPPED))
     parser.add_argument("--report", default=str(DEFAULT_REPORT))
+    parser.add_argument("--candidates", default=str(DEFAULT_CANDIDATES))
+    parser.add_argument("--coeff-resource-unresolved", default=str(DEFAULT_UNRESOLVED))
+    parser.add_argument("--review-report", default=str(DEFAULT_REVIEW_REPORT))
     return parser
 
 

@@ -143,19 +143,23 @@ Run the extractor from the project root:
 ```bash
 python scripts/extract_aemeath_excel_data.py
 python scripts/extract_aemeath_excel_data_smoke_test.py
+python scripts/aemeath_coeff_resource_extraction_smoke_test.py
 ```
 
 The extraction script uses section tracking because the Aemeath character name may appear once as a section header while following action rows only contain labels like `A1`, `A2-1`, `E`, enhanced `E`, heavy attack labels, or liberation labels. Mapping uses the detected source action name first; full row text is not used for normal mapping, which avoids note/comment columns contaminating action IDs. QTE rows are explicitly excluded from normal form-switch/sync mapping and remain in the unmapped audit output.
 
-Coefficient extraction reads explicit workbook multiplier columns when available. Numeric Excel cells are treated as already-normalized decimal multipliers; only strings that contain `%` are divided by 100. C0/C1/C2/C3 and other sequence or resonance-chain variants are preserved separately from base coefficients; C0 is used as base only when no non-variant coefficient row exists. Grouped frame rows are validated so action time is never earlier than the latest hit frame, and combat time subtracts only global time stop, not hitstop.
+Coefficient extraction reads explicit workbook multiplier columns when available. Numeric Excel cells are treated as already-normalized decimal multipliers; only strings that contain `%` are divided by 100. Explicit multihit notation such as `23.20%*3`, `23.20% x3`, or `0.232*3` is expanded into repeated coefficient segments, while unclear multihit rows remain conservative audit candidates. C0/C1/C2/C3 and other sequence or resonance-chain variants are preserved separately from base coefficients; C0 can be accepted as base for workbook rows whose labels are otherwise direct base damage rows. Dodge/counter, QTE, timing-only, bonus-effect, sequence, form-switch, and sync-strike rows are excluded from base coefficient candidates and kept in the unresolved audit output. Grouped frame rows are validated so action time is never earlier than the latest hit frame, and combat time subtracts only global time stop, not hitstop.
 
-Resource extraction is conservative. The extractor records raw resource cells, parsed resource candidates, per-field confidence, and resource warnings. Low- or medium-confidence resource candidates are not patch recommendations unless manually confirmed. The extractor still does not modify `data/actions.json`. This first pass is for verification only. It generates:
+Resource extraction is conservative. The extractor records raw resource cells, parsed resource candidates, per-field confidence, and resource warnings. Low- or medium-confidence resource candidates are not patch recommendations unless manually confirmed. Coefficient candidates are also compared against current `data/actions.json` hit shapes as a safety guardrail: candidates shorter than current actions are never considered safe, and `safe_to_patch` means review-ready only, not automatically applied. Coefficient/resource review files are audit-only and do not modify `data/actions.json`; time-stop timing has already been handled separately. This pass generates:
 
 - `data/extracted/aemeath_excel_actions.json`
 - `data/extracted/aemeath_excel_unmapped_rows.json`
+- `data/extracted/aemeath_coeff_resource_candidates.json`
+- `data/extracted/aemeath_coeff_resource_unresolved.json`
 - `reports/aemeath_excel_diff.md`
+- `reports/aemeath_coeff_resource_review.md`
 
-Later patches may apply confirmed `action_time`, `combat_time_cost`, hit timing, and resource values after the report is reviewed.
+Later patches may apply confirmed coefficients or resource values after the coefficient/resource review is manually reviewed.
 
 Field meanings:
 
@@ -314,6 +318,7 @@ python scripts/aemeath_mechanics_correction_smoke_test.py
 python scripts/aemeath_lite_smoke_test.py
 python scripts/extract_aemeath_excel_data.py
 python scripts/extract_aemeath_excel_data_smoke_test.py
+python scripts/aemeath_coeff_resource_extraction_smoke_test.py
 python scripts/party_selection_smoke_test.py
 python scripts/character_selection_smoke_test.py
 python scripts/mechanics_smoke_test.py
