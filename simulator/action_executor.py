@@ -209,7 +209,7 @@ def execute_action(
 
     state.current_time += action_time
     state.combat_time += combat_time_cost
-    reduce_cooldowns(state, action_time)
+    reduce_cooldowns(state, combat_time_cost)
     tick_buffs(state, action_time)
     anomaly_tick_damage, anomaly_damage_by_type = advance_anomalies(state, action_time)
     state.total_damage += anomaly_tick_damage

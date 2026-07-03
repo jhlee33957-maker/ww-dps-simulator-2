@@ -94,7 +94,7 @@ The internal state field is still named `seraphic_duo_remaining` for compatibili
 
 ## Aemeath Confirmed Time-Stop Timing
 
-Some Aemeath cinematic actions have long action lock but reduced or zero timed-combat cost. The simulator intentionally separates `action_time` from `combat_time_cost`: `action_time` drives action lock, hit progression, cooldown ticking, buffs, anomalies, and character mechanic timers; `combat_time_cost` drives the timed-combat clock and defaults to `action_time` when omitted.
+Some Aemeath cinematic actions have long action lock but reduced or zero timed-combat cost. The simulator intentionally separates `action_time` from `combat_time_cost`: `action_time` drives action lock, hit progression, buffs, anomalies, and character mechanic timers; `combat_time_cost` drives the timed-combat clock and cooldown reduction, and defaults to `action_time` when omitted.
 
 Confirmed whitelist values currently applied:
 
@@ -120,7 +120,7 @@ Reviewed Heavy Attack and Sync Strike timing values are applied without PPO retr
 
 Normal Form Switch is modeled as the immediate opposite-form Basic Attack Stage 1 rather than a separate 1.0s E1 action. Switching from Aemeath to Mech uses Mech Basic Stage 1 timing and hit multipliers, then sets the next Mech Basic Attack to Stage 2. Switching from Mech to Aemeath uses Aemeath Basic Stage 1 timing and hit multipliers, then sets the next Aemeath Basic Attack to Stage 2.
 
-Instant Response Heavy Attack timing follows the manually reviewed frame values and is resolved before the after-action mechanic clears Instant Response. This preserves the existing rule that `combat_time_cost` affects only the timed-combat clock while `action_time` drives action lock, buffs, anomalies, cooldowns, and Aemeath mechanic timers.
+Instant Response Heavy Attack timing follows the manually reviewed frame values and is resolved before the after-action mechanic clears Instant Response. This preserves the existing rule that `combat_time_cost` affects timed-combat clock and cooldown reduction while `action_time` drives action lock, buffs, anomalies, and Aemeath mechanic timers.
 
 ## Aemeath Notice-Based Mechanics
 
@@ -261,6 +261,11 @@ The simulator does not model animation playback time and does not include a gene
 - hits: damage events that occur at offsets inside action_time.
 
 Buffs, Havoc Bane, and other time-sensitive effects are evaluated at each hit time. For example, if Havoc Bane has 0.30 seconds remaining at action start, a hit at 0.20 receives its DEF reduction and a hit at 0.45 does not. Current hit timing data is dummy/sample data; real character-specific hit timings are not implemented yet.
+
+## Cooldown Timing Model
+
+Cooldown reduction follows `combat_time_cost`, not `action_time`. Normal actions without an explicit `combat_time_cost` still reduce cooldowns by their action time through the fallback behavior. Global time-stop actions such as Overdrive and Finale have long `action_time` but `0.0` `combat_time_cost`, so they do not advance the timed combat clock or reduce cooldowns during their cinematic time. This prevents time-stop cinematics from artificially shortening cooldown cycles.
+
 ## Attribute Anomaly System
 
 - Actions apply anomaly stacks to enemy-wide CombatState.
@@ -286,7 +291,7 @@ Monster-specific resistance data, character-specific special coefficients, hit t
 - damage/anomaly_damage remain compatibility fields and mirror total_action_damage/anomaly_tick_damage where appropriate.
 - Damage uses expected crit value instead of random crit rolls.
 - Damage is calculated using buffs and anomalies that are already active at the start of an action. Buffs and anomalies applied by the current action are added after the action resolves and affect later actions only.
-- Existing buffs, cooldowns, and active anomalies advance by action_time. Timed combat mode advances by combat_time_cost.
+- Existing buffs and active anomalies advance by action_time. Timed combat mode and cooldowns advance by combat_time_cost.
 - Cooldowns are set after the action resolves, so cooldown timing currently starts from the end of the action.
 - Actions may define cooldown_group. When present, cooldown checking and cooldown storage use that group key instead of action.id. Existing actions without cooldown_group keep their original behavior.
 - Actions may define policy_selectable = false to hide concrete internal mechanic actions from PPO while keeping them available for mechanic resolution.

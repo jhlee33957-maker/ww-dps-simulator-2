@@ -112,8 +112,8 @@
     {"priority": 6, "rule": "Normal fallback behavior"}
   ],
   "timing_model": [
-    {"name": "action_time", "action_time": null, "combat_time_cost": null, "notes": "Action lock, internal action progression, hit timing progression, cooldown ticking, buffs, anomalies, and mechanic state duration ticking."},
-    {"name": "combat_time_cost", "action_time": null, "combat_time_cost": null, "notes": "Timed combat clock cost. If omitted from an action, it falls back to action_time."},
+    {"name": "action_time", "action_time": null, "combat_time_cost": null, "notes": "Action lock, internal action progression, hit timing progression, buffs, anomalies, and mechanic state duration ticking."},
+    {"name": "combat_time_cost", "action_time": null, "combat_time_cost": null, "notes": "Timed combat clock cost and cooldown reduction time. If omitted from an action, it falls back to action_time."},
     {"name": "Overdrive", "action_time": 4.3667, "combat_time_cost": 0.0},
     {"name": "Finale", "action_time": 5.6667, "combat_time_cost": 0.0},
     {"name": "Seraphic Duet Overturn/Ouverture", "action_time": 3.0, "combat_time_cost": 1.3167},
