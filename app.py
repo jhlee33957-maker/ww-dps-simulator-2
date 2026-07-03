@@ -88,7 +88,7 @@ def run_repeating_sequence(
     apply_enemy_settings(sim, settings)
     index = 0
 
-    while sim.state.current_time < sim.combat_duration:
+    while sim.state.combat_time < sim.combat_duration:
         action_id = sequence[index % len(sequence)]
         if not sim.execute_action(action_id):
             sim.execute_action("short_wait")
@@ -114,7 +114,7 @@ def evaluate_ppo_model(
     apply_enemy_settings(env.simulation, settings)
     action_sequence: list[str] = []
 
-    while env.simulation.state.current_time < env.simulation.combat_duration:
+    while env.simulation.state.combat_time < env.simulation.combat_duration:
         action, _ = model.predict(observation, deterministic=True, action_masks=env.action_masks())
         observation, _reward, terminated, truncated, info = env.step(int(action))
         action_sequence.append(str(info["action_id"]))
@@ -168,6 +168,9 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "time_start",
         "time_end",
         "action_time",
+        "combat_time_start",
+        "combat_time_end",
+        "combat_time_cost",
         "hit_count",
         "normal_damage",
         "tune_break_damage",
@@ -250,7 +253,7 @@ selected_character_ids = party_selection()
 with st.expander("Active Anomaly System"):
     st.write("Actions apply anomaly stacks to enemy-wide combat state. Aero/Spectro/Electro deal tick damage during later action durations. Havoc Bane deals no direct damage and contributes defense reduction while active. Current durations and tick intervals are simplified assumptions.")
 with st.expander("Hit Timing Model"):
-    st.write("action_time is the combat timer consumed by the action and the time until the next action decision. hits are damage events inside action_time. Buffs and Havoc Bane are evaluated at each hit time. Animation-only duration and a general cancel system are not modeled.")
+    st.write("action_time is internal action lock and hit timing progression. combat_time_cost is the timed-combat timer cost; it defaults to action_time when omitted. Buffs and Havoc Bane are evaluated at each hit time. Animation-only duration and a general cancel system are not modeled.")
 
 mode = st.radio("Mode", ["Demo Sequence", "PPO Model"], horizontal=True)
 

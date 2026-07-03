@@ -91,6 +91,7 @@ class ActionData(BaseModel):
     action_type: ActionType
     duration: float = Field(gt=0)
     action_time: float | None = Field(default=None, gt=0)
+    combat_time_cost: float | None = Field(default=None, ge=0)
     cooldown: float = Field(ge=0)
     damage_category: DamageCategory = "normal"
     damage_multiplier: float = Field(default=0.0, ge=0)
@@ -126,6 +127,10 @@ class ActionData(BaseModel):
     @property
     def effective_action_time(self) -> float:
         return self.action_time if self.action_time is not None else self.duration
+
+    @property
+    def effective_combat_time_cost(self) -> float:
+        return self.combat_time_cost if self.combat_time_cost is not None else self.effective_action_time
 
     def effective_hits(self) -> list[HitData]:
         if self.hits:
@@ -178,6 +183,7 @@ class ResourceChange(BaseModel):
 
 class CombatState(BaseModel):
     current_time: float = 0.0
+    combat_time: float = 0.0
     total_damage: float = 0.0
     active_character_id: str
     enemy_level: int = 90
@@ -207,6 +213,9 @@ class ActionResult(BaseModel):
     start_time: float
     end_time: float
     action_time: float = 0.0
+    combat_time_start: float = 0.0
+    combat_time_end: float = 0.0
+    combat_time_cost: float = 0.0
     damage: float
     normal_damage: float = 0.0
     tune_break_damage: float = 0.0
@@ -240,6 +249,9 @@ class TimelineEntry(BaseModel):
     action_name: str
     character_id: str | None
     action_time: float = 0.0
+    combat_time_start: float = 0.0
+    combat_time_end: float = 0.0
+    combat_time_cost: float = 0.0
     damage: float
     normal_damage: float = 0.0
     tune_break_damage: float = 0.0
@@ -265,6 +277,7 @@ class SimulationSummary(BaseModel):
     total_damage: float
     dps: float
     final_time: float
+    final_action_time: float = 0.0
     active_character: str
     timeline: list[TimelineEntry]
     resources: dict[str, dict[str, float]]

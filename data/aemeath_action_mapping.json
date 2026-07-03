@@ -1,0 +1,110 @@
+{
+  "version": 2,
+  "notes": "Manual mapping from Excel action labels to simulator action IDs. Character scope is applied before exact, prefix, then contains matching. Only mapped rows may be patched in later passes.",
+  "mappings": [
+    {
+      "action_id": "aemeath_basic_form_stage_1",
+      "character": "aemeath",
+      "source_exact_any": ["A1", "\u666e\u653b1"]
+    },
+    {
+      "action_id": "aemeath_basic_form_stage_2",
+      "character": "aemeath",
+      "source_prefix_any": ["A2", "\u666e\u653b2"]
+    },
+    {
+      "action_id": "aemeath_basic_form_stage_3",
+      "character": "aemeath",
+      "source_prefix_any": ["A3", "\u666e\u653b3"]
+    },
+    {
+      "action_id": "aemeath_basic_form_stage_4",
+      "character": "aemeath",
+      "source_prefix_any": ["A4", "\u666e\u653b4"]
+    },
+    {
+      "action_id": "aemeath_mech_basic_stage_1",
+      "character": "aemeath_mech",
+      "source_exact_any": ["A1", "\u666e\u653b1"]
+    },
+    {
+      "action_id": "aemeath_mech_basic_stage_2",
+      "character": "aemeath_mech",
+      "source_prefix_any": ["A2", "\u666e\u653b2"]
+    },
+    {
+      "action_id": "aemeath_mech_basic_stage_3",
+      "character": "aemeath_mech",
+      "source_prefix_any": ["A3", "\u666e\u653b3"]
+    },
+    {
+      "action_id": "aemeath_mech_basic_stage_4",
+      "character": "aemeath_mech",
+      "source_prefix_any": ["A4", "\u666e\u653b4"]
+    },
+    {
+      "action_id": "aemeath_form_switch_to_mech_normal",
+      "character": "aemeath",
+      "source_exact_any": ["E"],
+      "source_contains_any": ["E-1", "E-2"]
+    },
+    {
+      "action_id": "aemeath_form_switch_to_aemeath_normal",
+      "character": "aemeath_mech",
+      "source_exact_any": ["E"],
+      "source_contains_any": ["E-1", "E-2"]
+    },
+    {
+      "action_id": "aemeath_sync_strike_armament_merge",
+      "character": "aemeath",
+      "source_contains_any": ["\u964d\u4e34", "Armament Merge"]
+    },
+    {
+      "action_id": "aemeath_sync_strike_call_of_dawn",
+      "character": "aemeath_mech",
+      "source_contains_any": ["\u767b\u53f0", "Call of Dawn"]
+    },
+    {
+      "action_id": "aemeath_seraphic_duet_overture",
+      "character": "aemeath",
+      "source_contains_any": ["\u5f3a\u5316E", "\u964d\u4e34", "Seraphic", "Overture", "Overturn"]
+    },
+    {
+      "action_id": "aemeath_seraphic_duet_encore",
+      "character": "aemeath_mech",
+      "source_contains_any": ["\u5f3a\u5316E", "\u767b\u53f0", "Seraphic", "Encore"]
+    },
+    {
+      "action_id": "aemeath_liberation_overdrive",
+      "character": "any",
+      "source_prefix_any": ["\u5927\u62db1", "C0\u5927\u62db1", "C3\u5927\u62db1"],
+      "source_contains_any": ["Overdrive", "Heavenfall Edict Overdrive"]
+    },
+    {
+      "action_id": "aemeath_heavenfall_finale",
+      "character": "any",
+      "source_prefix_any": ["\u5927\u62db2", "C0\u5927\u62db2", "C3\u5927\u62db2"],
+      "source_contains_any": ["Finale", "Heavenfall Finale"]
+    },
+    {
+      "action_id": "aemeath_heavy_aemeath_charged_1",
+      "character": "aemeath",
+      "source_contains_any": ["\u91cd\u51fb-1"]
+    },
+    {
+      "action_id": "aemeath_heavy_aemeath_charged_2",
+      "character": "aemeath",
+      "source_contains_any": ["\u91cd\u51fb-2", "\u5f3a\u5316\u91cd\u51fb"]
+    },
+    {
+      "action_id": "aemeath_heavy_mech_charged_1",
+      "character": "aemeath_mech",
+      "source_contains_any": ["\u91cd\u51fb-1"]
+    },
+    {
+      "action_id": "aemeath_heavy_mech_charged_2",
+      "character": "aemeath_mech",
+      "source_contains_any": ["\u91cd\u51fb-2", "\u5f3a\u5316\u91cd\u51fb"]
+    }
+  ]
+}

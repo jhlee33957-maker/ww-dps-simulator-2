@@ -78,7 +78,8 @@ def main() -> None:
     print("Policy action IDs:", env.get_policy_action_ids())
     print(f"Total damage: {summary.total_damage:.2f}")
     print(f"DPS: {summary.dps:.2f}")
-    print(f"Final time: {summary.final_time:.2f}")
+    print(f"Final combat time: {summary.final_time:.2f}")
+    print(f"Final action time: {summary.final_action_time:.2f}")
     print("Selected action sequence:", ", ".join(action_sequence))
     print("Action count breakdown:", counts)
     print("Resolved action count breakdown:", resolved_counts)
@@ -98,6 +99,7 @@ def main() -> None:
         "total_damage": summary.total_damage,
         "dps": summary.dps,
         "final_time": summary.final_time,
+        "final_action_time": summary.final_action_time,
         "active_character": summary.active_character,
         "selected_character_ids": env.get_selected_character_ids(),
         "selected_party_character_ids": env.get_selected_party_character_ids(),

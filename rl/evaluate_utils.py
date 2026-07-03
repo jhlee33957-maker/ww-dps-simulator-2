@@ -27,7 +27,7 @@ def run_masked_episode(
     action_sequence: list[str] = []
     resolved_action_sequence: list[str] = []
 
-    while env.simulation.state.current_time < env.simulation.combat_duration:
+    while env.simulation.state.combat_time < env.simulation.combat_duration:
         mask = env.action_masks()
         action, _ = model.predict(observation, deterministic=deterministic, action_masks=mask)
         action_index = int(action)

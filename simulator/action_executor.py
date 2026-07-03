@@ -148,7 +148,9 @@ def execute_action(
 ) -> ActionResult:
     valid, reason = is_action_valid(action, state)
     start_time = state.current_time
+    combat_start_time = state.combat_time
     action_time = action.effective_action_time
+    combat_time_cost = action.effective_combat_time_cost
     if not valid:
         return ActionResult(
             action_id=action.id,
@@ -157,6 +159,9 @@ def execute_action(
             start_time=start_time,
             end_time=start_time,
             action_time=0.0,
+            combat_time_start=combat_start_time,
+            combat_time_end=combat_start_time,
+            combat_time_cost=0.0,
             damage=0.0,
             valid=False,
             reason=reason,
@@ -184,6 +189,7 @@ def execute_action(
     resource_change = apply_resource_changes(state, action, characters)
 
     state.current_time += action_time
+    state.combat_time += combat_time_cost
     reduce_cooldowns(state, action_time)
     tick_buffs(state, action_time)
     anomaly_tick_damage, anomaly_damage_by_type = advance_anomalies(state, action_time)
@@ -212,6 +218,9 @@ def execute_action(
         start_time=start_time,
         end_time=state.current_time,
         action_time=action_time,
+        combat_time_start=combat_start_time,
+        combat_time_end=state.combat_time,
+        combat_time_cost=combat_time_cost,
         damage=total_action_damage,
         normal_damage=normal_damage,
         tune_break_damage=tune_break_damage,
@@ -246,6 +255,9 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         action_name=result.action_name,
         character_id=result.character_id,
         action_time=result.action_time,
+        combat_time_start=result.combat_time_start,
+        combat_time_end=result.combat_time_end,
+        combat_time_cost=result.combat_time_cost,
         damage=result.damage,
         normal_damage=result.normal_damage,
         tune_break_damage=result.tune_break_damage,

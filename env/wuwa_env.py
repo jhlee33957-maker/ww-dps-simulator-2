@@ -85,7 +85,7 @@ class WuwaDpsEnv(gym.Env):
                     self.simulation.execute_action("short_wait")
 
         damage_this_action = self.simulation.state.total_damage - before_damage
-        terminated = self.simulation.state.current_time >= self.simulation.combat_duration
+        terminated = self.simulation.state.combat_time >= self.simulation.combat_duration
         truncated = False
         reward = calculate_reward(damage_this_action) if not invalid_action else -1.0
         info = {
@@ -96,6 +96,8 @@ class WuwaDpsEnv(gym.Env):
             "damage_this_action": damage_this_action,
             "total_damage": self.simulation.state.total_damage,
             "dps": self.simulation.state.total_damage / self.simulation.combat_duration,
+            "action_time": self.simulation.state.current_time,
+            "combat_time": self.simulation.state.combat_time,
         }
         return self._get_observation(), reward, terminated, truncated, info
 
@@ -140,8 +142,8 @@ class WuwaDpsEnv(gym.Env):
         state = self.simulation.state
         duration = self.simulation.combat_duration
         values: list[float] = [
-            state.current_time / duration,
-            max(0.0, duration - state.current_time) / duration,
+            state.combat_time / duration,
+            max(0.0, duration - state.combat_time) / duration,
             state.total_damage / 1_000_000.0,
         ]
         values.extend(
@@ -179,8 +181,8 @@ class WuwaDpsEnv(gym.Env):
 
     def observation_labels(self) -> list[str]:
         labels = [
-            "time_elapsed",
-            "time_remaining",
+            "combat_time_elapsed",
+            "combat_time_remaining",
             "total_damage",
         ]
         labels.extend(f"active_character.{character_id}" for character_id in self.character_ids)

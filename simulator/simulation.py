@@ -110,7 +110,7 @@ class Simulation:
             self.state.tune_dmg_bonus = tune_dmg_bonus
 
     def execute_action(self, action_id: str) -> bool:
-        if self.state.current_time >= self.combat_duration:
+        if self.state.combat_time >= self.combat_duration:
             return False
 
         selected_action = self.actions[action_id]
@@ -146,7 +146,7 @@ class Simulation:
 
     def run_sequence(self, action_ids: list[str]) -> "Simulation":
         for action_id in action_ids:
-            if self.state.current_time >= self.combat_duration:
+            if self.state.combat_time >= self.combat_duration:
                 break
             self.execute_action(action_id)
         return self
@@ -219,7 +219,8 @@ class Simulation:
         return SimulationSummary(
             total_damage=self.state.total_damage,
             dps=self.state.total_damage / self.combat_duration,
-            final_time=self.state.current_time,
+            final_time=self.state.combat_time,
+            final_action_time=self.state.current_time,
             active_character=active_character,
             timeline=self.timeline,
             resources=resources,

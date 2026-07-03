@@ -79,16 +79,29 @@ Aemeath-lite now uses Level 10 coefficients visible in the provided skill screen
 
 These values are still placeholders or approximations:
 
-- action_time values
+- most action_time values outside the confirmed whitelist below
 - hit timing offsets
 - Synchronization Rate gain values
 - some mechanic effects beyond the implemented Aemeath-lite subset
 
 Full Aemeath is not implemented yet. Starflux is utility-related and intentionally omitted from the current DPS-lite implementation. Starflux natural recovery/spending, Tune Break, Tune Rupture, Fusion Burst, Fusion Trail, Rupturous Trail, Stardust Resonance's full Trail effects, Heavy Attacks, Intro/Outro, team buffs, full passives, mid-air attacks, dodge counters, and exact video-verified hit timings remain out of scope.
 
-Character mechanics have an advance_time hook that runs whenever combat time advances, even if the character is off-field. Aemeath Seraphic Duet, Heavenfall Unbound, Stardust Resonance, and Starlume Acceleration timers use this hook, so their remaining time decreases during swaps and during other characters' actions. Heavenfall Finale is separated from Overdrive cooldown by using its own cooldown group. Aemeath-lite has selected Level 10 screenshot coefficients, while timings and several mechanic values remain placeholder/sample values.
+Character mechanics have an advance_time hook that runs whenever action/internal time advances, even if the character is off-field. Aemeath Seraphic Duet, Heavenfall Unbound, Stardust Resonance, and Starlume Acceleration timers use this hook, so their remaining time decreases during swaps and during other characters' actions. Heavenfall Finale is separated from Overdrive cooldown by using its own cooldown group. Aemeath-lite has selected Level 10 screenshot coefficients, while several mechanic values remain placeholder/sample values.
 
 The internal state field is still named `seraphic_duo_remaining` for compatibility with existing tests and saved debug output, but user-facing documentation and UI text should refer to the mechanic as Seraphic Duet.
+
+## Aemeath Confirmed Time-Stop Timing
+
+Some Aemeath cinematic actions have long action lock but reduced or zero timed-combat cost. The simulator intentionally separates `action_time` from `combat_time_cost`: `action_time` drives action lock, hit progression, cooldown ticking, buffs, anomalies, and character mechanic timers; `combat_time_cost` drives the timed-combat clock and defaults to `action_time` when omitted.
+
+Confirmed whitelist values currently applied:
+
+- Overdrive: 4.3667s action_time / 0.0s combat_time_cost.
+- Finale: 5.6667s action_time / 0.0s combat_time_cost.
+- Seraphic Duet Overture/Overturn: 3.0s action_time / 1.3167s combat_time_cost.
+- Seraphic Duet Encore: 2.4167s action_time / 1.3333s combat_time_cost.
+
+Heavy Attack, Form Switch, and Sync Strike Excel timings are not applied yet.
 
 Current Aemeath-lite mechanic notes:
 
@@ -114,6 +127,43 @@ Current Aemeath-lite mechanic notes:
 - Instant Response is removed when Heavenfall Unbound ends. Its Heavy Attack effects are not implemented yet.
 - Finale depletes Synchronization Rate and Resonance Rate, ends Heavenfall Unbound, Stardust Resonance, and Seraphic Duet, and switches Aemeath back to Aemeath Form.
 - Overdrive and Finale use separate cooldown groups and do not share cooldown.
+
+## Aemeath Excel Data Extraction
+
+The simulator can extract Aemeath action data from a source Excel workbook for verification. Put the workbook under:
+
+```bash
+data/source/
+```
+
+The extractor auto-discovers `.xlsx` files in `data/source`. The exact Chinese filename is not required; if only one workbook is present, it is used automatically. It also recognizes encoded zip-style filenames such as `#U9e23#U6f6e#U52a8#U4f5c#U6570#U636e#U6c47#U603b.xlsx` when choosing among multiple candidates. If discovery is ambiguous, pass `--workbook` with the intended path.
+
+Run the extractor from the project root:
+
+```bash
+python scripts/extract_aemeath_excel_data.py
+python scripts/extract_aemeath_excel_data_smoke_test.py
+```
+
+The extraction script uses section tracking because the Aemeath character name may appear once as a section header while following action rows only contain labels like `A1`, `A2-1`, `E`, enhanced `E`, heavy attack labels, or liberation labels. Mapping uses the detected source action name first; full row text is not used for normal mapping, which avoids note/comment columns contaminating action IDs. QTE rows are explicitly excluded from normal form-switch/sync mapping and remain in the unmapped audit output.
+
+Coefficient extraction reads explicit workbook multiplier columns when available. Numeric Excel cells are treated as already-normalized decimal multipliers; only strings that contain `%` are divided by 100. C0/C1/C2/C3 and other sequence or resonance-chain variants are preserved separately from base coefficients; C0 is used as base only when no non-variant coefficient row exists. Grouped frame rows are validated so action time is never earlier than the latest hit frame, and combat time subtracts only global time stop, not hitstop.
+
+Resource extraction is conservative. The extractor records raw resource cells, parsed resource candidates, per-field confidence, and resource warnings. Low- or medium-confidence resource candidates are not patch recommendations unless manually confirmed. The extractor still does not modify `data/actions.json`. This first pass is for verification only. It generates:
+
+- `data/extracted/aemeath_excel_actions.json`
+- `data/extracted/aemeath_excel_unmapped_rows.json`
+- `reports/aemeath_excel_diff.md`
+
+Later patches may apply confirmed `action_time`, `combat_time_cost`, hit timing, and resource values after the report is reviewed.
+
+Field meanings:
+
+- `action_time`: time until the next action decision / cancel point.
+- `combat_time_cost`: time deducted from timed combat mode.
+- hit timing: damage occurrence times within the action.
+- time stop segments: global time stop / cinematic time stop data.
+- hitstop: impact pause data, recorded but not used in DPS calculation yet.
 
 ## Character Selection
 
@@ -167,7 +217,8 @@ Tune Break Base x Tune Break Multiplier x Tune Break Boost x RES Multiplier x DE
 
 The simulator does not model animation playback time and does not include a general cancel system. For DPS and reinforcement learning, each action has:
 
-- action_time: combat timer time consumed by the action and the time until the next action decision.
+- action_time: internal action progression and time until the next action decision.
+- combat_time_cost: timed-combat timer cost, defaulting to action_time when omitted.
 - hits: damage events that occur at offsets inside action_time.
 
 Buffs, Havoc Bane, and other time-sensitive effects are evaluated at each hit time. For example, if Havoc Bane has 0.30 seconds remaining at action start, a hit at 0.20 receives its DEF reduction and a hit at 0.45 does not. Current hit timing data is dummy/sample data; real character-specific hit timings are not implemented yet.
@@ -192,11 +243,11 @@ Monster-specific resistance data, character-specific special coefficients, hit t
 
 ## Simplified Rules
 
-- Damage is split into normal_damage, tune_break_damage, anomaly_tick_damage, and total_action_damage in the timeline. Timeline rows also include action_time, hit_count, and hit_details for debugging.
+- Damage is split into normal_damage, tune_break_damage, anomaly_tick_damage, and total_action_damage in the timeline. Timeline rows also include action_time, combat_time_cost, hit_count, and hit_details for debugging.
 - damage/anomaly_damage remain compatibility fields and mirror total_action_damage/anomaly_tick_damage where appropriate.
 - Damage uses expected crit value instead of random crit rolls.
 - Damage is calculated using buffs and anomalies that are already active at the start of an action. Buffs and anomalies applied by the current action are added after the action resolves and affect later actions only.
-- Existing buffs, cooldowns, and active anomalies advance by the action duration.
+- Existing buffs, cooldowns, and active anomalies advance by action_time. Timed combat mode advances by combat_time_cost.
 - Cooldowns are set after the action resolves, so cooldown timing currently starts from the end of the action.
 - Actions may define cooldown_group. When present, cooldown checking and cooldown storage use that group key instead of action.id. Existing actions without cooldown_group keep their original behavior.
 - Actions may define policy_selectable = false to hide concrete internal mechanic actions from PPO while keeping them available for mechanic resolution.
@@ -254,12 +305,15 @@ Streamlit supports Demo Sequence and PPO Model modes. PPO Model mode loads and e
 
 ```bash
 python -m compileall .
+python scripts/aemeath_time_stop_timing_smoke_test.py
 python scripts/aemeath_client_mechanics_smoke_test.py
 python scripts/aemeath_coefficients_smoke_test.py
 python scripts/aemeath_finale_condition_smoke_test.py
 python scripts/aemeath_heavy_sync_strike_smoke_test.py
 python scripts/aemeath_mechanics_correction_smoke_test.py
 python scripts/aemeath_lite_smoke_test.py
+python scripts/extract_aemeath_excel_data.py
+python scripts/extract_aemeath_excel_data_smoke_test.py
 python scripts/party_selection_smoke_test.py
 python scripts/character_selection_smoke_test.py
 python scripts/mechanics_smoke_test.py
