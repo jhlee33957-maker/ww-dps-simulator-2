@@ -1,0 +1,68 @@
+from __future__ import annotations
+
+import math
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from simulator.party_transition import PLACEHOLDER_WARNING
+from simulator.simulation import Simulation
+
+
+DATA_DIR = PROJECT_ROOT / "data"
+
+
+def assert_close(actual: float, expected: float, label: str, tolerance: float = 1e-6) -> None:
+    assert math.isclose(actual, expected, rel_tol=tolerance, abs_tol=tolerance), (
+        f"{label}: expected {expected}, got {actual}"
+    )
+
+
+def main() -> None:
+    sim = Simulation.from_json(DATA_DIR, party="aemeath_test_party")
+    assert sim.transition_config["characters"]["aemeath"]["intro_qte"]["enabled"] is False
+    assert sim.transition_config["characters"]["aemeath"]["outro"]["enabled"] is False
+    assert all("qte" not in action_id.lower() for action_id in sim.get_policy_action_ids())
+    assert_close(sim.actions["swap_to_aemeath"].action_time or 0.0, 0.5, "swap_to_aemeath action_time")
+    assert_close(sim.actions["swap_to_aemeath"].combat_time_cost or 0.0, 0.5, "swap_to_aemeath combat_time_cost")
+
+    assert sim.execute_action("swap_to_dummy_support")
+    first_swap = sim.timeline[-1]
+    assert first_swap.outgoing_character_id == "aemeath"
+    assert first_swap.incoming_character_id == "dummy_support"
+    assert first_swap.transition_events == []
+    assert first_swap.fallback_swap_used is True
+    assert first_swap.swap_timing_is_placeholder is True
+    assert first_swap.swap_timing_source == "party_presets.aemeath_test_party.generic_swap"
+    assert PLACEHOLDER_WARNING in first_swap.transition_warnings
+    assert_close(first_swap.action_time, 0.5, "first swap action_time")
+    assert_close(first_swap.combat_time_cost, 0.5, "first swap combat_time_cost")
+
+    assert sim.execute_action("swap_to_aemeath")
+    outro_swap = sim.timeline[-1]
+    assert outro_swap.outgoing_character_id == "dummy_support"
+    assert outro_swap.incoming_character_id == "aemeath"
+    assert outro_swap.outgoing_outro_event_id == "dummy_support_outro_damage_amp"
+    assert outro_swap.incoming_intro_event_id is None
+    assert outro_swap.fallback_swap_used is True
+    assert outro_swap.swap_timing_is_placeholder is True
+    assert_close(outro_swap.action_time, 0.5, "outro fallback action_time")
+    assert_close(outro_swap.combat_time_cost, 0.5, "outro fallback combat_time_cost")
+    assert len(outro_swap.transition_events) == 1
+    event = outro_swap.transition_events[0]
+    assert event["event_type"] == "outro"
+    assert event["action_time"] == 0.0
+    assert event["combat_time_cost"] == 0.0
+    assert event["implementation_status"] == "test_only"
+    assert event["applies_buffs"] == ["dummy_support_outro_damage_amp"]
+    assert "dummy_support_outro_damage_amp" in outro_swap.applied_buffs
+    assert "dummy_support_outro_damage_amp" in outro_swap.active_buffs
+
+    print("QTE / Intro / Outro foundation smoke test passed.")
+
+
+if __name__ == "__main__":
+    main()

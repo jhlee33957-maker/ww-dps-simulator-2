@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Any
 
 
@@ -26,8 +28,32 @@ def parse_character_ids(value: str | list[str] | None, available_character_ids: 
     return selected
 
 
-def parse_party_character_ids(value: str | list[str] | None, available_characters: dict[str, Any]) -> list[str]:
+def read_party_presets(data_dir: Path | str) -> dict[str, dict[str, Any]]:
+    path = Path(data_dir) / "party_presets.json"
+    if not path.exists():
+        return {}
+    with path.open("r", encoding="utf-8-sig") as file:
+        items = json.load(file)
+    return {str(item["party_id"]): item for item in items}
+
+
+def resolve_party_preset(
+    value: str | list[str] | None,
+    party_presets: dict[str, dict[str, Any]] | None = None,
+) -> tuple[str | list[str] | None, str | None]:
+    if isinstance(value, str) and party_presets and value in party_presets:
+        preset = party_presets[value]
+        return list(preset["members"]), preset.get("initial_active")
+    return value, None
+
+
+def parse_party_character_ids(
+    value: str | list[str] | None,
+    available_characters: dict[str, Any],
+    party_presets: dict[str, dict[str, Any]] | None = None,
+) -> list[str]:
     available_character_ids = list(available_characters)
+    value, _initial_active = resolve_party_preset(value, party_presets)
     requested = parse_character_ids(value, available_character_ids) if value else []
     if not requested:
         if "aemeath" in available_characters:

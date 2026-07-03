@@ -16,8 +16,8 @@ ActionType = Literal[
 ]
 DamageCategory = Literal["normal", "tune_break", "anomaly"]
 AnomalyType = Literal["aero_erosion", "spectro_frazzle", "electro_flare", "havoc_bane"]
-BuffModifierType = Literal["attack", "damage_bonus", "boost", "dmg_taken"]
-BuffTarget = Literal["self", "active", "team"]
+BuffModifierType = Literal["attack", "damage_bonus", "boost", "dmg_taken", "damage_amp"]
+BuffTarget = Literal["self", "active", "team", "party", "next_active", "specific_character"]
 
 
 class CharacterData(BaseModel):
@@ -167,12 +167,24 @@ class BuffData(BaseModel):
     modifier_type: BuffModifierType
     value: float
     target: BuffTarget
+    target_scope: BuffTarget | None = None
+    target_character_id: str | None = None
+    affected_tags: list[str] = Field(default_factory=list)
+    stat_modifiers: dict[str, float] = Field(default_factory=dict)
+    damage_amp_modifiers: dict[str, float] = Field(default_factory=dict)
+    stack_count: int = Field(default=1, ge=1)
+    max_stacks: int = Field(default=1, ge=1)
+    is_off_field: bool = False
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class ActiveBuff(BaseModel):
     buff_id: str
     source_character_id: str | None
     remaining_duration: float
+    stack_count: int = Field(default=1, ge=1)
+    target_character_id: str | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class ResourceChange(BaseModel):
@@ -185,8 +197,11 @@ class ResourceChange(BaseModel):
 class CombatState(BaseModel):
     current_time: float = 0.0
     combat_time: float = 0.0
+    combat_duration: float = 120.0
     total_damage: float = 0.0
+    party_members: list[str] = Field(default_factory=list)
     active_character_id: str
+    character_states: dict[str, dict[str, Any]] = Field(default_factory=dict)
     enemy_level: int = 90
     enemy_res: float = 0.1
     res_pen: float = 0.0
@@ -195,8 +210,11 @@ class CombatState(BaseModel):
     tune_dmg_bonus: float = 0.0
     cooldowns: dict[str, float] = Field(default_factory=dict)
     active_buffs: list[ActiveBuff] = Field(default_factory=list)
+    team_buffs: list[ActiveBuff] = Field(default_factory=list)
     active_anomalies: dict[str, AnomalyState] = Field(default_factory=dict)
     character_mechanics_state: dict[str, dict] = Field(default_factory=dict)
+    action_log: list[dict[str, Any]] = Field(default_factory=list)
+    damage_log: list[dict[str, Any]] = Field(default_factory=list)
     resonance_energy: dict[str, float] = Field(default_factory=dict)
     concerto_energy: dict[str, float] = Field(default_factory=dict)
     wasted_resonance_energy: dict[str, float] = Field(default_factory=dict)
@@ -211,12 +229,19 @@ class ActionResult(BaseModel):
     action_id: str
     action_name: str
     character_id: str | None
+    actor_character_id: str | None = None
+    active_character_before: str | None = None
+    active_character_after: str | None = None
     start_time: float
     end_time: float
     action_time: float = 0.0
     combat_time_start: float = 0.0
     combat_time_end: float = 0.0
     combat_time_cost: float = 0.0
+    effective_combat_time_cost: float = 0.0
+    truncated_by_combat_limit: bool = False
+    damage_before_cutoff: float = 0.0
+    damage_after_cutoff_excluded: float = 0.0
     damage: float
     normal_damage: float = 0.0
     tune_break_damage: float = 0.0
@@ -230,6 +255,17 @@ class ActionResult(BaseModel):
     hit_damage_by_category: dict[str, float] = Field(default_factory=dict)
     hit_details: list[dict[str, Any]] = Field(default_factory=list)
     active_anomalies_after: dict[str, int] = Field(default_factory=dict)
+    active_buffs: list[str] = Field(default_factory=list)
+    applied_buffs: list[str] = Field(default_factory=list)
+    outgoing_character_id: str | None = None
+    incoming_character_id: str | None = None
+    transition_events: list[dict[str, Any]] = Field(default_factory=list)
+    outgoing_outro_event_id: str | None = None
+    incoming_intro_event_id: str | None = None
+    fallback_swap_used: bool = False
+    swap_timing_is_placeholder: bool = False
+    swap_timing_source: str | None = None
+    transition_warnings: list[str] = Field(default_factory=list)
     valid: bool
     resonance_energy_gained: float = 0.0
     resonance_energy_wasted: float = 0.0
@@ -249,10 +285,17 @@ class TimelineEntry(BaseModel):
     action_id: str
     action_name: str
     character_id: str | None
+    actor_character_id: str | None = None
+    active_character_before: str | None = None
+    active_character_after: str | None = None
     action_time: float = 0.0
     combat_time_start: float = 0.0
     combat_time_end: float = 0.0
     combat_time_cost: float = 0.0
+    effective_combat_time_cost: float = 0.0
+    truncated_by_combat_limit: bool = False
+    damage_before_cutoff: float = 0.0
+    damage_after_cutoff_excluded: float = 0.0
     damage: float
     normal_damage: float = 0.0
     tune_break_damage: float = 0.0
@@ -266,12 +309,38 @@ class TimelineEntry(BaseModel):
     hit_damage_by_category: dict[str, float] = Field(default_factory=dict)
     hit_details: list[dict[str, Any]] = Field(default_factory=list)
     active_anomalies_after: dict[str, int] = Field(default_factory=dict)
+    active_buffs: list[str] = Field(default_factory=list)
+    applied_buffs: list[str] = Field(default_factory=list)
+    outgoing_character_id: str | None = None
+    incoming_character_id: str | None = None
+    transition_events: list[dict[str, Any]] = Field(default_factory=list)
+    outgoing_outro_event_id: str | None = None
+    incoming_intro_event_id: str | None = None
+    fallback_swap_used: bool = False
+    swap_timing_is_placeholder: bool = False
+    swap_timing_source: str | None = None
+    transition_warnings: list[str] = Field(default_factory=list)
     active_character: str
     resonance_energy_gained: float = 0.0
     resonance_energy_wasted: float = 0.0
     concerto_energy_gained: float = 0.0
     concerto_energy_wasted: float = 0.0
     mechanic_debug_after: dict[str, Any] = Field(default_factory=dict)
+
+
+class PartyState(BaseModel):
+    party_members: list[str]
+    active_character_id: str
+    character_states: dict[str, dict[str, Any]]
+    team_buffs: list[ActiveBuff] = Field(default_factory=list)
+    enemy_state: dict[str, float] = Field(default_factory=dict)
+    current_time: float = 0.0
+    combat_time: float = 0.0
+    combat_duration: float = 120.0
+    total_damage: float = 0.0
+    damage_log: list[dict[str, Any]] = Field(default_factory=list)
+    action_log: list[dict[str, Any]] = Field(default_factory=list)
+    cooldowns: dict[str, float] = Field(default_factory=dict)
 
 
 class SimulationSummary(BaseModel):

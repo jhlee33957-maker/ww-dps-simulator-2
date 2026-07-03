@@ -2508,6 +2508,173 @@
                              }
     },
     {
+        "id":  "dummy_support_attack",
+        "name":  "Dummy Support Attack",
+        "character_id":  "dummy_support",
+        "action_type":  "basic_attack",
+        "duration":  0.7,
+        "action_time":  0.7,
+        "combat_time_cost":  0.7,
+        "cooldown":  0,
+        "damage_category":  "normal",
+        "damage_multiplier":  0,
+        "tune_break_multiplier":  0,
+        "tune_break_boost_points":  0,
+        "hits":  [
+                     {
+                         "time":  0.35,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.08,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+                                      "damage",
+                                      "normal"
+                                  ],
+                         "name":  "dummy support attack"
+                     }
+                 ],
+        "resonance_energy_gain":  6,
+        "concerto_energy_gain":  6,
+        "resonance_energy_cost":  0,
+        "applies_buffs":  [
+
+                          ],
+        "required_buffs":  [
+
+                           ],
+        "tags":  [
+                     "damage",
+                     "normal",
+                     "dummy",
+                     "party-foundation"
+                 ],
+        "data_status":  "dummy_sample",
+        "notes":  "Test-only dummy support action for party foundation validation."
+    },
+    {
+        "id":  "dummy_support_buff",
+        "name":  "Dummy Support Buff",
+        "character_id":  "dummy_support",
+        "action_type":  "resonance_skill",
+        "duration":  1.0,
+        "action_time":  1.0,
+        "combat_time_cost":  1.0,
+        "cooldown":  0,
+        "damage_category":  "normal",
+        "damage_multiplier":  0,
+        "tune_break_multiplier":  0,
+        "tune_break_boost_points":  0,
+        "hits":  [
+
+                 ],
+        "resonance_energy_gain":  8,
+        "concerto_energy_gain":  12,
+        "resonance_energy_cost":  0,
+        "applies_buffs":  [
+                              "dummy_support_damage_amp"
+                          ],
+        "required_buffs":  [
+
+                           ],
+        "tags":  [
+                     "buff",
+                     "dummy",
+                     "party-foundation"
+                 ],
+        "data_status":  "dummy_sample",
+        "notes":  "Applies a test-only party damage amp buff. No Intro/Outro/QTE behavior."
+    },
+    {
+        "id":  "dummy_sub_dps_attack",
+        "name":  "Dummy Sub DPS Attack",
+        "character_id":  "dummy_sub_dps",
+        "action_type":  "basic_attack",
+        "duration":  1.0,
+        "action_time":  1.0,
+        "combat_time_cost":  1.0,
+        "cooldown":  0,
+        "damage_category":  "normal",
+        "damage_multiplier":  0,
+        "tune_break_multiplier":  0,
+        "tune_break_boost_points":  0,
+        "hits":  [
+                     {
+                         "time":  0.5,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.18,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+                                      "damage",
+                                      "normal"
+                                  ],
+                         "name":  "dummy sub dps attack"
+                     }
+                 ],
+        "resonance_energy_gain":  8,
+        "concerto_energy_gain":  8,
+        "resonance_energy_cost":  0,
+        "applies_buffs":  [
+
+                          ],
+        "required_buffs":  [
+
+                           ],
+        "tags":  [
+                     "damage",
+                     "normal",
+                     "dummy",
+                     "party-foundation"
+                 ],
+        "data_status":  "dummy_sample",
+        "notes":  "Test-only dummy sub-DPS action for party foundation validation."
+    },
+    {
+        "id":  "dummy_sub_dps_quick_burst",
+        "name":  "Dummy Sub DPS Quick Burst",
+        "character_id":  "dummy_sub_dps",
+        "action_type":  "resonance_skill",
+        "duration":  1.5,
+        "action_time":  1.5,
+        "combat_time_cost":  1.5,
+        "cooldown":  8,
+        "damage_category":  "normal",
+        "damage_multiplier":  0,
+        "tune_break_multiplier":  0,
+        "tune_break_boost_points":  0,
+        "hits":  [
+                     {
+                         "time":  0.75,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.45,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+                                      "damage",
+                                      "skill",
+                                      "normal"
+                                  ],
+                         "name":  "dummy sub dps quick burst"
+                     }
+                 ],
+        "resonance_energy_gain":  16,
+        "concerto_energy_gain":  18,
+        "resonance_energy_cost":  0,
+        "applies_buffs":  [
+
+                          ],
+        "required_buffs":  [
+
+                           ],
+        "tags":  [
+                     "damage",
+                     "skill",
+                     "normal",
+                     "dummy",
+                     "party-foundation"
+                 ],
+        "data_status":  "dummy_sample",
+        "notes":  "Test-only dummy sub-DPS burst with cooldown for party foundation validation."
+    },
+    {
         "damage_category":  "normal",
         "tune_break_multiplier":  0,
         "tune_break_boost_points":  0,

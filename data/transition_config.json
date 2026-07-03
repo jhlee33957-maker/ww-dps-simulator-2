@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "generic_swap_fallback": {
+    "action_time": 0.5,
+    "combat_time_cost": 0.5,
+    "is_placeholder": true,
+    "source": "transition_config.generic_swap_fallback",
+    "warning": "Generic swap timing is a placeholder for party-structure testing. It is not sourced from Excel/client data. Real party DPS requires QTE/Intro/Outro transition modeling."
+  },
+  "characters": {
+    "aemeath": {
+      "intro_qte": {
+        "enabled": false,
+        "implementation_status": "review_only",
+        "source": "data/extracted/aemeath_qte_intro_outro_candidates.json",
+        "notes": "Aemeath QTE/Intro rows are extracted for review only and are not executable."
+      },
+      "outro": {
+        "enabled": false,
+        "implementation_status": "review_only",
+        "source": "data/extracted/aemeath_qte_intro_outro_candidates.json",
+        "notes": "Aemeath Outro rows are extracted for review only and are not executable."
+      }
+    },
+    "dummy_support": {
+      "intro_qte": {
+        "enabled": false,
+        "implementation_status": "not_implemented"
+      },
+      "outro": {
+        "enabled": true,
+        "implementation_status": "test_only",
+        "action_id": "dummy_support_outro_damage_amp",
+        "action_time": 0.0,
+        "combat_time_cost": 0.0,
+        "applies_buffs": ["dummy_support_outro_damage_amp"],
+        "source": "transition_config.dummy_support.outro",
+        "notes": "Zero-time test-only outgoing outro event. Physical swap timing still uses generic placeholder fallback when no incoming timed intro exists."
+      }
+    },
+    "dummy_sub_dps": {
+      "intro_qte": {
+        "enabled": false,
+        "implementation_status": "not_implemented"
+      },
+      "outro": {
+        "enabled": false,
+        "implementation_status": "not_implemented"
+      }
+    }
+  }
+}

@@ -67,6 +67,20 @@ class WuwaDpsEnv(gym.Env):
         return self._get_observation(), {}
 
     def step(self, action: int):
+        if self.simulation.state.combat_time >= self.simulation.combat_duration:
+            info = {
+                "action_id": None,
+                "resolved_action_id": None,
+                "valid_action": False,
+                "invalid_action": False,
+                "damage_this_action": 0.0,
+                "total_damage": self.simulation.state.total_damage,
+                "dps": self.simulation.state.total_damage / self.simulation.combat_duration,
+                "action_time": self.simulation.state.current_time,
+                "combat_time": self.simulation.state.combat_time,
+            }
+            return self._get_observation(), 0.0, True, False, info
+
         before_damage = self.simulation.state.total_damage
         invalid_action = False
 

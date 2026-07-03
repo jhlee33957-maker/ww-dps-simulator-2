@@ -1,0 +1,21 @@
+[
+  {
+    "party_id": "aemeath",
+    "display_name": "Aemeath Solo",
+    "members": ["aemeath"],
+    "initial_active": "aemeath"
+  },
+  {
+    "party_id": "aemeath_test_party",
+    "display_name": "Aemeath Test Party",
+    "members": ["aemeath", "dummy_support", "dummy_sub_dps"],
+    "initial_active": "aemeath",
+    "generic_swap": {
+      "action_time": 0.5,
+      "combat_time_cost": 0.5,
+      "is_placeholder": true,
+      "source": "party_presets.aemeath_test_party.generic_swap",
+      "warning": "Generic swap timing is a placeholder for party-structure testing. It is not sourced from Excel/client data. Real party DPS requires QTE/Intro/Outro transition modeling."
+    }
+  }
+]

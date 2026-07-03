@@ -22,5 +22,37 @@
     "modifier_type": "damage_bonus",
     "value": 0.22,
     "target": "self"
+  },
+  {
+    "id": "dummy_support_damage_amp",
+    "name": "Dummy Support Damage Amp",
+    "duration": 20.0,
+    "modifier_type": "damage_amp",
+    "value": 0.0,
+    "target": "party",
+    "target_scope": "party",
+    "damage_amp_modifiers": {
+      "all": 0.2
+    },
+    "metadata": {
+      "purpose": "Party Simulation Foundation v1 test-only team buff"
+    }
+  },
+  {
+    "id": "dummy_support_outro_damage_amp",
+    "name": "Dummy Support Outro Damage Amp",
+    "duration": 20.0,
+    "modifier_type": "damage_amp",
+    "value": 0.0,
+    "target": "party",
+    "target_scope": "party",
+    "damage_amp_modifiers": {
+      "all": 0.2
+    },
+    "metadata": {
+      "purpose": "QTE / Intro / Outro Foundation v1 test-only outgoing outro buff",
+      "implementation_status": "test_only",
+      "source_event_id": "dummy_support_outro_damage_amp"
+    }
   }
 ]

@@ -27,6 +27,21 @@ def main() -> None:
     assert not any(action.startswith(("main_", "sub_", "support_")) for action in solo_actions)
     print("Solo party policy actions:", solo_actions)
 
+    preset_solo = Simulation.from_json(DATA_DIR, party="aemeath")
+    assert preset_solo.selected_party_character_ids == ["aemeath"]
+    assert preset_solo.state.active_character_id == "aemeath"
+    assert preset_solo.get_policy_action_ids() == solo_actions
+
+    preset_party = Simulation.from_json(DATA_DIR, party="aemeath_test_party")
+    preset_party_actions = preset_party.get_policy_action_ids()
+    assert preset_party.selected_party_character_ids == ["aemeath", "dummy_support", "dummy_sub_dps"]
+    assert preset_party.state.active_character_id == "aemeath"
+    assert "swap_to_dummy_support" in preset_party_actions
+    assert "dummy_support_attack" in preset_party_actions
+    assert "dummy_sub_dps_quick_burst" in preset_party_actions
+    assert not preset_party.is_action_available(preset_party.actions["swap_to_aemeath"])
+    print("Aemeath test party policy actions:", preset_party_actions)
+
     dummy = Simulation.from_json(DATA_DIR, party=["main", "sub", "support"])
     dummy_actions = dummy.get_policy_action_ids()
     assert all(action_id in dummy_actions for action_id in ["main_basic_attack", "sub_basic_attack", "support_basic_attack"])

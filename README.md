@@ -7,7 +7,7 @@ This project is a Wuthering Waves-style DPS simulation tool focused on Maskable 
 - Deterministic 120-second combat simulation.
 - Time advances by action duration, not by fixed frames or ticks.
 - The player or agent chooses a new action only after the current action finishes.
-- If an action starts before 120.0 seconds, its full damage counts even if it ends after 120.0.
+- If an action starts before 120.0 seconds and crosses the limit, combat-time effects and damage are clipped at the configured combat duration.
 - Final DPS is always total_damage / 120.0.
 - Gymnasium environment for Maskable PPO training.
 - Streamlit UI with Demo Sequence, PPO Model evaluation, and Character Mechanics reference modes.
@@ -28,6 +28,21 @@ Character mechanic modules can:
 - provide debug state for Streamlit and smoke tests
 
 Existing dummy characters use DefaultCharacterMechanic, which is a no-op. AemeathMechanic contains the first Aemeath-lite implementation. It resolves high-level policy actions into concrete internal actions and owns Aemeath-specific state updates. Full real-game Aemeath logic is planned later.
+
+## Party Simulation Foundation v1
+
+The simulator now has a party-state foundation with `party_members`, `active_character_id`, per-character `character_states`, team buffs, enemy state, combat/action clocks, cooldowns, action logs, and damage logs. The existing `CombatState` remains the execution state for backward compatibility, and `Simulation.party_state` exposes the party-oriented view.
+
+Two party presets are included in `data/party_presets.json`:
+
+- `aemeath`: Aemeath Solo, preserving the existing solo Aemeath behavior.
+- `aemeath_test_party`: Aemeath, Dummy Support, and Dummy Sub DPS for structural party testing.
+
+Generic swap actions are available for non-active party members. Party swaps are now treated as transition requests, not authoritative gameplay timing. `data/transition_config.json` and optional preset `generic_swap` metadata provide the current `0.50s` placeholder fallback; this intentionally overrides legacy `swap_to_*` action timings such as old `0.30s` dummy swaps. Timeline rows include transition metadata such as outgoing/incoming character IDs, transition events, placeholder timing source, fallback usage, and Intro/Outro event IDs.
+
+The generic team buff foundation supports target scopes, optional tag filters, stat modifiers, and damage amp modifiers. `dummy_support` and `dummy_sub_dps` are test-only characters, not real Wuthering Waves data. `dummy_support_buff` applies a party damage amp buff for testing swap and buff persistence, while `dummy_support` also has a zero-time test-only outgoing Outro-like event that applies `dummy_support_outro_damage_amp` through the transition config. Aemeath QTE/Intro/Outro candidates are extracted for review only and remain disabled/non-executable. Full real Intro/Outro/QTE timing, Starflux, Tune/Fusion/Trail systems, and real party rotations remain out of scope.
+
+No PPO retraining was performed for this foundation patch. Saved PPO models are party/action-space specific and should be retrained before use with new party presets.
 
 ## Aemeath-lite Character Mechanic
 
@@ -174,9 +189,10 @@ Run the extractor from the project root:
 python scripts/extract_aemeath_excel_data.py
 python scripts/extract_aemeath_excel_data_smoke_test.py
 python scripts/aemeath_coeff_resource_extraction_smoke_test.py
+python scripts/aemeath_qte_intro_outro_extraction_smoke_test.py
 ```
 
-The extraction script uses section tracking because the Aemeath character name may appear once as a section header while following action rows only contain labels like `A1`, `A2-1`, `E`, enhanced `E`, heavy attack labels, or liberation labels. Mapping uses the detected source action name first; full row text is not used for normal mapping, which avoids note/comment columns contaminating action IDs. QTE rows are explicitly excluded from normal form-switch/sync mapping and remain in the unmapped audit output.
+The extraction script uses section tracking because the Aemeath character name may appear once as a section header while following action rows only contain labels like `A1`, `A2-1`, `E`, enhanced `E`, heavy attack labels, or liberation labels. Mapping uses the detected source action name first; full row text is not used for normal mapping, which avoids note/comment columns contaminating action IDs. QTE rows are explicitly excluded from normal form-switch/sync mapping and remain in the unmapped audit output. The QTE/Intro/Outro extractor writes `data/extracted/aemeath_qte_intro_outro_candidates.json` and `reports/aemeath_qte_intro_outro_review.md` for manual review only.
 
 Coefficient extraction reads explicit workbook multiplier columns when available. Numeric Excel cells are treated as already-normalized decimal multipliers; only strings that contain `%` are divided by 100. Explicit multihit notation such as `23.20%*3`, `23.20% x3`, or `0.232*3` is expanded into repeated coefficient segments, while unclear multihit rows remain conservative audit candidates. Repeat-hit information may live in the frame sheet while coefficients live in the skill/type sheet, so the extractor builds a repeat metadata index from frame rows and joins it to coefficient rows by character scope, normalized action label, and group action context. Joined repeat metadata is still review-only and does not modify `data/actions.json`. C0/C1/C2/C3 and other sequence or resonance-chain variants are preserved separately from base coefficients; C0 can be accepted as base for workbook rows whose labels are otherwise direct base damage rows. Dodge/counter, QTE, timing-only, bonus-effect, sequence, form-switch, and sync-strike rows are excluded from base coefficient candidates and kept in the unresolved audit output. Grouped frame rows are validated so action time is never earlier than the latest hit frame, and combat time subtracts only global time stop, not hitstop.
 
@@ -208,7 +224,7 @@ Field meanings:
 
 The simulator supports selecting which characters are active for training, evaluation, deterministic simulation, and Streamlit. PPO action space is built only from the selected characters' policy-selectable actions. Concrete internal actions remain hidden from PPO and are used only after character mechanic resolution.
 
-By default, the roster prefers Aemeath when available. Main DPS, Sub DPS, and Support are retained as dummy sample characters with intentionally low coefficients for system testing. They are not intended for real DPS analysis. Aemeath is the first partial real character implementation.
+By default, the roster prefers Aemeath when available. Main DPS, Sub DPS, Support, Dummy Support, and Dummy Sub DPS are retained as dummy sample characters with intentionally low coefficients for system testing. They are not intended for real DPS analysis. Aemeath is the first partial real character implementation. Party presets can be selected with `--party aemeath` or `--party aemeath_test_party`.
 
 Models are roster-specific because both action space and observation shape can change when selected characters change.
 
@@ -266,6 +282,10 @@ Buffs, Havoc Bane, and other time-sensitive effects are evaluated at each hit ti
 
 Cooldown reduction follows `combat_time_cost`, not `action_time`. Normal actions without an explicit `combat_time_cost` still reduce cooldowns by their action time through the fallback behavior. Global time-stop actions such as Overdrive and Finale have long `action_time` but `0.0` `combat_time_cost`, so they do not advance the timed combat clock or reduce cooldowns during their cinematic time. This prevents time-stop cinematics from artificially shortening cooldown cycles.
 
+## Timed Combat Cutoff
+
+`combat_time` is hard-capped by the configured combat duration, which defaults to 120s. `action_time` may still describe animation lock, internal progression, hit timing, buffs, anomalies, and character mechanic timers, but the timed-combat clock never exceeds the cap. Final actions that cross the limit are clipped: cooldowns tick only by the effective `combat_time_cost` before the cap, damage after the cap is excluded, and the timeline records `effective_combat_time_cost`, `truncated_by_combat_limit`, `damage_before_cutoff`, and `damage_after_cutoff_excluded`. Actions with `combat_time_cost = 0` may still occur before the cap, but no action can be started after the episode is already finished.
+
 ## Attribute Anomaly System
 
 - Actions apply anomaly stacks to enemy-wide CombatState.
@@ -287,11 +307,11 @@ Monster-specific resistance data, character-specific special coefficients, hit t
 
 ## Simplified Rules
 
-- Damage is split into normal_damage, tune_break_damage, anomaly_tick_damage, and total_action_damage in the timeline. Timeline rows also include action_time, combat_time_cost, hit_count, and hit_details for debugging.
+- Damage is split into normal_damage, tune_break_damage, anomaly_tick_damage, and total_action_damage in the timeline. Timeline rows also include action_time, combat_time_cost, effective_combat_time_cost, cutoff diagnostics, hit_count, and hit_details for debugging.
 - damage/anomaly_damage remain compatibility fields and mirror total_action_damage/anomaly_tick_damage where appropriate.
 - Damage uses expected crit value instead of random crit rolls.
 - Damage is calculated using buffs and anomalies that are already active at the start of an action. Buffs and anomalies applied by the current action are added after the action resolves and affect later actions only.
-- Existing buffs and active anomalies advance by action_time. Timed combat mode and cooldowns advance by combat_time_cost.
+- Existing buffs and active anomalies advance by action_time. Timed combat mode and cooldowns advance by effective_combat_time_cost when an action is clipped by the combat limit.
 - Cooldowns are set after the action resolves, so cooldown timing currently starts from the end of the action.
 - Actions may define cooldown_group. When present, cooldown checking and cooldown storage use that group key instead of action.id. Existing actions without cooldown_group keep their original behavior.
 - Actions may define policy_selectable = false to hide concrete internal mechanic actions from PPO while keeping them available for mechanic resolution.
@@ -311,7 +331,7 @@ The RL reward is intentionally simple and objective:
 reward = damage_this_action / 10000.0
 ```
 
-damage_this_action is the simulator total_action_damage for the selected action, including normal, Tune Break, and active anomaly tick components. Resource waste, buff usage, cooldown usage, and action counts are analysis metrics only. They are not reward terms. Training is done by script, not inside Streamlit. Streamlit only evaluates a saved model in PPO Model mode. Demo Sequence mode is for deterministic simulator validation.
+damage_this_action is the simulator total_action_damage for the selected action, including normal, Tune Break, and active anomaly tick components that occur before or at the timed-combat cutoff. Resource waste, buff usage, cooldown usage, and action counts are analysis metrics only. They are not reward terms. Training is done by script, not inside Streamlit. Streamlit only evaluates a saved model in PPO Model mode. Demo Sequence mode is for deterministic simulator validation.
 
 ## Install
 
@@ -355,6 +375,13 @@ This reference page does not affect simulation results or PPO training. Update t
 
 ```bash
 python -m compileall .
+python scripts/party_state_foundation_smoke_test.py
+python scripts/party_swap_smoke_test.py
+python scripts/party_buff_smoke_test.py
+python scripts/qte_intro_outro_foundation_smoke_test.py
+python scripts/aemeath_party_integration_smoke_test.py
+python scripts/rl_party_action_mask_smoke_test.py
+python scripts/party_selection_smoke_test.py
 python scripts/aemeath_mechanics_reference_smoke_test.py
 python scripts/aemeath_source_aligned_coefficients_smoke_test.py
 python scripts/aemeath_time_stop_timing_smoke_test.py
@@ -366,9 +393,9 @@ python scripts/aemeath_mechanics_correction_smoke_test.py
 python scripts/aemeath_lite_smoke_test.py
 python scripts/extract_aemeath_excel_data.py
 python scripts/extract_aemeath_excel_data_smoke_test.py
+python scripts/aemeath_qte_intro_outro_extraction_smoke_test.py
 python scripts/aemeath_action_timing_extraction_smoke_test.py
 python scripts/aemeath_coeff_resource_extraction_smoke_test.py
-python scripts/party_selection_smoke_test.py
 python scripts/character_selection_smoke_test.py
 python scripts/mechanics_smoke_test.py
 python scripts/smoke_test.py

@@ -17,6 +17,7 @@ def create_initial_state(
     enemy = enemy or EnemyData()
 
     return CombatState(
+        party_members=list(characters),
         active_character_id=active.id,
         enemy_level=enemy.level,
         enemy_res=enemy.res,

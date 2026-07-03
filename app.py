@@ -10,7 +10,7 @@ import plotly.express as px
 import streamlit as st
 
 from simulator.models import CharacterData
-from simulator.roster import is_dummy_character, parse_character_ids
+from simulator.roster import is_dummy_character, parse_character_ids, read_party_presets
 from simulator.simulation import Simulation
 from ui.mechanics_reference import render_mechanics_reference
 
@@ -50,6 +50,20 @@ def character_label(character: CharacterData) -> str:
 
 def party_selection() -> list[str]:
     characters = load_available_characters()
+    presets = read_party_presets(DATA_DIR)
+    if presets:
+        preset_ids = list(presets)
+        selected_preset_id = st.sidebar.selectbox(
+            "Party Preset",
+            options=preset_ids,
+            index=0,
+            format_func=lambda preset_id: presets[preset_id].get("display_name", preset_id),
+        )
+        selected = list(presets[selected_preset_id]["members"])
+        if any(is_dummy_character(characters[character_id]) for character_id in selected):
+            st.sidebar.warning("Dummy sample characters are test-only and are not intended for real DPS analysis.")
+        return parse_character_ids(selected, list(characters))
+
     default_ids = parse_character_ids(None, list(characters))
     options = list(characters)
     selected = st.sidebar.multiselect(
@@ -142,6 +156,14 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
             st.write(simulation.get_policy_action_ids())
         with st.expander("Registered Character Mechanics"):
             st.write({character_id: mechanic.__class__.__name__ for character_id, mechanic in simulation.character_mechanics.items()})
+        with st.expander("Active Team Buffs"):
+            st.write([buff.model_dump() for buff in simulation.state.active_buffs])
+        if len(simulation.selected_party_character_ids) > 1 and simulation.has_placeholder_swap_timing:
+            st.warning(
+                "Generic swap timing is a placeholder for party-structure testing. "
+                "It is not sourced from Excel/client data. Real party DPS requires "
+                "QTE/Intro/Outro transition modeling."
+            )
 
     if action_sequence is not None:
         st.subheader("Selected action sequence")
@@ -166,18 +188,36 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "resolved_action_id",
         "resolved_action_name",
         "action_name",
+        "actor_character_id",
+        "active_character_before",
+        "active_character_after",
+        "outgoing_character_id",
+        "incoming_character_id",
+        "outgoing_outro_event_id",
+        "incoming_intro_event_id",
+        "fallback_swap_used",
+        "swap_timing_is_placeholder",
+        "swap_timing_source",
+        "transition_events",
+        "transition_warnings",
         "time_start",
         "time_end",
         "action_time",
         "combat_time_start",
         "combat_time_end",
         "combat_time_cost",
+        "effective_combat_time_cost",
+        "truncated_by_combat_limit",
+        "damage_before_cutoff",
+        "damage_after_cutoff_excluded",
         "hit_count",
         "normal_damage",
         "tune_break_damage",
         "anomaly_tick_damage",
         "total_action_damage",
         "active_anomalies_after",
+        "active_buffs",
+        "applied_buffs",
         "total_damage_after",
         "active_character",
         "mechanic_debug_after",

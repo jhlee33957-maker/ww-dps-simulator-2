@@ -9,8 +9,17 @@ class CharacterMechanic:
     def initialize_state(self, state: Any) -> None:
         pass
 
+    def initialize_character_state(self, character_id: str, data: Any) -> None:
+        self.character_id = character_id
+
     def resolve_action(self, state: Any, selected_action: Any, actions_by_id: dict[str, Any]) -> Any:
         return selected_action
+
+    def get_policy_actions(self, character_state: Any, party_state: Any) -> list[str]:
+        return []
+
+    def get_action_mask(self, character_state: Any, party_state: Any) -> dict[str, bool]:
+        return {}
 
     def is_action_available(self, state: Any, action: Any) -> bool:
         return True
@@ -24,6 +33,9 @@ class CharacterMechanic:
     def after_action(self, state: Any, action: Any, result: Any) -> None:
         pass
 
+    def apply_character_mechanics(self, resolved_action: Any, character_state: Any, party_state: Any) -> None:
+        pass
+
     def advance_time(self, state: Any, elapsed_time: float) -> None:
         pass
 
@@ -35,3 +47,6 @@ class CharacterMechanic:
 
     def get_debug_state(self, state: Any) -> dict[str, Any]:
         return {}
+
+    def get_display_state(self, character_state: Any) -> dict[str, Any]:
+        return dict(character_state) if isinstance(character_state, dict) else {}
