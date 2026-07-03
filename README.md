@@ -88,6 +88,8 @@ Full Aemeath is not implemented yet. Starflux is utility-related and intentional
 
 Character mechanics have an advance_time hook that runs whenever action/internal time advances, even if the character is off-field. Aemeath Seraphic Duet, Heavenfall Unbound, Stardust Resonance, and Starlume Acceleration timers use this hook, so their remaining time decreases during swaps and during other characters' actions. Heavenfall Finale is separated from Overdrive cooldown by using its own cooldown group. Aemeath-lite has selected Level 10 screenshot coefficients, while several mechanic values remain placeholder/sample values.
 
+The source-aligned coefficient pass applies two manually reviewed Excel C0/base alignments only: Overdrive uses `[2.008, 2.6774, 2.6774, 2.6774]`, and Seraphic Duet Encore uses source row order `[0.179, 0.179, 0.3579, 0.3579, 0.179, 0.179, 1.7893, 0.3579]`. Encore's total coefficient is unchanged. This pass does not change resources, action timing, combat timing, Heavy Attack timing, Form Switch timing, Sync Strike timing, simulator mechanics, PPO/rewards, or Beam Search.
+
 The internal state field is still named `seraphic_duo_remaining` for compatibility with existing tests and saved debug output, but user-facing documentation and UI text should refer to the mechanic as Seraphic Duet.
 
 ## Aemeath Confirmed Time-Stop Timing
@@ -309,6 +311,7 @@ Streamlit supports Demo Sequence and PPO Model modes. PPO Model mode loads and e
 
 ```bash
 python -m compileall .
+python scripts/aemeath_source_aligned_coefficients_smoke_test.py
 python scripts/aemeath_time_stop_timing_smoke_test.py
 python scripts/aemeath_client_mechanics_smoke_test.py
 python scripts/aemeath_coefficients_smoke_test.py

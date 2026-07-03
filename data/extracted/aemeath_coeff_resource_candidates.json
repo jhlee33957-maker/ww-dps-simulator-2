@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-03T07:48:56.655676+00:00",
+  "generated_at": "2026-07-03T08:10:56.096849+00:00",
   "source": "data\\source\\鸣潮动作数据汇总.xlsx",
   "safe_to_patch": false,
   "repeat_metadata_index": [
@@ -1629,11 +1629,9 @@
     {
       "action_id": "aemeath_liberation_overdrive",
       "coefficient_candidate": {
-        "safe_to_patch": false,
-        "safe_to_patch_reasons": [
-          "candidate_values_differ_from_current"
-        ],
-        "confidence": "medium",
+        "safe_to_patch": true,
+        "safe_to_patch_reasons": [],
+        "confidence": "high",
         "base_source_rows": [
           {
             "row_number": 2729,
@@ -1724,33 +1722,21 @@
           "current_hit_count": 4,
           "candidate_hit_count": 4,
           "same_hit_count": true,
-          "shape_status": "same_length_diff_values",
-          "max_abs_diff": 0.003,
-          "warnings": [
-            "Coefficient candidate hit count matches current actions.json but values differ."
-          ]
+          "shape_status": "exact_match",
+          "max_abs_diff": 0.0,
+          "warnings": []
         },
         "critical_warnings": [],
         "excluded_variants_count": 2,
         "excluded_unrelated_rows_count": 0,
         "repeat_expansions_applied": 1,
-        "warnings": [
-          {
-            "severity": "warning",
-            "message": "Coefficient candidate hit count matches current actions.json but values differ."
-          }
-        ]
+        "warnings": []
       },
       "resource_candidate": {
         "safe_to_patch": false,
-        "confidence": "medium",
+        "confidence": "high",
         "parsed_resource_candidates": {
-          "resonance_energy_gain": 0.0,
-          "core_energy_raw": 0,
-          "concerto_energy_gain": 0.0,
-          "toughness_value": 106.67,
-          "tune_value": 224.0,
-          "resonance_reduction_raw": 0
+          "concerto_energy_gain": 0.0
         },
         "raw_resources": {
           "大招能量": 0,
@@ -1783,9 +1769,9 @@
       },
       "current_actions_json_multipliers": [
         2.008,
-        2.6744,
-        2.6744,
-        2.6744
+        2.6774,
+        2.6774,
+        2.6774
       ]
     },
     {
@@ -2404,11 +2390,9 @@
     {
       "action_id": "aemeath_seraphic_duet_encore",
       "coefficient_candidate": {
-        "safe_to_patch": false,
-        "safe_to_patch_reasons": [
-          "candidate_values_differ_from_current"
-        ],
-        "confidence": "medium",
+        "safe_to_patch": true,
+        "safe_to_patch_reasons": [],
+        "confidence": "high",
         "base_source_rows": [
           {
             "row_number": 2769,
@@ -2614,33 +2598,21 @@
           "current_hit_count": 8,
           "candidate_hit_count": 8,
           "same_hit_count": true,
-          "shape_status": "same_length_diff_values",
-          "max_abs_diff": 1.4314,
-          "warnings": [
-            "Coefficient candidate hit count matches current actions.json but values differ."
-          ]
+          "shape_status": "exact_match",
+          "max_abs_diff": 0.0,
+          "warnings": []
         },
         "critical_warnings": [],
         "excluded_variants_count": 5,
         "excluded_unrelated_rows_count": 2,
         "repeat_expansions_applied": 3,
-        "warnings": [
-          {
-            "severity": "warning",
-            "message": "Coefficient candidate hit count matches current actions.json but values differ."
-          }
-        ]
+        "warnings": []
       },
       "resource_candidate": {
         "safe_to_patch": false,
-        "confidence": "medium",
+        "confidence": "high",
         "parsed_resource_candidates": {
-          "resonance_energy_gain": 0.0,
-          "core_energy_raw": 0,
-          "concerto_energy_gain": 0.0,
-          "toughness_value": 16.2,
-          "tune_value": 0.0,
-          "resonance_reduction_raw": 0
+          "concerto_energy_gain": 0.0
         },
         "raw_resources": {
           "大招能量": 0,
@@ -2674,12 +2646,12 @@
       "current_actions_json_multipliers": [
         0.179,
         0.179,
+        0.3579,
+        0.3579,
         0.179,
         0.179,
-        0.3579,
-        0.3579,
-        0.3579,
-        1.7893
+        1.7893,
+        0.3579
       ]
     },
     {

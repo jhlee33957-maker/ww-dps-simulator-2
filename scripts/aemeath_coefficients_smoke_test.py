@@ -36,12 +36,12 @@ EXPECTED_MULTIPLIERS = {
         0.5965,
         0.5965,
     ],
-    "aemeath_seraphic_duet_encore": [0.179, 0.179, 0.179, 0.179, 0.3579, 0.3579, 0.3579, 1.7893],
+    "aemeath_seraphic_duet_encore": [0.179, 0.179, 0.3579, 0.3579, 0.179, 0.179, 1.7893, 0.3579],
     "aemeath_heavy_aemeath_charged_1": [0.1857, 0.7426],
     "aemeath_heavy_aemeath_charged_2": [0.116, 0.116, 0.116, 0.116, 1.856],
     "aemeath_heavy_mech_charged_1": [0.9283],
     "aemeath_heavy_mech_charged_2": [2.32],
-    "aemeath_liberation_overdrive": [2.008, 2.6744, 2.6744, 2.6744],
+    "aemeath_liberation_overdrive": [2.008, 2.6774, 2.6774, 2.6774],
     "aemeath_heavenfall_finale": [17.8929],
 }
 

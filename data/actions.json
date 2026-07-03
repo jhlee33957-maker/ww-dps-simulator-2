@@ -1968,7 +1968,7 @@
                      {
                          "time":  0.1833,
                          "damage_category":  "normal",
-                         "damage_multiplier":  0.179,
+                         "damage_multiplier":  0.3579,
                          "tune_break_multiplier":  0,
                          "tags":  [
 
@@ -1978,7 +1978,7 @@
                      {
                          "time":  0.2444,
                          "damage_category":  "normal",
-                         "damage_multiplier":  0.179,
+                         "damage_multiplier":  0.3579,
                          "tune_break_multiplier":  0,
                          "tags":  [
 
@@ -1988,7 +1988,7 @@
                      {
                          "time":  0.3056,
                          "damage_category":  "normal",
-                         "damage_multiplier":  0.3579,
+                         "damage_multiplier":  0.179,
                          "tune_break_multiplier":  0,
                          "tags":  [
 
@@ -1998,7 +1998,7 @@
                      {
                          "time":  0.3667,
                          "damage_category":  "normal",
-                         "damage_multiplier":  0.3579,
+                         "damage_multiplier":  0.179,
                          "tune_break_multiplier":  0,
                          "tags":  [
 
@@ -2008,7 +2008,7 @@
                      {
                          "time":  0.4278,
                          "damage_category":  "normal",
-                         "damage_multiplier":  0.3579,
+                         "damage_multiplier":  1.7893,
                          "tune_break_multiplier":  0,
                          "tags":  [
 
@@ -2018,7 +2018,7 @@
                      {
                          "time":  0.4889,
                          "damage_category":  "normal",
-                         "damage_multiplier":  1.7893,
+                         "damage_multiplier":  0.3579,
                          "tune_break_multiplier":  0,
                          "tags":  [
 
@@ -2314,7 +2314,7 @@
                      {
                          "time":  0.26,
                          "damage_category":  "normal",
-                         "damage_multiplier":  2.6744,
+                         "damage_multiplier":  2.6774,
                          "tune_break_multiplier":  0,
                          "tags":  [
 
@@ -2324,7 +2324,7 @@
                      {
                          "time":  0.4,
                          "damage_category":  "normal",
-                         "damage_multiplier":  2.6744,
+                         "damage_multiplier":  2.6774,
                          "tune_break_multiplier":  0,
                          "tags":  [
 
@@ -2334,7 +2334,7 @@
                      {
                          "time":  0.54,
                          "damage_category":  "normal",
-                         "damage_multiplier":  2.6744,
+                         "damage_multiplier":  2.6774,
                          "tune_break_multiplier":  0,
                          "tags":  [
 
