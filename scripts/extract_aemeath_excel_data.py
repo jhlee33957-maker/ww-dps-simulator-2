@@ -819,6 +819,14 @@ COEFFICIENT_TERM_PATTERN = re.compile(
 
 
 def parse_repeat_count(text: str) -> tuple[int | None, str | None, str | None]:
+    max_hits = re.findall(r"\u6700\u591a\s*(\d+)\s*\u6b21", text)
+    if max_hits:
+        counts = sorted({int(value) for value in max_hits})
+        if len(counts) == 1:
+            source = next(match.group(0) for match in re.finditer(r"\u6700\u591a\s*\d+\s*\u6b21", text))
+            return counts[0], source, None
+        return None, None, "Conflicting maximum-hit repeat counts were present."
+
     explicit = re.search(
         rf"(?:{REPEAT_OPERATOR_PATTERN}\s*(?P<count>\d+)|(?P<count_before>\d+)\s*{REPEAT_WORD_PATTERN})",
         text,
@@ -832,6 +840,25 @@ def parse_repeat_count(text: str) -> tuple[int | None, str | None, str | None]:
     )
     if possible_repeat:
         return None, None, "Possible repeat metadata found, but no unambiguous repeat count was parsed."
+    return None, None, None
+
+
+def parse_frame_repeat_count(text: str) -> tuple[int | None, str | None, str | None]:
+    max_hits = re.findall(r"\u6700\u591a\s*(\d+)\s*\u6b21", text)
+    if max_hits:
+        counts = sorted({int(value) for value in max_hits})
+        if len(counts) == 1:
+            source = next(match.group(0) for match in re.finditer(r"\u6700\u591a\s*\d+\s*\u6b21", text))
+            return counts[0], source, None
+        return None, None, "Conflicting maximum-hit repeat counts were present."
+
+    explicit = re.search(rf"(?:{REPEAT_OPERATOR_PATTERN}\s*(?P<count>\d+))", text)
+    if explicit:
+        return int(explicit.group("count")), explicit.group(0), None
+
+    possible_repeat = any(token in text for token in ["\u8fde\u51fb", "\u591a\u6bb5", "\u6bcf\u6bb5", "\u6700\u591a"])
+    if possible_repeat:
+        return None, None, "Possible frame-sheet repeat metadata found, but no unambiguous repeat count was parsed."
     return None, None, None
 
 
@@ -944,6 +971,262 @@ def apply_repeat_expansion(parsed_multipliers: list[float], repeat_metadata: dic
     if repeat_metadata.get("expanded_from_repeat") and repeat_count and len(parsed_multipliers) == 1:
         return [parsed_multipliers[0]] * int(repeat_count)
     return list(parsed_multipliers)
+
+
+def normalize_action_label_for_join(source_action_name: str | None) -> tuple[str, str | None]:
+    label = str(source_action_name or "").strip()
+    label = label.replace("－", "-").replace("—", "-").replace("–", "-").replace("：", ":")
+    variant = None
+    match = re.match(r"^(C[0-6])\s*(.+)$", label, re.IGNORECASE)
+    if match:
+        variant = match.group(1).upper()
+        label = match.group(2).strip()
+    label = re.sub(r"\s+", "", label)
+    return label, variant
+
+
+def repeat_confidence(repeat_count: int | None, warning: str | None) -> str:
+    if repeat_count and not warning:
+        return "high"
+    if repeat_count:
+        return "medium"
+    return "low"
+
+
+def frame_repeat_metadata_entry(
+    row: dict[str, Any],
+    sheet_name: str,
+    source_action_name: str | None,
+    action_id: str | None,
+) -> dict[str, Any] | None:
+    text = row_text(row)
+    repeat_count, repeat_source, repeat_warning = parse_frame_repeat_count(text)
+    if not repeat_count and not repeat_warning:
+        return None
+    normalized_label, variant = normalize_action_label_for_join(source_action_name)
+    return {
+        "character": row.get("current_character") or "any",
+        "group_action_id": action_id,
+        "normalized_label": normalized_label,
+        "variant": variant,
+        "source_action_name": source_action_name,
+        "sheet": sheet_name,
+        "row_number": row.get("row_number"),
+        "raw_text": text,
+        "repeat_count": repeat_count,
+        "repeat_source": repeat_source,
+        "repeat_confidence": repeat_confidence(repeat_count, repeat_warning),
+        "warnings": [repeat_warning] if repeat_warning else [],
+    }
+
+
+def repeat_join_summary_template() -> dict[str, int]:
+    return {
+        "repeat_metadata_entries": 0,
+        "repeat_joins_applied": 0,
+        "repeat_join_ambiguous": 0,
+        "repeat_join_missing": 0,
+        "repeat_join_conflict": 0,
+        "repeat_metadata_low_confidence": 0,
+        "group_context_missing_for_repeat_join": 0,
+        "double_expansion_prevented": 0,
+    }
+
+
+def repeat_index_matches(
+    repeat_metadata_index: list[dict[str, Any]],
+    character: str | None,
+    action_id: str,
+    normalized_label: str,
+) -> tuple[list[dict[str, Any]], str | None]:
+    exact = [
+        item
+        for item in repeat_metadata_index
+        if item.get("character") == character
+        and item.get("group_action_id") == action_id
+        and item.get("normalized_label") == normalized_label
+    ]
+    if exact:
+        return exact, "character_group_label"
+    group_sensitive = (
+        normalized_label.startswith(f"{ENHANCED}E")
+        or normalized_label.startswith(f"{LIBERATION}1")
+        or normalized_label.startswith(f"{LIBERATION}2")
+        or action_id
+        in {
+            "aemeath_liberation_overdrive",
+            "aemeath_heavenfall_finale",
+            "aemeath_seraphic_duet_overturn",
+            "aemeath_seraphic_duet_overture",
+            "aemeath_seraphic_duet_encore",
+        }
+    )
+    if group_sensitive:
+        return [], None
+    character_label = [
+        item
+        for item in repeat_metadata_index
+        if item.get("character") == character
+        and item.get("group_action_id") in {None, action_id}
+        and item.get("normalized_label") == normalized_label
+    ]
+    if character_label:
+        return character_label, "character_label"
+    any_group = [
+        item
+        for item in repeat_metadata_index
+        if item.get("character") in {"any", None}
+        and item.get("group_action_id") == action_id
+        and item.get("normalized_label") == normalized_label
+    ]
+    if any_group:
+        return any_group, "any_group_label"
+    fallback = [
+        item
+        for item in repeat_metadata_index
+        if item.get("normalized_label") == normalized_label
+        and item.get("group_action_id") in {None, action_id}
+    ]
+    return fallback, "fallback_label" if fallback else None
+
+
+def apply_frame_repeat_to_row(
+    row: dict[str, Any],
+    repeat_entry: dict[str, Any],
+    join_method: str,
+    summary: dict[str, int],
+) -> dict[str, Any]:
+    repeat_count = repeat_entry.get("repeat_count")
+    updated = dict(row)
+    segments = [dict(segment) for segment in row.get("segments", [])]
+    if not repeat_count or not segments:
+        return updated
+
+    row_expanded_values: list[float] = []
+    for segment in segments:
+        before = list(segment.get("parsed_values_before_repeat", []))
+        if segment.get("expanded_from_repeat"):
+            summary["double_expansion_prevented"] += 1
+            segment["repeat_metadata_joined"] = False
+            segment["repeat_metadata_row_number"] = repeat_entry.get("row_number")
+            segment["repeat_metadata_source_text"] = repeat_entry.get("repeat_source")
+            segment["repeat_join_method"] = "double_expansion_prevented"
+            segment["repeat_join_warning"] = "Frame repeat metadata matched but coefficient term was already explicitly expanded."
+            row_expanded_values.extend(segment.get("expanded_values", []))
+            continue
+        if len(before) != 1:
+            segment["repeat_metadata_joined"] = False
+            segment["repeat_join_warning"] = "Frame repeat metadata matched but segment was not a single coefficient."
+            row_expanded_values.extend(segment.get("expanded_values", before))
+            continue
+        expanded = before * int(repeat_count)
+        segment["repeat_count"] = repeat_count
+        segment["repeat_source"] = "frame_sheet_join"
+        segment["repeat_metadata_joined"] = True
+        segment["repeat_metadata_row_number"] = repeat_entry.get("row_number")
+        segment["repeat_metadata_source_text"] = repeat_entry.get("repeat_source") or repeat_entry.get("raw_text")
+        segment["repeat_join_method"] = join_method
+        segment["repeat_join_warning"] = None
+        segment["expanded_values"] = expanded
+        segment["expanded_from_repeat"] = True
+        row_expanded_values.extend(expanded)
+        summary["repeat_joins_applied"] += 1
+
+    repeat_metadata = dict(row.get("repeat_metadata", {}))
+    repeat_metadata.update(
+        {
+            "repeat_count": repeat_count,
+            "repeat_source": "frame_sheet_join",
+            "repeat_metadata_row_number": repeat_entry.get("row_number"),
+            "repeat_metadata_source_text": repeat_entry.get("repeat_source") or repeat_entry.get("raw_text"),
+            "repeat_join_method": join_method,
+            "expanded_from_repeat": any(segment.get("repeat_metadata_joined") for segment in segments),
+        }
+    )
+    updated["segments"] = segments
+    updated["parsed_multipliers"] = row_expanded_values
+    updated["repeat_metadata"] = repeat_metadata
+    return updated
+
+
+def join_repeat_metadata_into_actions(
+    actions: list[dict[str, Any]],
+    repeat_metadata_index: list[dict[str, Any]],
+    repeat_join_summary: dict[str, int],
+) -> list[dict[str, Any]]:
+    unresolved: list[dict[str, Any]] = []
+    repeat_join_summary["repeat_metadata_entries"] = len(repeat_metadata_index)
+    for action in actions:
+        action_id = action["action_id"]
+        character = action.get("character") or "any"
+        skill_data = action.get("skill_data", {})
+        joined_rows: list[dict[str, Any]] = []
+        for row in skill_data.get("coefficient_rows", []):
+            classification, row_warnings = coefficient_row_classification(action_id, row)
+            row = dict(row)
+            row["row_classification"] = classification
+            row["warnings"] = row_warnings
+            normalized_label, variant = normalize_action_label_for_join(row.get("source_action_name"))
+            row["normalized_label"] = normalized_label
+            row["join_variant"] = variant
+            if classification != "base_damage" or not row.get("segments"):
+                joined_rows.append(row)
+                continue
+            matches, join_method = repeat_index_matches(repeat_metadata_index, character, action_id, normalized_label)
+            matches = [match for match in matches if match.get("repeat_confidence") in {"high", "medium"} and match.get("repeat_count")]
+            if not matches:
+                repeat_join_summary["repeat_join_missing"] += 1
+                row.setdefault("repeat_join_warnings", []).append("No frame-sheet repeat metadata matched this base coefficient row.")
+                unresolved.append(
+                    {
+                        "reason": "repeat_metadata_missing_for_compressed_candidate",
+                        "action_id": action_id,
+                        "coefficient_row_number": row.get("row_number"),
+                        "source_action_name": row.get("source_action_name"),
+                        "attempted_normalized_label": normalized_label,
+                        "candidate_group_context": action_id,
+                        "matching_frame_metadata_candidates": [],
+                    }
+                )
+                joined_rows.append(row)
+                continue
+            counts = sorted({int(match["repeat_count"]) for match in matches})
+            if len(matches) > 1 and len(counts) > 1:
+                repeat_join_summary["repeat_join_conflict"] += 1
+                row.setdefault("repeat_join_warnings", []).append("Conflicting frame-sheet repeat metadata matched this coefficient row.")
+                unresolved.append(
+                    {
+                        "reason": "repeat_join_conflict",
+                        "action_id": action_id,
+                        "coefficient_row_number": row.get("row_number"),
+                        "source_action_name": row.get("source_action_name"),
+                        "attempted_normalized_label": normalized_label,
+                        "candidate_group_context": action_id,
+                        "matching_frame_metadata_candidates": matches,
+                    }
+                )
+                joined_rows.append(row)
+                continue
+            if len(matches) > 1 and join_method == "fallback_label":
+                repeat_join_summary["repeat_join_ambiguous"] += 1
+                row.setdefault("repeat_join_warnings", []).append("Frame-sheet repeat metadata matched only by ambiguous fallback label.")
+                unresolved.append(
+                    {
+                        "reason": "repeat_join_ambiguous",
+                        "action_id": action_id,
+                        "coefficient_row_number": row.get("row_number"),
+                        "source_action_name": row.get("source_action_name"),
+                        "attempted_normalized_label": normalized_label,
+                        "candidate_group_context": action_id,
+                        "matching_frame_metadata_candidates": matches,
+                    }
+                )
+                joined_rows.append(row)
+                continue
+            joined_rows.append(apply_frame_repeat_to_row(row, matches[0], join_method or "unknown", repeat_join_summary))
+        skill_data["coefficient_rows"] = joined_rows
+        action["skill_data"] = skill_data
+    return unresolved
 
 
 def find_coefficient_value(row: dict[str, Any]) -> tuple[str | None, Any]:
@@ -1834,8 +2117,9 @@ def build_unresolved_rows(
     actions: list[dict[str, Any]],
     unmapped_rows: list[dict[str, Any]],
     candidate_actions: list[dict[str, Any]] | None = None,
+    repeat_join_unresolved: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
-    unresolved: list[dict[str, Any]] = []
+    unresolved: list[dict[str, Any]] = list(repeat_join_unresolved or [])
     for action in actions:
         for row in action.get("skill_data", {}).get("coefficient_rows", []):
             reason = row.get("row_classification")
@@ -1921,6 +2205,9 @@ def build_coeff_resource_outputs(
     current_actions: dict[str, dict[str, Any]],
     workbook_path: Path,
     generated_at: str,
+    repeat_metadata_index: list[dict[str, Any]] | None = None,
+    repeat_join_summary: dict[str, int] | None = None,
+    repeat_join_unresolved: list[dict[str, Any]] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     candidate_actions = []
     for action in actions:
@@ -1935,11 +2222,13 @@ def build_coeff_resource_outputs(
             }
         )
 
-    unresolved_rows = build_unresolved_rows(actions, unmapped_rows, candidate_actions)
+    unresolved_rows = build_unresolved_rows(actions, unmapped_rows, candidate_actions, repeat_join_unresolved)
     candidates = {
         "generated_at": generated_at,
         "source": str(workbook_path),
         "safe_to_patch": False,
+        "repeat_metadata_index": repeat_metadata_index or [],
+        "repeat_join_summary": repeat_join_summary or repeat_join_summary_template(),
         "notes": [
             "This file is for review only. It does not modify actions.json.",
             "Time-stop timing was handled separately; this file is coefficient/resource extraction review.",
@@ -1968,6 +2257,8 @@ def write_coeff_resource_review_report(
     unresolved: dict[str, Any],
 ) -> None:
     actions = candidates.get("actions", [])
+    repeat_metadata_index = candidates.get("repeat_metadata_index", [])
+    repeat_join_summary = candidates.get("repeat_join_summary", {})
     unresolved_counts = unresolved_reason_counts(unresolved)
     coeff_safe = sum(1 for action in actions if action["coefficient_candidate"].get("safe_to_patch"))
     resource_safe = sum(1 for action in actions if action["resource_candidate"].get("safe_to_patch"))
@@ -2012,6 +2303,124 @@ def write_coeff_resource_review_report(
         f"- Repeat expansion warnings: {repeat_warnings}",
         f"- Resource confidence counts: {markdown_value(resource_confidence_counts)}",
         "",
+        "## Repeat metadata index summary",
+        "",
+        f"- Repeat metadata entries found: {len(repeat_metadata_index)}",
+        f"- High confidence entries: {sum(1 for item in repeat_metadata_index if item.get('repeat_confidence') == 'high')}",
+        f"- Medium confidence entries: {sum(1 for item in repeat_metadata_index if item.get('repeat_confidence') == 'medium')}",
+        f"- Low confidence entries: {sum(1 for item in repeat_metadata_index if item.get('repeat_confidence') == 'low')}",
+        "",
+        "| normalized_label | action/group | character | repeat_count | repeat source row | repeat source text | confidence |",
+        "| --- | --- | --- | --- | --- | --- | --- |",
+    ]
+    interesting_repeat_labels = {"A1", "A4-2", f"{LIBERATION}1-2", f"{ENHANCED}E-2", f"{ENHANCED}E-3", f"{ENHANCED}E-4"}
+    shown_entries = [
+        item
+        for item in repeat_metadata_index
+        if item.get("normalized_label") in interesting_repeat_labels or (item.get("repeat_count") or 0) > 1
+    ]
+    for item in shown_entries[:40]:
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    markdown_value(item.get("normalized_label")),
+                    markdown_value(item.get("group_action_id")),
+                    markdown_value(item.get("character")),
+                    markdown_value(item.get("repeat_count")),
+                    markdown_value(item.get("row_number")),
+                    markdown_value(item.get("repeat_source")),
+                    markdown_value(item.get("repeat_confidence")),
+                ]
+            )
+            + " |"
+        )
+    if not shown_entries:
+        lines.append("|  |  |  |  |  |  |  |")
+
+    lines.extend(
+        [
+            "",
+            "## Repeat join summary",
+            "",
+            f"- Repeat metadata entries: {repeat_join_summary.get('repeat_metadata_entries', 0)}",
+            f"- Joins applied: {repeat_join_summary.get('repeat_joins_applied', 0)}",
+            f"- Joins missing: {repeat_join_summary.get('repeat_join_missing', 0)}",
+            f"- Ambiguous joins: {repeat_join_summary.get('repeat_join_ambiguous', 0)}",
+            f"- Conflicting joins: {repeat_join_summary.get('repeat_join_conflict', 0)}",
+            f"- Low-confidence repeat metadata: {repeat_join_summary.get('repeat_metadata_low_confidence', 0)}",
+            f"- Double expansions prevented: {repeat_join_summary.get('double_expansion_prevented', 0)}",
+            "",
+            "## Repeat-joined coefficient table",
+            "",
+            "| action_id | source coefficient row | normalized label | repeat_count joined | repeat source row | expanded values | warning |",
+            "| --- | --- | --- | --- | --- | --- | --- |",
+        ]
+    )
+    repeat_join_rows = 0
+    for action in actions:
+        for segment in action["coefficient_candidate"].get("segments", []):
+            if not segment.get("repeat_metadata_joined") and not segment.get("repeat_join_warning"):
+                continue
+            repeat_join_rows += 1
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        action["action_id"],
+                        markdown_value(segment.get("source_row_number")),
+                        markdown_value(segment.get("source_action_name")),
+                        markdown_value(segment.get("repeat_count")),
+                        markdown_value(segment.get("repeat_metadata_row_number")),
+                        markdown_value(segment.get("expanded_values")),
+                        markdown_value(segment.get("repeat_join_warning")),
+                    ]
+                )
+                + " |"
+            )
+    if repeat_join_rows == 0:
+        lines.append("|  |  |  |  |  |  |  |")
+
+    focus_actions = {
+        "aemeath_mech_basic_stage_1",
+        "aemeath_basic_form_stage_4",
+        "aemeath_liberation_overdrive",
+        "aemeath_seraphic_duet_overturn",
+        "aemeath_seraphic_duet_overture",
+        "aemeath_seraphic_duet_encore",
+    }
+    lines.extend(
+        [
+            "",
+            "## Candidate vs current after repeat join",
+            "",
+            "| action_id | candidate_hit_count | current_hit_count | shape_status | safe_to_patch | reasons | parsed multipliers |",
+            "| --- | --- | --- | --- | --- | --- | --- |",
+        ]
+    )
+    for action in actions:
+        if action["action_id"] not in focus_actions:
+            continue
+        coeff = action["coefficient_candidate"]
+        comparison = coeff.get("current_actions_comparison", {})
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    action["action_id"],
+                    markdown_value(comparison.get("candidate_hit_count")),
+                    markdown_value(comparison.get("current_hit_count")),
+                    markdown_value(comparison.get("shape_status")),
+                    markdown_value(coeff.get("safe_to_patch")),
+                    markdown_value(coeff.get("safe_to_patch_reasons")),
+                    markdown_value(coeff.get("parsed_multipliers")),
+                ]
+            )
+            + " |"
+        )
+    lines.extend(
+        [
+        "",
         "## Multihit reconstruction summary",
         "",
         f"- Repeat expansions applied: {repeat_expansions}",
@@ -2024,7 +2433,8 @@ def write_coeff_resource_review_report(
         "",
         "| action_id | candidate_hit_count | current_hit_count | shape_status | safe_to_patch | reason if false | max_abs_diff | repeat expansion notes |",
         "| --- | --- | --- | --- | --- | --- | --- | --- |",
-    ]
+        ]
+    )
     for action in actions:
         coeff = action["coefficient_candidate"]
         comparison = coeff.get("current_actions_comparison", {})
@@ -2558,6 +2968,7 @@ def extract(args: argparse.Namespace) -> int:
     unmapped_rows: list[dict[str, Any]] = []
     global_warnings: list[str] = []
     candidate_row_count = 0
+    repeat_metadata_index: list[dict[str, Any]] = []
 
     for sheet_role, sheet_name in selected_sheets.items():
         metadata = read_sheet_rows(workbook[sheet_name])
@@ -2576,6 +2987,10 @@ def extract(args: argparse.Namespace) -> int:
             frame_data, frame_warnings = (
                 extract_frame_data(candidate, source_action_name) if sheet_role == "frame_sheet" else ({}, [])
             )
+            if sheet_role == "frame_sheet":
+                repeat_entry = frame_repeat_metadata_entry(candidate, sheet_name, source_action_name, action_id)
+                if repeat_entry:
+                    repeat_metadata_index.append(repeat_entry)
             skill_data, skill_warnings = (
                 extract_skill_data(candidate, source_action_name) if sheet_role == "skill_sheet" else ({}, [])
             )
@@ -2617,6 +3032,8 @@ def extract(args: argparse.Namespace) -> int:
                 unmapped_rows.append(payload)
 
     actions = sorted(grouped_actions.values(), key=lambda item: item["action_id"])
+    repeat_join_summary = repeat_join_summary_template()
+    repeat_join_unresolved = join_repeat_metadata_into_actions(actions, repeat_metadata_index, repeat_join_summary)
     validation_summary = finalize_actions(actions, unmapped_rows)
     if candidate_row_count == 0:
         global_warnings.append(
@@ -2631,6 +3048,9 @@ def extract(args: argparse.Namespace) -> int:
         current_actions,
         workbook_path,
         generated_at,
+        repeat_metadata_index,
+        repeat_join_summary,
+        repeat_join_unresolved,
     )
     output_payload = {
         "source_workbook": str(workbook_path),
@@ -2642,6 +3062,8 @@ def extract(args: argparse.Namespace) -> int:
         "mapped_action_count": len(actions),
         "unmapped_row_count": len(unmapped_rows),
         "validation_summary": validation_summary,
+        "repeat_metadata_index": repeat_metadata_index,
+        "repeat_join_summary": repeat_join_summary,
         "coefficient_resource_review": {
             "candidates": str(candidates_path),
             "unresolved": str(unresolved_review_path),

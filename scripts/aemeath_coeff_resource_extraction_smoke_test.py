@@ -65,6 +65,19 @@ def main() -> int:
         for action in json.loads(DEFAULT_ACTIONS.read_text(encoding="utf-8-sig"))
     }
     by_id = candidate_by_id(candidates)
+    repeat_metadata_index = candidates.get("repeat_metadata_index", [])
+    repeat_join_summary = candidates.get("repeat_join_summary", {})
+    assert repeat_metadata_index, "Expected repeat_metadata_index to be populated when workbook exists."
+    assert repeat_join_summary, "Expected repeat_join_summary in coefficient/resource candidates JSON."
+    assert repeat_join_summary.get("repeat_metadata_entries", 0) == len(repeat_metadata_index)
+
+    def repeat_entry_exists(action_id: str, label: str) -> bool:
+        return any(
+            entry.get("group_action_id") == action_id
+            and entry.get("normalized_label") == label
+            and entry.get("repeat_count")
+            for entry in repeat_metadata_index
+        )
 
     finale = by_id.get("aemeath_heavenfall_finale", {}).get("coefficient_candidate", {})
     assert 17.8929 in finale.get("parsed_multipliers", []), (
@@ -115,6 +128,14 @@ def main() -> int:
             assert "candidate_shorter_than_current" in coeff.get("safe_to_patch_reasons", []), (
                 f"{action['action_id']} should explain that candidate is shorter than current"
             )
+        for segment in coeff.get("segments", []):
+            if segment.get("repeat_metadata_joined") and segment.get("repeat_source") == "coefficient_cell":
+                before_count = len(segment.get("parsed_values_before_repeat", []))
+                repeat_count = segment.get("repeat_count") or 1
+                expanded_count = len(segment.get("expanded_values", []))
+                assert expanded_count <= before_count * repeat_count, (
+                    f"{action['action_id']} appears to double-expand repeat metadata"
+                )
 
     normal_form_switch_ids = {
         "aemeath_form_switch_to_mech",
@@ -181,6 +202,32 @@ def main() -> int:
     assert_complete_or_unsafe("aemeath_seraphic_duet_encore", 8)
     assert_complete_or_unsafe("aemeath_heavy_aemeath_charged_1", 2, [0.1857])
 
+    known_repeat_expectations = [
+        ("aemeath_mech_basic_stage_1", "A1", 3),
+        ("aemeath_basic_form_stage_4", "A4-2", 6),
+        ("aemeath_liberation_overdrive", "\u5927\u62db1-2", 4),
+        ("aemeath_seraphic_duet_overturn", "\u5f3a\u5316E-2", 13),
+        ("aemeath_seraphic_duet_overturn", "\u5f3a\u5316E-3", 13),
+        ("aemeath_seraphic_duet_overturn", "\u5f3a\u5316E-4", 13),
+        ("aemeath_seraphic_duet_encore", "\u5f3a\u5316E-2", 8),
+    ]
+    for action_id, label, current_hits in known_repeat_expectations:
+        if not repeat_entry_exists(action_id, label) or action_id not in by_id:
+            continue
+        coeff = by_id[action_id]["coefficient_candidate"]
+        comparison = coeff.get("current_actions_comparison", {})
+        if comparison.get("candidate_hit_count") == current_hits:
+            assert comparison.get("shape_status") in {"exact_match", "same_length_diff_values"}, (
+                f"{action_id} should have complete shape after joining repeat metadata"
+            )
+            if coeff.get("safe_to_patch"):
+                assert comparison.get("shape_status") == "exact_match"
+        else:
+            assert not coeff.get("safe_to_patch"), (
+                f"{action_id} with known repeat metadata must stay unsafe if not expanded"
+            )
+            assert coeff.get("critical_warnings"), f"{action_id} should explain remaining compressed candidate"
+
     for action_id in (
         "aemeath_mech_basic_stage_1",
         "aemeath_basic_form_stage_4",
@@ -202,6 +249,10 @@ def main() -> int:
     for section in (
         "## Summary",
         "## Multihit reconstruction summary",
+        "## Repeat metadata index summary",
+        "## Repeat join summary",
+        "## Repeat-joined coefficient table",
+        "## Candidate vs current after repeat join",
         "## Candidate vs current shape table",
         "## Expanded coefficient segments",
         "## Critical warnings",

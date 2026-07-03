@@ -1,6 +1,6 @@
 {
   "source_workbook": "data\\source\\鸣潮动作数据汇总.xlsx",
-  "generated_at": "2026-07-03T07:28:01.649038+00:00",
+  "generated_at": "2026-07-03T07:48:56.655676+00:00",
   "fps": 60,
   "sheets": {
     "frame_sheet": "角色-女",
@@ -32,6 +32,242 @@
     "variant_rows_excluded_from_base": 12,
     "qte_rows_excluded": 12,
     "low_confidence_resource_fields": 32
+  },
+  "repeat_metadata_index": [
+    {
+      "character": "aemeath",
+      "group_action_id": "aemeath_basic_form_stage_4",
+      "normalized_label": "A4-2",
+      "variant": null,
+      "source_action_name": "A4-2",
+      "sheet": "角色-女",
+      "row_number": 2754,
+      "raw_text": "A4-2 | 持续帧内每9F进行一次判定，最多4次 | 2 | 28 | 3 | √ | × | 4.84 | 3.87 | 0.13 | 0.25 | 1.17 | 2 | 地面 | 攻击顿帧 | 0.2 | 4 | 目标 | 爱弥斯 | (-50,0,100) | 圆柱(800,0,400) | 动作 | A4-2 | 备注 | 持续帧内每9F进行一次判定，最多4次 | 发生帧 | 2 | 持续帧 | 28 | 顿帧-敌 | 3 | 可弹刀 | √ | 可脱手 | × | 削韧值 | 4.84 | 偏谐值 | 3.87 | 大招回收 | 0.13 | 协奏回收 | 0.25 | 核心回收1 | 1.17 | 中断优先级 | 2 | 位置状态 | 地面 | 时间膨胀类型 | 攻击顿帧 | 敌膨胀系数 | 0.2 | 膨胀持续_2 | 4 | 命中类型 | 目标 | 位置基准 | 爱弥斯 | 位置基准偏移 | (-50,0,100) | 判定范围 | 圆柱(800,0,400)",
+      "repeat_count": 4,
+      "repeat_source": "最多4次",
+      "repeat_confidence": "high",
+      "warnings": []
+    },
+    {
+      "character": "aemeath",
+      "group_action_id": "aemeath_heavy_aemeath_charged_2",
+      "normalized_label": "强化重击-1",
+      "variant": null,
+      "source_action_name": "强化重击-1",
+      "sheet": "角色-女",
+      "row_number": 2765,
+      "raw_text": "强化重击-1 | 持续帧内每5F进行一次判定，最多2次 | 4 | 6 | 1 | 1 | √ | √ | 48.34 | 6.67 | 0.21 | 0.42 | 4 | 地面 | 攻击顿帧 | 0.01 | 2 | 0.01 | 2 | 目标 | 爱弥斯 | (300,0,100) | 矩形(550,600,300) | 动作 | 强化重击-1 | 备注 | 持续帧内每5F进行一次判定，最多2次 | 发生帧 | 4 | 持续帧 | 6 | 顿帧-自 | 1 | 顿帧-敌 | 1 | 可弹刀 | √ | 可脱手 | √ | 削韧值 | 48.34 | 偏谐值 | 6.67 | 大招回收 | 0.21 | 协奏回收 | 0.42 | 中断优先级 | 4 | 位置状态 | 地面 | 时间膨胀类型 | 攻击顿帧 | 自膨胀系数 | 0.01 | 膨胀持续 | 2 | 敌膨胀系数 | 0.01 | 膨胀持续_2 | 2 | 命中类型 | 目标 | 位置基准 | 爱弥斯 | 位置基准偏移 | (300,0,100) | 判定范围 | 矩形(550,600,300)",
+      "repeat_count": 2,
+      "repeat_source": "最多2次",
+      "repeat_confidence": "high",
+      "warnings": []
+    },
+    {
+      "character": "aemeath",
+      "group_action_id": "aemeath_heavy_aemeath_charged_2",
+      "normalized_label": "强化重击-2",
+      "variant": null,
+      "source_action_name": "强化重击-2",
+      "sheet": "角色-女",
+      "row_number": 2766,
+      "raw_text": "强化重击-2 | 持续帧内每6F进行一次判定，最多2次 | 16 | 7 | 1 | 1 | √ | √ | 48.34 | 6.67 | 0.21 | 0.42 | 4 | 地面 | 攻击顿帧 | 0.01 | 2 | 0.01 | 2 | 目标 | 爱弥斯 | (300,0,100) | 矩形(550,600,300) | 动作 | 强化重击-2 | 备注 | 持续帧内每6F进行一次判定，最多2次 | 发生帧 | 16 | 持续帧 | 7 | 顿帧-自 | 1 | 顿帧-敌 | 1 | 可弹刀 | √ | 可脱手 | √ | 削韧值 | 48.34 | 偏谐值 | 6.67 | 大招回收 | 0.21 | 协奏回收 | 0.42 | 中断优先级 | 4 | 位置状态 | 地面 | 时间膨胀类型 | 攻击顿帧 | 自膨胀系数 | 0.01 | 膨胀持续 | 2 | 敌膨胀系数 | 0.01 | 膨胀持续_2 | 2 | 命中类型 | 目标 | 位置基准 | 爱弥斯 | 位置基准偏移 | (300,0,100) | 判定范围 | 矩形(550,600,300)",
+      "repeat_count": 2,
+      "repeat_source": "最多2次",
+      "repeat_confidence": "high",
+      "warnings": []
+    },
+    {
+      "character": "aemeath",
+      "group_action_id": "aemeath_seraphic_duet_overturn",
+      "normalized_label": "强化E-2",
+      "variant": null,
+      "source_action_name": "强化E-2",
+      "sheet": "角色-女",
+      "row_number": 2781,
+      "raw_text": "强化E-2 | 持续帧内每4F进行一次判定，最多6次 | 40 | 20 | 1 | 1 | √ | √ | 8.34 | 6.67 | 0.21 | 0.42 | 10 | 地面 | 攻击顿帧 | 0.2 | 2 | 0.2 | 2 | 目标 | 机兵 | (600,0,0) | 球形(1000,0,0) | 动作 | 强化E-2 | 备注 | 持续帧内每4F进行一次判定，最多6次 | 发生帧 | 40 | 持续帧 | 20 | 顿帧-自 | 1 | 顿帧-敌 | 1 | 可弹刀 | √ | 可脱手 | √ | 削韧值 | 8.34 | 偏谐值 | 6.67 | 大招回收 | 0.21 | 协奏回收 | 0.42 | 中断优先级 | 10 | 位置状态 | 地面 | 时间膨胀类型 | 攻击顿帧 | 自膨胀系数 | 0.2 | 膨胀持续 | 2 | 敌膨胀系数 | 0.2 | 膨胀持续_2 | 2 | 命中类型 | 目标 | 位置基准 | 机兵 | 位置基准偏移 | (600,0,0) | 判定范围 | 球形(1000,0,0)",
+      "repeat_count": 6,
+      "repeat_source": "最多6次",
+      "repeat_confidence": "high",
+      "warnings": []
+    },
+    {
+      "character": "aemeath",
+      "group_action_id": "aemeath_seraphic_duet_overturn",
+      "normalized_label": "强化E-3",
+      "variant": null,
+      "source_action_name": "强化E-3",
+      "sheet": "角色-女",
+      "row_number": 2782,
+      "raw_text": "强化E-3 | 持续帧内每4F进行一次判定，最多3次 | 120 | 12 | √ | √ | 53.34 | 10.67 | 0.34 | 0.67 | 10 | 地面 | 目标 | 机兵 | (-500,0,0) | 矩形(1200,1200,1000) | 动作 | 强化E-3 | 备注 | 持续帧内每4F进行一次判定，最多3次 | 发生帧 | 120 | 持续帧 | 12 | 可弹刀 | √ | 可脱手 | √ | 削韧值 | 53.34 | 偏谐值 | 10.67 | 大招回收 | 0.34 | 协奏回收 | 0.67 | 中断优先级 | 10 | 位置状态 | 地面 | 命中类型 | 目标 | 位置基准 | 机兵 | 位置基准偏移 | (-500,0,0) | 判定范围 | 矩形(1200,1200,1000)",
+      "repeat_count": 3,
+      "repeat_source": "最多3次",
+      "repeat_confidence": "high",
+      "warnings": []
+    },
+    {
+      "character": "aemeath",
+      "group_action_id": "aemeath_seraphic_duet_overturn",
+      "normalized_label": "强化E-4",
+      "variant": null,
+      "source_action_name": "强化E-4",
+      "sheet": "角色-女",
+      "row_number": 2783,
+      "raw_text": "强化E-4 | 持续帧内每6F进行一次判定，最多3次 | 153 | 13 | 3 | √ | √ | 33.34 | 26.67 | 0.84 | 1.67 | 10 | 地面 | 攻击顿帧 | 0.05 | 4 | 目标 | 机兵 | (600,0,0) | 球形(1000,0,0) | 动作 | 强化E-4 | 备注 | 持续帧内每6F进行一次判定，最多3次 | 发生帧 | 153 | 持续帧 | 13 | 顿帧-敌 | 3 | 可弹刀 | √ | 可脱手 | √ | 削韧值 | 33.34 | 偏谐值 | 26.67 | 大招回收 | 0.84 | 协奏回收 | 1.67 | 中断优先级 | 10 | 位置状态 | 地面 | 时间膨胀类型 | 攻击顿帧 | 敌膨胀系数 | 0.05 | 膨胀持续_2 | 4 | 命中类型 | 目标 | 位置基准 | 机兵 | 位置基准偏移 | (600,0,0) | 判定范围 | 球形(1000,0,0)",
+      "repeat_count": 3,
+      "repeat_source": "最多3次",
+      "repeat_confidence": "high",
+      "warnings": []
+    },
+    {
+      "character": "aemeath",
+      "group_action_id": "aemeath_seraphic_duet_overturn",
+      "normalized_label": "强化E-震谐",
+      "variant": null,
+      "source_action_name": "强化E-震谐",
+      "sheet": "角色-女",
+      "row_number": 2786,
+      "raw_text": "强化E-震谐 | 持续帧内每4F进行一次判定，最多5次，每次随机命中1个目标 | 166 | 19 | 0 | 0 | × | √ | 16.2 | 0 | 0 | 0 | 10 | 地面 | 攻击顿帧 | 0.01 | 1 | 0.01 | 1 | 目标 | 机兵 | (600,0,0) | (0,-200,0) | 球形(1000,0,0) | 动作 | 强化E-震谐 | 备注 | 持续帧内每4F进行一次判定，最多5次，每次随机命中1个目标 | 发生帧 | 166 | 持续帧 | 19 | 顿帧-自 | 0 | 顿帧-敌 | 0 | 可弹刀 | × | 可脱手 | √ | 削韧值 | 16.2 | 偏谐值 | 0 | 大招回收 | 0 | 协奏回收 | 0 | 中断优先级 | 10 | 位置状态 | 地面 | 时间膨胀类型 | 攻击顿帧 | 自膨胀系数 | 0.01 | 膨胀持续 | 1 | 敌膨胀系数 | 0.01 | 膨胀持续_2 | 1 | 命中类型 | 目标 | 位置基准 | 机兵 | 位置基准偏移 | (600,0,0) | 中心位置偏移 | (0,-200,0) | 判定范围 | 球形(1000,0,0)",
+      "repeat_count": 5,
+      "repeat_source": "最多5次",
+      "repeat_confidence": "high",
+      "warnings": []
+    },
+    {
+      "character": "aemeath",
+      "group_action_id": "aemeath_seraphic_duet_overturn",
+      "normalized_label": "强化E-震谐增幅",
+      "variant": null,
+      "source_action_name": "强化E-震谐增幅",
+      "sheet": "角色-女",
+      "row_number": 2787,
+      "raw_text": "强化E-震谐增幅 | 持续帧内每2F进行一次判定，最多10次，每次随机命中1个目标 | 166 | 19 | 0 | 0 | × | √ | 16.2 | 0 | 0 | 0 | 10 | 地面 | 攻击顿帧 | 0.01 | 1 | 0.01 | 1 | 目标 | 机兵 | (600,0,0) | (0,-200,0) | 球形(1000,0,0) | 动作 | 强化E-震谐增幅 | 备注 | 持续帧内每2F进行一次判定，最多10次，每次随机命中1个目标 | 发生帧 | 166 | 持续帧 | 19 | 顿帧-自 | 0 | 顿帧-敌 | 0 | 可弹刀 | × | 可脱手 | √ | 削韧值 | 16.2 | 偏谐值 | 0 | 大招回收 | 0 | 协奏回收 | 0 | 中断优先级 | 10 | 位置状态 | 地面 | 时间膨胀类型 | 攻击顿帧 | 自膨胀系数 | 0.01 | 膨胀持续 | 1 | 敌膨胀系数 | 0.01 | 膨胀持续_2 | 1 | 命中类型 | 目标 | 位置基准 | 机兵 | 位置基准偏移 | (600,0,0) | 中心位置偏移 | (0,-200,0) | 判定范围 | 球形(1000,0,0)",
+      "repeat_count": 10,
+      "repeat_source": "最多10次",
+      "repeat_confidence": "high",
+      "warnings": []
+    },
+    {
+      "character": "aemeath",
+      "group_action_id": "aemeath_liberation_overdrive",
+      "normalized_label": "大招1-2",
+      "variant": null,
+      "source_action_name": "大招1-2",
+      "sheet": "角色-女",
+      "row_number": 2797,
+      "raw_text": "大招1-2 | 持续帧内每7F进行一次判定，最多3次 | 238 | 15 | 264 | 262 | 84 | 320 | √ | √ | 106.67 | 224 | 0 | 0 | 10,0 | 地面 | 目标 | 机兵 | (0,0,400) | 圆柱(1200,0,600) | 动作 | 大招1-2 | 备注 | 持续帧内每7F进行一次判定，最多3次 | 发生帧 | 238 | 持续帧 | 15 | 优先级改变 | 264 | 派生帧 | 262 | 派生持续帧 | 84 | 动作结束帧 | 320 | 可弹刀 | √ | 可脱手 | √ | 削韧值 | 106.67 | 偏谐值 | 224 | 大招回收 | 0 | 协奏回收 | 0 | 中断优先级 | 10,0 | 位置状态 | 地面 | 命中类型 | 目标 | 位置基准 | 机兵 | 位置基准偏移 | (0,0,400) | 判定范围 | 圆柱(1200,0,600)",
+      "repeat_count": 3,
+      "repeat_source": "最多3次",
+      "repeat_confidence": "high",
+      "warnings": []
+    },
+    {
+      "character": "aemeath_mech",
+      "group_action_id": "aemeath_mech_basic_stage_1",
+      "normalized_label": "A1",
+      "variant": null,
+      "source_action_name": "A1",
+      "sheet": "角色-女",
+      "row_number": 2886,
+      "raw_text": "机兵爱弥斯 | 1 | A1 | 持续帧内每8F进行一次判定，最多3次 | 12 | 16 | 0 | 0 | 32 | 30 | 89 | 61 | √ | √ | 16.67 | 13.34 | 0.42 | 0.84 | 2.15 | 0.75 | 2,1 | 地面 | 攻击顿帧 | 0.01 | 1 | 0.01 | 1 | 目标 | 机兵 | (300,0,200) | 矩形(500,300,500) | 名称 | 机兵爱弥斯 | ID | 1 | 动作 | A1 | 备注 | 持续帧内每8F进行一次判定，最多3次 | 发生帧 | 12 | 持续帧 | 16 | 顿帧-自 | 0 | 顿帧-敌 | 0 | 优先级改变 | 32 | 派生帧 | 30 | 派生持续帧 | 89 | 动作结束帧 | 61 | 可弹刀 | √ | 可脱手 | √ | 削韧值 | 16.67 | 偏谐值 | 13.34 | 大招回收 | 0.42 | 协奏回收 | 0.84 | 核心回收1 | 2.15 | 受击韧性系数 | 0.75 | 中断优先级 | 2,1 | 位置状态 | 地面 | 时间膨胀类型 | 攻击顿帧 | 自膨胀系数 | 0.01 | 膨胀持续 | 1 | 敌膨胀系数 | 0.01 | 膨胀持续_2 | 1 | 命中类型 | 目标 | 位置基准 | 机兵 | 位置基准偏移 | (300,0,200) | 判定范围 | 矩形(500,300,500)",
+      "repeat_count": 3,
+      "repeat_source": "最多3次",
+      "repeat_confidence": "high",
+      "warnings": []
+    },
+    {
+      "character": "aemeath_mech",
+      "group_action_id": "aemeath_mech_basic_stage_3",
+      "normalized_label": "A3-2",
+      "variant": null,
+      "source_action_name": "A3-2",
+      "sheet": "角色-女",
+      "row_number": 2890,
+      "raw_text": "A3-2 | 持续帧内每9F进行一次判定，最多3次 | 10 | 18 | 1 | 1 | √ | √ | 2.79 | 2.24 | 0.07 | 0.14 | 0.67 | 2 | 空中 | 攻击顿帧 | 0.2 | 2 | 0.02 | 2 | 目标 | 机兵 | (600,0,0) | 球形(1100,0,0) | 动作 | A3-2 | 备注 | 持续帧内每9F进行一次判定，最多3次 | 发生帧 | 10 | 持续帧 | 18 | 顿帧-自 | 1 | 顿帧-敌 | 1 | 可弹刀 | √ | 可脱手 | √ | 削韧值 | 2.79 | 偏谐值 | 2.24 | 大招回收 | 0.07 | 协奏回收 | 0.14 | 核心回收1 | 0.67 | 中断优先级 | 2 | 位置状态 | 空中 | 时间膨胀类型 | 攻击顿帧 | 自膨胀系数 | 0.2 | 膨胀持续 | 2 | 敌膨胀系数 | 0.02 | 膨胀持续_2 | 2 | 命中类型 | 目标 | 位置基准 | 机兵 | 位置基准偏移 | (600,0,0) | 判定范围 | 球形(1100,0,0)",
+      "repeat_count": 3,
+      "repeat_source": "最多3次",
+      "repeat_confidence": "high",
+      "warnings": []
+    },
+    {
+      "character": "aemeath_mech",
+      "group_action_id": "aemeath_seraphic_duet_encore",
+      "normalized_label": "强化E-1",
+      "variant": null,
+      "source_action_name": "强化E-1",
+      "sheet": "角色-女",
+      "row_number": 2925,
+      "raw_text": "强化E-1 | 持续帧内每6F进行一次判定，最多2次 | 1 | 7 | √ | √ | 10 | 8 | 0.25 | 0.5 | 10 | 地面 | 目标 | 爱弥斯 | (600,-300,100) | (0,-200,0) | 圆柱(1500,0,300) | 动作 | 强化E-1 | 备注 | 持续帧内每6F进行一次判定，最多2次 | 发生帧 | 1 | 持续帧 | 7 | 可弹刀 | √ | 可脱手 | √ | 削韧值 | 10 | 偏谐值 | 8 | 大招回收 | 0.25 | 协奏回收 | 0.5 | 中断优先级 | 10 | 位置状态 | 地面 | 命中类型 | 目标 | 位置基准 | 爱弥斯 | 位置基准偏移 | (600,-300,100) | 中心位置偏移 | (0,-200,0) | 判定范围 | 圆柱(1500,0,300)",
+      "repeat_count": 2,
+      "repeat_source": "最多2次",
+      "repeat_confidence": "high",
+      "warnings": []
+    },
+    {
+      "character": "aemeath_mech",
+      "group_action_id": "aemeath_seraphic_duet_encore",
+      "normalized_label": "强化E-2",
+      "variant": null,
+      "source_action_name": "强化E-2",
+      "sheet": "角色-女",
+      "row_number": 2926,
+      "raw_text": "强化E-2 | 持续帧内每12F进行一次判定，最多2次 | 68 | 13 | 0 | 0 | √ | √ | 20 | 16 | 0.5 | 1 | 10 | 地面 | 攻击顿帧 | 0.1 | 1 | 0.1 | 1 | 目标 | 爱弥斯 | (600,-300,250) | 圆柱(1000,0,450) | 动作 | 强化E-2 | 备注 | 持续帧内每12F进行一次判定，最多2次 | 发生帧 | 68 | 持续帧 | 13 | 顿帧-自 | 0 | 顿帧-敌 | 0 | 可弹刀 | √ | 可脱手 | √ | 削韧值 | 20 | 偏谐值 | 16 | 大招回收 | 0.5 | 协奏回收 | 1 | 中断优先级 | 10 | 位置状态 | 地面 | 时间膨胀类型 | 攻击顿帧 | 自膨胀系数 | 0.1 | 膨胀持续 | 1 | 敌膨胀系数 | 0.1 | 膨胀持续_2 | 1 | 命中类型 | 目标 | 位置基准 | 爱弥斯 | 位置基准偏移 | (600,-300,250) | 判定范围 | 圆柱(1000,0,450)",
+      "repeat_count": 2,
+      "repeat_source": "最多2次",
+      "repeat_confidence": "high",
+      "warnings": []
+    },
+    {
+      "character": "aemeath_mech",
+      "group_action_id": "aemeath_seraphic_duet_encore",
+      "normalized_label": "强化E-3",
+      "variant": null,
+      "source_action_name": "强化E-3",
+      "sheet": "角色-女",
+      "row_number": 2927,
+      "raw_text": "强化E-3 | 持续帧内每12F进行一次判定，最多2次 | 89 | 13 | 0 | 0 | √ | √ | 10 | 8 | 0.25 | 0.5 | 10 | 地面 | 攻击顿帧 | 0.1 | 1 | 0.1 | 1 | 目标 | 爱弥斯 | (600,-300,250) | 圆柱(1000,0,450) | 动作 | 强化E-3 | 备注 | 持续帧内每12F进行一次判定，最多2次 | 发生帧 | 89 | 持续帧 | 13 | 顿帧-自 | 0 | 顿帧-敌 | 0 | 可弹刀 | √ | 可脱手 | √ | 削韧值 | 10 | 偏谐值 | 8 | 大招回收 | 0.25 | 协奏回收 | 0.5 | 中断优先级 | 10 | 位置状态 | 地面 | 时间膨胀类型 | 攻击顿帧 | 自膨胀系数 | 0.1 | 膨胀持续 | 1 | 敌膨胀系数 | 0.1 | 膨胀持续_2 | 1 | 命中类型 | 目标 | 位置基准 | 爱弥斯 | 位置基准偏移 | (600,-300,250) | 判定范围 | 圆柱(1000,0,450)",
+      "repeat_count": 2,
+      "repeat_source": "最多2次",
+      "repeat_confidence": "high",
+      "warnings": []
+    },
+    {
+      "character": "aemeath_mech",
+      "group_action_id": "aemeath_seraphic_duet_encore",
+      "normalized_label": "强化E-震谐",
+      "variant": null,
+      "source_action_name": "强化E-震谐",
+      "sheet": "角色-女",
+      "row_number": 2931,
+      "raw_text": "强化E-震谐 | 持续帧内每4F进行一次判定，最多5次，每次随机命中1个目标 | 139 | 19 | 0 | 0 | × | √ | 16.2 | 0 | 0 | 0 | 10 | 地面 | 攻击顿帧 | 0.01 | 1 | 0.01 | 1 | 目标 | 爱弥斯 | (600,-150,200) | (0,-200,0) | 圆柱(1000,0,450) | 动作 | 强化E-震谐 | 备注 | 持续帧内每4F进行一次判定，最多5次，每次随机命中1个目标 | 发生帧 | 139 | 持续帧 | 19 | 顿帧-自 | 0 | 顿帧-敌 | 0 | 可弹刀 | × | 可脱手 | √ | 削韧值 | 16.2 | 偏谐值 | 0 | 大招回收 | 0 | 协奏回收 | 0 | 中断优先级 | 10 | 位置状态 | 地面 | 时间膨胀类型 | 攻击顿帧 | 自膨胀系数 | 0.01 | 膨胀持续 | 1 | 敌膨胀系数 | 0.01 | 膨胀持续_2 | 1 | 命中类型 | 目标 | 位置基准 | 爱弥斯 | 位置基准偏移 | (600,-150,200) | 中心位置偏移 | (0,-200,0) | 判定范围 | 圆柱(1000,0,450)",
+      "repeat_count": 5,
+      "repeat_source": "最多5次",
+      "repeat_confidence": "high",
+      "warnings": []
+    },
+    {
+      "character": "aemeath_mech",
+      "group_action_id": "aemeath_seraphic_duet_encore",
+      "normalized_label": "强化E-震谐增幅",
+      "variant": null,
+      "source_action_name": "强化E-震谐增幅",
+      "sheet": "角色-女",
+      "row_number": 2932,
+      "raw_text": "强化E-震谐增幅 | 持续帧内每2F进行一次判定，最多10次，每次随机命中1个目标 | 139 | 19 | 0 | 0 | × | √ | 16.2 | 0 | 0 | 0 | 10 | 地面 | 攻击顿帧 | 0.01 | 1 | 0.01 | 1 | 目标 | 爱弥斯 | (600,-150,200) | (0,-200,0) | 圆柱(1000,0,450) | 动作 | 强化E-震谐增幅 | 备注 | 持续帧内每2F进行一次判定，最多10次，每次随机命中1个目标 | 发生帧 | 139 | 持续帧 | 19 | 顿帧-自 | 0 | 顿帧-敌 | 0 | 可弹刀 | × | 可脱手 | √ | 削韧值 | 16.2 | 偏谐值 | 0 | 大招回收 | 0 | 协奏回收 | 0 | 中断优先级 | 10 | 位置状态 | 地面 | 时间膨胀类型 | 攻击顿帧 | 自膨胀系数 | 0.01 | 膨胀持续 | 1 | 敌膨胀系数 | 0.01 | 膨胀持续_2 | 1 | 命中类型 | 目标 | 位置基准 | 爱弥斯 | 位置基准偏移 | (600,-150,200) | 中心位置偏移 | (0,-200,0) | 判定范围 | 圆柱(1000,0,450)",
+      "repeat_count": 10,
+      "repeat_source": "最多10次",
+      "repeat_confidence": "high",
+      "warnings": []
+    }
+  ],
+  "repeat_join_summary": {
+    "repeat_metadata_entries": 16,
+    "repeat_joins_applied": 12,
+    "repeat_join_ambiguous": 0,
+    "repeat_join_missing": 28,
+    "repeat_join_conflict": 0,
+    "repeat_metadata_low_confidence": 0,
+    "group_context_missing_for_repeat_join": 0,
+    "double_expansion_prevented": 0
   },
   "coefficient_resource_review": {
     "candidates": "data\\extracted\\aemeath_coeff_resource_candidates.json",
@@ -728,6 +964,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A1",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           }
         ],
@@ -2479,6 +2720,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A2-1",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           },
           {
@@ -2553,6 +2799,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A2-2",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           },
           {
@@ -2627,6 +2878,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A2-3",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           }
         ],
@@ -7726,6 +7982,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A3-1",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           },
           {
@@ -7800,6 +8061,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A3-2",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           },
           {
@@ -7874,6 +8140,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A3-3",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           },
           {
@@ -7948,6 +8219,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A3-4",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           },
           {
@@ -8022,6 +8298,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A3-5",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           },
           {
@@ -8096,6 +8377,8 @@
               "共振削减": 0
             },
             "row_classification": "dodge_counter",
+            "normalized_label": "A3-1D",
+            "join_variant": null,
             "classification_warnings": []
           },
           {
@@ -8170,6 +8453,8 @@
               "共振削减": 0
             },
             "row_classification": "dodge_counter",
+            "normalized_label": "A3-2D",
+            "join_variant": null,
             "classification_warnings": []
           },
           {
@@ -8244,6 +8529,8 @@
               "共振削减": 0
             },
             "row_classification": "dodge_counter",
+            "normalized_label": "A3-3D",
+            "join_variant": null,
             "classification_warnings": []
           },
           {
@@ -8318,6 +8605,8 @@
               "共振削减": 0
             },
             "row_classification": "dodge_counter",
+            "normalized_label": "A3-4D",
+            "join_variant": null,
             "classification_warnings": []
           },
           {
@@ -8392,6 +8681,8 @@
               "共振削减": 0
             },
             "row_classification": "dodge_counter",
+            "normalized_label": "A3-5D",
+            "join_variant": null,
             "classification_warnings": []
           }
         ],
@@ -10111,6 +10402,9 @@
         "parsed_multipliers": [
           0.0673,
           0.0673,
+          0.0673,
+          0.0673,
+          0.0673,
           1.0094
         ],
         "coefficient_rows": [
@@ -10186,6 +10480,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A4-1",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           },
           {
@@ -10196,6 +10495,9 @@
             "coefficient_unit": "decimal_multiplier",
             "raw_coefficients": 0.0673,
             "parsed_multipliers": [
+              0.0673,
+              0.0673,
+              0.0673,
               0.0673
             ],
             "unexpanded_multipliers": [
@@ -10203,10 +10505,13 @@
             ],
             "repeat_metadata": {
               "raw_text": "A4-2 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0673 | 0.13 | 0 | 1.17 | 0 | 0 | 0 | 0.25 | 1 | 4.84 | 3.87 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A4-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0673 | 大招能量 | 0.13 | 核心能量1 | 0 | 核心能量2 | 1.17 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.25 | 共振系数 | 1 | 削韧值 | 4.84 | 偏谐值 | 3.87 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-              "repeat_count": null,
-              "repeat_source": null,
-              "expanded_from_repeat": false,
-              "repeat_warning": null
+              "repeat_count": 4,
+              "repeat_source": "frame_sheet_join",
+              "expanded_from_repeat": true,
+              "repeat_warning": null,
+              "repeat_metadata_row_number": 2754,
+              "repeat_metadata_source_text": "最多4次",
+              "repeat_join_method": "character_group_label"
             },
             "segments": [
               {
@@ -10216,13 +10521,21 @@
                 "parsed_values_before_repeat": [
                   0.0673
                 ],
-                "repeat_count": null,
-                "repeat_source": null,
+                "repeat_count": 4,
+                "repeat_source": "frame_sheet_join",
                 "expanded_values": [
+                  0.0673,
+                  0.0673,
+                  0.0673,
                   0.0673
                 ],
-                "expanded_from_repeat": false,
-                "warnings": []
+                "expanded_from_repeat": true,
+                "warnings": [],
+                "repeat_metadata_joined": true,
+                "repeat_metadata_row_number": 2754,
+                "repeat_metadata_source_text": "最多4次",
+                "repeat_join_method": "character_group_label",
+                "repeat_join_warning": null
               }
             ],
             "damage_type": "普攻伤害",
@@ -10260,6 +10573,8 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A4-2",
+            "join_variant": null,
             "classification_warnings": []
           },
           {
@@ -10334,6 +10649,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A4-3",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           }
         ],
@@ -10409,6 +10729,9 @@
           "parsed_multipliers": [
             0.0673,
             0.0673,
+            0.0673,
+            0.0673,
+            0.0673,
             1.0094
           ],
           "coefficient_units": [
@@ -10437,10 +10760,13 @@
               "coefficient_source_column": "倍率",
               "repeat_metadata": {
                 "raw_text": "A4-2 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0673 | 0.13 | 0 | 1.17 | 0 | 0 | 0 | 0.25 | 1 | 4.84 | 3.87 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A4-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0673 | 大招能量 | 0.13 | 核心能量1 | 0 | 核心能量2 | 1.17 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.25 | 共振系数 | 1 | 削韧值 | 4.84 | 偏谐值 | 3.87 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-                "repeat_count": null,
-                "repeat_source": null,
-                "expanded_from_repeat": false,
-                "repeat_warning": null
+                "repeat_count": 4,
+                "repeat_source": "frame_sheet_join",
+                "expanded_from_repeat": true,
+                "repeat_warning": null,
+                "repeat_metadata_row_number": 2754,
+                "repeat_metadata_source_text": "最多4次",
+                "repeat_join_method": "character_group_label"
               }
             },
             {
@@ -11865,7 +12191,9 @@
             ],
             "damage_type": "共鸣解放伤害",
             "skill_category": "共鸣解放",
-            "warnings": [],
+            "warnings": [
+              "C0-labelled direct damage row used as base fallback for this workbook."
+            ],
             "raw_by_header": {
               "角色/动作": "C0大招2-伤害",
               "属性": "热熔",
@@ -11898,6 +12226,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "大招2-伤害",
+            "join_variant": "C0",
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": [
               "C0-labelled direct damage row used as base fallback for this workbook."
             ]
@@ -11974,6 +12307,8 @@
               "共振削减": 0
             },
             "row_classification": "sequence_variant",
+            "normalized_label": "大招2-伤害",
+            "join_variant": "C3",
             "classification_warnings": []
           }
         ],
@@ -12763,6 +13098,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "重击-1",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           }
         ],
@@ -15114,6 +15454,8 @@
           0.7426,
           0.116,
           0.116,
+          0.116,
+          0.116,
           1.856
         ],
         "coefficient_rows": [
@@ -15189,6 +15531,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "重击-2",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           },
           {
@@ -15199,6 +15546,7 @@
             "coefficient_unit": "decimal_multiplier",
             "raw_coefficients": 0.116,
             "parsed_multipliers": [
+              0.116,
               0.116
             ],
             "unexpanded_multipliers": [
@@ -15206,10 +15554,13 @@
             ],
             "repeat_metadata": {
               "raw_text": "强化重击-1 | 热熔 | 伤害 | 重击 | 共鸣解放伤害 | 0 | 攻击 | 0.116 | 0.21 | 0 | 0 | 0 | 0 | 0 | 0.42 | 1 | 48.34 | 6.67 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | 强化重击-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 重击 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.116 | 大招能量 | 0.21 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.42 | 共振系数 | 1 | 削韧值 | 48.34 | 偏谐值 | 6.67 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-              "repeat_count": null,
-              "repeat_source": null,
-              "expanded_from_repeat": false,
-              "repeat_warning": null
+              "repeat_count": 2,
+              "repeat_source": "frame_sheet_join",
+              "expanded_from_repeat": true,
+              "repeat_warning": null,
+              "repeat_metadata_row_number": 2765,
+              "repeat_metadata_source_text": "最多2次",
+              "repeat_join_method": "character_group_label"
             },
             "segments": [
               {
@@ -15219,13 +15570,19 @@
                 "parsed_values_before_repeat": [
                   0.116
                 ],
-                "repeat_count": null,
-                "repeat_source": null,
+                "repeat_count": 2,
+                "repeat_source": "frame_sheet_join",
                 "expanded_values": [
+                  0.116,
                   0.116
                 ],
-                "expanded_from_repeat": false,
-                "warnings": []
+                "expanded_from_repeat": true,
+                "warnings": [],
+                "repeat_metadata_joined": true,
+                "repeat_metadata_row_number": 2765,
+                "repeat_metadata_source_text": "最多2次",
+                "repeat_join_method": "character_group_label",
+                "repeat_join_warning": null
               }
             ],
             "damage_type": "共鸣解放伤害",
@@ -15263,6 +15620,8 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "强化重击-1",
+            "join_variant": null,
             "classification_warnings": []
           },
           {
@@ -15273,6 +15632,7 @@
             "coefficient_unit": "decimal_multiplier",
             "raw_coefficients": 0.116,
             "parsed_multipliers": [
+              0.116,
               0.116
             ],
             "unexpanded_multipliers": [
@@ -15280,10 +15640,13 @@
             ],
             "repeat_metadata": {
               "raw_text": "强化重击-2 | 热熔 | 伤害 | 重击 | 共鸣解放伤害 | 0 | 攻击 | 0.116 | 0.21 | 0 | 0 | 0 | 0 | 0 | 0.42 | 1 | 48.34 | 6.67 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | 强化重击-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 重击 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.116 | 大招能量 | 0.21 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.42 | 共振系数 | 1 | 削韧值 | 48.34 | 偏谐值 | 6.67 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-              "repeat_count": null,
-              "repeat_source": null,
-              "expanded_from_repeat": false,
-              "repeat_warning": null
+              "repeat_count": 2,
+              "repeat_source": "frame_sheet_join",
+              "expanded_from_repeat": true,
+              "repeat_warning": null,
+              "repeat_metadata_row_number": 2766,
+              "repeat_metadata_source_text": "最多2次",
+              "repeat_join_method": "character_group_label"
             },
             "segments": [
               {
@@ -15293,13 +15656,19 @@
                 "parsed_values_before_repeat": [
                   0.116
                 ],
-                "repeat_count": null,
-                "repeat_source": null,
+                "repeat_count": 2,
+                "repeat_source": "frame_sheet_join",
                 "expanded_values": [
+                  0.116,
                   0.116
                 ],
-                "expanded_from_repeat": false,
-                "warnings": []
+                "expanded_from_repeat": true,
+                "warnings": [],
+                "repeat_metadata_joined": true,
+                "repeat_metadata_row_number": 2766,
+                "repeat_metadata_source_text": "最多2次",
+                "repeat_join_method": "character_group_label",
+                "repeat_join_warning": null
               }
             ],
             "damage_type": "共鸣解放伤害",
@@ -15337,6 +15706,8 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "强化重击-2",
+            "join_variant": null,
             "classification_warnings": []
           },
           {
@@ -15411,6 +15782,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "强化重击-3",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           }
         ],
@@ -15488,6 +15864,8 @@
             0.7426,
             0.116,
             0.116,
+            0.116,
+            0.116,
             1.856
           ],
           "coefficient_units": [
@@ -15516,10 +15894,13 @@
               "coefficient_source_column": "倍率",
               "repeat_metadata": {
                 "raw_text": "强化重击-1 | 热熔 | 伤害 | 重击 | 共鸣解放伤害 | 0 | 攻击 | 0.116 | 0.21 | 0 | 0 | 0 | 0 | 0 | 0.42 | 1 | 48.34 | 6.67 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | 强化重击-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 重击 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.116 | 大招能量 | 0.21 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.42 | 共振系数 | 1 | 削韧值 | 48.34 | 偏谐值 | 6.67 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-                "repeat_count": null,
-                "repeat_source": null,
-                "expanded_from_repeat": false,
-                "repeat_warning": null
+                "repeat_count": 2,
+                "repeat_source": "frame_sheet_join",
+                "expanded_from_repeat": true,
+                "repeat_warning": null,
+                "repeat_metadata_row_number": 2765,
+                "repeat_metadata_source_text": "最多2次",
+                "repeat_join_method": "character_group_label"
               }
             },
             {
@@ -15530,10 +15911,13 @@
               "coefficient_source_column": "倍率",
               "repeat_metadata": {
                 "raw_text": "强化重击-2 | 热熔 | 伤害 | 重击 | 共鸣解放伤害 | 0 | 攻击 | 0.116 | 0.21 | 0 | 0 | 0 | 0 | 0 | 0.42 | 1 | 48.34 | 6.67 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | 强化重击-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 重击 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.116 | 大招能量 | 0.21 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.42 | 共振系数 | 1 | 削韧值 | 48.34 | 偏谐值 | 6.67 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-                "repeat_count": null,
-                "repeat_source": null,
-                "expanded_from_repeat": false,
-                "repeat_warning": null
+                "repeat_count": 2,
+                "repeat_source": "frame_sheet_join",
+                "expanded_from_repeat": true,
+                "repeat_warning": null,
+                "repeat_metadata_row_number": 2766,
+                "repeat_metadata_source_text": "最多2次",
+                "repeat_join_method": "character_group_label"
               }
             },
             {
@@ -16158,6 +16542,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "重击",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           }
         ],
@@ -17032,6 +17421,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "强化重击",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           }
         ],
@@ -18953,6 +19347,8 @@
         ],
         "parsed_multipliers": [
           2.008,
+          2.6774,
+          2.6774,
           2.6774
         ],
         "coefficient_rows": [
@@ -18995,7 +19391,9 @@
             ],
             "damage_type": "共鸣解放伤害",
             "skill_category": "共鸣解放",
-            "warnings": [],
+            "warnings": [
+              "C0-labelled direct damage row used as base fallback for this workbook."
+            ],
             "raw_by_header": {
               "角色/动作": "C0大招1-1",
               "属性": "热熔",
@@ -19028,6 +19426,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "大招1-1",
+            "join_variant": "C0",
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": [
               "C0-labelled direct damage row used as base fallback for this workbook."
             ]
@@ -19040,6 +19443,8 @@
             "coefficient_unit": "decimal_multiplier",
             "raw_coefficients": 2.6774,
             "parsed_multipliers": [
+              2.6774,
+              2.6774,
               2.6774
             ],
             "unexpanded_multipliers": [
@@ -19047,10 +19452,13 @@
             ],
             "repeat_metadata": {
               "raw_text": "C0大招1-2 | 热熔 | 伤害 | 共鸣解放 | 共鸣解放伤害 | 0 | 攻击 | 2.6774 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 106.67 | 224 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0大招1-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣解放 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 2.6774 | 大招能量 | 0 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0 | 共振系数 | 1 | 削韧值 | 106.67 | 偏谐值 | 224 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-              "repeat_count": null,
-              "repeat_source": null,
-              "expanded_from_repeat": false,
-              "repeat_warning": null
+              "repeat_count": 3,
+              "repeat_source": "frame_sheet_join",
+              "expanded_from_repeat": true,
+              "repeat_warning": null,
+              "repeat_metadata_row_number": 2797,
+              "repeat_metadata_source_text": "最多3次",
+              "repeat_join_method": "character_group_label"
             },
             "segments": [
               {
@@ -19060,18 +19468,27 @@
                 "parsed_values_before_repeat": [
                   2.6774
                 ],
-                "repeat_count": null,
-                "repeat_source": null,
+                "repeat_count": 3,
+                "repeat_source": "frame_sheet_join",
                 "expanded_values": [
+                  2.6774,
+                  2.6774,
                   2.6774
                 ],
-                "expanded_from_repeat": false,
-                "warnings": []
+                "expanded_from_repeat": true,
+                "warnings": [],
+                "repeat_metadata_joined": true,
+                "repeat_metadata_row_number": 2797,
+                "repeat_metadata_source_text": "最多3次",
+                "repeat_join_method": "character_group_label",
+                "repeat_join_warning": null
               }
             ],
             "damage_type": "共鸣解放伤害",
             "skill_category": "共鸣解放",
-            "warnings": [],
+            "warnings": [
+              "C0-labelled direct damage row used as base fallback for this workbook."
+            ],
             "raw_by_header": {
               "角色/动作": "C0大招1-2",
               "属性": "热熔",
@@ -19104,6 +19521,8 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "大招1-2",
+            "join_variant": "C0",
             "classification_warnings": [
               "C0-labelled direct damage row used as base fallback for this workbook."
             ]
@@ -19180,6 +19599,8 @@
               "共振削减": 0
             },
             "row_classification": "sequence_variant",
+            "normalized_label": "大招1-1",
+            "join_variant": "C3",
             "classification_warnings": []
           },
           {
@@ -19254,6 +19675,8 @@
               "共振削减": 0
             },
             "row_classification": "sequence_variant",
+            "normalized_label": "大招1-2",
+            "join_variant": "C3",
             "classification_warnings": []
           }
         ],
@@ -19329,6 +19752,8 @@
           ],
           "parsed_multipliers": [
             2.008,
+            2.6774,
+            2.6774,
             2.6774
           ],
           "coefficient_units": [
@@ -19357,10 +19782,13 @@
               "coefficient_source_column": "倍率",
               "repeat_metadata": {
                 "raw_text": "C0大招1-2 | 热熔 | 伤害 | 共鸣解放 | 共鸣解放伤害 | 0 | 攻击 | 2.6774 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 106.67 | 224 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0大招1-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣解放 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 2.6774 | 大招能量 | 0 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0 | 共振系数 | 1 | 削韧值 | 106.67 | 偏谐值 | 224 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-                "repeat_count": null,
-                "repeat_source": null,
-                "expanded_from_repeat": false,
-                "repeat_warning": null
+                "repeat_count": 3,
+                "repeat_source": "frame_sheet_join",
+                "expanded_from_repeat": true,
+                "repeat_warning": null,
+                "repeat_metadata_row_number": 2797,
+                "repeat_metadata_source_text": "最多3次",
+                "repeat_join_method": "character_group_label"
               }
             }
           ]
@@ -20059,6 +20487,8 @@
         "coefficient_unit": "decimal_multiplier",
         "raw_coefficients": 0.232,
         "parsed_multipliers": [
+          0.232,
+          0.232,
           0.232
         ],
         "coefficient_rows": [
@@ -20070,6 +20500,8 @@
             "coefficient_unit": "decimal_multiplier",
             "raw_coefficients": 0.232,
             "parsed_multipliers": [
+              0.232,
+              0.232,
               0.232
             ],
             "unexpanded_multipliers": [
@@ -20077,10 +20509,13 @@
             ],
             "repeat_metadata": {
               "raw_text": "A1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.232 | 0.42 | 0 | 2.15 | 0 | 0 | 0 | 0.84 | 1 | 16.67 | 13.34 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.232 | 大招能量 | 0.42 | 核心能量1 | 0 | 核心能量2 | 2.15 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.84 | 共振系数 | 1 | 削韧值 | 16.67 | 偏谐值 | 13.34 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-              "repeat_count": null,
-              "repeat_source": null,
-              "expanded_from_repeat": false,
-              "repeat_warning": null
+              "repeat_count": 3,
+              "repeat_source": "frame_sheet_join",
+              "expanded_from_repeat": true,
+              "repeat_warning": null,
+              "repeat_metadata_row_number": 2886,
+              "repeat_metadata_source_text": "最多3次",
+              "repeat_join_method": "character_group_label"
             },
             "segments": [
               {
@@ -20090,13 +20525,20 @@
                 "parsed_values_before_repeat": [
                   0.232
                 ],
-                "repeat_count": null,
-                "repeat_source": null,
+                "repeat_count": 3,
+                "repeat_source": "frame_sheet_join",
                 "expanded_values": [
+                  0.232,
+                  0.232,
                   0.232
                 ],
-                "expanded_from_repeat": false,
-                "warnings": []
+                "expanded_from_repeat": true,
+                "warnings": [],
+                "repeat_metadata_joined": true,
+                "repeat_metadata_row_number": 2886,
+                "repeat_metadata_source_text": "最多3次",
+                "repeat_join_method": "character_group_label",
+                "repeat_join_warning": null
               }
             ],
             "damage_type": "普攻伤害",
@@ -20134,6 +20576,8 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A1",
+            "join_variant": null,
             "classification_warnings": []
           }
         ],
@@ -20204,6 +20648,8 @@
         "base": {
           "raw_coefficients": 0.232,
           "parsed_multipliers": [
+            0.232,
+            0.232,
             0.232
           ],
           "coefficient_units": [
@@ -20218,10 +20664,13 @@
               "coefficient_source_column": "倍率",
               "repeat_metadata": {
                 "raw_text": "A1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.232 | 0.42 | 0 | 2.15 | 0 | 0 | 0 | 0.84 | 1 | 16.67 | 13.34 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.232 | 大招能量 | 0.42 | 核心能量1 | 0 | 核心能量2 | 2.15 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.84 | 共振系数 | 1 | 削韧值 | 16.67 | 偏谐值 | 13.34 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-                "repeat_count": null,
-                "repeat_source": null,
-                "expanded_from_repeat": false,
-                "repeat_warning": null
+                "repeat_count": 3,
+                "repeat_source": "frame_sheet_join",
+                "expanded_from_repeat": true,
+                "repeat_warning": null,
+                "repeat_metadata_row_number": 2886,
+                "repeat_metadata_source_text": "最多3次",
+                "repeat_join_method": "character_group_label"
               }
             }
           ]
@@ -21413,6 +21862,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A2-1",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           },
           {
@@ -21487,6 +21941,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A2-2",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           }
         ],
@@ -25552,6 +26011,8 @@
           0.1165,
           0.0389,
           0.0389,
+          0.0389,
+          0.0389,
           0.8154
         ],
         "coefficient_rows": [
@@ -25627,6 +26088,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A3-1",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           },
           {
@@ -25637,6 +26103,8 @@
             "coefficient_unit": "decimal_multiplier",
             "raw_coefficients": 0.0389,
             "parsed_multipliers": [
+              0.0389,
+              0.0389,
               0.0389
             ],
             "unexpanded_multipliers": [
@@ -25644,10 +26112,13 @@
             ],
             "repeat_metadata": {
               "raw_text": "A3-2 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0389 | 0.07 | 0 | 0.67 | 0 | 0 | 0 | 0.14 | 1 | 2.79 | 2.24 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0389 | 大招能量 | 0.07 | 核心能量1 | 0 | 核心能量2 | 0.67 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.14 | 共振系数 | 1 | 削韧值 | 2.79 | 偏谐值 | 2.24 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-              "repeat_count": null,
-              "repeat_source": null,
-              "expanded_from_repeat": false,
-              "repeat_warning": null
+              "repeat_count": 3,
+              "repeat_source": "frame_sheet_join",
+              "expanded_from_repeat": true,
+              "repeat_warning": null,
+              "repeat_metadata_row_number": 2890,
+              "repeat_metadata_source_text": "最多3次",
+              "repeat_join_method": "character_group_label"
             },
             "segments": [
               {
@@ -25657,13 +26128,20 @@
                 "parsed_values_before_repeat": [
                   0.0389
                 ],
-                "repeat_count": null,
-                "repeat_source": null,
+                "repeat_count": 3,
+                "repeat_source": "frame_sheet_join",
                 "expanded_values": [
+                  0.0389,
+                  0.0389,
                   0.0389
                 ],
-                "expanded_from_repeat": false,
-                "warnings": []
+                "expanded_from_repeat": true,
+                "warnings": [],
+                "repeat_metadata_joined": true,
+                "repeat_metadata_row_number": 2890,
+                "repeat_metadata_source_text": "最多3次",
+                "repeat_join_method": "character_group_label",
+                "repeat_join_warning": null
               }
             ],
             "damage_type": "普攻伤害",
@@ -25701,6 +26179,8 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A3-2",
+            "join_variant": null,
             "classification_warnings": []
           },
           {
@@ -25775,6 +26255,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A3-3",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           },
           {
@@ -25849,6 +26334,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A3-4",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           },
           {
@@ -25923,6 +26413,8 @@
               "共振削减": 0
             },
             "row_classification": "dodge_counter",
+            "normalized_label": "A3-1D",
+            "join_variant": null,
             "classification_warnings": []
           },
           {
@@ -25997,6 +26489,8 @@
               "共振削减": 0
             },
             "row_classification": "dodge_counter",
+            "normalized_label": "A3-2D",
+            "join_variant": null,
             "classification_warnings": []
           },
           {
@@ -26071,6 +26565,8 @@
               "共振削减": 0
             },
             "row_classification": "dodge_counter",
+            "normalized_label": "A3-3D",
+            "join_variant": null,
             "classification_warnings": []
           },
           {
@@ -26145,6 +26641,8 @@
               "共振削减": 0
             },
             "row_classification": "dodge_counter",
+            "normalized_label": "A3-4D",
+            "join_variant": null,
             "classification_warnings": []
           }
         ],
@@ -26222,6 +26720,8 @@
             0.1165,
             0.0389,
             0.0389,
+            0.0389,
+            0.0389,
             0.8154
           ],
           "coefficient_units": [
@@ -26250,10 +26750,13 @@
               "coefficient_source_column": "倍率",
               "repeat_metadata": {
                 "raw_text": "A3-2 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0389 | 0.07 | 0 | 0.67 | 0 | 0 | 0 | 0.14 | 1 | 2.79 | 2.24 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0389 | 大招能量 | 0.07 | 核心能量1 | 0 | 核心能量2 | 0.67 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.14 | 共振系数 | 1 | 削韧值 | 2.79 | 偏谐值 | 2.24 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-                "repeat_count": null,
-                "repeat_source": null,
-                "expanded_from_repeat": false,
-                "repeat_warning": null
+                "repeat_count": 3,
+                "repeat_source": "frame_sheet_join",
+                "expanded_from_repeat": true,
+                "repeat_warning": null,
+                "repeat_metadata_row_number": 2890,
+                "repeat_metadata_source_text": "最多3次",
+                "repeat_join_method": "character_group_label"
               }
             },
             {
@@ -27541,6 +28044,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A4-1",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           },
           {
@@ -27615,6 +28123,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "A4-2",
+            "join_variant": null,
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": []
           }
         ],
@@ -33109,7 +33622,10 @@
         ],
         "parsed_multipliers": [
           0.179,
+          0.179,
           0.3579,
+          0.3579,
+          0.179,
           0.179,
           1.7893,
           0.3579
@@ -33123,6 +33639,7 @@
             "coefficient_unit": "decimal_multiplier",
             "raw_coefficients": 0.179,
             "parsed_multipliers": [
+              0.179,
               0.179
             ],
             "unexpanded_multipliers": [
@@ -33130,10 +33647,13 @@
             ],
             "repeat_metadata": {
               "raw_text": "C0强化E-1 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.179 | 0.25 | 0 | 0 | 0 | 0 | 0 | 0.5 | 1 | 10 | 8 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.179 | 大招能量 | 0.25 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.5 | 共振系数 | 1 | 削韧值 | 10 | 偏谐值 | 8 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-              "repeat_count": null,
-              "repeat_source": null,
-              "expanded_from_repeat": false,
-              "repeat_warning": null
+              "repeat_count": 2,
+              "repeat_source": "frame_sheet_join",
+              "expanded_from_repeat": true,
+              "repeat_warning": null,
+              "repeat_metadata_row_number": 2925,
+              "repeat_metadata_source_text": "最多2次",
+              "repeat_join_method": "character_group_label"
             },
             "segments": [
               {
@@ -33143,18 +33663,26 @@
                 "parsed_values_before_repeat": [
                   0.179
                 ],
-                "repeat_count": null,
-                "repeat_source": null,
+                "repeat_count": 2,
+                "repeat_source": "frame_sheet_join",
                 "expanded_values": [
+                  0.179,
                   0.179
                 ],
-                "expanded_from_repeat": false,
-                "warnings": []
+                "expanded_from_repeat": true,
+                "warnings": [],
+                "repeat_metadata_joined": true,
+                "repeat_metadata_row_number": 2925,
+                "repeat_metadata_source_text": "最多2次",
+                "repeat_join_method": "character_group_label",
+                "repeat_join_warning": null
               }
             ],
             "damage_type": "共鸣解放伤害",
             "skill_category": "共鸣技能",
-            "warnings": [],
+            "warnings": [
+              "C0-labelled direct damage row used as base fallback for this workbook."
+            ],
             "raw_by_header": {
               "角色/动作": "C0强化E-1",
               "属性": "热熔",
@@ -33187,6 +33715,8 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "强化E-1",
+            "join_variant": "C0",
             "classification_warnings": [
               "C0-labelled direct damage row used as base fallback for this workbook."
             ]
@@ -33199,6 +33729,7 @@
             "coefficient_unit": "decimal_multiplier",
             "raw_coefficients": 0.3579,
             "parsed_multipliers": [
+              0.3579,
               0.3579
             ],
             "unexpanded_multipliers": [
@@ -33206,10 +33737,13 @@
             ],
             "repeat_metadata": {
               "raw_text": "C0强化E-2 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.3579 | 0.5 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 20 | 16 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.3579 | 大招能量 | 0.5 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 1 | 共振系数 | 1 | 削韧值 | 20 | 偏谐值 | 16 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-              "repeat_count": null,
-              "repeat_source": null,
-              "expanded_from_repeat": false,
-              "repeat_warning": null
+              "repeat_count": 2,
+              "repeat_source": "frame_sheet_join",
+              "expanded_from_repeat": true,
+              "repeat_warning": null,
+              "repeat_metadata_row_number": 2926,
+              "repeat_metadata_source_text": "最多2次",
+              "repeat_join_method": "character_group_label"
             },
             "segments": [
               {
@@ -33219,18 +33753,26 @@
                 "parsed_values_before_repeat": [
                   0.3579
                 ],
-                "repeat_count": null,
-                "repeat_source": null,
+                "repeat_count": 2,
+                "repeat_source": "frame_sheet_join",
                 "expanded_values": [
+                  0.3579,
                   0.3579
                 ],
-                "expanded_from_repeat": false,
-                "warnings": []
+                "expanded_from_repeat": true,
+                "warnings": [],
+                "repeat_metadata_joined": true,
+                "repeat_metadata_row_number": 2926,
+                "repeat_metadata_source_text": "最多2次",
+                "repeat_join_method": "character_group_label",
+                "repeat_join_warning": null
               }
             ],
             "damage_type": "共鸣解放伤害",
             "skill_category": "共鸣技能",
-            "warnings": [],
+            "warnings": [
+              "C0-labelled direct damage row used as base fallback for this workbook."
+            ],
             "raw_by_header": {
               "角色/动作": "C0强化E-2",
               "属性": "热熔",
@@ -33263,6 +33805,8 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "强化E-2",
+            "join_variant": "C0",
             "classification_warnings": [
               "C0-labelled direct damage row used as base fallback for this workbook."
             ]
@@ -33275,6 +33819,7 @@
             "coefficient_unit": "decimal_multiplier",
             "raw_coefficients": 0.179,
             "parsed_multipliers": [
+              0.179,
               0.179
             ],
             "unexpanded_multipliers": [
@@ -33282,10 +33827,13 @@
             ],
             "repeat_metadata": {
               "raw_text": "C0强化E-3 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.179 | 0.25 | 0 | 0 | 0 | 0 | 0 | 0.5 | 1 | 10 | 8 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.179 | 大招能量 | 0.25 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.5 | 共振系数 | 1 | 削韧值 | 10 | 偏谐值 | 8 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-              "repeat_count": null,
-              "repeat_source": null,
-              "expanded_from_repeat": false,
-              "repeat_warning": null
+              "repeat_count": 2,
+              "repeat_source": "frame_sheet_join",
+              "expanded_from_repeat": true,
+              "repeat_warning": null,
+              "repeat_metadata_row_number": 2927,
+              "repeat_metadata_source_text": "最多2次",
+              "repeat_join_method": "character_group_label"
             },
             "segments": [
               {
@@ -33295,18 +33843,26 @@
                 "parsed_values_before_repeat": [
                   0.179
                 ],
-                "repeat_count": null,
-                "repeat_source": null,
+                "repeat_count": 2,
+                "repeat_source": "frame_sheet_join",
                 "expanded_values": [
+                  0.179,
                   0.179
                 ],
-                "expanded_from_repeat": false,
-                "warnings": []
+                "expanded_from_repeat": true,
+                "warnings": [],
+                "repeat_metadata_joined": true,
+                "repeat_metadata_row_number": 2927,
+                "repeat_metadata_source_text": "最多2次",
+                "repeat_join_method": "character_group_label",
+                "repeat_join_warning": null
               }
             ],
             "damage_type": "共鸣解放伤害",
             "skill_category": "共鸣技能",
-            "warnings": [],
+            "warnings": [
+              "C0-labelled direct damage row used as base fallback for this workbook."
+            ],
             "raw_by_header": {
               "角色/动作": "C0强化E-3",
               "属性": "热熔",
@@ -33339,6 +33895,8 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "强化E-3",
+            "join_variant": "C0",
             "classification_warnings": [
               "C0-labelled direct damage row used as base fallback for this workbook."
             ]
@@ -33382,7 +33940,9 @@
             ],
             "damage_type": "共鸣解放伤害",
             "skill_category": "共鸣技能",
-            "warnings": [],
+            "warnings": [
+              "C0-labelled direct damage row used as base fallback for this workbook."
+            ],
             "raw_by_header": {
               "角色/动作": "C0强化E-4",
               "属性": "热熔",
@@ -33415,6 +33975,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "强化E-4",
+            "join_variant": "C0",
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": [
               "C0-labelled direct damage row used as base fallback for this workbook."
             ]
@@ -33458,7 +34023,9 @@
             ],
             "damage_type": "共鸣解放伤害",
             "skill_category": "共鸣技能",
-            "warnings": [],
+            "warnings": [
+              "C0-labelled direct damage row used as base fallback for this workbook."
+            ],
             "raw_by_header": {
               "角色/动作": "C0强化E-5",
               "属性": "热熔",
@@ -33491,6 +34058,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "强化E-5",
+            "join_variant": "C0",
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": [
               "C0-labelled direct damage row used as base fallback for this workbook."
             ]
@@ -33567,6 +34139,8 @@
               "共振削减": 0
             },
             "row_classification": "sequence_variant",
+            "normalized_label": "强化E-1",
+            "join_variant": "C2",
             "classification_warnings": []
           },
           {
@@ -33641,6 +34215,8 @@
               "共振削减": 0
             },
             "row_classification": "sequence_variant",
+            "normalized_label": "强化E-2",
+            "join_variant": "C2",
             "classification_warnings": []
           },
           {
@@ -33715,6 +34291,8 @@
               "共振削减": 0
             },
             "row_classification": "sequence_variant",
+            "normalized_label": "强化E-3",
+            "join_variant": "C2",
             "classification_warnings": []
           },
           {
@@ -33789,6 +34367,8 @@
               "共振削减": 0
             },
             "row_classification": "sequence_variant",
+            "normalized_label": "强化E-4",
+            "join_variant": "C2",
             "classification_warnings": []
           },
           {
@@ -33863,6 +34443,8 @@
               "共振削减": 0
             },
             "row_classification": "sequence_variant",
+            "normalized_label": "强化E-5",
+            "join_variant": "C2",
             "classification_warnings": []
           },
           {
@@ -33937,6 +34519,8 @@
               "共振削减": 0
             },
             "row_classification": "bonus_effect",
+            "normalized_label": "强化E-震谐",
+            "join_variant": null,
             "classification_warnings": []
           },
           {
@@ -34011,6 +34595,8 @@
               "共振削减": 0
             },
             "row_classification": "bonus_effect",
+            "normalized_label": "强化E-震谐增幅",
+            "join_variant": null,
             "classification_warnings": []
           }
         ],
@@ -34087,7 +34673,10 @@
           ],
           "parsed_multipliers": [
             0.179,
+            0.179,
             0.3579,
+            0.3579,
+            0.179,
             0.179,
             1.7893,
             0.3579
@@ -34104,10 +34693,13 @@
               "coefficient_source_column": "倍率",
               "repeat_metadata": {
                 "raw_text": "C0强化E-1 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.179 | 0.25 | 0 | 0 | 0 | 0 | 0 | 0.5 | 1 | 10 | 8 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.179 | 大招能量 | 0.25 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.5 | 共振系数 | 1 | 削韧值 | 10 | 偏谐值 | 8 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-                "repeat_count": null,
-                "repeat_source": null,
-                "expanded_from_repeat": false,
-                "repeat_warning": null
+                "repeat_count": 2,
+                "repeat_source": "frame_sheet_join",
+                "expanded_from_repeat": true,
+                "repeat_warning": null,
+                "repeat_metadata_row_number": 2925,
+                "repeat_metadata_source_text": "最多2次",
+                "repeat_join_method": "character_group_label"
               }
             },
             {
@@ -34118,10 +34710,13 @@
               "coefficient_source_column": "倍率",
               "repeat_metadata": {
                 "raw_text": "C0强化E-2 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.3579 | 0.5 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 20 | 16 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.3579 | 大招能量 | 0.5 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 1 | 共振系数 | 1 | 削韧值 | 20 | 偏谐值 | 16 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-                "repeat_count": null,
-                "repeat_source": null,
-                "expanded_from_repeat": false,
-                "repeat_warning": null
+                "repeat_count": 2,
+                "repeat_source": "frame_sheet_join",
+                "expanded_from_repeat": true,
+                "repeat_warning": null,
+                "repeat_metadata_row_number": 2926,
+                "repeat_metadata_source_text": "最多2次",
+                "repeat_join_method": "character_group_label"
               }
             },
             {
@@ -34132,10 +34727,13 @@
               "coefficient_source_column": "倍率",
               "repeat_metadata": {
                 "raw_text": "C0强化E-3 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.179 | 0.25 | 0 | 0 | 0 | 0 | 0 | 0.5 | 1 | 10 | 8 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.179 | 大招能量 | 0.25 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.5 | 共振系数 | 1 | 削韧值 | 10 | 偏谐值 | 8 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-                "repeat_count": null,
-                "repeat_source": null,
-                "expanded_from_repeat": false,
-                "repeat_warning": null
+                "repeat_count": 2,
+                "repeat_source": "frame_sheet_join",
+                "expanded_from_repeat": true,
+                "repeat_warning": null,
+                "repeat_metadata_row_number": 2927,
+                "repeat_metadata_source_text": "最多2次",
+                "repeat_join_method": "character_group_label"
               }
             },
             {
@@ -39220,7 +39818,16 @@
         "parsed_multipliers": [
           0.179,
           0.1492,
+          0.1492,
+          0.1492,
+          0.1492,
+          0.1492,
+          0.1492,
           0.2386,
+          0.2386,
+          0.2386,
+          0.5965,
+          0.5965,
           0.5965
         ],
         "coefficient_rows": [
@@ -39263,7 +39870,9 @@
             ],
             "damage_type": "共鸣解放伤害",
             "skill_category": "共鸣技能",
-            "warnings": [],
+            "warnings": [
+              "C0-labelled direct damage row used as base fallback for this workbook."
+            ],
             "raw_by_header": {
               "角色/动作": "C0强化E-1",
               "属性": "热熔",
@@ -39296,6 +39905,11 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "强化E-1",
+            "join_variant": "C0",
+            "repeat_join_warnings": [
+              "No frame-sheet repeat metadata matched this base coefficient row."
+            ],
             "classification_warnings": [
               "C0-labelled direct damage row used as base fallback for this workbook."
             ]
@@ -39308,6 +39922,11 @@
             "coefficient_unit": "decimal_multiplier",
             "raw_coefficients": 0.1492,
             "parsed_multipliers": [
+              0.1492,
+              0.1492,
+              0.1492,
+              0.1492,
+              0.1492,
               0.1492
             ],
             "unexpanded_multipliers": [
@@ -39315,10 +39934,13 @@
             ],
             "repeat_metadata": {
               "raw_text": "C0强化E-2 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.1492 | 0.21 | 0 | 0 | 0 | 0 | 0 | 0.42 | 1 | 8.34 | 6.67 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.1492 | 大招能量 | 0.21 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.42 | 共振系数 | 1 | 削韧值 | 8.34 | 偏谐值 | 6.67 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-              "repeat_count": null,
-              "repeat_source": null,
-              "expanded_from_repeat": false,
-              "repeat_warning": null
+              "repeat_count": 6,
+              "repeat_source": "frame_sheet_join",
+              "expanded_from_repeat": true,
+              "repeat_warning": null,
+              "repeat_metadata_row_number": 2781,
+              "repeat_metadata_source_text": "最多6次",
+              "repeat_join_method": "character_group_label"
             },
             "segments": [
               {
@@ -39328,18 +39950,30 @@
                 "parsed_values_before_repeat": [
                   0.1492
                 ],
-                "repeat_count": null,
-                "repeat_source": null,
+                "repeat_count": 6,
+                "repeat_source": "frame_sheet_join",
                 "expanded_values": [
+                  0.1492,
+                  0.1492,
+                  0.1492,
+                  0.1492,
+                  0.1492,
                   0.1492
                 ],
-                "expanded_from_repeat": false,
-                "warnings": []
+                "expanded_from_repeat": true,
+                "warnings": [],
+                "repeat_metadata_joined": true,
+                "repeat_metadata_row_number": 2781,
+                "repeat_metadata_source_text": "最多6次",
+                "repeat_join_method": "character_group_label",
+                "repeat_join_warning": null
               }
             ],
             "damage_type": "共鸣解放伤害",
             "skill_category": "共鸣技能",
-            "warnings": [],
+            "warnings": [
+              "C0-labelled direct damage row used as base fallback for this workbook."
+            ],
             "raw_by_header": {
               "角色/动作": "C0强化E-2",
               "属性": "热熔",
@@ -39372,6 +40006,8 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "强化E-2",
+            "join_variant": "C0",
             "classification_warnings": [
               "C0-labelled direct damage row used as base fallback for this workbook."
             ]
@@ -39384,6 +40020,8 @@
             "coefficient_unit": "decimal_multiplier",
             "raw_coefficients": 0.2386,
             "parsed_multipliers": [
+              0.2386,
+              0.2386,
               0.2386
             ],
             "unexpanded_multipliers": [
@@ -39391,10 +40029,13 @@
             ],
             "repeat_metadata": {
               "raw_text": "C0强化E-3 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.2386 | 0.34 | 0 | 0 | 0 | 0 | 0 | 0.67 | 1 | 53.34 | 10.67 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.2386 | 大招能量 | 0.34 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.67 | 共振系数 | 1 | 削韧值 | 53.34 | 偏谐值 | 10.67 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-              "repeat_count": null,
-              "repeat_source": null,
-              "expanded_from_repeat": false,
-              "repeat_warning": null
+              "repeat_count": 3,
+              "repeat_source": "frame_sheet_join",
+              "expanded_from_repeat": true,
+              "repeat_warning": null,
+              "repeat_metadata_row_number": 2782,
+              "repeat_metadata_source_text": "最多3次",
+              "repeat_join_method": "character_group_label"
             },
             "segments": [
               {
@@ -39404,18 +40045,27 @@
                 "parsed_values_before_repeat": [
                   0.2386
                 ],
-                "repeat_count": null,
-                "repeat_source": null,
+                "repeat_count": 3,
+                "repeat_source": "frame_sheet_join",
                 "expanded_values": [
+                  0.2386,
+                  0.2386,
                   0.2386
                 ],
-                "expanded_from_repeat": false,
-                "warnings": []
+                "expanded_from_repeat": true,
+                "warnings": [],
+                "repeat_metadata_joined": true,
+                "repeat_metadata_row_number": 2782,
+                "repeat_metadata_source_text": "最多3次",
+                "repeat_join_method": "character_group_label",
+                "repeat_join_warning": null
               }
             ],
             "damage_type": "共鸣解放伤害",
             "skill_category": "共鸣技能",
-            "warnings": [],
+            "warnings": [
+              "C0-labelled direct damage row used as base fallback for this workbook."
+            ],
             "raw_by_header": {
               "角色/动作": "C0强化E-3",
               "属性": "热熔",
@@ -39448,6 +40098,8 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "强化E-3",
+            "join_variant": "C0",
             "classification_warnings": [
               "C0-labelled direct damage row used as base fallback for this workbook."
             ]
@@ -39460,6 +40112,8 @@
             "coefficient_unit": "decimal_multiplier",
             "raw_coefficients": 0.5965,
             "parsed_multipliers": [
+              0.5965,
+              0.5965,
               0.5965
             ],
             "unexpanded_multipliers": [
@@ -39467,10 +40121,13 @@
             ],
             "repeat_metadata": {
               "raw_text": "C0强化E-4 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.5965 | 0.84 | 0 | 0 | 0 | 0 | 0 | 1.67 | 1 | 33.34 | 26.67 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-4 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.5965 | 大招能量 | 0.84 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 1.67 | 共振系数 | 1 | 削韧值 | 33.34 | 偏谐值 | 26.67 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-              "repeat_count": null,
-              "repeat_source": null,
-              "expanded_from_repeat": false,
-              "repeat_warning": null
+              "repeat_count": 3,
+              "repeat_source": "frame_sheet_join",
+              "expanded_from_repeat": true,
+              "repeat_warning": null,
+              "repeat_metadata_row_number": 2783,
+              "repeat_metadata_source_text": "最多3次",
+              "repeat_join_method": "character_group_label"
             },
             "segments": [
               {
@@ -39480,18 +40137,27 @@
                 "parsed_values_before_repeat": [
                   0.5965
                 ],
-                "repeat_count": null,
-                "repeat_source": null,
+                "repeat_count": 3,
+                "repeat_source": "frame_sheet_join",
                 "expanded_values": [
+                  0.5965,
+                  0.5965,
                   0.5965
                 ],
-                "expanded_from_repeat": false,
-                "warnings": []
+                "expanded_from_repeat": true,
+                "warnings": [],
+                "repeat_metadata_joined": true,
+                "repeat_metadata_row_number": 2783,
+                "repeat_metadata_source_text": "最多3次",
+                "repeat_join_method": "character_group_label",
+                "repeat_join_warning": null
               }
             ],
             "damage_type": "共鸣解放伤害",
             "skill_category": "共鸣技能",
-            "warnings": [],
+            "warnings": [
+              "C0-labelled direct damage row used as base fallback for this workbook."
+            ],
             "raw_by_header": {
               "角色/动作": "C0强化E-4",
               "属性": "热熔",
@@ -39524,6 +40190,8 @@
               "共振削减": 0
             },
             "row_classification": "base_damage",
+            "normalized_label": "强化E-4",
+            "join_variant": "C0",
             "classification_warnings": [
               "C0-labelled direct damage row used as base fallback for this workbook."
             ]
@@ -39600,6 +40268,8 @@
               "共振削减": 0
             },
             "row_classification": "sequence_variant",
+            "normalized_label": "强化E-1",
+            "join_variant": "C2",
             "classification_warnings": []
           },
           {
@@ -39674,6 +40344,8 @@
               "共振削减": 0
             },
             "row_classification": "sequence_variant",
+            "normalized_label": "强化E-2",
+            "join_variant": "C2",
             "classification_warnings": []
           },
           {
@@ -39748,6 +40420,8 @@
               "共振削减": 0
             },
             "row_classification": "sequence_variant",
+            "normalized_label": "强化E-3",
+            "join_variant": "C2",
             "classification_warnings": []
           },
           {
@@ -39822,6 +40496,8 @@
               "共振削减": 0
             },
             "row_classification": "sequence_variant",
+            "normalized_label": "强化E-4",
+            "join_variant": "C2",
             "classification_warnings": []
           },
           {
@@ -39896,6 +40572,8 @@
               "共振削减": 0
             },
             "row_classification": "bonus_effect",
+            "normalized_label": "强化E-震谐",
+            "join_variant": null,
             "classification_warnings": []
           },
           {
@@ -39970,6 +40648,8 @@
               "共振削减": 0
             },
             "row_classification": "bonus_effect",
+            "normalized_label": "强化E-震谐增幅",
+            "join_variant": null,
             "classification_warnings": []
           }
         ],
@@ -40048,7 +40728,16 @@
           "parsed_multipliers": [
             0.179,
             0.1492,
+            0.1492,
+            0.1492,
+            0.1492,
+            0.1492,
+            0.1492,
             0.2386,
+            0.2386,
+            0.2386,
+            0.5965,
+            0.5965,
             0.5965
           ],
           "coefficient_units": [
@@ -40077,10 +40766,13 @@
               "coefficient_source_column": "倍率",
               "repeat_metadata": {
                 "raw_text": "C0强化E-2 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.1492 | 0.21 | 0 | 0 | 0 | 0 | 0 | 0.42 | 1 | 8.34 | 6.67 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.1492 | 大招能量 | 0.21 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.42 | 共振系数 | 1 | 削韧值 | 8.34 | 偏谐值 | 6.67 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-                "repeat_count": null,
-                "repeat_source": null,
-                "expanded_from_repeat": false,
-                "repeat_warning": null
+                "repeat_count": 6,
+                "repeat_source": "frame_sheet_join",
+                "expanded_from_repeat": true,
+                "repeat_warning": null,
+                "repeat_metadata_row_number": 2781,
+                "repeat_metadata_source_text": "最多6次",
+                "repeat_join_method": "character_group_label"
               }
             },
             {
@@ -40091,10 +40783,13 @@
               "coefficient_source_column": "倍率",
               "repeat_metadata": {
                 "raw_text": "C0强化E-3 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.2386 | 0.34 | 0 | 0 | 0 | 0 | 0 | 0.67 | 1 | 53.34 | 10.67 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.2386 | 大招能量 | 0.34 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.67 | 共振系数 | 1 | 削韧值 | 53.34 | 偏谐值 | 10.67 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-                "repeat_count": null,
-                "repeat_source": null,
-                "expanded_from_repeat": false,
-                "repeat_warning": null
+                "repeat_count": 3,
+                "repeat_source": "frame_sheet_join",
+                "expanded_from_repeat": true,
+                "repeat_warning": null,
+                "repeat_metadata_row_number": 2782,
+                "repeat_metadata_source_text": "最多3次",
+                "repeat_join_method": "character_group_label"
               }
             },
             {
@@ -40105,10 +40800,13 @@
               "coefficient_source_column": "倍率",
               "repeat_metadata": {
                 "raw_text": "C0强化E-4 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.5965 | 0.84 | 0 | 0 | 0 | 0 | 0 | 1.67 | 1 | 33.34 | 26.67 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-4 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.5965 | 大招能量 | 0.84 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 1.67 | 共振系数 | 1 | 削韧值 | 33.34 | 偏谐值 | 26.67 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-                "repeat_count": null,
-                "repeat_source": null,
-                "expanded_from_repeat": false,
-                "repeat_warning": null
+                "repeat_count": 3,
+                "repeat_source": "frame_sheet_join",
+                "expanded_from_repeat": true,
+                "repeat_warning": null,
+                "repeat_metadata_row_number": 2783,
+                "repeat_metadata_source_text": "最多3次",
+                "repeat_join_method": "character_group_label"
               }
             }
           ]
