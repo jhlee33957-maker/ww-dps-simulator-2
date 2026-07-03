@@ -47,7 +47,10 @@ def main() -> None:
         assert "aemeath_qte_intro_mech" not in sim.get_policy_action_ids()
         assert candidate_ids.issubset({"aemeath_qte_intro_human", "aemeath_qte_intro_mech"})
         for candidate in qte_action_candidates["candidates"]:
-            assert candidate["damage_candidate"]["normalized_action_classification"] == "qte_intro"
+            assert candidate["simulation_executable"] is False
+            assert candidate["policy_selectable"] is False
+            assert candidate["damage_candidate"]["trigger_classification"] == "qte_intro"
+            assert "damage_bonus_category" in candidate["damage_candidate"]
             assert candidate["proposed_action_id"] not in sim.get_policy_action_ids()
         assert all(
             candidate["proposed_action_id"] not in sim.get_policy_action_ids()

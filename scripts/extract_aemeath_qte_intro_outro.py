@@ -21,6 +21,10 @@ AEMEATH_MECH = "\u673a\u5175\u7231\u5f25\u65af"
 VARIATION = "\u53d8\u594f"
 VARIATION_DAMAGE = "\u53d8\u594f\u4f24\u5bb3"
 RESONANCE_SKILL = "\u5171\u9e23\u6280\u80fd"
+TRIGGER_QTE_INTRO = "qte_intro"
+SOURCE_INTRO_SKILL_DAMAGE = "intro_skill_damage"
+DAMAGE_BONUS_UNMODELED_INTRO = "none_or_unmodeled_intro"
+DAMAGE_BONUS_RESONANCE_SKILL = "resonance_skill"
 OUTRO = "\u5ef6\u594f"
 INTRO = "\u767b\u53f0"
 INVULNERABLE_SWAP_LOCK = "\u65e0\u654c\u671f\u95f4\u4e0d\u80fd\u5207\u4eba"
@@ -421,13 +425,16 @@ def _build_action_candidate(
             "action_type": "swap",
             "policy_selectable": False,
             "review_only": True,
+            "trigger_classification": damage_candidate["trigger_classification"],
+            "source_damage_label": damage_candidate["source_damage_label"],
+            "damage_bonus_category": damage_candidate["damage_bonus_category"],
             "action_time": timing_candidate["action_time_seconds"],
             "combat_time_cost": timing_candidate["combat_time_cost_seconds"],
             "hits": [
                 {"damage_multiplier": multiplier}
                 for multiplier in damage_candidate["parsed_multipliers"]
             ],
-            "tags": ["qte", "intro", "variation"],
+            "tags": ["qte", "intro"],
             "notes": ["This is not applied to simulation yet."],
         },
         "safe_to_implement_later": False,
@@ -548,8 +555,18 @@ def _action_damage_candidate(coefficient_rows: list[dict[str, Any]]) -> dict[str
         "coefficient_source_column": coefficient_source_column,
         "coefficient_source_column_index": "9",
         "category_like_fields": _category_like_fields(coefficient_rows),
+        "trigger_classification": classification["trigger_classification"],
+        "source_damage_label": classification["source_damage_label"],
+        "raw_source_damage_label": damage_type,
+        "damage_bonus_category": classification["damage_bonus_category"],
+        "damage_bonus_category_confidence": classification["damage_bonus_category_confidence"],
+        "damage_bonus_category_reason": classification["damage_bonus_category_reason"],
         "normalized_action_classification": classification["normalized_action_classification"],
         "normalized_damage_category": classification["normalized_damage_category"],
+        "normalized_damage_category_deprecated_note": (
+            "Deprecated. Use trigger_classification/source_damage_label/damage_bonus_category instead. "
+            "This is not a modeled damage bonus category."
+        ),
         "qte_classification_confidence": classification["qte_classification_confidence"],
         "classification_warnings": classification["classification_warnings"],
         "raw_coefficients": raw_coefficients,
@@ -570,13 +587,32 @@ def _qte_classification(
     has_variation_damage = VARIATION_DAMAGE in str(raw_damage_type or "")
     raw_skill_conflict = raw_skill_category not in (None, "", VARIATION)
     warnings = []
-    normalized_action = "qte_intro" if has_qte_label or has_variation_damage else None
+    trigger_classification = TRIGGER_QTE_INTRO if has_qte_label or has_variation_damage else None
+    source_damage_label = SOURCE_INTRO_SKILL_DAMAGE if has_variation_damage else None
     normalized_damage = "variation_damage" if has_variation_damage else None
+    damage_bonus_category = None
+    damage_bonus_confidence = "low"
+    damage_bonus_reason = "No modeled damage bonus category could be inferred from source rows."
+
+    if raw_skill_category == RESONANCE_SKILL:
+        damage_bonus_category = DAMAGE_BONUS_RESONANCE_SKILL
+        damage_bonus_confidence = "high" if has_qte_label and has_variation_damage else "medium"
+        damage_bonus_reason = (
+            "Triggered as QTE/Intro, but the source skill category is Resonance Skill; "
+            "future damage bonus application should use resonance_skill."
+        )
+    elif raw_skill_category == VARIATION and has_qte_label:
+        damage_bonus_category = DAMAGE_BONUS_UNMODELED_INTRO
+        damage_bonus_confidence = "medium"
+        damage_bonus_reason = (
+            "QTE/Intro action with an intro-skill source damage label, but no modeled damage bonus "
+            "category is confirmed for Human QTE yet."
+        )
 
     if raw_skill_conflict and has_qte_label and has_variation_damage:
         warnings.append(
             f"Raw skill category is {raw_skill_category!r} while damage type is {raw_damage_type!r}; "
-            "candidate is classified as QTE by source label and damage type. Preserve raw category for review."
+            "candidate is triggered as QTE/Intro by source label and damage label. Preserve raw category for review."
         )
 
     if has_qte_label and has_variation_damage and not raw_skill_conflict:
@@ -591,7 +627,12 @@ def _qte_classification(
             warnings.append("Variation damage type is missing from coefficient rows.")
 
     return {
-        "normalized_action_classification": normalized_action,
+        "trigger_classification": trigger_classification,
+        "source_damage_label": source_damage_label,
+        "damage_bonus_category": damage_bonus_category,
+        "damage_bonus_category_confidence": damage_bonus_confidence,
+        "damage_bonus_category_reason": damage_bonus_reason,
+        "normalized_action_classification": trigger_classification,
         "normalized_damage_category": normalized_damage,
         "qte_classification_confidence": confidence,
         "classification_warnings": warnings,
@@ -910,28 +951,44 @@ def _first_skill_index_source_column(rows: list[dict[str, Any]], index: str) -> 
 
 def _classification_summary(candidates: list[dict[str, Any]]) -> dict[str, Any]:
     conflicts = []
-    qte_intro_count = 0
+    trigger_counts: dict[str, int] = {}
+    source_damage_counts: dict[str, int] = {}
+    damage_bonus_counts: dict[str, int] = {}
     for candidate in candidates:
         damage = candidate["damage_candidate"]
-        if damage.get("normalized_action_classification") == "qte_intro":
-            qte_intro_count += 1
+        _count_value(trigger_counts, damage.get("trigger_classification"))
+        _count_value(source_damage_counts, damage.get("source_damage_label"))
+        _count_value(damage_bonus_counts, damage.get("damage_bonus_category"))
         for warning in damage.get("classification_warnings", []):
             conflicts.append(
                 {
                     "candidate_id": candidate["candidate_id"],
                     "raw_skill_category": damage.get("raw_skill_category"),
                     "raw_damage_type": damage.get("raw_damage_type"),
-                    "normalized_action_classification": damage.get("normalized_action_classification"),
-                    "normalized_damage_category": damage.get("normalized_damage_category"),
-                    "warning": warning,
+                    "trigger_classification": damage.get("trigger_classification"),
+                    "source_damage_label": damage.get("source_damage_label"),
+                    "damage_bonus_category": damage.get("damage_bonus_category"),
+                    "note": (
+                        "Triggered as QTE/Intro, but future damage bonus category should follow "
+                        f"raw skill category {damage.get('raw_skill_category')!r}."
+                    ),
                 }
             )
     return {
         "candidate_count": len(candidates),
-        "qte_intro_classified_count": qte_intro_count,
+        "trigger_classification_counts": trigger_counts,
+        "source_damage_label_counts": source_damage_counts,
+        "damage_bonus_category_counts": damage_bonus_counts,
         "raw_category_conflict_count": len(conflicts),
         "conflicts": conflicts,
     }
+
+
+def _count_value(counter: dict[str, int], value: Any) -> None:
+    if value is None:
+        return
+    key = str(value)
+    counter[key] = counter.get(key, 0) + 1
 
 
 def _row_ref(row: dict[str, Any]) -> dict[str, Any]:
@@ -1030,13 +1087,15 @@ def _action_candidate_report_markdown(artifact: dict[str, Any]) -> str:
         f"- simulation applied: {str(artifact['simulation_applied']).lower()}",
         f"- review only: {str(artifact['review_only']).lower()}",
         f"- simulation executable: {str(artifact['simulation_executable']).lower()}",
-        f"- QTE intro classified candidates: {artifact['classification_summary']['qte_intro_classified_count']}",
+        f"- Trigger classifications: `{artifact['classification_summary']['trigger_classification_counts']}`",
+        f"- Source damage labels: `{artifact['classification_summary']['source_damage_label_counts']}`",
+        f"- Damage bonus categories: `{artifact['classification_summary']['damage_bonus_category_counts']}`",
         f"- Raw category conflicts: {artifact['classification_summary']['raw_category_conflict_count']}",
         "",
         "## B. Candidate Table",
         "",
-        "| candidate_id | proposed_action_id | character | action_time | combat_time_cost | hit count | parsed multipliers | raw skill category | raw damage type | normalized action | normalized damage | previous Outro trigger frame | implementation status | safe_to_implement_later |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| candidate_id | proposed_action_id | character | action_time | combat_time_cost | hit count | parsed multipliers | raw skill category | raw damage label | trigger classification | source damage label | damage bonus category | previous Outro trigger frame | implementation status | safe_to_implement_later |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for candidate in artifact["candidates"]:
         timing = candidate["timing_candidate"]
@@ -1055,8 +1114,9 @@ def _action_candidate_report_markdown(artifact: dict[str, Any]) -> str:
                     _md(damage["parsed_multipliers"]),
                     _md(damage["raw_skill_category"]),
                     _md(damage["raw_damage_type"]),
-                    _md(damage["normalized_action_classification"]),
-                    _md(damage["normalized_damage_category"]),
+                    _md(damage["trigger_classification"]),
+                    _md(damage["source_damage_label"]),
+                    _md(damage["damage_bonus_category"]),
                     _md(notice["previous_character_outro_trigger_frame"] or notice["previous_outro_trigger_frames"]),
                     candidate["implementation_status"],
                     str(candidate["safe_to_implement_later"]).lower(),
@@ -1068,9 +1128,9 @@ def _action_candidate_report_markdown(artifact: dict[str, Any]) -> str:
     lines.extend([""])
     lines.extend(
         [
-            "## C. Classification Audit",
+            "## C. Trigger / Damage Bonus Classification",
             "",
-            "| Candidate | Raw skill category | Raw damage type | Normalized action | Normalized damage | Confidence | Warnings |",
+            "| Candidate | Raw Skill Category | Raw Damage Label | Trigger Classification | Source Damage Label | Damage Bonus Category | Confidence | Reason / Warning |",
             "| --- | --- | --- | --- | --- | --- | --- |",
         ]
     )
@@ -1083,10 +1143,11 @@ def _action_candidate_report_markdown(artifact: dict[str, Any]) -> str:
                     candidate["candidate_id"],
                     _md(damage["raw_skill_category"]),
                     _md(damage["raw_damage_type"]),
-                    _md(damage["normalized_action_classification"]),
-                    _md(damage["normalized_damage_category"]),
-                    _md(damage["qte_classification_confidence"]),
-                    _md(damage["classification_warnings"]),
+                    _md(damage["trigger_classification"]),
+                    _md(damage["source_damage_label"]),
+                    _md(damage["damage_bonus_category"]),
+                    _md(damage["damage_bonus_category_confidence"]),
+                    _md(_classification_reason_or_warning(damage)),
                 ]
             )
             + " |"
@@ -1095,8 +1156,11 @@ def _action_candidate_report_markdown(artifact: dict[str, Any]) -> str:
         [
             "",
             "- Raw Excel category fields are preserved for review.",
-            "- Normalized classifications are audit metadata only and do not change simulation behavior.",
-            "- A raw skill category mismatch remains non-executable and requires review before implementation.",
+            "- `trigger_classification` controls how the action enters the rotation.",
+            "- `source_damage_label` preserves the Excel damage label in display/reporting terms.",
+            "- `damage_bonus_category` is the future DPS calculation tag.",
+            "- A QTE action can be triggered as QTE/Intro while using a different damage bonus category.",
+            "- Aemeath QTE remains review-only and non-executable.",
             "",
         ]
     )
@@ -1117,7 +1181,8 @@ def _action_candidate_report_markdown(artifact: dict[str, Any]) -> str:
                 f"- Metadata rows used: `{[(row['source_action_name'], row['row_number']) for row in candidate['metadata_source_rows']]}`",
                 f"- Excluded rows: `{[(row['source_action_name'], row['row_number'], row['excluded_reason']) for row in candidate['excluded_source_rows']]}`",
                 f"- Timing candidate: `{candidate['timing_candidate']}`",
-                f"- Damage candidate: `{candidate['damage_candidate']}`",
+                f"- Damage classification: `{_damage_report_payload(candidate['damage_candidate'])}`",
+                f"- Parsed multipliers: `{candidate['damage_candidate']['parsed_multipliers']}`",
                 f"- Notice metadata: `{candidate['notice_metadata']}`",
                 f"- Action stub preview: `{candidate['action_stub_preview']}`",
                 "",
@@ -1173,6 +1238,29 @@ def _action_candidate_report_markdown(artifact: dict[str, Any]) -> str:
         ]
     )
     return "\n".join(lines)
+
+
+def _classification_reason_or_warning(damage: dict[str, Any]) -> str:
+    warnings = damage.get("classification_warnings") or []
+    if warnings:
+        return "; ".join(warnings)
+    return damage.get("damage_bonus_category_reason") or ""
+
+
+def _damage_report_payload(damage: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "raw_skill_category": damage.get("raw_skill_category"),
+        "raw_skill_category_source_column": damage.get("raw_skill_category_source_column"),
+        "raw_damage_type": damage.get("raw_damage_type"),
+        "raw_damage_type_source_column": damage.get("raw_damage_type_source_column"),
+        "trigger_classification": damage.get("trigger_classification"),
+        "source_damage_label": damage.get("source_damage_label"),
+        "raw_source_damage_label": damage.get("raw_source_damage_label"),
+        "damage_bonus_category": damage.get("damage_bonus_category"),
+        "damage_bonus_category_confidence": damage.get("damage_bonus_category_confidence"),
+        "damage_bonus_category_reason": damage.get("damage_bonus_category_reason"),
+        "classification_warnings": damage.get("classification_warnings", []),
+    }
 
 
 def _cross_scope_rows(candidate: dict[str, Any] | None, forbidden_character: str) -> list[tuple[str, int, str | None]]:

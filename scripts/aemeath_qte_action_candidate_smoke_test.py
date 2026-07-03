@@ -20,6 +20,10 @@ from simulator.simulation import Simulation
 DATA_DIR = PROJECT_ROOT / "data"
 VARIATION_DAMAGE = "\u53d8\u594f\u4f24\u5bb3"
 RESONANCE_SKILL = "\u5171\u9e23\u6280\u80fd"
+TRIGGER_QTE_INTRO = "qte_intro"
+SOURCE_INTRO_SKILL_DAMAGE = "intro_skill_damage"
+DAMAGE_BONUS_UNMODELED_INTRO = "none_or_unmodeled_intro"
+DAMAGE_BONUS_RESONANCE_SKILL = "resonance_skill"
 ALLOWED_EXECUTABLE_LABELS = {"QTE", "QTE-1", "QTE-2", "QTE-3"}
 FORBIDDEN_EXECUTABLE_LABEL_PARTS = [
     "\u5f3a\u5316E",
@@ -92,10 +96,20 @@ def main() -> int:
         assert damage["raw_damage_type_source_column"]
         assert damage["raw_action_type"] is not None
         assert damage["raw_action_type_source_column"]
-        assert damage["normalized_action_classification"] == "qte_intro"
+        assert damage["trigger_classification"] == TRIGGER_QTE_INTRO
+        assert damage["source_damage_label"] == SOURCE_INTRO_SKILL_DAMAGE
+        assert damage["raw_source_damage_label"] == damage["raw_damage_type"]
         if VARIATION_DAMAGE in str(damage["raw_damage_type"]):
-            assert damage["normalized_damage_category"] == "variation_damage"
+            assert damage["source_damage_label"] == SOURCE_INTRO_SKILL_DAMAGE
+        assert damage["damage_bonus_category"] in {DAMAGE_BONUS_UNMODELED_INTRO, DAMAGE_BONUS_RESONANCE_SKILL}
+        assert damage["damage_bonus_category_confidence"] in {"high", "medium", "low"}
+        assert damage["damage_bonus_category_reason"]
+        assert "normalized_damage_category_deprecated_note" in damage
+        assert "not a modeled damage bonus category" in damage["normalized_damage_category_deprecated_note"]
         assert damage["qte_classification_confidence"] in {"high", "medium", "low"}
+        assert candidate["action_stub_preview"]["trigger_classification"] == damage["trigger_classification"]
+        assert candidate["action_stub_preview"]["source_damage_label"] == damage["source_damage_label"]
+        assert candidate["action_stub_preview"]["damage_bonus_category"] == damage["damage_bonus_category"]
 
         executable_labels = [row["source_action_name"] or "" for row in candidate["executable_source_rows"]]
         assert set(executable_labels).issubset(ALLOWED_EXECUTABLE_LABELS)
@@ -119,16 +133,23 @@ def main() -> int:
         assert human_frames != mech_frames, "Previous Outro trigger frames should not be merged across sections"
         human_damage = candidates["aemeath_qte_intro_human"]["damage_candidate"]
         mech_damage = candidates["aemeath_qte_intro_mech"]["damage_candidate"]
-        assert human_damage["normalized_action_classification"] == "qte_intro"
-        assert human_damage["normalized_damage_category"] == "variation_damage"
-        assert mech_damage["normalized_action_classification"] == "qte_intro"
+        assert human_damage["trigger_classification"] == TRIGGER_QTE_INTRO
+        assert human_damage["source_damage_label"] == SOURCE_INTRO_SKILL_DAMAGE
+        assert human_damage["raw_damage_type"] == VARIATION_DAMAGE
+        assert human_damage["damage_bonus_category"] == DAMAGE_BONUS_UNMODELED_INTRO
+        assert human_damage["damage_bonus_category_confidence"] in {"medium", "low"}
+        assert mech_damage["trigger_classification"] == TRIGGER_QTE_INTRO
+        assert mech_damage["source_damage_label"] == SOURCE_INTRO_SKILL_DAMAGE
         assert mech_damage["raw_skill_category"] is not None
         assert mech_damage["raw_damage_type"] is not None
         if mech_damage["raw_skill_category"] == RESONANCE_SKILL and mech_damage["raw_damage_type"] == VARIATION_DAMAGE:
-            assert mech_damage["normalized_damage_category"] == "variation_damage"
-            assert mech_damage["classification_warnings"], "Expected warning for mech raw category mismatch"
+            assert mech_damage["damage_bonus_category"] == DAMAGE_BONUS_RESONANCE_SKILL
+            assert mech_damage["classification_warnings"] or mech_damage["damage_bonus_category_reason"]
             assert candidates["aemeath_qte_intro_mech"]["safe_to_implement_later"] is False
             assert payload["classification_summary"]["raw_category_conflict_count"] >= 1
+            assert payload["classification_summary"]["trigger_classification_counts"][TRIGGER_QTE_INTRO] == 2
+            assert payload["classification_summary"]["source_damage_label_counts"][SOURCE_INTRO_SKILL_DAMAGE] == 2
+            assert payload["classification_summary"]["damage_bonus_category_counts"][DAMAGE_BONUS_RESONANCE_SKILL] == 1
 
     sim = Simulation.from_json(DATA_DIR, party="aemeath")
     assert "aemeath_qte_intro_human" not in sim.get_policy_action_ids()
@@ -137,11 +158,13 @@ def main() -> int:
 
     report = DEFAULT_ACTION_CANDIDATE_REPORT.read_text(encoding="utf-8")
     for text in (
-        "Classification Audit",
-        "Raw skill category",
-        "Raw damage type",
-        "Normalized action",
-        "Normalized damage",
+        "Trigger / Damage Bonus Classification",
+        "Trigger Classification",
+        "Source Damage Label",
+        "Damage Bonus Category",
+        DAMAGE_BONUS_UNMODELED_INTRO,
+        DAMAGE_BONUS_RESONANCE_SKILL,
+        "A QTE action can be triggered as QTE/Intro while using a different damage bonus category",
         "Human QTE Candidate",
         "Cross-contamination check",
         "Executable candidates: 0",
@@ -151,7 +174,8 @@ def main() -> int:
     if "aemeath_qte_intro_mech" in candidates:
         assert "Mech QTE Candidate" in report
         if candidates["aemeath_qte_intro_mech"]["damage_candidate"]["classification_warnings"]:
-            assert "candidate is classified as QTE by source label and damage type" in report
+            assert "candidate is triggered as QTE/Intro by source label and damage label" in report
+    assert "variation_damage" not in report
     assert "24 executable" not in report.lower()
 
     print("Aemeath QTE action candidate smoke test passed.")

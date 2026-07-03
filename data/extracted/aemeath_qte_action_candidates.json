@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-03T16:17:22.064386+00:00",
+  "generated_at": "2026-07-03T17:33:18.823796+00:00",
   "source_workbook": "C:\\Users\\coree\\OneDrive\\Documents\\GitHub\\ww-dps-simulator-2\\ww-dps-simulator-2\\data\\source\\鸣潮动作数据汇总.xlsx",
   "review_only": true,
   "simulation_applied": false,
@@ -391,8 +391,15 @@
             "source_column_index": "9"
           }
         },
+        "trigger_classification": "qte_intro",
+        "source_damage_label": "intro_skill_damage",
+        "raw_source_damage_label": "变奏伤害",
+        "damage_bonus_category": "none_or_unmodeled_intro",
+        "damage_bonus_category_confidence": "medium",
+        "damage_bonus_category_reason": "QTE/Intro action with an intro-skill source damage label, but no modeled damage bonus category is confirmed for Human QTE yet.",
         "normalized_action_classification": "qte_intro",
         "normalized_damage_category": "variation_damage",
+        "normalized_damage_category_deprecated_note": "Deprecated. Use trigger_classification/source_damage_label/damage_bonus_category instead. This is not a modeled damage bonus category.",
         "qte_classification_confidence": "high",
         "classification_warnings": [],
         "raw_coefficients": [
@@ -461,6 +468,9 @@
         "action_type": "swap",
         "policy_selectable": false,
         "review_only": true,
+        "trigger_classification": "qte_intro",
+        "source_damage_label": "intro_skill_damage",
+        "damage_bonus_category": "none_or_unmodeled_intro",
         "action_time": 1.0,
         "combat_time_cost": 0.1667,
         "hits": [
@@ -476,8 +486,7 @@
         ],
         "tags": [
           "qte",
-          "intro",
-          "variation"
+          "intro"
         ],
         "notes": [
           "This is not applied to simulation yet."
@@ -765,11 +774,18 @@
             "source_column_index": "9"
           }
         },
+        "trigger_classification": "qte_intro",
+        "source_damage_label": "intro_skill_damage",
+        "raw_source_damage_label": "变奏伤害",
+        "damage_bonus_category": "resonance_skill",
+        "damage_bonus_category_confidence": "high",
+        "damage_bonus_category_reason": "Triggered as QTE/Intro, but the source skill category is Resonance Skill; future damage bonus application should use resonance_skill.",
         "normalized_action_classification": "qte_intro",
         "normalized_damage_category": "variation_damage",
+        "normalized_damage_category_deprecated_note": "Deprecated. Use trigger_classification/source_damage_label/damage_bonus_category instead. This is not a modeled damage bonus category.",
         "qte_classification_confidence": "medium",
         "classification_warnings": [
-          "Raw skill category is '共鸣技能' while damage type is '变奏伤害'; candidate is classified as QTE by source label and damage type. Preserve raw category for review."
+          "Raw skill category is '共鸣技能' while damage type is '变奏伤害'; candidate is triggered as QTE/Intro by source label and damage label. Preserve raw category for review."
         ],
         "raw_coefficients": [
           0.653,
@@ -782,7 +798,7 @@
         "hit_count": 2,
         "confidence": "medium",
         "warnings": [
-          "Raw skill category is '共鸣技能' while damage type is '变奏伤害'; candidate is classified as QTE by source label and damage type. Preserve raw category for review."
+          "Raw skill category is '共鸣技能' while damage type is '变奏伤害'; candidate is triggered as QTE/Intro by source label and damage label. Preserve raw category for review."
         ]
       },
       "notice_metadata": {
@@ -836,6 +852,9 @@
         "action_type": "swap",
         "policy_selectable": false,
         "review_only": true,
+        "trigger_classification": "qte_intro",
+        "source_damage_label": "intro_skill_damage",
+        "damage_bonus_category": "resonance_skill",
         "action_time": 1.2,
         "combat_time_cost": 0.4333,
         "hits": [
@@ -848,8 +867,7 @@
         ],
         "tags": [
           "qte",
-          "intro",
-          "variation"
+          "intro"
         ],
         "notes": [
           "This is not applied to simulation yet."
@@ -866,22 +884,32 @@
         "This is an action-ready review candidate only.",
         "Aemeath QTE is not executable and is not policy-selectable.",
         "Rows are scoped to the aemeath_mech workbook section only.",
-        "Raw skill category is '共鸣技能' while damage type is '变奏伤害'; candidate is classified as QTE by source label and damage type. Preserve raw category for review."
+        "Raw skill category is '共鸣技能' while damage type is '变奏伤害'; candidate is triggered as QTE/Intro by source label and damage label. Preserve raw category for review."
       ]
     }
   ],
   "classification_summary": {
     "candidate_count": 2,
-    "qte_intro_classified_count": 2,
+    "trigger_classification_counts": {
+      "qte_intro": 2
+    },
+    "source_damage_label_counts": {
+      "intro_skill_damage": 2
+    },
+    "damage_bonus_category_counts": {
+      "none_or_unmodeled_intro": 1,
+      "resonance_skill": 1
+    },
     "raw_category_conflict_count": 1,
     "conflicts": [
       {
         "candidate_id": "aemeath_qte_intro_mech",
         "raw_skill_category": "共鸣技能",
         "raw_damage_type": "变奏伤害",
-        "normalized_action_classification": "qte_intro",
-        "normalized_damage_category": "variation_damage",
-        "warning": "Raw skill category is '共鸣技能' while damage type is '变奏伤害'; candidate is classified as QTE by source label and damage type. Preserve raw category for review."
+        "trigger_classification": "qte_intro",
+        "source_damage_label": "intro_skill_damage",
+        "damage_bonus_category": "resonance_skill",
+        "note": "Triggered as QTE/Intro, but future damage bonus category should follow raw skill category '共鸣技能'."
       }
     ]
   },
