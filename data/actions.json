@@ -984,7 +984,7 @@
                  ],
         "policy_selectable":  false,
         "mechanic_effects":  {
-                                 "sync_delta":  8,
+                                 "sync_delta":  3.29,
                                  "set_aemeath_combo_stage":  2
                              }
     },
@@ -1047,7 +1047,7 @@
                  ],
         "policy_selectable":  false,
         "mechanic_effects":  {
-                                 "sync_delta":  10,
+                                 "sync_delta":  6.44,
                                  "set_aemeath_combo_stage":  3
                              }
     },
@@ -1130,7 +1130,7 @@
                  ],
         "policy_selectable":  false,
         "mechanic_effects":  {
-                                 "sync_delta":  14,
+                                 "sync_delta":  16.66,
                                  "set_aemeath_combo_stage":  4
                              }
     },
@@ -1224,7 +1224,7 @@
         "policy_selectable":  false,
         "mechanic_effects":  {
                                  "set_aemeath_combo_stage":  1,
-                                 "sync_delta":  40,
+                                 "sync_delta":  23.31,
                                  "seraphic_duo_duration":  5
                              }
     },
@@ -1287,7 +1287,7 @@
                  ],
         "policy_selectable":  false,
         "mechanic_effects":  {
-                                 "sync_delta":  12,
+                                 "sync_delta":  6.45,
                                  "set_mech_combo_stage":  2
                              }
     },
@@ -1340,7 +1340,7 @@
                  ],
         "policy_selectable":  false,
         "mechanic_effects":  {
-                                 "sync_delta":  14,
+                                 "sync_delta":  9.60,
                                  "set_mech_combo_stage":  3
                              }
     },
@@ -1453,7 +1453,7 @@
                  ],
         "policy_selectable":  false,
         "mechanic_effects":  {
-                                 "sync_delta":  18,
+                                 "sync_delta":  18.54,
                                  "set_mech_combo_stage":  4
                              }
     },
@@ -1507,7 +1507,7 @@
         "policy_selectable":  false,
         "mechanic_effects":  {
                                  "set_mech_combo_stage":  1,
-                                 "sync_delta":  40,
+                                 "sync_delta":  23.28,
                                  "seraphic_duo_duration":  5
                              }
     },
@@ -1573,7 +1573,7 @@
         "policy_selectable":  false,
         "mechanic_effects":  {
                                  "set_form":  "mech",
-                                 "sync_delta":  12,
+                                 "sync_delta":  6.45,
                                  "set_mech_combo_stage":  2
                              }
     },
@@ -1619,8 +1619,74 @@
         "policy_selectable":  false,
         "mechanic_effects":  {
                                  "set_form":  "aemeath",
-                                 "sync_delta":  8,
+                                 "sync_delta":  3.29,
                                  "set_aemeath_combo_stage":  2
+                             }
+    },
+    {
+        "id":  "aemeath_form_switch_to_aemeath_after_overdrive",
+        "name":  "Aemeath Post-Overdrive Form Switch to Aemeath",
+        "character_id":  "aemeath",
+        "action_type":  "resonance_skill",
+        "duration":  0.35,
+        "action_time":  0.5,
+        "combat_time_cost":  0.5,
+        "cooldown":  1,
+        "cooldown_group":  "aemeath_form_switch",
+        "damage_category":  "normal",
+        "damage_multiplier":  0,
+        "tune_break_multiplier":  0,
+        "tune_break_boost_points":  0,
+        "hits":  [
+                     {
+                         "time":  0.16,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.1389,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "post-overdrive form switch aemeath basic 2a"
+                     },
+                     {
+                         "time":  0.28,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.2084,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "post-overdrive form switch aemeath basic 2b"
+                     },
+                     {
+                         "time":  0.4,
+                         "damage_category":  "normal",
+                         "damage_multiplier":  0.3473,
+                         "tune_break_multiplier":  0,
+                         "tags":  [
+
+                                  ],
+                         "name":  "post-overdrive form switch aemeath basic 2c"
+                     }
+                 ],
+        "resonance_energy_gain":  5,
+        "concerto_energy_gain":  4,
+        "resonance_energy_cost":  0,
+        "applies_buffs":  [
+
+                          ],
+        "required_buffs":  [
+
+                           ],
+        "tags":  [
+                     "aemeath-lite",
+                     "internal"
+                 ],
+        "policy_selectable":  false,
+        "mechanic_effects":  {
+                                 "set_form":  "aemeath",
+                                 "sync_delta":  6.44,
+                                 "set_aemeath_combo_stage":  3
                              }
     },
     {
@@ -1632,7 +1698,7 @@
         "action_time":  1.1667,
         "combat_time_cost":  1.1667,
         "cooldown":  1,
-        "cooldown_group":  "aemeath_form_switch",
+        "cooldown_group":  "aemeath_sync_strike_armament_merge",
         "damage_category":  "normal",
         "damage_multiplier":  0,
         "tune_break_multiplier":  0,
@@ -1686,7 +1752,7 @@
         "policy_selectable":  false,
         "mechanic_effects":  {
                                  "set_form":  "mech",
-                                 "sync_delta":  15,
+                                 "sync_delta":  18.29,
                                  "set_mech_combo_stage":  2
                              }
     },
@@ -1699,7 +1765,7 @@
         "action_time":  0.9667,
         "combat_time_cost":  0.9667,
         "cooldown":  1,
-        "cooldown_group":  "aemeath_form_switch",
+        "cooldown_group":  "aemeath_sync_strike_call_of_dawn",
         "damage_category":  "normal",
         "damage_multiplier":  0,
         "tune_break_multiplier":  0,
@@ -1763,7 +1829,7 @@
         "policy_selectable":  false,
         "mechanic_effects":  {
                                  "set_form":  "aemeath",
-                                 "sync_delta":  15,
+                                 "sync_delta":  22.18,
                                  "set_aemeath_combo_stage":  2
                              }
     },

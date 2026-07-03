@@ -19,6 +19,7 @@ EXPECTED_MULTIPLIERS = {
     "aemeath_mech_basic_stage_4": [0.4038, 0.9421],
     "aemeath_form_switch_to_mech_normal": [0.232, 0.232, 0.232],
     "aemeath_form_switch_to_aemeath_normal": [0.4635],
+    "aemeath_form_switch_to_aemeath_after_overdrive": [0.1389, 0.2084, 0.3473],
     "aemeath_sync_strike_armament_merge": [0.2692, 0.4038, 0.6729],
     "aemeath_sync_strike_call_of_dawn": [0.1633, 0.1633, 0.1633, 1.1428],
     "aemeath_seraphic_duet_overturn": [
@@ -76,8 +77,12 @@ def main() -> None:
 
     assert actions["aemeath_form_switch_to_mech_normal"]["cooldown"] == 1
     assert actions["aemeath_form_switch_to_aemeath_normal"]["cooldown"] == 1
-    assert actions["aemeath_sync_strike_armament_merge"]["cooldown_group"] == "aemeath_form_switch"
-    assert actions["aemeath_sync_strike_call_of_dawn"]["cooldown_group"] == "aemeath_form_switch"
+    assert actions["aemeath_form_switch_to_aemeath_after_overdrive"]["cooldown"] == 1
+    assert actions["aemeath_form_switch_to_mech_normal"]["cooldown_group"] == "aemeath_form_switch"
+    assert actions["aemeath_form_switch_to_aemeath_normal"]["cooldown_group"] == "aemeath_form_switch"
+    assert actions["aemeath_form_switch_to_aemeath_after_overdrive"]["cooldown_group"] == "aemeath_form_switch"
+    assert actions["aemeath_sync_strike_armament_merge"]["cooldown_group"] != "aemeath_form_switch"
+    assert actions["aemeath_sync_strike_call_of_dawn"]["cooldown_group"] != "aemeath_form_switch"
 
     print("Aemeath coefficient smoke test passed.")
 

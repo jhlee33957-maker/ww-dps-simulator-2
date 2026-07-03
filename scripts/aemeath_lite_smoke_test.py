@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import sys
 from pathlib import Path
 
@@ -11,6 +12,10 @@ from simulator.simulation import Simulation
 
 
 DATA_DIR = PROJECT_ROOT / "data"
+
+
+def approx(actual: float, expected: float, tolerance: float = 1e-4) -> bool:
+    return math.isclose(actual, expected, rel_tol=tolerance, abs_tol=tolerance)
 
 
 def aemeath_state(sim: Simulation) -> dict:
@@ -45,7 +50,7 @@ def main() -> None:
     sim.state.resonance_energy["aemeath"] = 125.0
     run_step(sim, "aemeath_resonance_liberation", "aemeath_liberation_overdrive")
     assert aemeath_state(sim)["seraphic_duo_remaining"] == 0.0
-    assert aemeath_state(sim)["synchronization_rate"] == 64.0
+    assert approx(aemeath_state(sim)["synchronization_rate"], 49.34)
     assert aemeath_state(sim)["resonance_rate"] == 1.0
     assert aemeath_state(sim)["heavenfall_unbound"] is True
     assert aemeath_state(sim)["heavenfall_unbound_remaining"] == 60.0

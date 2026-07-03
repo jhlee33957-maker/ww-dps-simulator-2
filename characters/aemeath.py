@@ -25,6 +25,7 @@ class AemeathMechanic(CharacterMechanic):
         "last_resolved_action_id": None,
         "sync_strike_window_type": None,
         "sync_strike_window_remaining": 0,
+        "overdrive_form_switch_window_remaining": 0,
     }
 
     _ARMAMENT_MERGE_WINDOW_ACTIONS = {
@@ -79,6 +80,8 @@ class AemeathMechanic(CharacterMechanic):
                 resolved_id = "aemeath_sync_strike_armament_merge"
             elif data["sync_strike_window_type"] == "call_of_dawn":
                 resolved_id = "aemeath_sync_strike_call_of_dawn"
+            elif data["overdrive_form_switch_window_remaining"] > 0 and data["form"] == "mech":
+                resolved_id = "aemeath_form_switch_to_aemeath_after_overdrive"
             else:
                 resolved_id = "aemeath_form_switch_to_aemeath_normal" if data["form"] == "mech" else "aemeath_form_switch_to_mech_normal"
         elif selected_action.id == "aemeath_resonance_liberation":
@@ -184,6 +187,10 @@ class AemeathMechanic(CharacterMechanic):
             self._set_sync_strike_window(data, "call_of_dawn")
         else:
             self._clear_sync_strike_window(data)
+        if action.id == "aemeath_liberation_overdrive":
+            data["overdrive_form_switch_window_remaining"] = 1
+        else:
+            data["overdrive_form_switch_window_remaining"] = 0
         if consumed_instant_response:
             data["instant_response"] = False
             data["instant_response_consumed"] = True
@@ -261,6 +268,7 @@ class AemeathMechanic(CharacterMechanic):
             "sync_strike_window_type": data["sync_strike_window_type"],
             "sync_strike_window_remaining": data["sync_strike_window_remaining"],
             "next_resonance_skill_variant": data["sync_strike_window_type"],
+            "overdrive_form_switch_window_remaining": data["overdrive_form_switch_window_remaining"],
         }
 
     def _state(self, state: Any) -> dict[str, Any]:
@@ -284,6 +292,7 @@ class AemeathMechanic(CharacterMechanic):
         if data["sync_strike_window_type"] not in {"armament_merge", "call_of_dawn"}:
             data["sync_strike_window_type"] = None
         data["sync_strike_window_remaining"] = 1 if data["sync_strike_window_type"] else 0
+        data["overdrive_form_switch_window_remaining"] = 1 if int(data["overdrive_form_switch_window_remaining"]) > 0 else 0
 
     def _derive_state(self, data: dict[str, Any]) -> None:
         data["heavenfall_unbound"] = data["heavenfall_unbound_remaining"] > 0.0

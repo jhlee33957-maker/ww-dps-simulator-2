@@ -195,11 +195,11 @@ def test_overdrive_then_resonance_skill_is_normal_switch() -> None:
     sim = make_sim()
     prepare_overdrive(sim)
     execute(sim, "aemeath_resonance_liberation", "aemeath_liberation_overdrive")
-    execute(sim, "aemeath_resonance_skill", "aemeath_form_switch_to_aemeath_normal")
+    execute(sim, "aemeath_resonance_skill", "aemeath_form_switch_to_aemeath_after_overdrive")
     data = state(sim)
     assert data["seraphic_duo_remaining"] == 0.0
     assert data["form"] == "aemeath"
-    assert data["aemeath_combo_stage"] == 2
+    assert data["aemeath_combo_stage"] == 3
 
 
 def main() -> None:

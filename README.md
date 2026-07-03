@@ -122,6 +122,17 @@ Normal Form Switch is modeled as the immediate opposite-form Basic Attack Stage 
 
 Instant Response Heavy Attack timing follows the manually reviewed frame values and is resolved before the after-action mechanic clears Instant Response. This preserves the existing rule that `combat_time_cost` affects only the timed-combat clock while `action_time` drives action lock, buffs, anomalies, cooldowns, and Aemeath mechanic timers.
 
+## Aemeath Notice-Based Mechanics
+
+Excel notice text is applied within the current Aemeath-lite scope:
+
+- Normal E1 Form Switch immediately casts the opposite-form Basic Attack Stage 1 and shares a 1s `aemeath_form_switch` cooldown.
+- The special post-Overdrive E1 switch from Mech to Aemeath immediately casts Aemeath Basic Attack Stage 2, then sets the next Aemeath Basic Attack to Stage 3.
+- The E1 shared cooldown applies only to E1 form-switch actions, not Seraphic Duet, Sync Strike, Finale, or Overdrive.
+- Synchronization Rate gains from Basic Attack, normal Form Switch, special post-Overdrive Form Switch, and Sync Strike are aligned to Excel notice/frame values under the full-hit DPS-lite assumption.
+- Heavy Attacks are not assigned `sync_delta` by this notice-alignment patch.
+- No PPO retraining was performed for these notice mechanics.
+
 Current Aemeath-lite mechanic notes:
 
 - Basic Attack Stage 4 in Aemeath Form or Mech Form grants Seraphic Duet for 5 seconds.
