@@ -13,6 +13,8 @@
 - simulation_applied = false
 - Action candidate output: `C:\Users\coree\OneDrive\Documents\GitHub\ww-dps-simulator-2\ww-dps-simulator-2\data\extracted\aemeath_qte_action_candidates.json`
 - Action candidate report: `C:\Users\coree\OneDrive\Documents\GitHub\ww-dps-simulator-2\ww-dps-simulator-2\reports\aemeath_qte_action_candidate_review.md`
+- Action candidates: 2 split by human/mech section in the action candidate output
+- Executable candidate count: 0
 
 ## B. Aemeath QTE Group
 

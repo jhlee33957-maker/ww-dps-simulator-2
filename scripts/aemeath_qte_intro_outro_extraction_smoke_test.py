@@ -49,6 +49,12 @@ def main() -> int:
     assert loaded["candidate_count"] > 0
     assert loaded["candidate_count"] < 100
     assert any("qte" in group["group_id"] for group in loaded["groups"])
+    action_payload = json.loads(DEFAULT_ACTION_CANDIDATES_OUTPUT.read_text(encoding="utf-8"))
+    assert action_payload["action_candidate_count"] in {1, 2}
+    assert action_payload["executable_policy_action_count"] == 0
+    assert {
+        candidate["candidate_id"] for candidate in action_payload["candidates"]
+    }.issubset({"aemeath_qte_intro_human", "aemeath_qte_intro_mech"})
 
     for group in loaded["groups"]:
         for row in group["source_rows"]:
@@ -56,9 +62,15 @@ def main() -> int:
             assert row["character"] != "other"
 
     report = DEFAULT_REPORT.read_text(encoding="utf-8")
-    for text in ("Aemeath QTE", "review_only", "simulation_applied = false", "previous-character outro"):
+    for text in (
+        "Aemeath QTE",
+        "review_only",
+        "simulation_applied = false",
+        "previous-character outro",
+        "split by human/mech",
+    ):
         assert text in report, f"Review report should contain {text!r}"
-    assert len(report.splitlines()) < 160, "Review report should stay compact."
+    assert len(report.splitlines()) < 180, "Review report should stay compact."
 
     sim = Simulation.from_json(PROJECT_ROOT / "data", party="aemeath")
     assert all("qte" not in action_id.lower() for action_id in sim.get_policy_action_ids())

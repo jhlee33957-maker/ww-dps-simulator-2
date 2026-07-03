@@ -19,10 +19,24 @@ DEFAULT_ACTION_CANDIDATE_REPORT = PROJECT_ROOT / "reports" / "aemeath_qte_action
 AEMEATH = "\u7231\u5f25\u65af"
 AEMEATH_MECH = "\u673a\u5175\u7231\u5f25\u65af"
 VARIATION = "\u53d8\u594f"
+VARIATION_DAMAGE = "\u53d8\u594f\u4f24\u5bb3"
+RESONANCE_SKILL = "\u5171\u9e23\u6280\u80fd"
 OUTRO = "\u5ef6\u594f"
 INTRO = "\u767b\u53f0"
 INVULNERABLE_SWAP_LOCK = "\u65e0\u654c\u671f\u95f4\u4e0d\u80fd\u5207\u4eba"
 FLOW_LIGHT_AMP = "\u6d41\u5149\u589e\u5e45"
+ACTION_CANDIDATE_BY_CHARACTER = {
+    "aemeath": {
+        "candidate_id": "aemeath_qte_intro_human",
+        "proposed_action_id": "aemeath_qte_intro_human",
+        "label": "Human QTE Candidate",
+    },
+    "aemeath_mech": {
+        "candidate_id": "aemeath_qte_intro_mech",
+        "proposed_action_id": "aemeath_qte_intro_mech",
+        "label": "Mech QTE Candidate",
+    },
+}
 NON_CHARACTER_SECTION_LABELS = {
     "\u504f\u8c10\u673a\u5236",
     "\u6280\u80fd\u7c7b\u578b",
@@ -97,6 +111,7 @@ def extract(
         "warnings": [
             "Review-only. Not applied to simulation.",
             "Aemeath QTE remains disabled in transition_config.json.",
+            "Action candidates are split by human/mech section in the action candidate artifact.",
         ],
     }
 
@@ -170,6 +185,11 @@ def _row_payload(
         for index, value in enumerate(values)
         if value not in (None, "")
     }
+    source_columns_by_index = {
+        str(index + 1): headers[index] if index < len(headers) else f"column_{index + 1}"
+        for index, value in enumerate(values)
+        if value not in (None, "")
+    }
     source_action_name = _source_action_name(values, sheet_role)
     return {
         "sheet": sheet_name,
@@ -180,6 +200,7 @@ def _row_payload(
         "raw_row_text": _row_text(values),
         "raw_by_header": raw_by_header,
         "raw_by_index": raw_by_index,
+        "source_columns_by_index": source_columns_by_index,
     }
 
 
@@ -281,8 +302,20 @@ def _build_action_candidate_artifact(
     executable_rows = [row for row in rows if _is_executable_candidate_row(row)]
     metadata_rows = [row for row in rows if _is_metadata_row(row)]
     excluded_rows = [row for row in rows if row not in executable_rows and row not in metadata_rows]
-    candidate = _build_action_candidate(executable_rows, metadata_rows, excluded_rows)
-    candidates = [candidate] if candidate is not None else []
+    candidates = []
+    for character in ACTION_CANDIDATE_BY_CHARACTER:
+        character_executable_rows = [row for row in executable_rows if row.get("character") == character]
+        character_metadata_rows = [row for row in metadata_rows if row.get("character") == character]
+        character_excluded_rows = [row for row in excluded_rows if row.get("character") == character]
+        candidate = _build_action_candidate(
+            character,
+            character_executable_rows,
+            character_metadata_rows,
+            character_excluded_rows,
+        )
+        if candidate is not None:
+            candidates.append(candidate)
+    metadata_only_rows = [row for row in metadata_rows if row not in executable_rows]
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "source_workbook": str(source_workbook),
@@ -293,8 +326,9 @@ def _build_action_candidate_artifact(
         "action_candidate_count": len(candidates),
         "executable_policy_action_count": 0,
         "candidates": candidates,
+        "classification_summary": _classification_summary(candidates),
         "excluded_summary": {
-            "excluded_metadata_only_rows": len(metadata_rows),
+            "excluded_metadata_only_rows": len(metadata_only_rows),
             "excluded_unrelated_aemeath_rows": len(excluded_rows),
             "excluded_other_character_rows": excluded_summary.get("excluded_other_character_rows", 0),
             "excluded_header_rows": excluded_summary.get("excluded_header_rows", 0),
@@ -302,6 +336,7 @@ def _build_action_candidate_artifact(
         "warnings": [
             "Action candidate output is review-only and is not applied to simulation.",
             "data/actions.json is not modified by this extraction.",
+            "Aemeath QTE action candidates are split by source character section; no mixed human/mech candidate is counted.",
         ],
     }
 
@@ -328,12 +363,14 @@ def _is_metadata_row(row: dict[str, Any]) -> bool:
 
 
 def _build_action_candidate(
+    character: str,
     executable_rows: list[dict[str, Any]],
     metadata_rows: list[dict[str, Any]],
     excluded_rows: list[dict[str, Any]],
 ) -> dict[str, Any] | None:
     if not executable_rows:
         return None
+    config = ACTION_CANDIDATE_BY_CHARACTER[character]
 
     qte_parent_rows = [row for row in executable_rows if row.get("source_action_name") == "QTE"]
     hit_rows = [row for row in executable_rows if row.get("category") == "qte_hit"]
@@ -351,18 +388,22 @@ def _build_action_candidate(
     action_warnings = [
         "This is an action-ready review candidate only.",
         "Aemeath QTE is not executable and is not policy-selectable.",
+        f"Rows are scoped to the {character} workbook section only.",
     ]
     if timing_candidate["action_time_frames"] is None:
-        action_warnings.append("Action time is unresolved because human/mech QTE parent timing differs.")
+        action_warnings.append("Action time is unresolved within this character section.")
+    action_warnings.extend(damage_candidate["classification_warnings"])
     safe_reasons = [
         "Aemeath QTE transition execution is not implemented.",
         "Timing needs manual review before data/actions.json can be patched.",
         "Notice metadata includes state and Outro behavior that must be modeled in the transition pipeline first.",
     ]
+    if damage_candidate["classification_warnings"]:
+        safe_reasons.append("Raw skill category conflict requires review before simulation implementation.")
     return {
-        "candidate_id": "aemeath_qte_intro",
-        "proposed_action_id": "aemeath_qte_intro",
-        "character": "aemeath",
+        "candidate_id": config["candidate_id"],
+        "proposed_action_id": config["proposed_action_id"],
+        "character": character,
         "group_type": "qte_intro",
         "implementation_status": "action_ready_review_candidate",
         "simulation_executable": False,
@@ -375,8 +416,8 @@ def _build_action_candidate(
         "damage_candidate": damage_candidate,
         "notice_metadata": notice_metadata,
         "action_stub_preview": {
-            "id": "aemeath_qte_intro",
-            "character_id": "aemeath",
+            "id": config["proposed_action_id"],
+            "character_id": character,
             "action_type": "swap",
             "policy_selectable": False,
             "review_only": True,
@@ -412,6 +453,11 @@ def _action_timing_candidate(
     ]
     parent_time_stop_candidates = [value for value in parent_time_stop_candidates if value is not None]
     hit_payloads = _hit_frame_payloads(hit_rows)
+    hit_action_end_candidates = [
+        payload["action_end_frames"]
+        for payload in hit_payloads
+        if payload.get("action_end_frames") is not None
+    ]
     hit_frames = [
         payload["hit_frame"]
         for payload in hit_payloads
@@ -423,21 +469,26 @@ def _action_timing_candidate(
     combat_time_cost_frames = None
     confidence = "low"
 
-    unique_parent_times = sorted(set(parent_action_time_candidates))
-    if len(unique_parent_times) == 1:
-        action_time_frames = unique_parent_times[0]
+    action_time_source = "parent_qte_action_time"
+    action_time_candidates = sorted(set(parent_action_time_candidates))
+    if not action_time_candidates and hit_action_end_candidates:
+        action_time_candidates = [max(hit_action_end_candidates)]
+        action_time_source = "max_qte_hit_action_end_frame"
+
+    if len(action_time_candidates) == 1:
+        action_time_frames = action_time_candidates[0]
         confidence = "medium"
         unique_time_stops = sorted(set(parent_time_stop_candidates))
         if len(unique_time_stops) == 1:
             combat_time_cost_frames = max(0.0, action_time_frames - unique_time_stops[0])
         elif unique_time_stops:
             warnings.append("Multiple confirmed time-stop candidates found; combat_time_cost left unresolved.")
-    elif unique_parent_times:
+    elif action_time_candidates:
         warnings.append(
-            "Multiple parent QTE action-time candidates found; selected action_time left unresolved."
+            "Multiple QTE action-time candidates found; selected action_time left unresolved."
         )
     else:
-        warnings.append("No parent QTE action-time candidate found.")
+        warnings.append("No QTE action-time candidate found.")
 
     if not hit_frames:
         warnings.append("No QTE hit frames found.")
@@ -449,7 +500,8 @@ def _action_timing_candidate(
     return {
         "action_time_frames": action_time_frames,
         "action_time_seconds": _seconds(action_time_frames),
-        "action_time_frame_candidates": unique_parent_times,
+        "action_time_frame_candidates": action_time_candidates,
+        "action_time_source": action_time_source if action_time_frames is not None else None,
         "combat_time_cost_frames": combat_time_cost_frames,
         "combat_time_cost_seconds": _seconds(combat_time_cost_frames),
         "confirmed_time_stop_frame_candidates": sorted(set(parent_time_stop_candidates)),
@@ -471,18 +523,98 @@ def _action_damage_candidate(coefficient_rows: list[dict[str, Any]]) -> dict[str
         warnings.append("No QTE multipliers parsed.")
     skill_category = _first_skill_index_value(coefficient_rows, "4")
     damage_type = _first_skill_index_value(coefficient_rows, "5")
-    if skill_category != VARIATION:
-        warnings.append(f"Skill category is {skill_category!r}; expected {VARIATION!r} or equivalent.")
-    if damage_type != "\u53d8\u594f\u4f24\u5bb3":
+    raw_action_type = _first_skill_index_value(coefficient_rows, "3")
+    raw_damage_category = _first_skill_index_value(coefficient_rows, "2")
+    coefficient_source_column = _first_skill_index_source_column(coefficient_rows, "9")
+    classification = _qte_classification(coefficient_rows, skill_category, damage_type)
+    warnings.extend(classification["classification_warnings"])
+    if damage_type != VARIATION_DAMAGE:
         warnings.append("Damage type is not the expected variation damage label.")
     return {
         "skill_category": skill_category,
         "damage_type": damage_type,
+        "raw_skill_category": skill_category,
+        "raw_skill_category_source_column": _first_skill_index_source_column(coefficient_rows, "4"),
+        "raw_skill_category_source_column_index": "4",
+        "raw_damage_type": damage_type,
+        "raw_damage_type_source_column": _first_skill_index_source_column(coefficient_rows, "5"),
+        "raw_damage_type_source_column_index": "5",
+        "raw_action_type": raw_action_type,
+        "raw_action_type_source_column": _first_skill_index_source_column(coefficient_rows, "3"),
+        "raw_action_type_source_column_index": "3",
+        "raw_damage_category": raw_damage_category,
+        "raw_damage_category_source_column": _first_skill_index_source_column(coefficient_rows, "2"),
+        "raw_damage_category_source_column_index": "2",
+        "coefficient_source_column": coefficient_source_column,
+        "coefficient_source_column_index": "9",
+        "category_like_fields": _category_like_fields(coefficient_rows),
+        "normalized_action_classification": classification["normalized_action_classification"],
+        "normalized_damage_category": classification["normalized_damage_category"],
+        "qte_classification_confidence": classification["qte_classification_confidence"],
+        "classification_warnings": classification["classification_warnings"],
         "raw_coefficients": raw_coefficients,
         "parsed_multipliers": parsed_multipliers,
         "hit_count": len(parsed_multipliers),
         "confidence": "high" if parsed_multipliers and not warnings else "medium" if parsed_multipliers else "low",
         "warnings": warnings,
+    }
+
+
+def _qte_classification(
+    coefficient_rows: list[dict[str, Any]],
+    raw_skill_category: Any,
+    raw_damage_type: Any,
+) -> dict[str, Any]:
+    labels = [row.get("source_action_name") or "" for row in coefficient_rows]
+    has_qte_label = any(label in {"QTE", "QTE-1", "QTE-2", "QTE-3"} for label in labels)
+    has_variation_damage = VARIATION_DAMAGE in str(raw_damage_type or "")
+    raw_skill_conflict = raw_skill_category not in (None, "", VARIATION)
+    warnings = []
+    normalized_action = "qte_intro" if has_qte_label or has_variation_damage else None
+    normalized_damage = "variation_damage" if has_variation_damage else None
+
+    if raw_skill_conflict and has_qte_label and has_variation_damage:
+        warnings.append(
+            f"Raw skill category is {raw_skill_category!r} while damage type is {raw_damage_type!r}; "
+            "candidate is classified as QTE by source label and damage type. Preserve raw category for review."
+        )
+
+    if has_qte_label and has_variation_damage and not raw_skill_conflict:
+        confidence = "high"
+    elif has_qte_label and has_variation_damage:
+        confidence = "medium"
+    else:
+        confidence = "low"
+        if not has_qte_label:
+            warnings.append("QTE source labels are missing from coefficient rows.")
+        if not has_variation_damage:
+            warnings.append("Variation damage type is missing from coefficient rows.")
+
+    return {
+        "normalized_action_classification": normalized_action,
+        "normalized_damage_category": normalized_damage,
+        "qte_classification_confidence": confidence,
+        "classification_warnings": warnings,
+    }
+
+
+def _category_like_fields(coefficient_rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    fields = {
+        "source_action_label": "1",
+        "raw_damage_category": "2",
+        "raw_action_type": "3",
+        "raw_skill_category": "4",
+        "raw_damage_type": "5",
+        "raw_scaling_stat": "8",
+        "coefficient": "9",
+    }
+    return {
+        name: {
+            "value": _first_skill_index_value(coefficient_rows, index),
+            "source_column": _first_skill_index_source_column(coefficient_rows, index),
+            "source_column_index": index,
+        }
+        for name, index in fields.items()
     }
 
 
@@ -768,6 +900,40 @@ def _first_skill_index_value(rows: list[dict[str, Any]], index: str) -> Any:
     return None
 
 
+def _first_skill_index_source_column(rows: list[dict[str, Any]], index: str) -> str | None:
+    for row in rows:
+        value = row.get("raw_by_index", {}).get(index)
+        if value not in (None, ""):
+            return row.get("source_columns_by_index", {}).get(index) or f"column_{index}"
+    return None
+
+
+def _classification_summary(candidates: list[dict[str, Any]]) -> dict[str, Any]:
+    conflicts = []
+    qte_intro_count = 0
+    for candidate in candidates:
+        damage = candidate["damage_candidate"]
+        if damage.get("normalized_action_classification") == "qte_intro":
+            qte_intro_count += 1
+        for warning in damage.get("classification_warnings", []):
+            conflicts.append(
+                {
+                    "candidate_id": candidate["candidate_id"],
+                    "raw_skill_category": damage.get("raw_skill_category"),
+                    "raw_damage_type": damage.get("raw_damage_type"),
+                    "normalized_action_classification": damage.get("normalized_action_classification"),
+                    "normalized_damage_category": damage.get("normalized_damage_category"),
+                    "warning": warning,
+                }
+            )
+    return {
+        "candidate_count": len(candidates),
+        "qte_intro_classified_count": qte_intro_count,
+        "raw_category_conflict_count": len(conflicts),
+        "conflicts": conflicts,
+    }
+
+
 def _row_ref(row: dict[str, Any]) -> dict[str, Any]:
     return {
         "sheet": row["sheet"],
@@ -799,6 +965,8 @@ def _report_markdown(artifact: dict[str, Any]) -> str:
         f"- simulation_applied = {str(artifact['simulation_applied']).lower()}",
         f"- Action candidate output: `{artifact['action_candidate_output']}`",
         f"- Action candidate report: `{artifact['action_candidate_report']}`",
+        f"- Action candidates: {artifact['action_candidate_count']} split by human/mech section in the action candidate output",
+        f"- Executable candidate count: {artifact['executable_candidate_count']}",
         "",
     ]
     if group:
@@ -850,6 +1018,7 @@ def _report_markdown(artifact: dict[str, Any]) -> str:
 
 
 def _action_candidate_report_markdown(artifact: dict[str, Any]) -> str:
+    candidates_by_id = {candidate["candidate_id"]: candidate for candidate in artifact["candidates"]}
     lines = [
         "# Aemeath QTE Action Candidate Review",
         "",
@@ -861,11 +1030,13 @@ def _action_candidate_report_markdown(artifact: dict[str, Any]) -> str:
         f"- simulation applied: {str(artifact['simulation_applied']).lower()}",
         f"- review only: {str(artifact['review_only']).lower()}",
         f"- simulation executable: {str(artifact['simulation_executable']).lower()}",
+        f"- QTE intro classified candidates: {artifact['classification_summary']['qte_intro_classified_count']}",
+        f"- Raw category conflicts: {artifact['classification_summary']['raw_category_conflict_count']}",
         "",
-        "## B. Action Candidate Table",
+        "## B. Candidate Table",
         "",
-        "| candidate_id | proposed_action_id | character | action_time | combat_time_cost | hit count | parsed multipliers | skill category | damage type | previous Outro trigger frame | implementation status | safe_to_implement_later |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| candidate_id | proposed_action_id | character | action_time | combat_time_cost | hit count | parsed multipliers | raw skill category | raw damage type | normalized action | normalized damage | previous Outro trigger frame | implementation status | safe_to_implement_later |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for candidate in artifact["candidates"]:
         timing = candidate["timing_candidate"]
@@ -882,8 +1053,10 @@ def _action_candidate_report_markdown(artifact: dict[str, Any]) -> str:
                     _md(timing["combat_time_cost_seconds"]),
                     _md(damage["hit_count"]),
                     _md(damage["parsed_multipliers"]),
-                    _md(damage["skill_category"]),
-                    _md(damage["damage_type"]),
+                    _md(damage["raw_skill_category"]),
+                    _md(damage["raw_damage_type"]),
+                    _md(damage["normalized_action_classification"]),
+                    _md(damage["normalized_damage_category"]),
                     _md(notice["previous_character_outro_trigger_frame"] or notice["previous_outro_trigger_frames"]),
                     candidate["implementation_status"],
                     str(candidate["safe_to_implement_later"]).lower(),
@@ -892,12 +1065,54 @@ def _action_candidate_report_markdown(artifact: dict[str, Any]) -> str:
             + " |"
         )
 
-    lines.extend(["", "## C. Candidate Details", ""])
+    lines.extend([""])
+    lines.extend(
+        [
+            "## C. Classification Audit",
+            "",
+            "| Candidate | Raw skill category | Raw damage type | Normalized action | Normalized damage | Confidence | Warnings |",
+            "| --- | --- | --- | --- | --- | --- | --- |",
+        ]
+    )
     for candidate in artifact["candidates"]:
+        damage = candidate["damage_candidate"]
+        lines.append(
+            "| "
+            + " | ".join(
+                [
+                    candidate["candidate_id"],
+                    _md(damage["raw_skill_category"]),
+                    _md(damage["raw_damage_type"]),
+                    _md(damage["normalized_action_classification"]),
+                    _md(damage["normalized_damage_category"]),
+                    _md(damage["qte_classification_confidence"]),
+                    _md(damage["classification_warnings"]),
+                ]
+            )
+            + " |"
+        )
+    lines.extend(
+        [
+            "",
+            "- Raw Excel category fields are preserved for review.",
+            "- Normalized classifications are audit metadata only and do not change simulation behavior.",
+            "- A raw skill category mismatch remains non-executable and requires review before implementation.",
+            "",
+        ]
+    )
+
+    detail_sections = [
+        ("## D. Human QTE Candidate Details", candidates_by_id.get("aemeath_qte_intro_human")),
+        ("## E. Mech QTE Candidate Details", candidates_by_id.get("aemeath_qte_intro_mech")),
+    ]
+    for title, candidate in detail_sections:
+        if candidate is None:
+            continue
         lines.extend(
             [
-                f"### {candidate['candidate_id']}",
+                title,
                 "",
+                f"- Candidate ID: `{candidate['candidate_id']}`",
                 f"- Executable rows used: `{[(row['source_action_name'], row['row_number']) for row in candidate['executable_source_rows']]}`",
                 f"- Metadata rows used: `{[(row['source_action_name'], row['row_number']) for row in candidate['metadata_source_rows']]}`",
                 f"- Excluded rows: `{[(row['source_action_name'], row['row_number'], row['excluded_reason']) for row in candidate['excluded_source_rows']]}`",
@@ -911,7 +1126,13 @@ def _action_candidate_report_markdown(artifact: dict[str, Any]) -> str:
 
     lines.extend(
         [
-            "## D. Metadata Separated From Action",
+            "## F. Cross-contamination check",
+            "",
+            f"- Human rows in mech candidate: `{_cross_scope_rows(candidates_by_id.get('aemeath_qte_intro_mech'), 'aemeath')}`",
+            f"- Mech rows in human candidate: `{_cross_scope_rows(candidates_by_id.get('aemeath_qte_intro_human'), 'aemeath_mech')}`",
+            f"- Forbidden labels in executable rows: `{_forbidden_executable_labels(artifact['candidates'])}`",
+            "",
+            "## G. Metadata Separated From Action",
             "",
         ]
     )
@@ -923,14 +1144,14 @@ def _action_candidate_report_markdown(artifact: dict[str, Any]) -> str:
                 f"- Cannot-switch note: `{notice['cannot_switch_during_invulnerable']}`",
                 f"- Flow Light / 15s state grants: `{notice['state_grants']}`",
                 f"- E1-QTE switch notes: `{[(row['source_action_name'], row['row_number']) for row in notice['qte_followup_form_switch_notes']]}`",
-                "",
-            ]
-        )
+            "",
+        ]
+    )
 
     excluded = artifact["excluded_summary"]
     lines.extend(
         [
-            "## E. Excluded Rows",
+            "## H. Excluded Rows",
             "",
             "- Seraphic Duet / enhanced E rows are excluded from QTE executable rows.",
             "- Overdrive and Finale rows are excluded from QTE executable rows.",
@@ -940,16 +1161,40 @@ def _action_candidate_report_markdown(artifact: dict[str, Any]) -> str:
             f"- Unrelated Aemeath rows: {excluded['excluded_unrelated_aemeath_rows']}",
             f"- Other-character rows excluded: {excluded['excluded_other_character_rows']}",
             "",
-            "## F. Implementation Note",
+            "## I. Implementation Note",
             "",
             "- This report produces action-ready review candidates.",
             "- It does not modify data/actions.json.",
-            "- Aemeath QTE remains disabled and non-policy.",
-            "- A future patch can turn `aemeath_qte_intro` into a real transition action after review.",
+            "- transition_config still keeps Aemeath QTE disabled/review_only.",
+            "- Aemeath QTE remains disabled, non-executable, and non-policy.",
+            "- Classification audit fields do not change simulation behavior.",
+            "- A future patch can wire the reviewed human/mech candidates into the transition pipeline.",
             "",
         ]
     )
     return "\n".join(lines)
+
+
+def _cross_scope_rows(candidate: dict[str, Any] | None, forbidden_character: str) -> list[tuple[str, int, str | None]]:
+    if candidate is None:
+        return []
+    mixed_rows = []
+    for bucket in ("source_rows", "executable_source_rows", "metadata_source_rows", "excluded_source_rows"):
+        for row in candidate.get(bucket, []):
+            if row.get("character") == forbidden_character:
+                mixed_rows.append((bucket, row["row_number"], row.get("source_action_name")))
+    return mixed_rows
+
+
+def _forbidden_executable_labels(candidates: list[dict[str, Any]]) -> list[str]:
+    forbidden_parts = ["\u5f3a\u5316E", "\u5927\u62db1", "\u5927\u62db2", "\u7279\u6b8a\u80fd\u91cf", "\u8c10\u5ea6\u7834\u574f"]
+    labels = []
+    for candidate in candidates:
+        for row in candidate.get("executable_source_rows", []):
+            label = row.get("source_action_name") or ""
+            if label.startswith("E1-QTE") or any(part in label for part in forbidden_parts):
+                labels.append(label)
+    return labels
 
 
 def _md(value: Any) -> str:

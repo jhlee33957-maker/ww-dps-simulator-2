@@ -42,6 +42,13 @@ def main() -> None:
         assert qte_action_candidates["simulation_applied"] is False
         assert qte_action_candidates["simulation_executable"] is False
         assert qte_action_candidates["executable_policy_action_count"] == 0
+        candidate_ids = {candidate["proposed_action_id"] for candidate in qte_action_candidates["candidates"]}
+        assert "aemeath_qte_intro_human" not in sim.get_policy_action_ids()
+        assert "aemeath_qte_intro_mech" not in sim.get_policy_action_ids()
+        assert candidate_ids.issubset({"aemeath_qte_intro_human", "aemeath_qte_intro_mech"})
+        for candidate in qte_action_candidates["candidates"]:
+            assert candidate["damage_candidate"]["normalized_action_classification"] == "qte_intro"
+            assert candidate["proposed_action_id"] not in sim.get_policy_action_ids()
         assert all(
             candidate["proposed_action_id"] not in sim.get_policy_action_ids()
             for candidate in qte_action_candidates["candidates"]
@@ -54,6 +61,7 @@ def main() -> None:
     assert first_swap.outgoing_character_id == "aemeath"
     assert first_swap.incoming_character_id == "dummy_support"
     assert first_swap.transition_events == []
+    assert first_swap.incoming_intro_event_id is None
     assert first_swap.fallback_swap_used is True
     assert first_swap.swap_timing_is_placeholder is True
     assert first_swap.swap_timing_source == "party_presets.aemeath_test_party.generic_swap"
