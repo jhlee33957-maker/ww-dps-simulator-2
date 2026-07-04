@@ -62,12 +62,15 @@ class Simulation:
         self.enemy = enemy or EnemyData()
         self.state: CombatState = create_initial_state(self.characters, self.enemy, self.initial_active_character)
         self.state.combat_duration = self.combat_duration
+        self.state.mechanics_config = dict(self.transition_config.get("mechanics") or {})
         self.character_mechanics = get_mechanics_for_characters(self.selected_character_ids)
         for mechanic in self.character_mechanics.values():
             mechanic.initialize_state(self.state)
         for character_id in self.selected_character_ids:
             self.state.character_mechanics_state.setdefault(character_id, {})
         self.state.character_states = self.state.character_mechanics_state
+        for character_id, character in self.characters.items():
+            self.state.character_states.setdefault(character_id, {})["energy_regen"] = character.energy_regen
         initialize_concerto_states(
             self.state,
             self.selected_character_ids,

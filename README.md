@@ -17,6 +17,10 @@ This project is a Wuthering Waves-style DPS simulation tool focused on Maskable 
 
 The common combat engine handles shared systems: damage formulas, action_time, hit timing, buffs, cooldowns, resources, attribute anomaly state, Havoc Bane DEF reduction, and the PPO reward objective. Character-specific mechanics are isolated under characters/ so the simulator core does not need character-specific branches.
 
+## Energy Regen
+
+Characters now support `energy_regen` as a decimal stat where `1.0 = 100%` and missing values default to `1.0`. The stat applies only to Resonance Energy gain: `final_resonance_energy_gain = base_resonance_energy_gain * actor.energy_regen`. Resonance Energy costs, Concerto gain, Mornye Rest Mass Energy, Mornye Relative Momentum, cooldowns, and direct damage are not scaled by this shared resource formula. Timeline rows log base Resonance Energy gain, Energy Regen, final Resonance Energy gain, gained energy after caps, and wasted energy.
+
 Character mechanic modules can:
 
 - initialize character-specific state
@@ -78,19 +82,26 @@ Implemented in v1:
 - Heavy Inversion at 100 Relative Momentum, applying Observation Marker metadata for 30s
 - simplified Resonance Skill behavior: baseline resolves to Optimal Solution; WFO resolves to Distributed Array
 - Critical Protocol Resonance Liberation, including Syntony Field to High Syntony Field conversion
+- Mornye Energy Regen scaling v1: Mornye uses `energy_regen = 2.60` as a configurable support-test assumption, and Critical Protocol gets temporary ER-derived crit bonuses only on that Liberation action
+- optional simplified Interfered Marker mode: when explicitly enabled, Heavy Inversion refreshes a 30s enemy damage-taken amp based on Mornye ER excess; global default remains disabled
 - Mornye Outro Recursion as a real transition buff: `mornye_outro_recursion_all_dmg_amp` gives the party 25% All DMG Amplification for 30s and consumes Mornye outgoing Concerto when applied
 
 Not implemented in v1:
 
 - full Tune Break / Tune Rupture / Tune Strain systems
-- Interfered Marker damage amplification and Particle Jet response
+- full Interfered Marker Tune conversion and Particle Jet response
 - Proof of Boundedness defensive survival logic
 - exact healing / DEF defensive value in DPS
-- Energy Regen scaling for Mornye crit or team damage amp
 - automatic Syntony Field damage scheduling
 - full QTE/Intro state-machine details beyond reviewed transition data
 
 Mornye Intro Convergence is present as reviewed transition data in `data/transition_actions.json` and remains disabled by default through `data/transition_config.json`. No PPO retraining was performed.
+
+## Mornye ER Scaling v1
+
+Mornye helper formulas live in `characters/mornye.py`. ER excess percent is `max(0, (energy_regen - 1.0) * 100)`. Interfered Marker amp potential is `min(excess_percent * 0.0025, 0.40)`, so 100% ER gives 0%, 160% ER gives 15%, and 260% ER caps at 40%. Critical Protocol temporary crit bonuses are `min(excess_percent * 0.005, 0.80)` crit rate and `min(excess_percent * 0.01, 1.60)` crit damage; at 260% ER this is +80% CR and +160% CD.
+
+`data/transition_config.json` keeps Mornye ER scaling enabled and Interfered Marker mode disabled by default. The supported marker modes are `disabled`, `dry_run`, and `simplified_on_inversion`. The `aemeath_mornye_enabled_test_party` preset opts into `simplified_on_inversion` for deterministic support-testing because that preset already enables experimental transition behavior. Full Tune/Tune Rupture/Tune Strain marker conversion, Proof of Boundedness, healing, and DEF survival value remain out of scope.
 
 ## Mornye Excel Audit
 
@@ -129,7 +140,7 @@ Implemented Mornye Intro values:
 
 Outgoing Outro hooks still run before incoming Intro hooks. When an enabled incoming transition event applies and `consume_concerto_on_enabled_transition` is true, the outgoing character's Concerto is consumed. No-concerto swaps and disabled/dry-run modes continue to use fallback swap behavior.
 
-Tune Break, Tune Rupture, Tune Strain, Observation/Interfered Marker systems, Proof of Boundedness, healing, DEF defensive calculations, and automatic Syntony Field periodic damage remain unimplemented. No PPO retraining was performed.
+Tune Break, Tune Rupture, Tune Strain, full Observation/Interfered Marker conversion, Proof of Boundedness, healing, DEF defensive calculations, and automatic Syntony Field periodic damage remain unimplemented. The optional simplified Interfered Marker amp mode is separate from full Tune conversion. No PPO retraining was performed.
 
 ## Party Training Transition Modes
 

@@ -97,15 +97,18 @@ def apply_resource_changes(
 
     character_id = action.character_id
     character = characters[character_id]
+    base_resonance_energy_gain = float(action.resonance_energy_gain)
+    energy_regen = float(character.energy_regen)
+    final_resonance_energy_gain = base_resonance_energy_gain * energy_regen
 
     resonance_after_cost = max(
         0.0,
         state.resonance_energy.get(character_id, 0.0) - action.resonance_energy_cost,
     )
-    resonance_uncapped = resonance_after_cost + action.resonance_energy_gain
+    resonance_uncapped = resonance_after_cost + final_resonance_energy_gain
     resonance_capped = min(character.resonance_energy_max, resonance_uncapped)
     resonance_wasted = max(0.0, resonance_uncapped - resonance_capped)
-    resonance_gained = action.resonance_energy_gain - resonance_wasted
+    resonance_gained = max(0.0, final_resonance_energy_gain - resonance_wasted)
 
     character_state = sync_concerto_state(state, character_id)
     concerto_before, concerto_gained, concerto_capped, concerto_ready_after, concerto_wasted = add_concerto_energy(
@@ -123,6 +126,9 @@ def apply_resource_changes(
     )
 
     return ResourceChange(
+        base_resonance_energy_gain=base_resonance_energy_gain,
+        energy_regen=energy_regen,
+        final_resonance_energy_gain=final_resonance_energy_gain,
         resonance_gained=resonance_gained,
         resonance_wasted=resonance_wasted,
         concerto_before=concerto_before,

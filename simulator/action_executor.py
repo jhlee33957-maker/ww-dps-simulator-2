@@ -111,6 +111,7 @@ def _calculate_hit_damage(
     state: CombatState,
     characters: dict[str, CharacterData],
     buffs: dict[str, BuffData],
+    temporary_stat_modifiers: dict[str, float] | None = None,
 ) -> tuple[float, dict]:
     transition_damage_action = bool((action.mechanic_effects or {}).get("transition_action"))
     if action.character_id is None or (action.action_type == "swap" and not transition_damage_action):
@@ -118,6 +119,9 @@ def _calculate_hit_damage(
 
     character = characters[action.character_id]
     stats = buffed_combat_stats(character, state, buffs, time_offset=hit.time)
+    for stat_name, stat_value in (temporary_stat_modifiers or {}).items():
+        if stat_name in stats:
+            stats[stat_name] += float(stat_value)
     damage_amp = damage_amp_for_action(action.character_id, action, state, buffs, time_offset=hit.time)
     havoc_def_reduction = get_havoc_bane_def_reduction_at_time(state, hit.time)
     final_def_reduction = state.def_reduction + havoc_def_reduction
@@ -184,6 +188,7 @@ def _calculate_hit_damage_totals(
     combat_duration: float | None,
     truncated_by_combat_limit: bool,
     action_damage_multiplier: float = 1.0,
+    temporary_stat_modifiers: dict[str, float] | None = None,
 ) -> tuple[float, float, list[dict], dict[str, float], float]:
     normal_damage = 0.0
     tune_break_damage = 0.0
@@ -195,7 +200,7 @@ def _calculate_hit_damage_totals(
     for hit in sorted(action.effective_hits(), key=lambda item: item.time):
         if hit.time > action_time:
             continue
-        damage, detail = _calculate_hit_damage(hit, action, state, characters, buffs)
+        damage, detail = _calculate_hit_damage(hit, action, state, characters, buffs, temporary_stat_modifiers)
         if damage > 0.0 and action_damage_multiplier != 1.0:
             damage *= action_damage_multiplier
             detail["damage"] = damage
@@ -291,6 +296,16 @@ def execute_action(
         if mechanic is not None
         else 1.0
     )
+    temporary_stat_modifiers = (
+        mechanic.get_action_stat_modifiers(state, action, characters)
+        if mechanic is not None and hasattr(mechanic, "get_action_stat_modifiers")
+        else {}
+    )
+    mechanic_log_fields = (
+        mechanic.get_action_log_fields(state, action, characters)
+        if mechanic is not None and hasattr(mechanic, "get_action_log_fields")
+        else {}
+    )
 
     # Damage events use an action-start state snapshot. Buffs/anomalies applied by
     # this action are added after action_time and do not affect same-action hits.
@@ -305,6 +320,7 @@ def execute_action(
         combat_duration=combat_duration,
         truncated_by_combat_limit=truncated_by_combat_limit,
         action_damage_multiplier=action_damage_multiplier,
+        temporary_stat_modifiers=temporary_stat_modifiers,
     )
     direct_damage = normal_damage + tune_break_damage
 
@@ -377,6 +393,9 @@ def execute_action(
         active_buffs=active_buff_ids,
         applied_buffs=applied_buff_ids,
         valid=True,
+        base_resonance_energy_gain=resource_change.base_resonance_energy_gain if resource_change is not None else 0.0,
+        energy_regen=resource_change.energy_regen if resource_change is not None else 1.0,
+        final_resonance_energy_gain=resource_change.final_resonance_energy_gain if resource_change is not None else 0.0,
         resonance_energy_gained=resource_change.resonance_gained if resource_change is not None else 0.0,
         resonance_energy_wasted=resource_change.resonance_wasted if resource_change is not None else 0.0,
         concerto_before=resource_change.concerto_before if resource_change is not None else 0.0,
@@ -385,6 +404,7 @@ def execute_action(
         concerto_ready_after=resource_change.concerto_ready_after if resource_change is not None else False,
         concerto_energy_gained=resource_change.concerto_gained if resource_change is not None else 0.0,
         concerto_energy_wasted=resource_change.concerto_wasted if resource_change is not None else 0.0,
+        **mechanic_log_fields,
     )
     state.action_log.append(result.model_dump(mode="json"))
     if total_action_damage > 0.0 or damage_after_cutoff_excluded > 0.0:
@@ -471,6 +491,9 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         swap_timing_source=result.swap_timing_source,
         transition_warnings=result.transition_warnings,
         active_character=active_character_name,
+        base_resonance_energy_gain=result.base_resonance_energy_gain,
+        energy_regen=result.energy_regen,
+        final_resonance_energy_gain=result.final_resonance_energy_gain,
         resonance_energy_gained=result.resonance_energy_gained,
         resonance_energy_wasted=result.resonance_energy_wasted,
         concerto_before=result.concerto_before,
@@ -484,4 +507,10 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         mornye_rest_mass_after=result.mornye_rest_mass_after,
         mornye_wfo_remaining_after=result.mornye_wfo_remaining_after,
         mornye_syntony_field_remaining_after=result.mornye_syntony_field_remaining_after,
+        mornye_er_excess_percent=result.mornye_er_excess_percent,
+        mornye_liberation_crit_rate_bonus=result.mornye_liberation_crit_rate_bonus,
+        mornye_liberation_crit_dmg_bonus=result.mornye_liberation_crit_dmg_bonus,
+        mornye_interfered_marker_mode=result.mornye_interfered_marker_mode,
+        mornye_interfered_amp=result.mornye_interfered_amp,
+        mornye_interfered_marker_applied=result.mornye_interfered_marker_applied,
     )

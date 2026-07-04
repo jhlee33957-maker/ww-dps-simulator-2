@@ -81,6 +81,17 @@ def default_transition_config() -> dict[str, Any]:
             "consume_concerto_on_disabled": False,
             "normal_swap_when_concerto_not_ready": True,
         },
+        "mechanics": {
+            "mornye": {
+                "energy_regen_scaling": {"enabled": True},
+                "interfered_marker": {
+                    "mode": "disabled",
+                    "modes": ["disabled", "dry_run", "simplified_on_inversion"],
+                    "duration": 30.0,
+                    "implementation_status": "simplified_optional",
+                },
+            }
+        },
         "characters": {},
     }
 
@@ -101,6 +112,7 @@ def load_transition_config(data_dir: Path | str) -> dict[str, Any]:
         **default_transition_config()["concerto_transition"],
         **config.get("concerto_transition", {}),
     }
+    merged["mechanics"] = config.get("mechanics", default_transition_config()["mechanics"])
     merged["characters"] = config.get("characters", {})
     merged["_data_dir"] = str(path.parent)
     return merged

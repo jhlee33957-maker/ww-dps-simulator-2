@@ -17,6 +17,19 @@
     "consume_concerto_on_disabled": false,
     "normal_swap_when_concerto_not_ready": true
   },
+  "mechanics": {
+    "mornye": {
+      "energy_regen_scaling": {
+        "enabled": true
+      },
+      "interfered_marker": {
+        "mode": "disabled",
+        "modes": ["disabled", "dry_run", "simplified_on_inversion"],
+        "duration": 30.0,
+        "implementation_status": "simplified_optional"
+      }
+    }
+  },
   "characters": {
     "aemeath": {
       "intro_qte": {

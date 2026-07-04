@@ -58,6 +58,13 @@
         }
       }
     },
+    "mechanic_overrides": {
+      "mornye": {
+        "interfered_marker": {
+          "mode": "simplified_on_inversion"
+        }
+      }
+    },
     "generic_swap": {
       "action_time": 0.5,
       "combat_time_cost": 0.5,

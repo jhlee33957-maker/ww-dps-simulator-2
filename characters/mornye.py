@@ -3,6 +3,36 @@ from __future__ import annotations
 from typing import Any
 
 from characters.base import CharacterMechanic
+from simulator.buff_system import apply_buff
+from simulator.models import BuffData
+
+
+INTERFERED_MARKER_BUFF_ID = "mornye_interfered_marker_damage_amp"
+MORNYE_LIBERATION_ACTION_ID = "mornye_liberation_critical_protocol"
+MORNYE_HEAVY_INVERSION_ACTION_ID = "mornye_heavy_inversion"
+
+
+def get_energy_regen(character_state: Any | None = None, character_data: Any | None = None) -> float:
+    if character_data is not None:
+        return max(0.0, float(getattr(character_data, "energy_regen", 1.0) or 1.0))
+    if isinstance(character_state, dict):
+        return max(0.0, float(character_state.get("energy_regen", 1.0) or 1.0))
+    return 1.0
+
+
+def get_energy_regen_excess_percent(character_state: Any | None = None, character_data: Any | None = None) -> float:
+    return max(0.0, (get_energy_regen(character_state, character_data) - 1.0) * 100.0)
+
+
+def get_interfered_damage_amp(character_state: Any | None = None, character_data: Any | None = None) -> float:
+    return min(get_energy_regen_excess_percent(character_state, character_data) * 0.0025, 0.40)
+
+
+def get_liberation_crit_bonuses(character_state: Any | None = None, character_data: Any | None = None) -> tuple[float, float]:
+    excess_percent = get_energy_regen_excess_percent(character_state, character_data)
+    crit_rate_bonus = min(excess_percent * 0.005, 0.80)
+    crit_dmg_bonus = min(excess_percent * 0.01, 1.60)
+    return crit_rate_bonus, crit_dmg_bonus
 
 
 class MornyeMechanic(CharacterMechanic):
@@ -21,6 +51,7 @@ class MornyeMechanic(CharacterMechanic):
         "high_syntony_field_remaining": 0.0,
         "observation_marker_active": False,
         "observation_marker_remaining": 0.0,
+        "energy_regen": 1.0,
         "last_resolved_action_id": None,
     }
 
@@ -74,9 +105,30 @@ class MornyeMechanic(CharacterMechanic):
 
     def is_action_available(self, state: Any, action: Any) -> bool:
         data = self._state(state)
-        if action.id == "mornye_heavy_inversion":
+        if action.id == MORNYE_HEAVY_INVERSION_ACTION_ID:
             return data["mode"] == "wide_field_observation" and data["relative_momentum"] >= data["relative_momentum_cap"]
         return True
+
+    def get_action_stat_modifiers(self, state: Any, action: Any, characters: dict[str, Any] | None = None) -> dict[str, float]:
+        if action.id != MORNYE_LIBERATION_ACTION_ID or not self._energy_regen_scaling_enabled(state):
+            return {}
+        character_data = (characters or {}).get(self.character_id)
+        crit_rate_bonus, crit_dmg_bonus = get_liberation_crit_bonuses(self._state(state), character_data)
+        return {
+            "crit_rate": crit_rate_bonus,
+            "crit_damage": crit_dmg_bonus,
+        }
+
+    def get_action_log_fields(self, state: Any, action: Any, characters: dict[str, Any] | None = None) -> dict[str, Any]:
+        if action.id != MORNYE_LIBERATION_ACTION_ID or not self._energy_regen_scaling_enabled(state):
+            return {}
+        character_data = (characters or {}).get(self.character_id)
+        crit_rate_bonus, crit_dmg_bonus = get_liberation_crit_bonuses(self._state(state), character_data)
+        return {
+            "mornye_er_excess_percent": get_energy_regen_excess_percent(self._state(state), character_data),
+            "mornye_liberation_crit_rate_bonus": crit_rate_bonus,
+            "mornye_liberation_crit_dmg_bonus": crit_dmg_bonus,
+        }
 
     def resolve_incoming_qte_transition_action(
         self,
@@ -130,6 +182,8 @@ class MornyeMechanic(CharacterMechanic):
             data["wfo_combo_stage"] = int(effects["set_wfo_combo_stage"])
 
         self._clamp(data)
+        if action.id == MORNYE_HEAVY_INVERSION_ACTION_ID:
+            self._resolve_interfered_marker(state, result)
         data["last_resolved_action_id"] = action.id
 
     def advance_time(self, state: Any, elapsed_time: float) -> None:
@@ -185,13 +239,26 @@ class MornyeMechanic(CharacterMechanic):
             "high_syntony_field_remaining": data["high_syntony_field_remaining"],
             "observation_marker_active": data["observation_marker_active"],
             "observation_marker_remaining": data["observation_marker_remaining"],
+            "energy_regen": data.get("energy_regen", 1.0),
+            "interfered_marker_mode": self._interfered_marker_config(state).get("mode", "disabled"),
+            "interfered_marker_active": self._active_interfered_marker(state) is not None,
             "last_resolved_action_id": data["last_resolved_action_id"],
         }
 
     def get_display_state(self, character_state: Any) -> dict[str, Any]:
         data = dict(character_state) if isinstance(character_state, dict) else {}
+        energy_regen = get_energy_regen(data)
+        excess_percent = get_energy_regen_excess_percent(data)
+        crit_rate_bonus, crit_dmg_bonus = get_liberation_crit_bonuses(data)
         return {
             "Mode": data.get("mode", "baseline"),
+            "Energy Regen": f"{energy_regen * 100.0:.0f}%",
+            "ER Excess": f"{excess_percent:.0f}%",
+            "Interfered Amp Potential": f"{get_interfered_damage_amp(data) * 100.0:.1f}%",
+            "Liberation CR Bonus": f"{crit_rate_bonus * 100.0:.1f}%",
+            "Liberation CD Bonus": f"{crit_dmg_bonus * 100.0:.1f}%",
+            "Interfered Marker Mode": data.get("mornye_interfered_marker_mode", "disabled"),
+            "Active Interfered Marker": bool(data.get("mornye_interfered_marker_active", False)),
             "Rest Mass Energy": f"{float(data.get('rest_mass_energy', 0.0)):.1f}/{float(data.get('rest_mass_energy_cap', 100.0)):.0f}",
             "Relative Momentum": f"{float(data.get('relative_momentum', 0.0)):.1f}/{float(data.get('relative_momentum_cap', 100.0)):.0f}",
             "Wide Field Observation": f"{float(data.get('wide_field_observation_remaining', 0.0)):.1f}s",
@@ -202,6 +269,12 @@ class MornyeMechanic(CharacterMechanic):
 
     def _state(self, state: Any) -> dict[str, Any]:
         self.initialize_state(state)
+        data = state.character_mechanics_state[self.character_id]
+        character_data = getattr(state, "character_data", {}).get(self.character_id) if hasattr(state, "character_data") else None
+        data["mornye_interfered_marker_mode"] = self._interfered_marker_config(state).get("mode", "disabled")
+        data["mornye_interfered_marker_active"] = self._active_interfered_marker(state) is not None
+        if character_data is not None:
+            data["energy_regen"] = get_energy_regen(data, character_data)
         return state.character_mechanics_state[self.character_id]
 
     def _clamp(self, data: dict[str, Any]) -> None:
@@ -220,3 +293,64 @@ class MornyeMechanic(CharacterMechanic):
         ):
             data[key] = max(0.0, float(data[key]))
         data["observation_marker_active"] = bool(data["observation_marker_active"]) and data["observation_marker_remaining"] > 0.0
+        data["energy_regen"] = get_energy_regen(data)
+
+    def _energy_regen_scaling_enabled(self, state: Any) -> bool:
+        config = self._mornye_mechanics_config(state)
+        return bool((config.get("energy_regen_scaling") or {}).get("enabled", True))
+
+    def _interfered_marker_config(self, state: Any) -> dict[str, Any]:
+        config = self._mornye_mechanics_config(state)
+        marker_config = dict(config.get("interfered_marker") or {})
+        marker_config.setdefault("mode", "disabled")
+        marker_config.setdefault("duration", 30.0)
+        return marker_config
+
+    def _mornye_mechanics_config(self, state: Any) -> dict[str, Any]:
+        mechanics_config = getattr(state, "mechanics_config", {}) or {}
+        return dict((mechanics_config.get("mornye") or {}))
+
+    def _resolve_interfered_marker(self, state: Any, result: Any) -> None:
+        config = self._interfered_marker_config(state)
+        mode = str(config.get("mode", "disabled"))
+        data = self._state(state)
+        amp = get_interfered_damage_amp(data)
+        result.mornye_interfered_marker_mode = mode
+        result.mornye_interfered_amp = amp
+        data["mornye_interfered_marker_mode"] = mode
+        data["mornye_interfered_marker_active"] = False
+        if mode == "disabled":
+            return
+        if mode == "dry_run":
+            return
+        if mode != "simplified_on_inversion":
+            return
+        duration = max(0.001, float(config.get("duration", 30.0) or 30.0))
+        buff = BuffData(
+            id=INTERFERED_MARKER_BUFF_ID,
+            name="Mornye Interfered Marker Damage Amp (Simplified)",
+            duration=duration,
+            modifier_type="dmg_taken",
+            value=amp,
+            target="enemy",
+            target_scope="enemy",
+            metadata={
+                "source_character_id": self.character_id,
+                "source_action_id": MORNYE_HEAVY_INVERSION_ACTION_ID,
+                "dynamic_value": amp,
+                "implementation_status": "simplified_v1",
+                "source_note": "Simplified optional Mornye Interfered Marker amp applied on Heavy Inversion; full Tune conversion is not implemented.",
+            },
+        )
+        apply_buff(state, buff, self.character_id)
+        result.mornye_interfered_marker_applied = True
+        if INTERFERED_MARKER_BUFF_ID not in result.applied_buffs:
+            result.applied_buffs.append(INTERFERED_MARKER_BUFF_ID)
+        result.active_buffs = [buff.buff_id for buff in state.active_buffs if buff.remaining_duration > 0.0]
+        data["mornye_interfered_marker_active"] = True
+
+    def _active_interfered_marker(self, state: Any) -> Any | None:
+        for active in getattr(state, "active_buffs", []) or []:
+            if active.buff_id == INTERFERED_MARKER_BUFF_ID and active.remaining_duration > 0.0:
+                return active
+        return None

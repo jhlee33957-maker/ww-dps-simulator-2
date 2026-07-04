@@ -137,6 +137,7 @@
         "final_dmg_bonus":  0,
         "resonance_energy":  125,
         "resonance_energy_max":  125,
+        "energy_regen":  1.0,
         "concerto_energy":  0,
         "active":  false,
         "data_status":  "partial_real",
@@ -166,10 +167,11 @@
         "final_dmg_bonus": 0,
         "resonance_energy": 175,
         "resonance_energy_max": 175,
+        "energy_regen": 2.6,
         "concerto_energy": 0,
         "active": false,
         "data_status": "partial_real_support_v1",
         "is_dummy_sample": false,
-        "notes": "Mornye Support v1 using workbook section \\u83ab\\u5b81 and screenshot coefficient sanity checks. Defensive/Tune systems are metadata-only."
+        "notes": "Mornye Support v1 using workbook section \\u83ab\\u5b81 and screenshot coefficient sanity checks. Energy Regen 260% is a configurable support-test assumption for ER scaling v1. Defensive/Tune systems are metadata-only."
     }
 ]

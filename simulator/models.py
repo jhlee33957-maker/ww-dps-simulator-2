@@ -17,7 +17,7 @@ ActionType = Literal[
 DamageCategory = Literal["normal", "tune_break", "anomaly"]
 AnomalyType = Literal["aero_erosion", "spectro_frazzle", "electro_flare", "havoc_bane"]
 BuffModifierType = Literal["attack", "damage_bonus", "boost", "dmg_taken", "damage_amp"]
-BuffTarget = Literal["self", "active", "team", "party", "next_active", "specific_character"]
+BuffTarget = Literal["self", "active", "team", "party", "next_active", "specific_character", "enemy"]
 
 
 class CharacterData(BaseModel):
@@ -38,6 +38,7 @@ class CharacterData(BaseModel):
     final_dmg_bonus: float = 0.0
     resonance_energy: float = Field(ge=0)
     resonance_energy_max: float = Field(default=125.0, gt=0)
+    energy_regen: float = Field(default=1.0, ge=0)
     concerto_energy: float = Field(ge=0)
     active: bool = False
     data_status: str | None = None
@@ -188,6 +189,9 @@ class ActiveBuff(BaseModel):
 
 
 class ResourceChange(BaseModel):
+    base_resonance_energy_gain: float = 0.0
+    energy_regen: float = 1.0
+    final_resonance_energy_gain: float = 0.0
     resonance_gained: float = 0.0
     resonance_wasted: float = 0.0
     concerto_before: float = 0.0
@@ -216,6 +220,7 @@ class CombatState(BaseModel):
     team_buffs: list[ActiveBuff] = Field(default_factory=list)
     active_anomalies: dict[str, AnomalyState] = Field(default_factory=dict)
     character_mechanics_state: dict[str, dict] = Field(default_factory=dict)
+    mechanics_config: dict[str, Any] = Field(default_factory=dict)
     action_log: list[dict[str, Any]] = Field(default_factory=list)
     damage_log: list[dict[str, Any]] = Field(default_factory=list)
     resonance_energy: dict[str, float] = Field(default_factory=dict)
@@ -293,6 +298,9 @@ class ActionResult(BaseModel):
     swap_timing_source: str | None = None
     transition_warnings: list[str] = Field(default_factory=list)
     valid: bool
+    base_resonance_energy_gain: float = 0.0
+    energy_regen: float = 1.0
+    final_resonance_energy_gain: float = 0.0
     resonance_energy_gained: float = 0.0
     resonance_energy_wasted: float = 0.0
     concerto_before: float = 0.0
@@ -306,6 +314,12 @@ class ActionResult(BaseModel):
     mornye_rest_mass_after: float | None = None
     mornye_wfo_remaining_after: float | None = None
     mornye_syntony_field_remaining_after: float | None = None
+    mornye_er_excess_percent: float | None = None
+    mornye_liberation_crit_rate_bonus: float | None = None
+    mornye_liberation_crit_dmg_bonus: float | None = None
+    mornye_interfered_marker_mode: str | None = None
+    mornye_interfered_amp: float | None = None
+    mornye_interfered_marker_applied: bool = False
     reason: str | None = None
 
 
@@ -378,6 +392,9 @@ class TimelineEntry(BaseModel):
     swap_timing_source: str | None = None
     transition_warnings: list[str] = Field(default_factory=list)
     active_character: str
+    base_resonance_energy_gain: float = 0.0
+    energy_regen: float = 1.0
+    final_resonance_energy_gain: float = 0.0
     resonance_energy_gained: float = 0.0
     resonance_energy_wasted: float = 0.0
     concerto_before: float = 0.0
@@ -391,6 +408,12 @@ class TimelineEntry(BaseModel):
     mornye_rest_mass_after: float | None = None
     mornye_wfo_remaining_after: float | None = None
     mornye_syntony_field_remaining_after: float | None = None
+    mornye_er_excess_percent: float | None = None
+    mornye_liberation_crit_rate_bonus: float | None = None
+    mornye_liberation_crit_dmg_bonus: float | None = None
+    mornye_interfered_marker_mode: str | None = None
+    mornye_interfered_amp: float | None = None
+    mornye_interfered_marker_applied: bool = False
 
 
 class PartyState(BaseModel):

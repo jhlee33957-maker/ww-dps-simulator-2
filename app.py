@@ -194,12 +194,29 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
                 ),
                 "0.0s",
             )
+            marker_buff = next(
+                (
+                    buff
+                    for buff in simulation.state.active_buffs
+                    if buff.buff_id == "mornye_interfered_marker_damage_amp"
+                ),
+                None,
+            )
+            display_state["Interfered Marker Remaining"] = (
+                f"{marker_buff.remaining_duration:.1f}s" if marker_buff is not None else "0.0s"
+            )
+            display_state["Interfered Marker Active"] = marker_buff is not None
             with st.expander("Mornye State"):
                 st.dataframe(
                     pd.DataFrame(display_state.items(), columns=["Field", "Value"]),
                     use_container_width=True,
                     hide_index=True,
                 )
+                if display_state.get("Interfered Marker Mode") == "simplified_on_inversion":
+                    st.warning(
+                        "Mornye Interfered Marker is running in simplified optional mode. "
+                        "It applies an enemy DMG Taken amp on Heavy Inversion; full Tune conversion is not implemented."
+                    )
         if len(simulation.selected_party_character_ids) > 1 and simulation.has_placeholder_swap_timing:
             st.warning(
                 "Generic swap timing is a placeholder for party-structure testing. "
@@ -283,6 +300,17 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "active_anomalies_after",
         "active_buffs",
         "applied_buffs",
+        "base_resonance_energy_gain",
+        "energy_regen",
+        "final_resonance_energy_gain",
+        "resonance_energy_gained",
+        "resonance_energy_wasted",
+        "mornye_er_excess_percent",
+        "mornye_liberation_crit_rate_bonus",
+        "mornye_liberation_crit_dmg_bonus",
+        "mornye_interfered_marker_mode",
+        "mornye_interfered_amp",
+        "mornye_interfered_marker_applied",
         "total_damage_after",
         "active_character",
         "mornye_mode_after",

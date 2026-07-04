@@ -30,6 +30,12 @@ class CharacterMechanic:
     def get_action_damage_multiplier(self, state: Any, action: Any) -> float:
         return 1.0
 
+    def get_action_stat_modifiers(self, state: Any, action: Any, characters: dict[str, Any] | None = None) -> dict[str, float]:
+        return {}
+
+    def get_action_log_fields(self, state: Any, action: Any, characters: dict[str, Any] | None = None) -> dict[str, Any]:
+        return {}
+
     def after_action(self, state: Any, action: Any, result: Any) -> None:
         pass
 

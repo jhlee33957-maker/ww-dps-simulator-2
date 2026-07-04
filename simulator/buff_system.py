@@ -47,6 +47,7 @@ def _buff_applies(buff: BuffData, active: ActiveBuff, character: CharacterData, 
     target_scope = buff.target_scope or buff.target
     return (
         target_scope in {"team", "party"}
+        or target_scope == "enemy"
         or (target_scope == "active" and character.id == state.active_character_id)
         or (target_scope == "next_active" and character.id == state.active_character_id and active.source_character_id != character.id)
         or (target_scope == "self" and active.source_character_id == character.id)
@@ -97,18 +98,19 @@ def damage_amp_for_action(
     time_offset: float = 0.0,
 ) -> float:
     damage_amp = 0.0
-    for _active, buff in get_active_buffs_for_action(
+    for active, buff in get_active_buffs_for_action(
         actor_character_id,
         action,
         state,
         buffs,
         time_offset=time_offset,
     ):
+        buff_value = float(active.metadata.get("dynamic_value", buff.value))
         damage_amp += buff.damage_amp_modifiers.get("all", 0.0)
         for tag in getattr(action, "tags", []) or []:
             damage_amp += buff.damage_amp_modifiers.get(tag, 0.0)
         if buff.modifier_type == "damage_amp":
-            damage_amp += buff.value
+            damage_amp += buff_value
     return damage_amp
 
 
@@ -144,15 +146,16 @@ def buffed_combat_stats(
         buff = buffs[active.buff_id]
         if not _buff_applies(buff, active, character, state):
             continue
+        buff_value = float(active.metadata.get("dynamic_value", buff.value))
         active_buff_names.append(buff.id)
         if buff.modifier_type == "attack":
-            stats["atk_percent"] += buff.value
+            stats["atk_percent"] += buff_value
         elif buff.modifier_type == "damage_bonus":
-            stats["dmg_bonus"] += buff.value
+            stats["dmg_bonus"] += buff_value
         elif buff.modifier_type == "boost":
-            stats["boost"] += buff.value
+            stats["boost"] += buff_value
         elif buff.modifier_type == "dmg_taken":
-            stats["dmg_taken"] += buff.value
+            stats["dmg_taken"] += buff_value
         for stat_name, stat_value in buff.stat_modifiers.items():
             if stat_name in stats:
                 stats[stat_name] += stat_value

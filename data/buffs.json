@@ -72,5 +72,21 @@
       "implementation_status": "implemented_v1",
       "source": "Mornye Outro Skill Recursion: team gains 25% All DMG Amplification for 30s"
     }
+  },
+  {
+    "id": "mornye_interfered_marker_damage_amp",
+    "name": "Mornye Interfered Marker Damage Amp (Simplified)",
+    "duration": 30.0,
+    "modifier_type": "dmg_taken",
+    "value": 0.0,
+    "target": "enemy",
+    "target_scope": "enemy",
+    "metadata": {
+      "source_character_id": "mornye",
+      "source_action_id": "mornye_heavy_inversion",
+      "implementation_status": "simplified_v1",
+      "source": "Mornye Interfered Marker simplified optional mode",
+      "source_note": "Simplified optional enemy damage-taken amp applied on Heavy Inversion. Full Tune/Tune Rupture/Tune Strain marker conversion is not implemented."
+    }
   }
 ]

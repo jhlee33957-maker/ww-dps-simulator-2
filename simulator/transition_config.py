@@ -52,6 +52,11 @@ def build_effective_transition_config(
     if preset_overrides:
         _deep_update(effective, preset_overrides)
         sources.append("party_preset")
+    mechanic_overrides = (party_preset or {}).get("mechanic_overrides")
+    if mechanic_overrides:
+        effective.setdefault("mechanics", {})
+        _deep_update(effective["mechanics"], mechanic_overrides)
+        sources.append("party_preset_mechanics")
     if ui_overrides:
         _deep_update(effective, ui_overrides)
         sources.append("ui_override")
