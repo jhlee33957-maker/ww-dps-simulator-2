@@ -9,6 +9,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from simulator.simulation import Simulation
+from simulator.resource_system import ensure_concerto_state
 
 
 DATA_DIR = PROJECT_ROOT / "data"
@@ -18,6 +19,14 @@ def assert_close(actual: float, expected: float, label: str, tolerance: float = 
     assert math.isclose(actual, expected, rel_tol=tolerance, abs_tol=tolerance), (
         f"{label}: expected {expected}, got {actual}"
     )
+
+
+def set_full_concerto(sim: Simulation, character_id: str) -> None:
+    state = sim.state.character_states[character_id]
+    ensure_concerto_state(state)
+    state["concerto_energy"] = state["concerto_energy_cap"]
+    state["concerto_ready"] = True
+    sim.state.concerto_energy[character_id] = state["concerto_energy"]
 
 
 def main() -> None:
@@ -41,6 +50,8 @@ def main() -> None:
     assert row.active_character_after == "dummy_support"
     assert row.outgoing_character_id == "aemeath"
     assert row.incoming_character_id == "dummy_support"
+    assert row.transition_type == "normal_swap"
+    assert row.transition_reason == "concerto_not_ready"
     assert row.fallback_swap_used is True
     assert row.swap_timing_is_placeholder is True
     assert row.swap_timing_source == "party_presets.aemeath_test_party.generic_swap"
@@ -52,12 +63,18 @@ def main() -> None:
     assert not sim.is_action_available(sim.actions["aemeath_basic_attack"])
     assert sim.is_action_available(sim.actions["swap_to_aemeath"])
 
+    set_full_concerto(sim, "dummy_support")
     assert sim.execute_action("swap_to_aemeath")
     outro_row = sim.timeline[-1]
     assert_close(outro_row.action_time, 0.5, "outro fallback swap action_time")
     assert outro_row.outgoing_character_id == "dummy_support"
     assert outro_row.incoming_character_id == "aemeath"
+    assert outro_row.transition_type == "full_concerto_transition"
+    assert outro_row.transition_reason == "concerto_ready"
     assert outro_row.outgoing_outro_event_id == "dummy_support_outro_damage_amp"
+    assert outro_row.outgoing_outro_applied is True
+    assert outro_row.incoming_qte_mode == "disabled"
+    assert outro_row.incoming_qte_applied is False
     assert outro_row.fallback_swap_used is True
     assert outro_row.swap_timing_is_placeholder is True
     assert "dummy_support_outro_damage_amp" in outro_row.applied_buffs

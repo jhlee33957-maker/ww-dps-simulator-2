@@ -15,6 +15,7 @@ from simulator.party_transition import (
     load_transition_config,
     resolve_party_transition,
 )
+from simulator.resource_system import initialize_concerto_states
 from simulator.roster import (
     get_initial_active_character,
     get_swap_target_character_id,
@@ -67,6 +68,13 @@ class Simulation:
         for character_id in self.selected_character_ids:
             self.state.character_mechanics_state.setdefault(character_id, {})
         self.state.character_states = self.state.character_mechanics_state
+        initialize_concerto_states(
+            self.state,
+            self.selected_character_ids,
+            default_cap=float(
+                (self.transition_config.get("concerto_transition") or {}).get("default_concerto_cap", 100.0)
+            ),
+        )
         self.timeline: list[TimelineEntry] = []
 
     @classmethod
@@ -294,6 +302,16 @@ class Simulation:
     def _apply_transition_resolution(self, result, transition_resolution) -> None:
         result.outgoing_character_id = transition_resolution.outgoing_character_id
         result.incoming_character_id = transition_resolution.incoming_character_id
+        result.transition_type = transition_resolution.transition_type
+        result.transition_reason = transition_resolution.transition_reason
+        result.outgoing_concerto_before = transition_resolution.outgoing_concerto_before
+        result.outgoing_concerto_ready = transition_resolution.outgoing_concerto_ready
+        result.outgoing_concerto_consumed = transition_resolution.outgoing_concerto_consumed
+        result.outgoing_concerto_after = transition_resolution.outgoing_concerto_after
+        result.incoming_qte_candidate_id = transition_resolution.incoming_qte_candidate_id
+        result.incoming_qte_mode = transition_resolution.incoming_qte_mode
+        result.incoming_qte_applied = transition_resolution.incoming_qte_applied
+        result.outgoing_outro_applied = transition_resolution.outgoing_outro_applied
         result.transition_events = transition_resolution.transition_events
         result.outgoing_outro_event_id = transition_resolution.outgoing_outro_event_id
         result.incoming_intro_event_id = transition_resolution.incoming_intro_event_id
@@ -336,6 +354,8 @@ class Simulation:
                 "resonance_energy_max": self.characters[char_id].resonance_energy_max,
                 "wasted_resonance_energy": self.state.wasted_resonance_energy.get(char_id, 0.0),
                 "concerto_energy": self.state.concerto_energy.get(char_id, 0.0),
+                "concerto_energy_cap": self.state.character_states.get(char_id, {}).get("concerto_energy_cap", 100.0),
+                "concerto_ready": bool(self.state.character_states.get(char_id, {}).get("concerto_ready", False)),
                 "wasted_concerto_energy": self.state.wasted_concerto_energy.get(char_id, 0.0),
             }
             for char_id in self.characters

@@ -20,6 +20,11 @@ def assert_party_state(sim: Simulation, members: list[str], active: str) -> None
     assert party_state.party_members == members
     assert party_state.active_character_id == active
     assert set(party_state.character_states) == set(members)
+    for character_id in members:
+        character_state = party_state.character_states[character_id]
+        assert character_state["concerto_energy"] == 0.0
+        assert character_state["concerto_energy_cap"] == 100.0
+        assert character_state["concerto_ready"] is False
     assert party_state.combat_time == 0.0
     assert party_state.current_time == 0.0
     assert party_state.combat_duration == sim.combat_duration

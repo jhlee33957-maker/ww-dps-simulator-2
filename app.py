@@ -193,6 +193,16 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "active_character_after",
         "outgoing_character_id",
         "incoming_character_id",
+        "transition_type",
+        "transition_reason",
+        "outgoing_concerto_before",
+        "outgoing_concerto_ready",
+        "outgoing_concerto_consumed",
+        "outgoing_concerto_after",
+        "incoming_qte_candidate_id",
+        "incoming_qte_mode",
+        "incoming_qte_applied",
+        "outgoing_outro_applied",
         "outgoing_outro_event_id",
         "incoming_intro_event_id",
         "fallback_swap_used",
@@ -226,6 +236,13 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
 
     st.subheader("Timeline")
     st.dataframe(timeline_df[visible_columns] if visible_columns else timeline_df, use_container_width=True, hide_index=True)
+    if not timeline_df.empty and "incoming_qte_mode" in timeline_df.columns:
+        qte_modes = {
+            mode for mode in timeline_df["incoming_qte_mode"].dropna().astype(str).tolist()
+            if mode in {"disabled", "dry_run"}
+        }
+        if qte_modes:
+            st.info("QTE candidates in disabled or dry_run mode are logged only and are not included in DPS.")
 
     if not timeline_df.empty and {"selected_action_id", "resolved_action_id"}.issubset(timeline_df.columns):
         st.subheader("Selected -> Resolved Actions")

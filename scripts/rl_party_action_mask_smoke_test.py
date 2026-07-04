@@ -22,6 +22,7 @@ def main() -> None:
     solo = Simulation.from_json(DATA_DIR, party="aemeath")
     solo_policy_ids = solo.get_policy_action_ids()
     assert not any(action_id.startswith("swap_to_") for action_id in solo_policy_ids)
+    assert all("qte" not in action_id.lower() for action_id in solo_policy_ids)
     solo_mask = mask_for(solo)
     assert len(solo_mask) == len(solo_policy_ids)
     assert solo_mask["aemeath_basic_attack"] is True
@@ -32,6 +33,8 @@ def main() -> None:
     assert len(party_mask) == len(policy_ids)
     assert "swap_to_dummy_support" in policy_ids
     assert "swap_to_dummy_sub_dps" in policy_ids
+    assert "aemeath_qte_intro_human" not in policy_ids
+    assert "aemeath_qte_intro_mech" not in policy_ids
     assert party_mask["swap_to_aemeath"] is False
     assert party_mask["swap_to_dummy_support"] is True
     assert party_mask["aemeath_basic_attack"] is True
@@ -39,6 +42,8 @@ def main() -> None:
     assert party_mask["dummy_sub_dps_attack"] is False
 
     assert party.execute_action("swap_to_dummy_support")
+    assert party.timeline[-1].transition_type == "normal_swap"
+    assert party.timeline[-1].transition_reason == "concerto_not_ready"
     swapped_mask = mask_for(party)
     assert swapped_mask["swap_to_aemeath"] is True
     assert swapped_mask["swap_to_dummy_support"] is False

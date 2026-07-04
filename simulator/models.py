@@ -190,8 +190,11 @@ class ActiveBuff(BaseModel):
 class ResourceChange(BaseModel):
     resonance_gained: float = 0.0
     resonance_wasted: float = 0.0
+    concerto_before: float = 0.0
     concerto_gained: float = 0.0
     concerto_wasted: float = 0.0
+    concerto_after: float = 0.0
+    concerto_ready_after: bool = False
 
 
 class CombatState(BaseModel):
@@ -259,6 +262,16 @@ class ActionResult(BaseModel):
     applied_buffs: list[str] = Field(default_factory=list)
     outgoing_character_id: str | None = None
     incoming_character_id: str | None = None
+    transition_type: str | None = None
+    transition_reason: str | None = None
+    outgoing_concerto_before: float = 0.0
+    outgoing_concerto_ready: bool = False
+    outgoing_concerto_consumed: bool = False
+    outgoing_concerto_after: float = 0.0
+    incoming_qte_candidate_id: str | None = None
+    incoming_qte_mode: str | None = None
+    incoming_qte_applied: bool = False
+    outgoing_outro_applied: bool = False
     transition_events: list[dict[str, Any]] = Field(default_factory=list)
     outgoing_outro_event_id: str | None = None
     incoming_intro_event_id: str | None = None
@@ -269,6 +282,10 @@ class ActionResult(BaseModel):
     valid: bool
     resonance_energy_gained: float = 0.0
     resonance_energy_wasted: float = 0.0
+    concerto_before: float = 0.0
+    concerto_gain: float = 0.0
+    concerto_after: float = 0.0
+    concerto_ready_after: bool = False
     concerto_energy_gained: float = 0.0
     concerto_energy_wasted: float = 0.0
     mechanic_debug_after: dict[str, Any] = Field(default_factory=dict)
@@ -313,6 +330,16 @@ class TimelineEntry(BaseModel):
     applied_buffs: list[str] = Field(default_factory=list)
     outgoing_character_id: str | None = None
     incoming_character_id: str | None = None
+    transition_type: str | None = None
+    transition_reason: str | None = None
+    outgoing_concerto_before: float = 0.0
+    outgoing_concerto_ready: bool = False
+    outgoing_concerto_consumed: bool = False
+    outgoing_concerto_after: float = 0.0
+    incoming_qte_candidate_id: str | None = None
+    incoming_qte_mode: str | None = None
+    incoming_qte_applied: bool = False
+    outgoing_outro_applied: bool = False
     transition_events: list[dict[str, Any]] = Field(default_factory=list)
     outgoing_outro_event_id: str | None = None
     incoming_intro_event_id: str | None = None
@@ -323,6 +350,10 @@ class TimelineEntry(BaseModel):
     active_character: str
     resonance_energy_gained: float = 0.0
     resonance_energy_wasted: float = 0.0
+    concerto_before: float = 0.0
+    concerto_gain: float = 0.0
+    concerto_after: float = 0.0
+    concerto_ready_after: bool = False
     concerto_energy_gained: float = 0.0
     concerto_energy_wasted: float = 0.0
     mechanic_debug_after: dict[str, Any] = Field(default_factory=dict)

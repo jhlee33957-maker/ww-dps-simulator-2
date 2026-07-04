@@ -10,6 +10,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from simulator.party_transition import PLACEHOLDER_WARNING
+from simulator.resource_system import ensure_concerto_state
 from simulator.simulation import Simulation
 
 
@@ -24,11 +25,21 @@ def assert_close(actual: float, expected: float, label: str, tolerance: float = 
     )
 
 
+def set_full_concerto(sim: Simulation, character_id: str) -> None:
+    state = sim.state.character_states[character_id]
+    ensure_concerto_state(state)
+    state["concerto_energy"] = state["concerto_energy_cap"]
+    state["concerto_ready"] = True
+    sim.state.concerto_energy[character_id] = state["concerto_energy"]
+
+
 def main() -> None:
     sim = Simulation.from_json(DATA_DIR, party="aemeath_test_party")
     assert sim.transition_config["characters"]["aemeath"]["intro_qte"]["enabled"] is False
+    assert sim.transition_config["characters"]["aemeath"]["intro_qte"]["mode"] == "disabled"
     assert sim.transition_config["characters"]["aemeath"]["intro_qte"]["implementation_status"] == "review_only"
     assert sim.transition_config["characters"]["aemeath"]["outro"]["enabled"] is False
+    assert sim.transition_config["concerto_transition"]["qte_mode"] == "disabled"
     assert all("qte" not in action_id.lower() for action_id in sim.get_policy_action_ids())
     if QTE_REVIEW_PATH.exists():
         qte_review = json.loads(QTE_REVIEW_PATH.read_text(encoding="utf-8"))
@@ -63,6 +74,8 @@ def main() -> None:
     first_swap = sim.timeline[-1]
     assert first_swap.outgoing_character_id == "aemeath"
     assert first_swap.incoming_character_id == "dummy_support"
+    assert first_swap.transition_type == "normal_swap"
+    assert first_swap.transition_reason == "concerto_not_ready"
     assert first_swap.transition_events == []
     assert first_swap.incoming_intro_event_id is None
     assert first_swap.fallback_swap_used is True
@@ -72,11 +85,29 @@ def main() -> None:
     assert_close(first_swap.action_time, 0.5, "first swap action_time")
     assert_close(first_swap.combat_time_cost, 0.5, "first swap combat_time_cost")
 
+    assert first_swap.incoming_qte_applied is False
+
+    assert sim.execute_action("swap_to_aemeath")
+    no_concerto_swap = sim.timeline[-1]
+    assert no_concerto_swap.transition_type == "normal_swap"
+    assert no_concerto_swap.transition_reason == "concerto_not_ready"
+    assert no_concerto_swap.outgoing_outro_event_id is None
+    assert no_concerto_swap.outgoing_outro_applied is False
+    assert no_concerto_swap.transition_events == []
+
+    assert sim.execute_action("swap_to_dummy_support")
+    set_full_concerto(sim, "dummy_support")
     assert sim.execute_action("swap_to_aemeath")
     outro_swap = sim.timeline[-1]
     assert outro_swap.outgoing_character_id == "dummy_support"
     assert outro_swap.incoming_character_id == "aemeath"
+    assert outro_swap.transition_type == "full_concerto_transition"
+    assert outro_swap.transition_reason == "concerto_ready"
     assert outro_swap.outgoing_outro_event_id == "dummy_support_outro_damage_amp"
+    assert outro_swap.outgoing_outro_applied is True
+    assert outro_swap.incoming_qte_candidate_id in {"aemeath_qte_intro_human", "aemeath_qte_intro_mech"}
+    assert outro_swap.incoming_qte_mode == "disabled"
+    assert outro_swap.incoming_qte_applied is False
     assert outro_swap.incoming_intro_event_id is None
     assert outro_swap.fallback_swap_used is True
     assert outro_swap.swap_timing_is_placeholder is True

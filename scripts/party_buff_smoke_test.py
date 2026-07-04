@@ -9,6 +9,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from simulator.simulation import Simulation
+from simulator.resource_system import ensure_concerto_state
 
 
 DATA_DIR = PROJECT_ROOT / "data"
@@ -33,6 +34,14 @@ def active_buff_remaining(sim: Simulation, buff_id: str) -> float:
     return 0.0
 
 
+def set_full_concerto(sim: Simulation, character_id: str) -> None:
+    state = sim.state.character_states[character_id]
+    ensure_concerto_state(state)
+    state["concerto_energy"] = state["concerto_energy_cap"]
+    state["concerto_ready"] = True
+    sim.state.concerto_energy[character_id] = state["concerto_energy"]
+
+
 def main() -> None:
     baseline_damage = first_aemeath_basic_damage()
 
@@ -43,6 +52,7 @@ def main() -> None:
     assert sim.timeline[-1].applied_buffs == ["dummy_support_damage_amp"]
     assert sim.party_state.team_buffs
 
+    set_full_concerto(sim, "dummy_support")
     assert sim.execute_action("swap_to_aemeath")
     after_swap_remaining = active_buff_remaining(sim, "dummy_support_damage_amp")
     outro_remaining = active_buff_remaining(sim, "dummy_support_outro_damage_amp")
@@ -50,6 +60,8 @@ def main() -> None:
     assert after_swap_remaining < 20.0
     assert outro_remaining == 20.0
     assert "dummy_support_outro_damage_amp" in sim.timeline[-1].applied_buffs
+    assert sim.timeline[-1].transition_type == "full_concerto_transition"
+    assert sim.timeline[-1].outgoing_outro_applied is True
 
     assert sim.execute_action("aemeath_basic_attack")
     buffed_damage = sim.timeline[-1].total_action_damage

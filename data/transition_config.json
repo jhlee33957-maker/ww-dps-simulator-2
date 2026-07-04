@@ -7,19 +7,30 @@
     "source": "transition_config.generic_swap_fallback",
     "warning": "Generic swap timing is a placeholder for party-structure testing. It is not sourced from Excel/client data. Real party DPS requires QTE/Intro/Outro transition modeling."
   },
+  "concerto_transition": {
+    "enabled": true,
+    "default_concerto_cap": 100.0,
+    "qte_mode": "disabled",
+    "qte_modes": ["disabled", "dry_run", "enabled"],
+    "consume_concerto_on_enabled_transition": true,
+    "consume_concerto_on_dry_run": false,
+    "consume_concerto_on_disabled": false,
+    "normal_swap_when_concerto_not_ready": true
+  },
   "characters": {
     "aemeath": {
       "intro_qte": {
         "enabled": false,
+        "mode": "disabled",
         "implementation_status": "review_only",
-        "source": "data/extracted/aemeath_qte_intro_outro_candidates.json",
+        "candidate_source": "data/extracted/aemeath_qte_action_candidates.json",
+        "source": "data/extracted/aemeath_qte_action_candidates.json",
         "notes": "Aemeath QTE/Intro rows are extracted for review only and are not executable."
       },
       "outro": {
         "enabled": false,
-        "implementation_status": "review_only",
-        "source": "data/extracted/aemeath_qte_intro_outro_candidates.json",
-        "notes": "Aemeath Outro rows are extracted for review only and are not executable."
+        "implementation_status": "not_implemented",
+        "notes": "Aemeath Outro execution is not implemented."
       }
     },
     "dummy_support": {
@@ -34,8 +45,9 @@
         "action_time": 0.0,
         "combat_time_cost": 0.0,
         "applies_buffs": ["dummy_support_outro_damage_amp"],
+        "requires_concerto": true,
         "source": "transition_config.dummy_support.outro",
-        "notes": "Zero-time test-only outgoing outro event. Physical swap timing still uses generic placeholder fallback when no incoming timed intro exists."
+        "notes": "Zero-time test-only outgoing outro event. It is gated behind outgoing concerto_ready. Physical swap timing still uses generic placeholder fallback when no incoming timed intro exists."
       }
     },
     "dummy_sub_dps": {

@@ -24,6 +24,7 @@ def main() -> None:
     assert "aemeath_resonance_liberation" in solo_actions
     assert "short_wait" in solo_actions
     assert "swap_to_aemeath" not in solo_actions
+    assert all("qte" not in action_id.lower() for action_id in solo_actions)
     assert not any(action.startswith(("main_", "sub_", "support_")) for action in solo_actions)
     print("Solo party policy actions:", solo_actions)
 
@@ -39,6 +40,8 @@ def main() -> None:
     assert "swap_to_dummy_support" in preset_party_actions
     assert "dummy_support_attack" in preset_party_actions
     assert "dummy_sub_dps_quick_burst" in preset_party_actions
+    assert "aemeath_qte_intro_human" not in preset_party_actions
+    assert "aemeath_qte_intro_mech" not in preset_party_actions
     assert not preset_party.is_action_available(preset_party.actions["swap_to_aemeath"])
     print("Aemeath test party policy actions:", preset_party_actions)
 

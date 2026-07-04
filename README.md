@@ -44,6 +44,16 @@ The generic team buff foundation supports target scopes, optional tag filters, s
 
 No PPO retraining was performed for this foundation patch. Saved PPO models are party/action-space specific and should be retrained before use with new party presets.
 
+## Concerto-Gated Transition v1
+
+Each party member now has per-character `concerto_energy`, `concerto_energy_cap`, and `concerto_ready` fields exposed through `party_state.character_states`. Normal character actions add their configured `concerto_energy_gain` and clamp to the cap. Swap requests do not invent concerto gain.
+
+No-concerto swaps use the generic fallback transition, log `transition_type = normal_swap` and `transition_reason = concerto_not_ready`, change the active character, and skip outgoing Outro plus incoming QTE/Intro. Full-concerto swaps log `transition_type = full_concerto_transition` and become eligible for configured transition hooks. The generic fallback swap timing remains a placeholder and should not be interpreted as real game data.
+
+Aemeath QTE candidates exist in `data/extracted/aemeath_qte_action_candidates.json` but are disabled by default and are not policy actions. QTE modes are configured in `data/transition_config.json`: `disabled` logs candidate availability without applying QTE; `dry_run` logs candidate timing, multipliers, classification, and previous-Outro metadata without DPS effects; `enabled` is currently scaffolded with an explicit not-implemented warning because the candidates remain review-only. QTE damage, timing, resources, Flow Light, E1-QTE follow-up, and real previous-Outro timing are not applied in v1.
+
+The unsupported observation that a no-concerto swap into Aemeath uses Basic Stage 2 is not implemented due to insufficient source support. Aemeath solo behavior is unchanged.
+
 ## Aemeath-lite Character Mechanic
 
 Aemeath-lite is a first-pass architecture validation character, not a final real-game implementation. Common combat systems remain in simulator/. Aemeath-specific form state, combo state, action replacement, Synchronization Rate, Resonance Rate, Seraphic Duet, Overdrive, and Finale behavior live in characters/aemeath.py.
@@ -376,6 +386,7 @@ This reference page does not affect simulation results or PPO training. Update t
 
 ```bash
 python -m compileall .
+python scripts/concerto_gated_transition_smoke_test.py
 python scripts/party_state_foundation_smoke_test.py
 python scripts/party_swap_smoke_test.py
 python scripts/party_buff_smoke_test.py

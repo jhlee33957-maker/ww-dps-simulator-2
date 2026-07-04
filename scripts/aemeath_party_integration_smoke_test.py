@@ -28,6 +28,8 @@ def test_solo_aemeath_still_resolves() -> None:
     assert row.selected_action_id == "aemeath_basic_attack"
     assert row.resolved_action_id == "aemeath_basic_form_stage_1"
     assert "aemeath" in row.mechanic_debug_after
+    assert row.transition_type is None
+    assert "concerto_ready" in sim.party_state.character_states["aemeath"]
 
 
 def test_party_aemeath_still_resolves_while_active() -> None:
@@ -38,6 +40,7 @@ def test_party_aemeath_still_resolves_while_active() -> None:
     assert row.resolved_action_id == "aemeath_basic_form_stage_1"
     assert "aemeath" in sim.state.character_states
     assert sim.party_state.character_states["aemeath"]["form"] == sim.state.character_states["aemeath"]["form"]
+    assert sim.party_state.character_states["aemeath"]["concerto_energy"] == sim.state.concerto_energy["aemeath"]
     assert row.actor_character_id == "aemeath"
 
 
