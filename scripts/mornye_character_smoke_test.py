@@ -41,6 +41,21 @@ def test_initial_state_and_policy_actions() -> None:
         assert action_id in policy_ids
     assert "mornye_outro_recursion" not in policy_ids
     assert "mornye_intro_convergence" not in policy_ids
+    assert "mornye_skill_expectation_error" not in policy_ids
+    assert "mornye_skill_optimal_solution" not in policy_ids
+
+
+def test_resonance_skill_defaults_to_expectation_error() -> None:
+    sim = Simulation.from_json(DATA_DIR, party=["mornye"])
+    assert sim.execute_action("mornye_resonance_skill")
+    row = sim.timeline[-1]
+    state = mornye_state(sim)
+    assert row.selected_action_id == "mornye_resonance_skill"
+    assert row.resolved_action_id == "mornye_skill_expectation_error"
+    assert row.optimal_solution_triggered is False
+    assert row.optimal_solution_trigger_reason == "gp_success_not_modeled"
+    assert row.total_action_damage == 0.0
+    assert state["rest_mass_energy"] == 0.0
 
 
 def test_basic_resolves_and_builds_rest_mass() -> None:
@@ -109,6 +124,7 @@ def test_wfo_inversion_requires_relative_momentum() -> None:
 
 def main() -> None:
     test_initial_state_and_policy_actions()
+    test_resonance_skill_defaults_to_expectation_error()
     test_basic_resolves_and_builds_rest_mass()
     test_heavy_geopotential_shift_enters_wfo()
     test_wfo_basic_and_liberation_high_syntony()

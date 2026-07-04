@@ -23,6 +23,7 @@ def main() -> None:
         "modes",
         "states",
         "actions",
+        "expectation_error_routing",
         "energy_regen_scaling",
         "interfered_marker",
         "outro",
@@ -39,6 +40,7 @@ def main() -> None:
     states_text = json.dumps(data["states"], ensure_ascii=False).lower()
     energy_regen_text = json.dumps(data["energy_regen_scaling"], ensure_ascii=False).lower()
     interfered_marker_text = json.dumps(data["interfered_marker"], ensure_ascii=False).lower()
+    expectation_error_text = json.dumps(data["expectation_error_routing"], ensure_ascii=False).lower()
     resources_text = json.dumps(data["resources"], ensure_ascii=False).lower()
 
     assert "tune break" in full_text
@@ -67,6 +69,15 @@ def main() -> None:
     assert "0.40" in interfered_marker_text or "40%" in interfered_marker_text
     assert "simplified_on_inversion" in interfered_marker_text
     assert "disabled" in interfered_marker_text
+
+    assert "expectation error" in full_text
+    assert "mornye_skill_expectation_error" in expectation_error_text
+    assert "mornye_skill_optimal_solution" in expectation_error_text
+    assert "expectation_error_only" in expectation_error_text
+    assert "dry_run_success_candidate" in expectation_error_text
+    assert "always_success" in expectation_error_text
+    assert "gp_success_not_model" in expectation_error_text
+    assert "old direct" in expectation_error_text or "old direct" in limitation_text
     assert any(row.get("action_id") == "mornye_outro_recursion" for row in data["outro"])
     assert any(row.get("action_id") == "mornye_intro_convergence" for row in data["intro"])
 

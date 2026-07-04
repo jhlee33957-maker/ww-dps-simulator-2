@@ -14,8 +14,10 @@ from simulator.roster import is_dummy_character, parse_character_ids, read_party
 from simulator.simulation import Simulation
 from simulator.transition_config import (
     build_effective_transition_config,
+    build_mornye_expectation_error_mode_override,
     build_transition_mode_overrides,
     load_transition_config,
+    mechanics_mode_summary,
     transition_mode_summary,
 )
 from ui.mechanics_reference import render_mechanics_reference
@@ -311,6 +313,13 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "mornye_interfered_marker_mode",
         "mornye_interfered_amp",
         "mornye_interfered_marker_applied",
+        "mornye_expectation_error_mode",
+        "base_policy_action_id",
+        "optimal_solution_triggered",
+        "optimal_solution_trigger_reason",
+        "optimal_solution_candidate_id",
+        "gp_success_modeled",
+        "implementation_status",
         "total_damage_after",
         "active_character",
         "mornye_mode_after",
@@ -427,18 +436,51 @@ else:
         if transition_mode_choice == "Use Party Preset / Default"
         else build_transition_mode_overrides(transition_mode=transition_mode_choice)
     )
+    if "mornye" in selected_character_ids:
+        mornye_expectation_error_choice = st.sidebar.selectbox(
+            "Mornye Expectation Error Mode",
+            options=[
+                "Use Party Preset / Default",
+                "expectation_error_only",
+                "dry_run_success_candidate",
+                "always_success",
+            ],
+            index=0,
+        )
+        ui_mechanics_overrides = (
+            None
+            if mornye_expectation_error_choice == "Use Party Preset / Default"
+            else build_mornye_expectation_error_mode_override(mornye_expectation_error_choice)
+        )
+    else:
+        mornye_expectation_error_choice = "Use Party Preset / Default"
+        ui_mechanics_overrides = None
+    ui_overrides = {}
+    if ui_transition_overrides:
+        ui_overrides.update(ui_transition_overrides)
+    if ui_mechanics_overrides:
+        ui_overrides.update(ui_mechanics_overrides)
     effective_transition_config = build_effective_transition_config(
         load_transition_config(DATA_DIR),
         party_preset_config,
-        ui_overrides=ui_transition_overrides,
+        ui_overrides=ui_overrides or None,
     )
     mode_summary = transition_mode_summary(effective_transition_config)
+    mechanic_summary = mechanics_mode_summary(effective_transition_config)
     st.sidebar.caption(
         "Effective transition modes: "
         f"Aemeath QTE={mode_summary['aemeath']['intro_qte']}, "
         f"Mornye Intro={mode_summary['mornye']['intro_qte']}, "
         f"Mornye Outro={'enabled' if mode_summary['mornye']['outro'] else 'disabled'}"
     )
+    if "mornye" in selected_character_ids:
+        effective_mornye_gp_mode = mechanic_summary["mornye"]["expectation_error_mode"]
+        st.sidebar.caption(f"Effective Mornye Expectation Error Mode: {effective_mornye_gp_mode}")
+        if effective_mornye_gp_mode == "always_success":
+            st.sidebar.warning(
+                "Mornye Optimal Solution is being forced by simplified always-success GP modeling. "
+                "This is optimistic and not a full game-client implementation."
+            )
     if transition_mode_choice == "enabled":
         st.sidebar.warning(
             "Transition enabled mode uses reviewed QTE/Intro candidate data. "

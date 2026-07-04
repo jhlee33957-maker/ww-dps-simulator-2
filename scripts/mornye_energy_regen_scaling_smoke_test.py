@@ -68,7 +68,16 @@ def test_liberation_only_receives_er_crit_scaling() -> None:
     assert low_row.mornye_liberation_crit_dmg_bonus == 0.0, "100% ER should log zero CD bonus"
 
 
+def test_energy_regen_patch_does_not_force_optimal_solution() -> None:
+    sim = make_mornye_sim(2.6)
+    assert sim.execute_action("mornye_resonance_skill"), "Mornye skill should execute"
+    row = sim.timeline[-1]
+    assert row.resolved_action_id == "mornye_skill_expectation_error"
+    assert row.optimal_solution_triggered is False
+
+
 if __name__ == "__main__":
     test_mornye_er_helper_formulas()
     test_liberation_only_receives_er_crit_scaling()
+    test_energy_regen_patch_does_not_force_optimal_solution()
     print("mornye_energy_regen_scaling_smoke_test ok")

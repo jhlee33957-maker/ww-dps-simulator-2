@@ -80,7 +80,7 @@ Implemented in v1:
 - baseline Basic and WFO Basic action resolution skeletons
 - Heavy Geopotential Shift at 100 Rest Mass, entering WFO for 30s and generating Syntony Field for 25s
 - Heavy Inversion at 100 Relative Momentum, applying Observation Marker metadata for 30s
-- simplified Resonance Skill behavior: baseline resolves to Optimal Solution; WFO resolves to Distributed Array
+- Expectation Error / Optimal Solution Resonance Skill routing: baseline resolves conservatively to Expectation Error by default; WFO resolves to Distributed Array
 - Critical Protocol Resonance Liberation, including Syntony Field to High Syntony Field conversion
 - Mornye Energy Regen scaling v1: Mornye uses `energy_regen = 2.60` as a configurable support-test assumption, and Critical Protocol gets temporary ER-derived crit bonuses only on that Liberation action
 - optional simplified Interfered Marker mode: when explicitly enabled, Heavy Inversion refreshes a 30s enemy damage-taken amp based on Mornye ER excess; global default remains disabled
@@ -90,12 +90,21 @@ Not implemented in v1:
 
 - full Tune Break / Tune Rupture / Tune Strain systems
 - full Interfered Marker Tune conversion and Particle Jet response
+- full GP/counter timing against enemy attacks for automatic Optimal Solution success
 - Proof of Boundedness defensive survival logic
 - exact healing / DEF defensive value in DPS
 - automatic Syntony Field damage scheduling
 - full QTE/Intro state-machine details beyond reviewed transition data
 
 Mornye Intro Convergence is present as reviewed transition data in `data/transition_actions.json` and remains disabled by default through `data/transition_config.json`. No PPO retraining was performed.
+
+## Mornye Expectation Error / Optimal Solution
+
+Mornye Resonance Skill no longer automatically resolves to Optimal Solution in baseline mode. The policy action remains `mornye_resonance_skill`, but conservative baseline routing now resolves to `mornye_skill_expectation_error`. Optimal Solution is treated as the GP/counter success follow-up rather than a normal always-available Resonance Skill result.
+
+The configurable `mornye_expectation_error_mode` lives under Mornye mechanics config. The default is `expectation_error_only`, which applies Expectation Error and logs `gp_success_not_modeled` without Optimal Solution damage or Rest Mass effects. `dry_run_success_candidate` also resolves to Expectation Error but logs `mornye_skill_optimal_solution` as the success candidate. `always_success` is an optimistic diagnostic mode only; it forces simplified GP success and preserves the old direct Optimal Solution behavior only when explicitly enabled.
+
+Full enemy attack timing and GP/counter success detection are not implemented. The `aemeath_mornye_enabled_test_party` preset stays conservative for this routing; `aemeath_mornye_optimistic_gp_test_party` is the explicit optimistic preset. PPO models trained before this routing fix are stale for Mornye party evaluation and should not be reused without retraining. No PPO training was performed for this patch.
 
 ## Mornye ER Scaling v1
 

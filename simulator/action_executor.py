@@ -513,4 +513,11 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         mornye_interfered_marker_mode=result.mornye_interfered_marker_mode,
         mornye_interfered_amp=result.mornye_interfered_amp,
         mornye_interfered_marker_applied=result.mornye_interfered_marker_applied,
+        mornye_expectation_error_mode=result.mornye_expectation_error_mode,
+        base_policy_action_id=result.base_policy_action_id,
+        optimal_solution_triggered=result.optimal_solution_triggered,
+        optimal_solution_trigger_reason=result.optimal_solution_trigger_reason,
+        optimal_solution_candidate_id=result.optimal_solution_candidate_id,
+        gp_success_modeled=result.gp_success_modeled,
+        implementation_status=result.implementation_status,
     )

@@ -8,6 +8,11 @@ from simulator.party_transition import load_transition_config as load_base_trans
 
 
 VALID_TRANSITION_MODES = {"disabled", "dry_run", "enabled"}
+VALID_MORNYE_EXPECTATION_ERROR_MODES = {
+    "expectation_error_only",
+    "dry_run_success_candidate",
+    "always_success",
+}
 SUPPORTED_CHARACTER_TRANSITIONS = (
     ("aemeath", "intro_qte"),
     ("mornye", "intro_qte"),
@@ -37,6 +42,19 @@ def build_transition_mode_overrides(
         _validate_mode(mornye_intro_mode)
         set_character_transition_mode(overrides, "mornye", "intro_qte", mornye_intro_mode)
     return overrides
+
+
+def build_mornye_expectation_error_mode_override(mode: str | None = None) -> dict[str, Any]:
+    if not mode:
+        return {}
+    _validate_mornye_expectation_error_mode(mode)
+    return {
+        "mechanics": {
+            "mornye": {
+                "mornye_expectation_error_mode": mode,
+            }
+        }
+    }
 
 
 def build_effective_transition_config(
@@ -110,6 +128,20 @@ def transition_mode_summary(config: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def mechanics_mode_summary(config: dict[str, Any]) -> dict[str, Any]:
+    mornye_config = (config.get("mechanics") or {}).get("mornye", {})
+    expectation_error_mode = str(mornye_config.get("mornye_expectation_error_mode", "expectation_error_only"))
+    if expectation_error_mode not in VALID_MORNYE_EXPECTATION_ERROR_MODES:
+        expectation_error_mode = "expectation_error_only"
+    marker_config = mornye_config.get("interfered_marker") or {}
+    return {
+        "mornye": {
+            "expectation_error_mode": expectation_error_mode,
+            "interfered_marker_mode": str(marker_config.get("mode", "disabled")),
+        }
+    }
+
+
 def transition_event_counts(timeline_rows: list[Any]) -> dict[str, int]:
     counts = {
         "transition_events_applied_count": 0,
@@ -152,3 +184,11 @@ def _deep_update(target: dict[str, Any], updates: dict[str, Any]) -> dict[str, A
 def _validate_mode(mode: str) -> None:
     if mode not in VALID_TRANSITION_MODES:
         raise ValueError(f"Unsupported transition mode {mode!r}; expected one of {sorted(VALID_TRANSITION_MODES)}.")
+
+
+def _validate_mornye_expectation_error_mode(mode: str) -> None:
+    if mode not in VALID_MORNYE_EXPECTATION_ERROR_MODES:
+        raise ValueError(
+            f"Unsupported Mornye Expectation Error mode {mode!r}; "
+            f"expected one of {sorted(VALID_MORNYE_EXPECTATION_ERROR_MODES)}."
+        )

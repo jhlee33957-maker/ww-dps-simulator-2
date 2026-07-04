@@ -66,6 +66,9 @@ def test_simplified_marker_applies_refreshes_and_amps_party_damage() -> None:
     assert (
         sim.transition_config["mechanics"]["mornye"]["interfered_marker"]["mode"] == "simplified_on_inversion"
     ), "Enabled test party should opt into simplified marker mode"
+    assert (
+        sim.transition_config["mechanics"]["mornye"]["mornye_expectation_error_mode"] == "expectation_error_only"
+    ), "Enabled test party should not silently force Mornye Optimal Solution"
 
     prep_inversion(sim)
     assert sim.execute_action("mornye_heavy_attack"), "Heavy Inversion should execute"

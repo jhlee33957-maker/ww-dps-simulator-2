@@ -38,8 +38,11 @@ def main() -> None:
     assert "swap_to_mornye" in policy_ids
     assert "mornye_outro_recursion" not in policy_ids
     assert "mornye_intro_convergence" not in policy_ids
+    assert "mornye_skill_expectation_error" not in policy_ids
+    assert "mornye_skill_optimal_solution" not in policy_ids
     assert "aemeath_qte_intro_human" not in policy_ids
     assert "aemeath_qte_intro_mech" not in policy_ids
+    assert sim.transition_config["mechanics"]["mornye"]["mornye_expectation_error_mode"] == "expectation_error_only"
 
     start_mask = mask_for(sim)
     assert start_mask["mornye_basic_attack"] is True

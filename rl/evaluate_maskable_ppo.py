@@ -15,8 +15,10 @@ if str(PROJECT_ROOT) not in sys.path:
 from simulator.roster import read_party_presets
 from simulator.transition_config import (
     build_effective_transition_config,
+    build_mornye_expectation_error_mode_override,
     build_transition_mode_overrides,
     load_transition_config,
+    mechanics_mode_summary,
     transition_event_counts,
     transition_mode_summary,
 )
@@ -32,6 +34,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--transition-mode", choices=["disabled", "dry_run", "enabled"], default=None)
     parser.add_argument("--aemeath-qte-mode", choices=["disabled", "dry_run", "enabled"], default=None)
     parser.add_argument("--mornye-intro-mode", choices=["disabled", "dry_run", "enabled"], default=None)
+    parser.add_argument(
+        "--mornye-expectation-error-mode",
+        choices=["expectation_error_only", "dry_run_success_candidate", "always_success"],
+        default=None,
+    )
     parser.add_argument("--allow-mismatch", action="store_true")
     return parser
 
@@ -48,7 +55,10 @@ def build_effective_config_from_args(args: argparse.Namespace) -> tuple[dict[str
         aemeath_qte_mode=args.aemeath_qte_mode,
         mornye_intro_mode=args.mornye_intro_mode,
     )
-    if not cli_overrides.get("characters"):
+    mechanic_overrides = build_mornye_expectation_error_mode_override(args.mornye_expectation_error_mode)
+    if mechanic_overrides:
+        cli_overrides.update(mechanic_overrides)
+    if not cli_overrides.get("characters") and not cli_overrides.get("mechanics"):
         cli_overrides = None
     config = build_effective_transition_config(
         load_transition_config(PROJECT_ROOT / "data"),
@@ -146,6 +156,7 @@ def main() -> None:
         "initial_active_character": env.get_initial_active_character(),
         "policy_action_ids": env.get_policy_action_ids(),
         "transition_modes": transition_mode_summary(transition_config),
+        "mechanics_modes": mechanics_mode_summary(transition_config),
         "transition_config_source": transition_config.get("_transition_config_source", ["default"]),
         "party_preset": party_preset.get("party_id") if party_preset else None,
         **transition_event_counts(summary.timeline),

@@ -10,6 +10,15 @@ from simulator.models import BuffData
 INTERFERED_MARKER_BUFF_ID = "mornye_interfered_marker_damage_amp"
 MORNYE_LIBERATION_ACTION_ID = "mornye_liberation_critical_protocol"
 MORNYE_HEAVY_INVERSION_ACTION_ID = "mornye_heavy_inversion"
+MORNYE_POLICY_SKILL_ACTION_ID = "mornye_resonance_skill"
+MORNYE_EXPECTATION_ERROR_ACTION_ID = "mornye_skill_expectation_error"
+MORNYE_OPTIMAL_SOLUTION_ACTION_ID = "mornye_skill_optimal_solution"
+MORNYE_DISTRIBUTED_ARRAY_ACTION_ID = "mornye_skill_distributed_array"
+MORNYE_EXPECTATION_ERROR_MODES = {
+    "expectation_error_only",
+    "dry_run_success_candidate",
+    "always_success",
+}
 
 
 def get_energy_regen(character_state: Any | None = None, character_data: Any | None = None) -> float:
@@ -52,6 +61,7 @@ class MornyeMechanic(CharacterMechanic):
         "observation_marker_active": False,
         "observation_marker_remaining": 0.0,
         "energy_regen": 1.0,
+        "mornye_expectation_error_mode": "expectation_error_only",
         "last_resolved_action_id": None,
     }
 
@@ -89,12 +99,16 @@ class MornyeMechanic(CharacterMechanic):
                 resolved_id = "mornye_heavy_geopotential_shift"
             else:
                 resolved_id = "mornye_heavy_attack_normal"
-        elif selected_action.id == "mornye_resonance_skill":
-            resolved_id = (
-                "mornye_skill_distributed_array"
-                if data["mode"] == "wide_field_observation"
-                else "mornye_skill_optimal_solution"
-            )
+        elif selected_action.id == MORNYE_POLICY_SKILL_ACTION_ID:
+            if data["mode"] == "wide_field_observation":
+                resolved_id = MORNYE_DISTRIBUTED_ARRAY_ACTION_ID
+            else:
+                expectation_error_mode = self._expectation_error_mode(state)
+                resolved_id = (
+                    MORNYE_OPTIMAL_SOLUTION_ACTION_ID
+                    if expectation_error_mode == "always_success"
+                    else MORNYE_EXPECTATION_ERROR_ACTION_ID
+                )
         elif selected_action.id == "mornye_resonance_liberation":
             resolved_id = "mornye_liberation_critical_protocol"
 
@@ -120,15 +134,24 @@ class MornyeMechanic(CharacterMechanic):
         }
 
     def get_action_log_fields(self, state: Any, action: Any, characters: dict[str, Any] | None = None) -> dict[str, Any]:
-        if action.id != MORNYE_LIBERATION_ACTION_ID or not self._energy_regen_scaling_enabled(state):
-            return {}
-        character_data = (characters or {}).get(self.character_id)
-        crit_rate_bonus, crit_dmg_bonus = get_liberation_crit_bonuses(self._state(state), character_data)
-        return {
-            "mornye_er_excess_percent": get_energy_regen_excess_percent(self._state(state), character_data),
-            "mornye_liberation_crit_rate_bonus": crit_rate_bonus,
-            "mornye_liberation_crit_dmg_bonus": crit_dmg_bonus,
-        }
+        fields: dict[str, Any] = {}
+        if action.id == MORNYE_LIBERATION_ACTION_ID and self._energy_regen_scaling_enabled(state):
+            character_data = (characters or {}).get(self.character_id)
+            crit_rate_bonus, crit_dmg_bonus = get_liberation_crit_bonuses(self._state(state), character_data)
+            fields.update(
+                {
+                    "mornye_er_excess_percent": get_energy_regen_excess_percent(self._state(state), character_data),
+                    "mornye_liberation_crit_rate_bonus": crit_rate_bonus,
+                    "mornye_liberation_crit_dmg_bonus": crit_dmg_bonus,
+                }
+            )
+        if action.id in {
+            MORNYE_EXPECTATION_ERROR_ACTION_ID,
+            MORNYE_OPTIMAL_SOLUTION_ACTION_ID,
+            MORNYE_DISTRIBUTED_ARRAY_ACTION_ID,
+        }:
+            fields.update(self._resonance_skill_route_log_fields(state, action))
+        return fields
 
     def resolve_incoming_qte_transition_action(
         self,
@@ -240,6 +263,7 @@ class MornyeMechanic(CharacterMechanic):
             "observation_marker_active": data["observation_marker_active"],
             "observation_marker_remaining": data["observation_marker_remaining"],
             "energy_regen": data.get("energy_regen", 1.0),
+            "expectation_error_mode": self._expectation_error_mode(state),
             "interfered_marker_mode": self._interfered_marker_config(state).get("mode", "disabled"),
             "interfered_marker_active": self._active_interfered_marker(state) is not None,
             "last_resolved_action_id": data["last_resolved_action_id"],
@@ -258,6 +282,7 @@ class MornyeMechanic(CharacterMechanic):
             "Liberation CR Bonus": f"{crit_rate_bonus * 100.0:.1f}%",
             "Liberation CD Bonus": f"{crit_dmg_bonus * 100.0:.1f}%",
             "Interfered Marker Mode": data.get("mornye_interfered_marker_mode", "disabled"),
+            "Expectation Error Mode": data.get("mornye_expectation_error_mode", "expectation_error_only"),
             "Active Interfered Marker": bool(data.get("mornye_interfered_marker_active", False)),
             "Rest Mass Energy": f"{float(data.get('rest_mass_energy', 0.0)):.1f}/{float(data.get('rest_mass_energy_cap', 100.0)):.0f}",
             "Relative Momentum": f"{float(data.get('relative_momentum', 0.0)):.1f}/{float(data.get('relative_momentum_cap', 100.0)):.0f}",
@@ -273,6 +298,7 @@ class MornyeMechanic(CharacterMechanic):
         character_data = getattr(state, "character_data", {}).get(self.character_id) if hasattr(state, "character_data") else None
         data["mornye_interfered_marker_mode"] = self._interfered_marker_config(state).get("mode", "disabled")
         data["mornye_interfered_marker_active"] = self._active_interfered_marker(state) is not None
+        data["mornye_expectation_error_mode"] = self._expectation_error_mode(state)
         if character_data is not None:
             data["energy_regen"] = get_energy_regen(data, character_data)
         return state.character_mechanics_state[self.character_id]
@@ -294,6 +320,11 @@ class MornyeMechanic(CharacterMechanic):
             data[key] = max(0.0, float(data[key]))
         data["observation_marker_active"] = bool(data["observation_marker_active"]) and data["observation_marker_remaining"] > 0.0
         data["energy_regen"] = get_energy_regen(data)
+        data["mornye_expectation_error_mode"] = (
+            data["mornye_expectation_error_mode"]
+            if data["mornye_expectation_error_mode"] in MORNYE_EXPECTATION_ERROR_MODES
+            else "expectation_error_only"
+        )
 
     def _energy_regen_scaling_enabled(self, state: Any) -> bool:
         config = self._mornye_mechanics_config(state)
@@ -309,6 +340,51 @@ class MornyeMechanic(CharacterMechanic):
     def _mornye_mechanics_config(self, state: Any) -> dict[str, Any]:
         mechanics_config = getattr(state, "mechanics_config", {}) or {}
         return dict((mechanics_config.get("mornye") or {}))
+
+    def _expectation_error_mode(self, state: Any) -> str:
+        config = self._mornye_mechanics_config(state)
+        nested = config.get("expectation_error") or {}
+        mode = str(
+            config.get(
+                "mornye_expectation_error_mode",
+                nested.get("mode", "expectation_error_only") if isinstance(nested, dict) else "expectation_error_only",
+            )
+        )
+        return mode if mode in MORNYE_EXPECTATION_ERROR_MODES else "expectation_error_only"
+
+    def _resonance_skill_route_log_fields(self, state: Any, action: Any) -> dict[str, Any]:
+        mode = self._expectation_error_mode(state)
+        if action.id == MORNYE_DISTRIBUTED_ARRAY_ACTION_ID:
+            return {
+                "base_policy_action_id": MORNYE_POLICY_SKILL_ACTION_ID,
+                "mornye_expectation_error_mode": mode,
+                "optimal_solution_triggered": False,
+                "optimal_solution_trigger_reason": "wide_field_observation_uses_distributed_array",
+                "optimal_solution_candidate_id": None,
+                "gp_success_modeled": False,
+                "implementation_status": "wfo_distributed_array",
+            }
+        if action.id == MORNYE_OPTIMAL_SOLUTION_ACTION_ID:
+            return {
+                "base_policy_action_id": MORNYE_POLICY_SKILL_ACTION_ID,
+                "mornye_expectation_error_mode": mode,
+                "optimal_solution_triggered": True,
+                "optimal_solution_trigger_reason": "simplified_always_success",
+                "optimal_solution_candidate_id": MORNYE_OPTIMAL_SOLUTION_ACTION_ID,
+                "gp_success_modeled": True,
+                "implementation_status": "simplified_always_success",
+            }
+        reason = "dry_run_success_candidate" if mode == "dry_run_success_candidate" else "gp_success_not_modeled"
+        status = "dry_run_success_candidate" if mode == "dry_run_success_candidate" else "conservative_gp_success_not_modeled"
+        return {
+            "base_policy_action_id": MORNYE_POLICY_SKILL_ACTION_ID,
+            "mornye_expectation_error_mode": mode,
+            "optimal_solution_triggered": False,
+            "optimal_solution_trigger_reason": reason,
+            "optimal_solution_candidate_id": MORNYE_OPTIMAL_SOLUTION_ACTION_ID,
+            "gp_success_modeled": False,
+            "implementation_status": status,
+        }
 
     def _resolve_interfered_marker(self, state: Any, result: Any) -> None:
         config = self._interfered_marker_config(state)

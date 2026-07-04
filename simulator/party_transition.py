@@ -84,6 +84,12 @@ def default_transition_config() -> dict[str, Any]:
         "mechanics": {
             "mornye": {
                 "energy_regen_scaling": {"enabled": True},
+                "mornye_expectation_error_mode": "expectation_error_only",
+                "mornye_expectation_error_modes": [
+                    "expectation_error_only",
+                    "dry_run_success_candidate",
+                    "always_success",
+                ],
                 "interfered_marker": {
                     "mode": "disabled",
                     "modes": ["disabled", "dry_run", "simplified_on_inversion"],

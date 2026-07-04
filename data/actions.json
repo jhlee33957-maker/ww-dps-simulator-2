@@ -51,7 +51,7 @@
         "tags": ["fusion", "resonance_skill", "mornye"],
         "policy_selectable": true,
         "data_status": "mornye_support_v1_selector",
-        "notes": "High-level policy action; baseline resolves to simplified Optimal Solution and WFO resolves to Distributed Array."
+    "notes": "High-level policy action; baseline resolves to Expectation Error by default, may force Optimal Solution only in explicit always_success GP mode, and WFO resolves to Distributed Array."
     },
     {
         "id": "mornye_resonance_liberation",
@@ -321,7 +321,7 @@
         "tags": ["fusion", "resonance_skill", "mornye", "metadata_only"],
         "policy_selectable": false,
         "data_status": "metadata_only_v1",
-        "notes": "Parry/defensive state behavior is not modeled in v1; policy skill resolves directly to Optimal Solution."
+    "notes": "Baseline Resonance Skill / GP judgment action. Full GP/counter success detection is not modeled; this action does not automatically apply Optimal Solution damage or resources."
     },
     {
         "id": "mornye_skill_optimal_solution",
@@ -341,7 +341,7 @@
         "policy_selectable": false,
         "mechanic_effects": {"rest_mass_energy_delta": 100, "source_character_name": "\u83ab\u5b81", "parry_state_behavior_modeled": false},
         "data_status": "partial_real_support_v1",
-        "notes": "Workbook \\u83ab\\u5b81 frame rows 4141-4142 and skill row 2665. Simplifies parry-state behavior to direct Optimal Solution."
+    "notes": "Workbook \\u83ab\\u5b81 frame rows 4141-4142 and skill row 2665. Optimal Solution is treated as a GP/counter success follow-up and is applied only by explicit always_success diagnostics or a future modeled GP success trigger."
     },
     {
         "id": "mornye_skill_distributed_array",

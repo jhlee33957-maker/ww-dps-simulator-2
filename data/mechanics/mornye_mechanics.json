@@ -15,7 +15,7 @@
       "Rest Mass Energy and Relative Momentum caps and state ticking",
       "Basic/WFO Basic action resolution skeleton using workbook coefficients",
       "Heavy Geopotential Shift and Heavy Inversion skeleton",
-      "Simplified Resonance Skill behavior",
+      "Expectation Error / Optimal Solution Resonance Skill routing modes",
       "Resonance Liberation Critical Protocol",
       "Energy Regen stat scaling for Resonance Energy gain and Mornye Liberation crit bonuses",
       "Optional simplified Interfered Marker enemy damage amp on Heavy Inversion",
@@ -25,6 +25,7 @@
     "excluded": [
       "Full Tune Break / Tune Rupture / Tune Strain systems",
       "Full Tune/Tune Rupture/Tune Strain Interfered Marker conversion",
+      "Full enemy attack timing and GP/counter success detection",
       "Proof of Boundedness defensive survival logic",
       "Healing and DEF survival value in DPS",
       "Exact WFO stamina drain",
@@ -51,9 +52,40 @@
   "actions": [
     {"selected": "mornye_basic_attack", "baseline_resolution": "mornye_basic_stage_1..4", "wfo_resolution": "mornye_wfo_basic_stage_1..3", "implemented": true},
     {"selected": "mornye_heavy_attack", "baseline_resolution": "normal Heavy or Geopotential Shift at 100 Rest Mass", "wfo_resolution": "Inversion at 100 Relative Momentum; otherwise unavailable", "implemented": true},
-    {"selected": "mornye_resonance_skill", "baseline_resolution": "mornye_skill_optimal_solution", "wfo_resolution": "mornye_skill_distributed_array", "implemented": "simplified"},
+    {"selected": "mornye_resonance_skill", "baseline_resolution": "mornye_skill_expectation_error by default; mornye_skill_optimal_solution only in explicit always_success GP diagnostics", "wfo_resolution": "mornye_skill_distributed_array", "implemented": "configurable_routing_v1"},
     {"selected": "mornye_resonance_liberation", "resolution": "mornye_liberation_critical_protocol", "implemented": true}
   ],
+  "expectation_error_routing": {
+    "implemented": true,
+    "policy_action_id": "mornye_resonance_skill",
+    "baseline_default_resolution": "mornye_skill_expectation_error",
+    "wfo_resolution": "mornye_skill_distributed_array",
+    "success_follow_up_action_id": "mornye_skill_optimal_solution",
+    "default_mode": "expectation_error_only",
+    "available_modes": ["expectation_error_only", "dry_run_success_candidate", "always_success"],
+    "modes": {
+      "expectation_error_only": {
+        "resolution": "mornye_skill_expectation_error",
+        "optimal_solution_triggered": false,
+        "trigger_reason": "gp_success_not_modeled",
+        "notes": "Conservative default. Full enemy attack timing and GP/counter success detection are not implemented, so Optimal Solution damage and Rest Mass effects are not automatically applied."
+      },
+      "dry_run_success_candidate": {
+        "resolution": "mornye_skill_expectation_error",
+        "optimal_solution_triggered": false,
+        "candidate_id": "mornye_skill_optimal_solution",
+        "notes": "Logs Optimal Solution as the likely success follow-up candidate without applying its damage or resource effects."
+      },
+      "always_success": {
+        "resolution": "mornye_skill_optimal_solution",
+        "optimal_solution_triggered": true,
+        "trigger_reason": "simplified_always_success",
+        "implementation_status": "simplified_optimistic_experimental",
+        "notes": "Optimistic diagnostics only. This forces GP/counter success and preserves old direct Optimal Solution behavior only when explicitly enabled."
+      }
+    },
+    "notes": "Old direct baseline routing to Optimal Solution has been removed from the default path. Optimal Solution remains present as a conditional success follow-up."
+  },
   "energy_regen_scaling": {
     "implemented": true,
     "energy_regen_decimal": 2.6,
@@ -91,6 +123,9 @@
   "known_limitations": [
     "Full Tune Break / Tune Rupture / Tune Strain conversion is not implemented in Mornye Support v1.",
     "Interfered Marker is implemented only as an optional simplified damage amp mode.",
+    "GP/counter success timing against enemy attacks is not fully modeled.",
+    "Optimal Solution is not automatically available in conservative Expectation Error mode.",
+    "Old direct baseline Resonance Skill routing to Optimal Solution has been removed from the default path.",
     "Particle Jet response is metadata only.",
     "Mornye Energy Regen scaling on Critical Protocol crit stats is implemented as temporary action-local stat modifiers.",
     "Proof of Boundedness survival behavior, healing, and DEF effects do not affect DPS in v1."

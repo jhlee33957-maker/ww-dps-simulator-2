@@ -11,7 +11,7 @@ from rl.evaluate_maskable_ppo import build_arg_parser as build_eval_parser
 from rl.evaluate_maskable_ppo import build_effective_config_from_args as build_eval_config
 from rl.train_maskable_ppo import build_arg_parser as build_train_parser
 from rl.train_maskable_ppo import build_effective_config_from_args as build_train_config
-from simulator.transition_config import get_character_transition_mode
+from simulator.transition_config import get_character_transition_mode, mechanics_mode_summary
 
 
 def test_train_parser_accepts_transition_modes() -> None:
@@ -26,15 +26,19 @@ def test_train_parser_accepts_transition_modes() -> None:
             "dry_run",
             "--mornye-intro-mode",
             "enabled",
+            "--mornye-expectation-error-mode",
+            "always_success",
         ]
     )
     assert args.transition_mode == "enabled"
     assert args.aemeath_qte_mode == "dry_run"
     assert args.mornye_intro_mode == "enabled"
+    assert args.mornye_expectation_error_mode == "always_success"
     config, party_preset = build_train_config(args)
     assert party_preset is not None
     assert get_character_transition_mode(config, "aemeath", "intro_qte") == "dry_run"
     assert get_character_transition_mode(config, "mornye", "intro_qte") == "enabled"
+    assert mechanics_mode_summary(config)["mornye"]["expectation_error_mode"] == "always_success"
     assert "cli_override" in config["_transition_config_source"]
 
 
@@ -50,12 +54,15 @@ def test_eval_parser_accepts_transition_modes() -> None:
             "disabled",
             "--mornye-intro-mode",
             "dry_run",
+            "--mornye-expectation-error-mode",
+            "dry_run_success_candidate",
         ]
     )
     config, party_preset = build_eval_config(args)
     assert party_preset is None
     assert get_character_transition_mode(config, "aemeath", "intro_qte") == "disabled"
     assert get_character_transition_mode(config, "mornye", "intro_qte") == "dry_run"
+    assert mechanics_mode_summary(config)["mornye"]["expectation_error_mode"] == "dry_run_success_candidate"
     assert "cli_override" in config["_transition_config_source"]
 
 
@@ -65,6 +72,7 @@ def test_no_flags_use_party_preset_or_default() -> None:
     preset_config, _party_preset = build_train_config(preset_args)
     assert get_character_transition_mode(preset_config, "aemeath", "intro_qte") == "enabled"
     assert get_character_transition_mode(preset_config, "mornye", "intro_qte") == "enabled"
+    assert mechanics_mode_summary(preset_config)["mornye"]["expectation_error_mode"] == "expectation_error_only"
     assert "party_preset" in preset_config["_transition_config_source"]
     assert "cli_override" not in preset_config["_transition_config_source"]
 

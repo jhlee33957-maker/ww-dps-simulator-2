@@ -320,6 +320,13 @@ class ActionResult(BaseModel):
     mornye_interfered_marker_mode: str | None = None
     mornye_interfered_amp: float | None = None
     mornye_interfered_marker_applied: bool = False
+    mornye_expectation_error_mode: str | None = None
+    base_policy_action_id: str | None = None
+    optimal_solution_triggered: bool = False
+    optimal_solution_trigger_reason: str | None = None
+    optimal_solution_candidate_id: str | None = None
+    gp_success_modeled: bool = False
+    implementation_status: str | None = None
     reason: str | None = None
 
 
@@ -414,6 +421,13 @@ class TimelineEntry(BaseModel):
     mornye_interfered_marker_mode: str | None = None
     mornye_interfered_amp: float | None = None
     mornye_interfered_marker_applied: bool = False
+    mornye_expectation_error_mode: str | None = None
+    base_policy_action_id: str | None = None
+    optimal_solution_triggered: bool = False
+    optimal_solution_trigger_reason: str | None = None
+    optimal_solution_candidate_id: str | None = None
+    gp_success_modeled: bool = False
+    implementation_status: str | None = None
 
 
 class PartyState(BaseModel):
