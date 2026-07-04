@@ -16,6 +16,7 @@ def run_masked_episode(
     party: list[str] | str | None = None,
     initial_active_character: str | None = None,
     transition_config: dict | None = None,
+    build_profile_overrides: dict[str, str] | None = None,
 ) -> tuple[WuwaDpsEnv, list[str], list[str]]:
     env = WuwaDpsEnv(
         data_dir,
@@ -24,6 +25,7 @@ def run_masked_episode(
         party=party,
         initial_active_character=initial_active_character,
         transition_config=transition_config,
+        build_profile_overrides=build_profile_overrides,
     )
     observation, _ = env.reset()
     action_sequence: list[str] = []

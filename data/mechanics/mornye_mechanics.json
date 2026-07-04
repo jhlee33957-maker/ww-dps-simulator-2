@@ -120,6 +120,23 @@
     {"field": "Syntony Field", "duration": 25, "implemented": "duration_metadata", "metadata_only": ["off-tune buildup +50%", "interruption resistance", "healing"]},
     {"field": "High Syntony Field", "duration": 25, "implemented": "duration_metadata", "metadata_only": ["DEF +20%", "healing multiplier +40%"]}
   ],
+  "build_profile_damage_type_bonus_notes": {
+    "title": "Build Profile / Damage Type Bonus Notes",
+    "profiles": {
+      "default": "Backward-compatible default profile derived from existing characters.json stats.",
+      "support_er_cap": "Support-test build assumption using Energy Regen 2.60 / 260% from data/build_profiles.json to reach Mornye Energy Regen scaling caps."
+    },
+    "damage_categories": [
+      {"action_id": "mornye_basic_stage_1..4", "damage_bonus_category": "basic_attack"},
+      {"action_id": "mornye_wfo_basic_stage_1..3", "damage_bonus_category": "basic_attack"},
+      {"action_id": "mornye_heavy_*", "damage_bonus_category": "heavy_attack"},
+      {"action_id": "mornye_skill_*", "damage_bonus_category": "resonance_skill"},
+      {"action_id": "mornye_liberation_critical_protocol", "damage_bonus_category": "resonance_liberation"},
+      {"action_id": "mornye_intro_convergence", "damage_bonus_category": "intro"},
+      {"action_id": "mornye_outro_recursion", "damage_bonus_category": "outro", "notes": "Outro is modeled as a party amplification buff, not direct additive damage bonus."}
+    ],
+    "notes": "Energy Regen remains generic build profile data and is not hardcoded into the damage formula. Mornye-specific Energy Regen effects remain in Mornye mechanics."
+  },
   "known_limitations": [
     "Full Tune Break / Tune Rupture / Tune Strain conversion is not implemented in Mornye Support v1.",
     "Interfered Marker is implemented only as an optional simplified damage amp mode.",

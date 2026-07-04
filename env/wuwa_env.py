@@ -24,6 +24,7 @@ class WuwaDpsEnv(gym.Env):
         character_ids: list[str] | str | None = None,
         initial_active_character: str | None = None,
         transition_config: dict | None = None,
+        build_profile_overrides: dict[str, str] | None = None,
     ) -> None:
         super().__init__()
         self.data_dir = Path(data_dir)
@@ -41,11 +42,13 @@ class WuwaDpsEnv(gym.Env):
         self.party_id_arg = party if isinstance(party, str) else selected_character_ids if isinstance(selected_character_ids, str) else None
         self.initial_active_character_arg = initial_active_character
         self.transition_config_arg = transition_config
+        self.build_profile_overrides_arg = build_profile_overrides
         self.simulation = Simulation.from_json(
             self.data_dir,
             selected_character_ids=self.selected_character_ids_arg,
             initial_active_character=self.initial_active_character_arg,
             transition_config=self.transition_config_arg,
+            build_profile_overrides=self.build_profile_overrides_arg,
         )
         self.action_ids = self._get_action_order()
         self.character_ids = self._get_character_order()
@@ -65,6 +68,7 @@ class WuwaDpsEnv(gym.Env):
             selected_character_ids=self.selected_character_ids_arg,
             initial_active_character=self.initial_active_character_arg,
             transition_config=self.transition_config_arg,
+            build_profile_overrides=self.build_profile_overrides_arg,
         )
         self.action_ids = self._get_action_order()
         self.character_ids = self._get_character_order()
@@ -248,3 +252,9 @@ class WuwaDpsEnv(gym.Env):
     def get_party_id(self) -> str | None:
         preset_config = self.simulation.party_preset_config or {}
         return preset_config.get("party_id") or self.party_id_arg
+
+    def get_active_build_profiles(self) -> dict[str, str]:
+        return dict(self.simulation.active_build_profiles)
+
+    def get_effective_build_stats_summary(self) -> dict:
+        return dict(self.simulation.effective_build_stats_summary)

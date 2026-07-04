@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from simulator.buff_system import buffed_combat_stats
+from simulator.build_profiles import damage_bonus_breakdown
 from simulator.models import ActionData, BuffData, CharacterData, CombatState
 
 
@@ -141,13 +142,18 @@ def expected_damage(
     if action.damage_multiplier <= 0.0:
         return 0.0
     stats = buffed_combat_stats(character, state, buffs)
+    damage_bonus_context = damage_bonus_breakdown(
+        character,
+        action,
+        additive_buff_bonus=float(stats.get("damage_bonus_buff", 0.0)),
+    )
     return calculate_normal_damage(
         skill_multiplier=action.damage_multiplier,
         character_base_atk=stats["character_base_atk"],
         weapon_base_atk=stats["weapon_base_atk"],
         atk_percent=stats["atk_percent"],
         flat_atk=stats["flat_atk"],
-        dmg_bonus=stats["dmg_bonus"],
+        dmg_bonus=float(damage_bonus_context["effective_damage_bonus"]),
         crit_rate=stats["crit_rate"],
         crit_damage=stats["crit_damage"],
         boost=stats["boost"],

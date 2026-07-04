@@ -137,6 +137,7 @@ def buffed_combat_stats(
         "def_ignore": character.def_ignore,
         "final_dmg_bonus": character.final_dmg_bonus,
         "dmg_taken": state.dmg_taken,
+        "damage_bonus_buff": 0.0,
     }
     active_buff_names: list[str] = []
 
@@ -152,6 +153,7 @@ def buffed_combat_stats(
             stats["atk_percent"] += buff_value
         elif buff.modifier_type == "damage_bonus":
             stats["dmg_bonus"] += buff_value
+            stats["damage_bonus_buff"] += buff_value
         elif buff.modifier_type == "boost":
             stats["boost"] += buff_value
         elif buff.modifier_type == "dmg_taken":

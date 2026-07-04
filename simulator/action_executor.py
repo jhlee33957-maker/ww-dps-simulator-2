@@ -11,6 +11,7 @@ from simulator.buff_system import (
     has_required_buffs,
     tick_buffs,
 )
+from simulator.build_profiles import damage_bonus_breakdown
 from simulator.damage_formula import calculate_normal_damage, calculate_tune_break_damage
 from simulator.models import ActionData, ActionResult, BuffData, CharacterData, CombatState, HitData, TimelineEntry
 from simulator.resource_system import apply_resource_changes, can_pay_resources
@@ -123,6 +124,11 @@ def _calculate_hit_damage(
         if stat_name in stats:
             stats[stat_name] += float(stat_value)
     damage_amp = damage_amp_for_action(action.character_id, action, state, buffs, time_offset=hit.time)
+    damage_bonus_context = damage_bonus_breakdown(
+        character,
+        action,
+        additive_buff_bonus=float(stats.get("damage_bonus_buff", 0.0)),
+    )
     havoc_def_reduction = get_havoc_bane_def_reduction_at_time(state, hit.time)
     final_def_reduction = state.def_reduction + havoc_def_reduction
 
@@ -134,7 +140,7 @@ def _calculate_hit_damage(
             weapon_base_atk=stats["weapon_base_atk"],
             atk_percent=stats["atk_percent"],
             flat_atk=stats["flat_atk"],
-            dmg_bonus=stats["dmg_bonus"],
+            dmg_bonus=float(damage_bonus_context["effective_damage_bonus"]),
             crit_rate=stats["crit_rate"],
             crit_damage=stats["crit_damage"],
             boost=stats["boost"],
@@ -164,10 +170,12 @@ def _calculate_hit_damage(
 
     detail = {
         "hit_time": hit.time,
+        "hit_damage_category": hit.damage_category,
         "damage_category": hit.damage_category,
         "damage": damage,
         "damage_multiplier": hit.damage_multiplier,
         "tune_break_multiplier": hit.tune_break_multiplier,
+        **damage_bonus_context,
         "applied_havoc_bane_def_reduction": havoc_def_reduction,
         "applied_buff_summary": stats.get("active_buff_summary", []),
         "applied_damage_amp": damage_amp,
@@ -189,12 +197,13 @@ def _calculate_hit_damage_totals(
     truncated_by_combat_limit: bool,
     action_damage_multiplier: float = 1.0,
     temporary_stat_modifiers: dict[str, float] | None = None,
-) -> tuple[float, float, list[dict], dict[str, float], float]:
+) -> tuple[float, float, list[dict], dict[str, float], float, dict[str, Any]]:
     normal_damage = 0.0
     tune_break_damage = 0.0
     damage_after_cutoff_excluded = 0.0
     hit_details: list[dict] = []
     damage_by_category: dict[str, float] = {}
+    action_damage_bonus_context: dict[str, Any] = {}
     has_explicit_hit_timing = bool(action.hits)
 
     for hit in sorted(action.effective_hits(), key=lambda item: item.time):
@@ -226,13 +235,30 @@ def _calculate_hit_damage_totals(
             continue
         if detail:
             hit_details.append(detail)
+            if not action_damage_bonus_context and "effective_damage_bonus" in detail:
+                action_damage_bonus_context = {
+                    "damage_category": detail.get("damage_category", "other"),
+                    "damage_element": detail.get("damage_element", "generic"),
+                    "all_dmg_bonus": detail.get("all_dmg_bonus", 0.0),
+                    "category_dmg_bonus": detail.get("category_dmg_bonus", 0.0),
+                    "element_dmg_bonus": detail.get("element_dmg_bonus", 0.0),
+                    "effective_damage_bonus": detail.get("effective_damage_bonus", 0.0),
+                    "build_profile_id": detail.get("build_profile_id"),
+                }
         damage_by_category[hit.damage_category] = damage_by_category.get(hit.damage_category, 0.0) + damage
         if hit.damage_category == "normal":
             normal_damage += damage
         elif hit.damage_category == "tune_break":
             tune_break_damage += damage
 
-    return normal_damage, tune_break_damage, hit_details, damage_by_category, damage_after_cutoff_excluded
+    return (
+        normal_damage,
+        tune_break_damage,
+        hit_details,
+        damage_by_category,
+        damage_after_cutoff_excluded,
+        action_damage_bonus_context,
+    )
 
 
 def execute_action(
@@ -309,7 +335,14 @@ def execute_action(
 
     # Damage events use an action-start state snapshot. Buffs/anomalies applied by
     # this action are added after action_time and do not affect same-action hits.
-    normal_damage, tune_break_damage, hit_details, hit_damage_by_category, damage_after_cutoff_excluded = _calculate_hit_damage_totals(
+    (
+        normal_damage,
+        tune_break_damage,
+        hit_details,
+        hit_damage_by_category,
+        damage_after_cutoff_excluded,
+        action_damage_bonus_context,
+    ) = _calculate_hit_damage_totals(
         action,
         state,
         characters,
@@ -389,6 +422,13 @@ def execute_action(
         hit_count=len(hit_details),
         hit_damage_by_category=hit_damage_by_category,
         hit_details=hit_details,
+        damage_category=action_damage_bonus_context.get("damage_category", "other"),
+        damage_element=action_damage_bonus_context.get("damage_element", "generic"),
+        all_dmg_bonus=float(action_damage_bonus_context.get("all_dmg_bonus", 0.0)),
+        category_dmg_bonus=float(action_damage_bonus_context.get("category_dmg_bonus", 0.0)),
+        element_dmg_bonus=float(action_damage_bonus_context.get("element_dmg_bonus", 0.0)),
+        effective_damage_bonus=float(action_damage_bonus_context.get("effective_damage_bonus", 0.0)),
+        build_profile_id=action_damage_bonus_context.get("build_profile_id"),
         active_anomalies_after=active_anomalies_after,
         active_buffs=active_buff_ids,
         applied_buffs=applied_buff_ids,
@@ -414,6 +454,7 @@ def execute_action(
                 "actor_character_id": actor_character_id,
                 "damage_before_cutoff": total_action_damage,
                 "damage_after_cutoff_excluded": damage_after_cutoff_excluded,
+                **action_damage_bonus_context,
                 "combat_time_start": combat_start_time,
                 "combat_time_end": state.combat_time,
             }
@@ -455,6 +496,13 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         hit_count=result.hit_count,
         hit_damage_by_category=result.hit_damage_by_category,
         hit_details=result.hit_details,
+        damage_category=result.damage_category,
+        damage_element=result.damage_element,
+        all_dmg_bonus=result.all_dmg_bonus,
+        category_dmg_bonus=result.category_dmg_bonus,
+        element_dmg_bonus=result.element_dmg_bonus,
+        effective_damage_bonus=result.effective_damage_bonus,
+        build_profile_id=result.build_profile_id,
         active_anomalies_after=result.active_anomalies_after,
         active_buffs=result.active_buffs,
         applied_buffs=result.applied_buffs,

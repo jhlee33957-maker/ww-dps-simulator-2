@@ -228,6 +228,22 @@
     {"name": "Seraphic Duet", "sync_delta": -100},
     {"name": "Finale", "sync_delta": null, "notes": "Clears Synchronization Rate."}
   ],
+  "build_profile_damage_type_bonus_notes": {
+    "title": "Build Profile / Damage Type Bonus Notes",
+    "profiles": {
+      "default": "Backward-compatible default profile derived from existing characters.json stats.",
+      "liberation_focus_test": "Editable test build assumption that adds Resonance Liberation DMG Bonus through data/build_profiles.json. It is intended to test Liberation-heavy damage distribution and is not claimed as final real-game build data."
+    },
+    "damage_categories": [
+      {"action_id": "aemeath_liberation_overdrive", "damage_bonus_category": "resonance_liberation"},
+      {"action_id": "aemeath_heavenfall_finale", "damage_bonus_category": "resonance_liberation"},
+      {"action_id": "aemeath_basic_form_stage_1..4", "damage_bonus_category": "basic_attack"},
+      {"action_id": "aemeath_mech_basic_stage_1..4", "damage_bonus_category": "basic_attack"},
+      {"action_id": "aemeath_heavy_*", "damage_bonus_category": "heavy_attack"},
+      {"action_id": "aemeath_seraphic_duet_*", "damage_bonus_category": "resonance_skill", "notes": "Current source/action data identifies Seraphic Duet actions as Resonance Skill category."}
+    ],
+    "notes": "Build profiles are stat overlays only. They do not change Aemeath action routing, coefficients, timings, resources, or policy action availability."
+  },
   "known_limitations": [
     "This page describes the simulator's modeled interpretation, not a complete game-client recreation.",
     "The current goal is 2-minute DPS and balance comparison, not exact frame-perfect combat reproduction.",

@@ -29,6 +29,7 @@ def main() -> None:
         "outro",
         "intro",
         "syntony_field",
+        "build_profile_damage_type_bonus_notes",
         "known_limitations",
     ):
         assert section in data, f"missing mechanics section: {section}"
@@ -42,6 +43,7 @@ def main() -> None:
     interfered_marker_text = json.dumps(data["interfered_marker"], ensure_ascii=False).lower()
     expectation_error_text = json.dumps(data["expectation_error_routing"], ensure_ascii=False).lower()
     resources_text = json.dumps(data["resources"], ensure_ascii=False).lower()
+    build_profile_text = json.dumps(data["build_profile_damage_type_bonus_notes"], ensure_ascii=False).lower()
 
     assert "tune break" in full_text
     assert "not implemented" in limitation_text
@@ -60,6 +62,9 @@ def main() -> None:
     assert "decimal" in resources_text or "1.0 = 100%" in resources_text
     assert "2.6" in energy_regen_text or "2.60" in resources_text or "260" in energy_regen_text
     assert "support-test" in resources_text or "support-test" in full_text
+    assert "support_er_cap" in build_profile_text
+    assert "2.60" in build_profile_text or "260%" in build_profile_text
+    assert "generic build profile data" in build_profile_text
     assert "mornye_liberation_critical_protocol" in energy_regen_text or "critical protocol" in energy_regen_text
     assert "crit rate" in energy_regen_text or "crit_rate" in energy_regen_text
     assert "crit dmg" in energy_regen_text or "crit_dmg" in energy_regen_text or "crit damage" in energy_regen_text

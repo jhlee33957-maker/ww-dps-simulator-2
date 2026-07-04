@@ -32,6 +32,12 @@ class CharacterData(BaseModel):
     crit_damage: float = Field(default=1.0, ge=0)
     damage_bonus: float = 0.0
     dmg_bonus: float = 0.0
+    damage_bonuses: dict[str, Any] = Field(default_factory=dict)
+    element: str | None = None
+    damage_attribute: str | None = None
+    build_profile_id: str | None = None
+    build_profile_display_name: str | None = None
+    build_profile_description: str | None = None
     boost: float = 0.0
     attacker_level: int = Field(default=90, ge=1)
     def_ignore: float = 0.0
@@ -95,6 +101,8 @@ class ActionData(BaseModel):
     combat_time_cost: float | None = Field(default=None, ge=0)
     cooldown: float = Field(ge=0)
     damage_category: DamageCategory = "normal"
+    damage_bonus_category: str | None = None
+    damage_element: str | None = None
     damage_multiplier: float = Field(default=0.0, ge=0)
     tune_break_multiplier: float = Field(default=0.0, ge=0)
     tune_break_boost_points: float = 0.0
@@ -262,6 +270,13 @@ class ActionResult(BaseModel):
     hit_count: int = 0
     hit_damage_by_category: dict[str, float] = Field(default_factory=dict)
     hit_details: list[dict[str, Any]] = Field(default_factory=list)
+    damage_category: str = "other"
+    damage_element: str = "generic"
+    all_dmg_bonus: float = 0.0
+    category_dmg_bonus: float = 0.0
+    element_dmg_bonus: float = 0.0
+    effective_damage_bonus: float = 0.0
+    build_profile_id: str | None = None
     active_anomalies_after: dict[str, int] = Field(default_factory=dict)
     active_buffs: list[str] = Field(default_factory=list)
     applied_buffs: list[str] = Field(default_factory=list)
@@ -363,6 +378,13 @@ class TimelineEntry(BaseModel):
     hit_count: int = 0
     hit_damage_by_category: dict[str, float] = Field(default_factory=dict)
     hit_details: list[dict[str, Any]] = Field(default_factory=list)
+    damage_category: str = "other"
+    damage_element: str = "generic"
+    all_dmg_bonus: float = 0.0
+    category_dmg_bonus: float = 0.0
+    element_dmg_bonus: float = 0.0
+    effective_damage_bonus: float = 0.0
+    build_profile_id: str | None = None
     active_anomalies_after: dict[str, int] = Field(default_factory=dict)
     active_buffs: list[str] = Field(default_factory=list)
     applied_buffs: list[str] = Field(default_factory=list)

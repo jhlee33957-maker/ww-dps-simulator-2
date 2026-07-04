@@ -11,6 +11,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from simulator.roster import read_party_presets
+from simulator.build_profiles import parse_build_profile_overrides
 from simulator.transition_config import (
     build_effective_transition_config,
     build_mornye_expectation_error_mode_override,
@@ -29,6 +30,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--character-ids", type=str, default=None)
     parser.add_argument("--party-character-ids", type=str, default=None)
     parser.add_argument("--party", type=str, default=None)
+    parser.add_argument(
+        "--build-profile",
+        action="append",
+        default=[],
+        help="Build profile override in character_id:profile_id form. May be repeated.",
+    )
     parser.add_argument("--initial-active-character", type=str, default=None)
     parser.add_argument("--transition-mode", choices=["disabled", "dry_run", "enabled"], default=None)
     parser.add_argument("--aemeath-qte-mode", choices=["disabled", "dry_run", "enabled"], default=None)
@@ -77,12 +84,18 @@ def main() -> None:
         raise SystemExit(1) from None
 
     transition_config, party_preset = build_effective_config_from_args(args)
+    try:
+        build_profile_overrides = parse_build_profile_overrides(args.build_profile)
+    except ValueError as exc:
+        print(f"Invalid build profile override: {exc}")
+        raise SystemExit(2) from None
     env = WuwaDpsEnv(
         PROJECT_ROOT / "data",
         selected_character_ids=args.character_ids or args.party_character_ids,
         party=args.party,
         initial_active_character=args.initial_active_character,
         transition_config=transition_config,
+        build_profile_overrides=build_profile_overrides,
     )
 
     try:
@@ -120,6 +133,8 @@ def main() -> None:
         "policy_action_ids": env.get_policy_action_ids(),
         "transition_modes": transition_mode_summary(transition_config),
         "mechanics_modes": mechanics_mode_summary(transition_config),
+        "active_build_profiles": env.get_active_build_profiles(),
+        "effective_build_stats_summary": env.get_effective_build_stats_summary(),
         "transition_config_source": transition_config.get("_transition_config_source", ["default"]),
         "party_preset": party_preset.get("party_id") if party_preset else None,
         "observation_shape": list(env.observation_space.shape),

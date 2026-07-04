@@ -6,6 +6,12 @@ from pathlib import Path
 from characters.base import CharacterMechanic
 from characters.registry import get_mechanic, get_mechanics_for_characters
 from simulator.action_executor import execute_action, is_action_valid, timeline_entry
+from simulator.build_profiles import (
+    effective_build_stats_summary,
+    load_build_profiles,
+    resolve_character_build_stats,
+    resolve_party_build_profiles,
+)
 from simulator.buff_system import add_team_buff
 from simulator.models import ActionData, BuffData, CharacterData, CombatState, EnemyData, PartyState, SimulationSummary, TimelineEntry
 from simulator.party_transition import (
@@ -39,6 +45,7 @@ class Simulation:
         initial_active_character: str | None = None,
         transition_config: dict | None = None,
         party_preset_config: dict | None = None,
+        active_build_profiles: dict[str, str] | None = None,
     ) -> None:
         self.all_characters = characters
         self.selected_character_ids = parse_party_character_ids(selected_character_ids, characters)
@@ -48,11 +55,17 @@ class Simulation:
         self.initial_active_character = get_initial_active_character(self.selected_character_ids, initial_active_character)
         self.transition_config = transition_config or default_transition_config()
         self.party_preset_config = party_preset_config or {}
+        self.active_build_profiles = active_build_profiles or {
+            character_id: character.build_profile_id
+            for character_id, character in characters.items()
+            if character.build_profile_id is not None
+        }
         self.preset_generic_swap = self.party_preset_config.get("generic_swap", {})
         self.characters = {
             character_id: characters[character_id]
             for character_id in self.selected_character_ids
         }
+        self.effective_build_stats_summary = effective_build_stats_summary(self.characters)
         self.actions = dict(actions)
         self._ensure_party_swap_actions()
         self.actions_by_id = self.actions
@@ -90,6 +103,7 @@ class Simulation:
         party: list[str] | str | None = None,
         initial_active_character: str | None = None,
         transition_config: dict | None = None,
+        build_profile_overrides: dict[str, str] | None = None,
     ) -> "Simulation":
         data_path = Path(data_dir)
         characters = {
@@ -122,6 +136,22 @@ class Simulation:
             else None
         )
         selection_value, preset_initial_active = resolve_party_preset(selection_value, party_presets)
+        selected_ids = parse_party_character_ids(selection_value, characters)
+        build_profiles = load_build_profiles(data_path)
+        active_build_profiles = resolve_party_build_profiles(
+            party_preset_config,
+            cli_overrides=build_profile_overrides,
+            selected_character_ids=selected_ids,
+            build_profiles=build_profiles,
+        )
+        characters = {
+            character_id: (
+                resolve_character_build_stats(character, active_build_profiles.get(character_id), build_profiles)
+                if character_id in selected_ids
+                else character
+            )
+            for character_id, character in characters.items()
+        }
         base_transition_config = transition_config or load_transition_config(data_path)
         effective_transition_config = (
             base_transition_config
@@ -137,6 +167,11 @@ class Simulation:
             initial_active_character=initial_active_character or preset_initial_active,
             transition_config=effective_transition_config,
             party_preset_config=party_preset_config,
+            active_build_profiles={
+                character_id: profile_id
+                for character_id, profile_id in active_build_profiles.items()
+                if character_id in selected_ids
+            },
         )
 
     def set_enemy_context(

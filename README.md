@@ -403,6 +403,48 @@ Expected Crit Multiplier = 1 + Crit Rate x (Crit DMG - 1)
 Tune Break Damage =
 Tune Break Base x Tune Break Multiplier x Tune Break Boost x RES Multiplier x DEF Multiplier x Tune DMG Bonus Multiplier
 
+## Build Profiles
+
+Build profiles are configurable stat overlays stored in `data/build_profiles.json`. `data/characters.json` remains the base/default character stat source, while build profiles add editable assumptions for a simulation run without changing character mechanics, action routing, timings, resources, or PPO policy actions.
+
+Profile precedence is:
+
+- CLI override
+- Streamlit UI override
+- party preset `build_profiles`
+- character `default` profile in `build_profiles.json`
+- existing `characters.json` stats
+
+CLI examples:
+
+```bash
+python rl/train_maskable_ppo.py --party aemeath_mornye_enabled_test_party --build-profile aemeath:liberation_focus_test --build-profile mornye:support_er_cap
+python rl/evaluate_maskable_ppo.py --model-path models/maskable_ppo_wuwa.zip --build-profile aemeath:liberation_focus_test
+```
+
+Training and evaluation metadata include `active_build_profiles` and `effective_build_stats_summary`. Build profile changes affect damage and therefore PPO reward; models trained under different build profiles should not be compared blindly and should normally be retrained.
+
+## Damage Type Bonuses
+
+Normal damage now resolves additive DMG Bonus through three buckets:
+
+```text
+effective_damage_bonus =
+  damage_bonuses.all
++ damage_bonuses.by_category[action.damage_category]
++ damage_bonuses.by_element[action.element or generic]
+```
+
+Supported damage bonus categories are `basic_attack`, `heavy_attack`, `resonance_skill`, `resonance_liberation`, `intro`, `outro`, `coordinated_attack`, and `other`. Missing keys default to `0.0`, so future characters can add only the buckets they need.
+
+Mornye Outro remains an All DMG Amplification buff in the amplification bucket. Mornye Interfered Marker simplified mode remains an enemy DMG Taken amp. Neither is converted into additive `damage_bonus`.
+
+## Aemeath Liberation Focus Test Build
+
+`aemeath:liberation_focus_test` is an editable test assumption that adds Resonance Liberation DMG Bonus. It exists to test whether Aemeath's Liberation-heavy damage distribution is represented better by category-specific bonuses. The current numeric value is configurable and is not verified final live-game build data.
+
+`mornye:support_er_cap` is a support-test build assumption that sets Energy Regen to `2.60` / `260%` through generic build profile data. Mornye-specific Energy Regen scaling remains in Mornye mechanics.
+
 ## Hit Timing Model
 
 The simulator does not model animation playback time and does not include a general cancel system. For DPS and reinforcement learning, each action has:

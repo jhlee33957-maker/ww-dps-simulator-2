@@ -38,6 +38,10 @@
     "members": ["mornye", "aemeath", "dummy_sub_dps"],
     "initial_active": "mornye",
     "note": "Explicit test preset for enabled Aemeath QTE, Mornye Intro, and Mornye Outro transition behavior.",
+    "build_profiles": {
+      "aemeath": "liberation_focus_test",
+      "mornye": "support_er_cap"
+    },
     "transition_overrides": {
       "characters": {
         "aemeath": {

@@ -10,6 +10,13 @@ import plotly.express as px
 import streamlit as st
 
 from simulator.models import CharacterData
+from simulator.build_profiles import (
+    effective_build_stats_summary,
+    get_available_build_profiles,
+    load_build_profiles,
+    resolve_character_build_stats,
+    resolve_party_build_profiles,
+)
 from simulator.roster import is_dummy_character, parse_character_ids, read_party_presets
 from simulator.simulation import Simulation
 from simulator.transition_config import (
@@ -54,6 +61,58 @@ def load_available_characters() -> dict[str, CharacterData]:
 def character_label(character: CharacterData) -> str:
     suffix = " (Dummy Sample)" if is_dummy_character(character) else ""
     return f"{character.name}{suffix}"
+
+
+def build_profile_controls(
+    selected_character_ids: list[str],
+    party_preset_config: dict[str, Any] | None,
+) -> dict[str, str]:
+    characters = load_available_characters()
+    build_profiles = load_build_profiles(DATA_DIR)
+    ui_overrides: dict[str, str] = {}
+    with st.sidebar.expander("Build Profiles"):
+        for character_id in selected_character_ids:
+            available = get_available_build_profiles(character_id, build_profiles)
+            if not available:
+                continue
+            options = ["Use Party Preset / Default", *available.keys()]
+            choice = st.selectbox(
+                f"{characters[character_id].name} Build",
+                options=options,
+                index=0,
+                key=f"build-profile-{character_id}",
+                format_func=lambda profile_id: (
+                    profile_id
+                    if profile_id == "Use Party Preset / Default"
+                    else f"{profile_id} - {available[profile_id].get('display_name', profile_id)}"
+                ),
+            )
+            if choice != "Use Party Preset / Default":
+                ui_overrides[character_id] = choice
+
+        effective_profiles = resolve_party_build_profiles(
+            party_preset_config,
+            ui_overrides=ui_overrides,
+            selected_character_ids=selected_character_ids,
+            build_profiles=build_profiles,
+        )
+        effective_characters = {
+            character_id: resolve_character_build_stats(
+                characters[character_id],
+                effective_profiles.get(character_id),
+                build_profiles,
+            )
+            for character_id in selected_character_ids
+        }
+        st.write("Effective profiles")
+        st.write(effective_profiles)
+        st.write(effective_build_stats_summary(effective_characters))
+        if effective_profiles.get("aemeath") == "liberation_focus_test":
+            st.warning(
+                "Aemeath liberation_focus_test is a configurable test assumption, "
+                "not verified final real-game build data."
+            )
+    return ui_overrides
 
 
 def party_selection() -> tuple[list[str], dict[str, Any] | None, str | None]:
@@ -108,12 +167,14 @@ def run_repeating_sequence(
     selected_character_ids: list[str],
     transition_config: dict[str, Any] | None = None,
     party_id: str | None = None,
+    build_profile_overrides: dict[str, str] | None = None,
 ) -> Simulation:
     sim = Simulation.from_json(
         DATA_DIR,
         selected_character_ids=None if party_id else selected_character_ids,
         party=party_id,
         transition_config=transition_config,
+        build_profile_overrides=build_profile_overrides,
     )
     apply_enemy_settings(sim, settings)
     index = 0
@@ -133,6 +194,7 @@ def evaluate_ppo_model(
     selected_character_ids: list[str],
     transition_config: dict[str, Any] | None = None,
     party_id: str | None = None,
+    build_profile_overrides: dict[str, str] | None = None,
 ) -> tuple[Any, list[str], Simulation]:
     try:
         from sb3_contrib import MaskablePPO
@@ -146,6 +208,7 @@ def evaluate_ppo_model(
         selected_character_ids=None if party_id else selected_character_ids,
         party=party_id,
         transition_config=transition_config,
+        build_profile_overrides=build_profile_overrides,
     )
     observation, _ = env.reset()
     apply_enemy_settings(env.simulation, settings)
@@ -178,6 +241,9 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
             st.write(simulation.get_policy_action_ids())
         with st.expander("Registered Character Mechanics"):
             st.write({character_id: mechanic.__class__.__name__ for character_id, mechanic in simulation.character_mechanics.items()})
+        with st.expander("Effective Build Profiles"):
+            st.write(simulation.active_build_profiles)
+            st.write(simulation.effective_build_stats_summary)
         with st.expander("Active Team Buffs"):
             st.write([buff.model_dump() for buff in simulation.state.active_buffs])
         if "mornye" in simulation.selected_party_character_ids:
@@ -426,6 +492,7 @@ if mode == "Character Mechanics":
 else:
     settings = enemy_settings()
     selected_character_ids, party_preset_config, party_id = party_selection()
+    build_profile_overrides = build_profile_controls(selected_character_ids, party_preset_config)
     transition_mode_choice = st.sidebar.selectbox(
         "Transition Mode",
         options=["Use Party Preset / Default", "disabled", "dry_run", "enabled"],
@@ -497,6 +564,7 @@ if mode == "Demo Sequence":
         selected_character_ids=None if party_id else selected_character_ids,
         party=party_id,
         transition_config=effective_transition_config,
+        build_profile_overrides=build_profile_overrides,
     )
     policy_action_ids = preview_sim.get_policy_action_ids()
     valid_policy_action_ids = preview_sim.valid_action_ids()
@@ -514,6 +582,7 @@ if mode == "Demo Sequence":
         selected_character_ids,
         transition_config=effective_transition_config,
         party_id=party_id,
+        build_profile_overrides=build_profile_overrides,
     )
     render_simulation(sim.summary(), simulation=sim)
 elif mode == "PPO Model":
@@ -522,6 +591,23 @@ elif mode == "PPO Model":
     if not model_path.exists():
         st.info("No trained PPO model found. Run training first: python rl/train_maskable_ppo.py --timesteps 50000")
     else:
+        metadata_path = Path(__file__).parent / "results" / "training_metadata.json"
+        if metadata_path.exists():
+            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+            current_sim = Simulation.from_json(
+                DATA_DIR,
+                selected_character_ids=None if party_id else selected_character_ids,
+                party=party_id,
+                transition_config=effective_transition_config,
+                build_profile_overrides=build_profile_overrides,
+            )
+            if metadata.get("active_build_profiles") != current_sim.active_build_profiles:
+                st.warning(
+                    "Selected build profiles differ from training metadata. "
+                    "Retrain before comparing PPO results across build assumptions."
+                )
+                with st.expander("Build profile metadata mismatch"):
+                    st.write({"model": metadata.get("active_build_profiles"), "current": current_sim.active_build_profiles})
         try:
             ppo_summary, ppo_actions, ppo_simulation = evaluate_ppo_model(
                 model_path,
@@ -529,6 +615,7 @@ elif mode == "PPO Model":
                 selected_character_ids,
                 transition_config=effective_transition_config,
                 party_id=party_id,
+                build_profile_overrides=build_profile_overrides,
             )
             render_simulation(ppo_summary, action_sequence=ppo_actions, simulation=ppo_simulation)
         except RuntimeError as exc:

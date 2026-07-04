@@ -12,6 +12,7 @@ from rl.evaluate_maskable_ppo import build_effective_config_from_args as build_e
 from rl.train_maskable_ppo import build_arg_parser as build_train_parser
 from rl.train_maskable_ppo import build_effective_config_from_args as build_train_config
 from simulator.transition_config import get_character_transition_mode, mechanics_mode_summary
+from simulator.build_profiles import parse_build_profile_overrides
 
 
 def test_train_parser_accepts_transition_modes() -> None:
@@ -28,12 +29,15 @@ def test_train_parser_accepts_transition_modes() -> None:
             "enabled",
             "--mornye-expectation-error-mode",
             "always_success",
+            "--build-profile",
+            "aemeath:liberation_focus_test",
         ]
     )
     assert args.transition_mode == "enabled"
     assert args.aemeath_qte_mode == "dry_run"
     assert args.mornye_intro_mode == "enabled"
     assert args.mornye_expectation_error_mode == "always_success"
+    assert parse_build_profile_overrides(args.build_profile) == {"aemeath": "liberation_focus_test"}
     config, party_preset = build_train_config(args)
     assert party_preset is not None
     assert get_character_transition_mode(config, "aemeath", "intro_qte") == "dry_run"

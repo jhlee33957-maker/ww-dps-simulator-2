@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "profiles": {
+    "aemeath": {
+      "default": {
+        "display_name": "Aemeath Default Test Build",
+        "description": "Backward-compatible default build derived from existing characters.json values.",
+        "inherits_from_character_stats": true,
+        "stat_overrides": {},
+        "damage_bonuses": {
+          "all": 0.0,
+          "by_category": {},
+          "by_element": {}
+        }
+      },
+      "liberation_focus_test": {
+        "display_name": "Aemeath Liberation Focus Test Build",
+        "description": "Editable test build assumption for Aemeath. Uses Resonance Liberation DMG bonus to better represent Liberation-heavy damage distribution. Not verified as a final real-game build.",
+        "inherits_from": "default",
+        "stat_overrides": {
+          "energy_regen": 1.0
+        },
+        "damage_bonuses": {
+          "all": 0.0,
+          "by_category": {
+            "resonance_liberation": 0.6
+          },
+          "by_element": {}
+        },
+        "implementation_status": "configurable_test_assumption"
+      }
+    },
+    "mornye": {
+      "default": {
+        "display_name": "Mornye Default Test Build",
+        "description": "Backward-compatible default build derived from existing characters.json values.",
+        "inherits_from_character_stats": true,
+        "stat_overrides": {},
+        "damage_bonuses": {
+          "all": 0.0,
+          "by_category": {},
+          "by_element": {}
+        }
+      },
+      "support_er_cap": {
+        "display_name": "Mornye Support ER Cap Test Build",
+        "description": "Support-test build assumption using 260% Energy Regen to reach Mornye Energy Regen scaling cap.",
+        "inherits_from": "default",
+        "stat_overrides": {
+          "energy_regen": 2.6
+        },
+        "damage_bonuses": {
+          "all": 0.0,
+          "by_category": {},
+          "by_element": {}
+        },
+        "implementation_status": "configurable_test_assumption"
+      }
+    }
+  }
+}

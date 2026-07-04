@@ -40,6 +40,7 @@ def main() -> None:
         "seraphic_duet",
         "overdrive_finale",
         "sync_delta_table",
+        "build_profile_damage_type_bonus_notes",
         "known_limitations",
     }
     missing = required_keys - set(loaded_data)
@@ -70,6 +71,12 @@ def main() -> None:
         assert assert_approx, f"{name} sync_delta expected {expected}, got {sync_deltas[name]}"
 
     assert loaded_data["known_limitations"], "known_limitations should not be empty"
+    build_profile_text = json.dumps(loaded_data["build_profile_damage_type_bonus_notes"], ensure_ascii=False).lower()
+    assert "liberation_focus_test" in build_profile_text
+    assert "resonance_liberation" in build_profile_text
+    assert "aemeath_liberation_overdrive" in build_profile_text
+    assert "aemeath_heavenfall_finale" in build_profile_text
+    assert "not claimed as final real-game build data" in build_profile_text
     print("Aemeath mechanics reference smoke test passed.")
 
 
