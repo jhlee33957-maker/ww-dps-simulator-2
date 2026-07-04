@@ -79,6 +79,18 @@ def main() -> None:
     assert outro_row.swap_timing_is_placeholder is True
     assert "dummy_support_outro_damage_amp" in outro_row.applied_buffs
 
+    mornye_sim = Simulation.from_json(DATA_DIR, party="aemeath_mornye_test_party")
+    assert mornye_sim.state.active_character_id == "mornye"
+    set_full_concerto(mornye_sim, "mornye")
+    assert mornye_sim.execute_action("swap_to_aemeath")
+    mornye_outro_row = mornye_sim.timeline[-1]
+    assert mornye_outro_row.outgoing_character_id == "mornye"
+    assert mornye_outro_row.incoming_character_id == "aemeath"
+    assert mornye_outro_row.outgoing_outro_event_id == "mornye_outro_recursion"
+    assert mornye_outro_row.outgoing_outro_applied is True
+    assert mornye_outro_row.outgoing_concerto_consumed is True
+    assert "mornye_outro_recursion_all_dmg_amp" in mornye_outro_row.applied_buffs
+
     print("Party swap smoke test passed.")
 
 

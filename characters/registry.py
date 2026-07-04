@@ -3,11 +3,14 @@ from __future__ import annotations
 from characters.aemeath import AemeathMechanic
 from characters.base import CharacterMechanic
 from characters.default import DefaultCharacterMechanic
+from characters.mornye import MornyeMechanic
 
 
 def get_mechanic(character_id: str) -> CharacterMechanic:
     if character_id == "aemeath":
         return AemeathMechanic()
+    if character_id == "mornye":
+        return MornyeMechanic()
     return DefaultCharacterMechanic(character_id)
 
 

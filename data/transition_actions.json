@@ -52,5 +52,44 @@
         "implemented": false
       }
     }
+  },
+  {
+    "id": "mornye_intro_convergence",
+    "name": "Mornye Intro Convergence",
+    "character_id": "mornye",
+    "transition_event_type": "incoming_intro_qte",
+    "transition_only": true,
+    "policy_selectable": false,
+    "review_source": "data/source/\u9e23\u6f6e\u52a8\u4f5c\u6570\u636e\u6c47\u603b.xlsx",
+    "trigger_classification": "qte_intro",
+    "source_damage_label": "intro_skill_damage",
+    "damage_bonus_category": "intro",
+    "action_time": 1.7,
+    "combat_time_cost": 1.7,
+    "previous_outro_trigger_frame": 36,
+    "concerto_energy_gain": 10,
+    "hits": [2.0279],
+    "apply_character_mechanics": true,
+    "mechanic_effects": {
+      "consume_rest_mass_energy": true,
+      "wide_field_observation_duration": 30.0,
+      "syntony_field_duration": 25.0,
+      "set_wfo_combo_stage": 1
+    },
+    "metadata": {
+      "raw_source_character": "\u83ab\u5b81",
+      "raw_skill_category": "\u53d8\u594f",
+      "raw_damage_type": "\u53d8\u594f\u4f24\u5bb3",
+      "concerto_energy_gain_review_only": 10,
+      "timing_is_placeholder": false,
+      "source_rows": {
+        "frame_sheet": "\u89d2\u8272-\u5973 rows 4148-4149",
+        "skill_type_sheet": "\u89d2\u8272\u6280\u80fd\u7c7b\u578b row 2670"
+      },
+      "v1_limitations": [
+        "Intro/QTE is disabled by default through transition config.",
+        "Full Tune Break, Interfered Marker, healing, and defensive survival systems are not implemented in v1."
+      ]
+    }
   }
 ]

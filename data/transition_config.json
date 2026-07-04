@@ -63,6 +63,31 @@
         "enabled": false,
         "implementation_status": "not_implemented"
       }
+    },
+    "mornye": {
+      "intro_qte": {
+        "enabled": false,
+        "mode": "disabled",
+        "implementation_status": "reviewed_candidate_disabled_by_default",
+        "candidate_source": "data/transition_actions.json",
+        "source": "data/source/\u9e23\u6f6e\u52a8\u4f5c\u6570\u636e\u6c47\u603b.xlsx",
+        "transition_actions": {
+          "default": "mornye_intro_convergence"
+        },
+        "notes": "Mornye Intro Convergence is reviewed transition data and remains disabled by default."
+      },
+      "outro": {
+        "enabled": true,
+        "implementation_status": "implemented_v1",
+        "action_id": "mornye_outro_recursion",
+        "action_time": 0.0,
+        "combat_time_cost": 0.0,
+        "applies_buffs": ["mornye_outro_recursion_all_dmg_amp"],
+        "requires_concerto": true,
+        "consume_concerto_on_apply": true,
+        "source": "Mornye Outro Skill Recursion",
+        "notes": "Outgoing Mornye full-Concerto transition applies 25% party All DMG Amplification for 30s. Swap timing still comes from the generic fallback unless an incoming timed transition applies."
+      }
     }
   }
 }

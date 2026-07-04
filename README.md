@@ -33,14 +33,15 @@ Existing dummy characters use DefaultCharacterMechanic, which is a no-op. Aemeat
 
 The simulator now has a party-state foundation with `party_members`, `active_character_id`, per-character `character_states`, team buffs, enemy state, combat/action clocks, cooldowns, action logs, and damage logs. The existing `CombatState` remains the execution state for backward compatibility, and `Simulation.party_state` exposes the party-oriented view.
 
-Two party presets are included in `data/party_presets.json`:
+Three party presets are included in `data/party_presets.json`:
 
 - `aemeath`: Aemeath Solo, preserving the existing solo Aemeath behavior.
 - `aemeath_test_party`: Aemeath, Dummy Support, and Dummy Sub DPS for structural party testing.
+- `aemeath_mornye_test_party`: Mornye, Aemeath, and Dummy Sub DPS for real-support party testing.
 
 Generic swap actions are available for non-active party members. Party swaps are now treated as transition requests, not authoritative gameplay timing. `data/transition_config.json` and optional preset `generic_swap` metadata provide the current `0.50s` placeholder fallback; this intentionally overrides legacy `swap_to_*` action timings such as old `0.30s` dummy swaps. Timeline rows include transition metadata such as outgoing/incoming character IDs, transition events, placeholder timing source, fallback usage, and Intro/Outro event IDs.
 
-The generic team buff foundation supports target scopes, optional tag filters, stat modifiers, and damage amp modifiers. `dummy_support` and `dummy_sub_dps` are test-only characters, not real Wuthering Waves data. `dummy_support_buff` applies a party damage amp buff for testing swap and buff persistence, while `dummy_support` also has a zero-time test-only outgoing Outro-like event that applies `dummy_support_outro_damage_amp` through the transition config. Aemeath QTE/Intro/Outro rows are extracted section-locally for review only, ignoring QTE rows from other character sections, and remain disabled/non-executable. Raw Aemeath QTE rows are split into action-ready review candidates named `aemeath_qte_intro_human` and `aemeath_qte_intro_mech` when both workbook sections are present; they are proposed future transition actions, not executable simulator actions. Full real Intro/Outro/QTE timing, Starflux, Tune/Fusion/Trail systems, and real party rotations remain out of scope.
+The generic team buff foundation supports target scopes, optional tag filters, stat modifiers, and damage amp modifiers. `dummy_support` and `dummy_sub_dps` are test-only characters, not real Wuthering Waves data. `dummy_support_buff` applies a party damage amp buff for testing swap and buff persistence, while `dummy_support` also has a zero-time test-only outgoing Outro-like event that applies `dummy_support_outro_damage_amp` through the transition config. Mornye is the first real support character and applies `mornye_outro_recursion_all_dmg_amp` through her implemented Outro transition. Aemeath QTE/Intro/Outro rows are extracted section-locally for review only, ignoring QTE rows from other character sections, and remain disabled/non-executable. Raw Aemeath QTE rows are split into action-ready review candidates named `aemeath_qte_intro_human` and `aemeath_qte_intro_mech` when both workbook sections are present; they are proposed future transition actions, not executable simulator actions. Full real Intro/Outro/QTE timing, Starflux, Tune/Fusion/Trail systems, and real party rotations remain out of scope.
 
 No PPO retraining was performed for this foundation patch. Saved PPO models are party/action-space specific and should be retrained before use with new party presets.
 
@@ -61,6 +62,35 @@ QTE is triggered only by a party swap transition when the outgoing character has
 The enabled path is data-driven through `data/transition_actions.json` and `simulator/transition_actions.py`, so future characters can reuse the same transition action schema. Human Aemeath QTE uses `action_time = 1.0`, `combat_time_cost = 0.1667`, and `damage_bonus_category = none_or_unmodeled_intro`. Mech Aemeath QTE uses `action_time = 1.2`, `combat_time_cost = 0.4333`, and `damage_bonus_category = resonance_skill`. Transition actions preserve raw Excel metadata in UTF-8/Unicode-safe form for auditability: Human QTE raw category is `变奏 / 变奏伤害`, while Mech QTE raw category is `共鸣技能 / 变奏伤害`. Functional simulation uses `trigger_classification`, `source_damage_label`, and `damage_bonus_category`.
 
 Default `qte_mode` remains `disabled`. `dry_run` logs the selected transition action only. `enabled` applies reviewed candidate damage/time, consumes outgoing Concerto when configured, and logs trigger classification, source damage label, previous-Outro trigger frame, and Flow Light metadata. Flow Light / `流光增幅状态` and E1-QTE follow-up are not implemented yet. No-concerto swaps remain fallback only, and the unsupported A2 normal swap-in observation is not implemented.
+
+## Mornye Support v1
+
+Mornye is added as the first real support character module under `characters/mornye.py` and is registered through the generic character registry. She is party-capable, non-dummy, Fusion-aligned, and available in `aemeath_mornye_test_party` with Aemeath and Dummy Sub DPS. The Streamlit Character Mechanics page includes `data/mechanics/mornye_mechanics.json`.
+
+Mornye v1 uses the source workbook section `莫宁`: frame sheet `角色-女` rows 4102-4185 and skill/type sheet `角色技能类型` rows 2639-2673. Coefficients use the workbook values that match the provided screenshot sanity checks, including Basic, Wide Field Observation Basic, Heavy, Skill, Liberation, Syntony Field, and Intro Convergence multipliers. Action timing uses clear action-end frame values divided by 60 where available; transition Outro timing is zero-time and generic swap timing still supplies the swap cost.
+
+Implemented in v1:
+
+- baseline / Wide Field Observation mode
+- Rest Mass Energy and Relative Momentum, each capped at 100
+- baseline Basic and WFO Basic action resolution skeletons
+- Heavy Geopotential Shift at 100 Rest Mass, entering WFO for 30s and generating Syntony Field for 25s
+- Heavy Inversion at 100 Relative Momentum, applying Observation Marker metadata for 30s
+- simplified Resonance Skill behavior: baseline resolves to Optimal Solution; WFO resolves to Distributed Array
+- Critical Protocol Resonance Liberation, including Syntony Field to High Syntony Field conversion
+- Mornye Outro Recursion as a real transition buff: `mornye_outro_recursion_all_dmg_amp` gives the party 25% All DMG Amplification for 30s and consumes Mornye outgoing Concerto when applied
+
+Not implemented in v1:
+
+- full Tune Break / Tune Rupture / Tune Strain systems
+- Interfered Marker damage amplification and Particle Jet response
+- Proof of Boundedness defensive survival logic
+- exact healing / DEF defensive value in DPS
+- Energy Regen scaling for Mornye crit or team damage amp
+- automatic Syntony Field damage scheduling
+- full QTE/Intro state-machine details beyond reviewed transition data
+
+Mornye Intro Convergence is present as reviewed transition data in `data/transition_actions.json` and remains disabled by default through `data/transition_config.json`. No PPO retraining was performed.
 
 ## Aemeath-lite Character Mechanic
 
@@ -395,6 +425,10 @@ This reference page does not affect simulation results or PPO training. Update t
 ```bash
 python -m compileall .
 python scripts/transition_actions_metadata_encoding_smoke_test.py
+python scripts/mornye_character_smoke_test.py
+python scripts/mornye_outro_buff_smoke_test.py
+python scripts/mornye_party_integration_smoke_test.py
+python scripts/mornye_mechanics_reference_smoke_test.py
 python scripts/aemeath_qte_enabled_transition_smoke_test.py
 python scripts/concerto_gated_transition_smoke_test.py
 python scripts/party_state_foundation_smoke_test.py

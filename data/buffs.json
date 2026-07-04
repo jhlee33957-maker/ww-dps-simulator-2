@@ -54,5 +54,23 @@
       "implementation_status": "test_only",
       "source_event_id": "dummy_support_outro_damage_amp"
     }
+  },
+  {
+    "id": "mornye_outro_recursion_all_dmg_amp",
+    "name": "Mornye Outro Recursion All DMG Amplification",
+    "duration": 30.0,
+    "modifier_type": "damage_amp",
+    "value": 0.0,
+    "target": "party",
+    "target_scope": "party",
+    "damage_amp_modifiers": {
+      "all": 0.25
+    },
+    "metadata": {
+      "source_character_id": "mornye",
+      "source_action_id": "mornye_outro_recursion",
+      "implementation_status": "implemented_v1",
+      "source": "Mornye Outro Skill Recursion: team gains 25% All DMG Amplification for 30s"
+    }
   }
 ]

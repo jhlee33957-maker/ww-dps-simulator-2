@@ -90,11 +90,16 @@ def render_mechanics_reference(character_id: str) -> None:
     render_table("Timing Model", data.get("timing_model", []))
 
     section_pairs = [
+        ("Modes", "modes"),
+        ("Actions", "actions"),
         ("Form Switch", "form_switch"),
         ("Heavy Attack", "heavy_attack"),
         ("Sync Strike", "sync_strike"),
         ("Seraphic Duet", "seraphic_duet"),
         ("Overdrive / Finale", "overdrive_finale"),
+        ("Outro", "outro"),
+        ("Intro", "intro"),
+        ("Syntony Field", "syntony_field"),
     ]
     for title, key in section_pairs:
         rows = data.get(key, [])

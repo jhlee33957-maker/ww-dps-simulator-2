@@ -51,6 +51,18 @@ def main() -> None:
     assert swapped_mask["dummy_support_attack"] is True
     assert swapped_mask["dummy_support_buff"] is True
 
+    mornye_party = Simulation.from_json(DATA_DIR, party="aemeath_mornye_test_party")
+    mornye_policy_ids = mornye_party.get_policy_action_ids()
+    mornye_mask = mask_for(mornye_party)
+    assert "mornye_basic_attack" in mornye_policy_ids
+    assert "mornye_outro_recursion" not in mornye_policy_ids
+    assert "mornye_intro_convergence" not in mornye_policy_ids
+    assert mornye_mask["mornye_basic_attack"] is True
+    assert mornye_mask["mornye_resonance_skill"] is True
+    assert mornye_mask["aemeath_basic_attack"] is False
+    assert mornye_mask["swap_to_aemeath"] is True
+    assert mornye_mask["swap_to_mornye"] is False
+
     try:
         from env.wuwa_env import WuwaDpsEnv
 

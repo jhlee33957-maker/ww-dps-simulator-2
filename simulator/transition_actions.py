@@ -56,6 +56,17 @@ def transition_action_to_action_data(record: dict[str, Any]) -> ActionData:
     if damage_bonus_category and damage_bonus_category != "none_or_unmodeled_intro":
         tags.append(damage_bonus_category)
 
+    mechanic_effects = dict(record.get("mechanic_effects") or {})
+    mechanic_effects.update(
+        {
+            "transition_action": True,
+            "transition_action_id": record["id"],
+            "transition_actor_character_id": record["character_id"],
+            "skip_character_after_action": not bool(record.get("apply_character_mechanics", False)),
+            "damage_bonus_category": damage_bonus_category,
+        }
+    )
+
     return ActionData(
         id=f"transition:{record['id']}",
         name=str(record.get("name") or record["id"]),
@@ -67,19 +78,13 @@ def transition_action_to_action_data(record: dict[str, Any]) -> ActionData:
         cooldown=0.0,
         damage_multiplier=0.0,
         tune_break_multiplier=0.0,
-        resonance_energy_gain=0.0,
-        concerto_energy_gain=0.0,
+        resonance_energy_gain=float(record.get("resonance_energy_gain", 0.0) or 0.0),
+        concerto_energy_gain=float(record.get("concerto_energy_gain", 0.0) or 0.0),
         resonance_energy_cost=0.0,
         hits=_transition_hits(record),
         tags=sorted({tag for tag in tags if tag}),
         policy_selectable=False,
-        mechanic_effects={
-            "transition_action": True,
-            "transition_action_id": record["id"],
-            "transition_actor_character_id": record["character_id"],
-            "skip_character_after_action": True,
-            "damage_bonus_category": damage_bonus_category,
-        },
+        mechanic_effects=mechanic_effects,
         data_status="transition_only",
         notes="Non-policy transition action loaded from data/transition_actions.json.",
     )

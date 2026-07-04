@@ -232,13 +232,17 @@ def resolve_party_transition(
     else:
         qte_mode = "disabled"
 
-    consume_enabled = (
+    consume_qte_enabled = (
         outgoing_ready
         and qte_mode == "enabled"
         and bool(concerto_config.get("consume_concerto_on_enabled_transition", True))
         and any(bool(event.get("qte_applied", False)) or bool(event.get("consume_concerto_on_apply", False)) for event in events)
     )
-    if consume_enabled:
+    consume_event_enabled = (
+        outgoing_ready
+        and any(bool(event.get("consume_concerto_on_apply", False)) for event in events)
+    )
+    if consume_qte_enabled or consume_event_enabled:
         consume_concerto(outgoing_state)
         state.concerto_energy[outgoing_character_id] = float(outgoing_state["concerto_energy"])
         outgoing_concerto_consumed = True
@@ -325,6 +329,7 @@ def _transition_event(
         "applied": True,
         "affects_timing": True,
         "requires_concerto": bool(event_config.get("requires_concerto", True)),
+        "consume_concerto_on_apply": bool(event_config.get("consume_concerto_on_apply", False)),
         "action_time": action_time,
         "combat_time_cost": combat_time_cost,
         "applies_buffs": applies_buffs,

@@ -162,6 +162,28 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
             st.write({character_id: mechanic.__class__.__name__ for character_id, mechanic in simulation.character_mechanics.items()})
         with st.expander("Active Team Buffs"):
             st.write([buff.model_dump() for buff in simulation.state.active_buffs])
+        if "mornye" in simulation.selected_party_character_ids:
+            mornye_state = simulation.state.character_states.get("mornye", {})
+            mornye_mechanic = simulation.character_mechanics.get("mornye")
+            display_state = mornye_mechanic.get_display_state(mornye_state) if mornye_mechanic else dict(mornye_state)
+            display_state["Concerto Energy"] = (
+                f"{float(mornye_state.get('concerto_energy', 0.0)):.1f}/"
+                f"{float(mornye_state.get('concerto_energy_cap', 100.0)):.0f}"
+            )
+            display_state["Outro Buff Remaining"] = next(
+                (
+                    f"{buff.remaining_duration:.1f}s"
+                    for buff in simulation.state.active_buffs
+                    if buff.buff_id == "mornye_outro_recursion_all_dmg_amp"
+                ),
+                "0.0s",
+            )
+            with st.expander("Mornye State"):
+                st.dataframe(
+                    pd.DataFrame(display_state.items(), columns=["Field", "Value"]),
+                    use_container_width=True,
+                    hide_index=True,
+                )
         if len(simulation.selected_party_character_ids) > 1 and simulation.has_placeholder_swap_timing:
             st.warning(
                 "Generic swap timing is a placeholder for party-structure testing. "
@@ -325,7 +347,12 @@ st.title("Wuwa DPS RL Simulator Prototype")
 mode = st.sidebar.radio("Mode", ["Demo Sequence", "PPO Model", "Character Mechanics"])
 
 if mode == "Character Mechanics":
-    character_id = st.selectbox("Character", options=["aemeath"], format_func=lambda item: "Aemeath")
+    mechanics_options = {"aemeath": "Aemeath", "mornye": "Mornye"}
+    character_id = st.selectbox(
+        "Character",
+        options=list(mechanics_options),
+        format_func=lambda item: mechanics_options[item],
+    )
     render_mechanics_reference(character_id)
 else:
     settings = enemy_settings()

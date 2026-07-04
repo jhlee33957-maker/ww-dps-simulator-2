@@ -45,6 +45,22 @@ def main() -> None:
     assert not preset_party.is_action_available(preset_party.actions["swap_to_aemeath"])
     print("Aemeath test party policy actions:", preset_party_actions)
 
+    mornye_party = Simulation.from_json(DATA_DIR, party="aemeath_mornye_test_party")
+    mornye_party_actions = mornye_party.get_policy_action_ids()
+    assert mornye_party.selected_party_character_ids == ["mornye", "aemeath", "dummy_sub_dps"]
+    assert mornye_party.state.active_character_id == "mornye"
+    assert "mornye_basic_attack" in mornye_party_actions
+    assert "mornye_heavy_attack" in mornye_party_actions
+    assert "mornye_resonance_skill" in mornye_party_actions
+    assert "mornye_resonance_liberation" in mornye_party_actions
+    assert "swap_to_aemeath" in mornye_party_actions
+    assert "swap_to_mornye" in mornye_party_actions
+    assert "mornye_outro_recursion" not in mornye_party_actions
+    assert "mornye_intro_convergence" not in mornye_party_actions
+    assert not mornye_party.is_action_available(mornye_party.actions["swap_to_mornye"])
+    assert not mornye_party.is_action_available(mornye_party.actions["aemeath_basic_attack"])
+    print("Aemeath + Mornye test party policy actions:", mornye_party_actions)
+
     dummy = Simulation.from_json(DATA_DIR, party=["main", "sub", "support"])
     dummy_actions = dummy.get_policy_action_ids()
     assert all(action_id in dummy_actions for action_id in ["main_basic_attack", "sub_basic_attack", "support_basic_attack"])
