@@ -131,6 +131,21 @@ Generated review artifacts:
 
 The audit is intentionally report-only. It does not modify `data/actions.json`, change Mornye gameplay behavior, enable Intro/QTE behavior, train PPO, restore Beam Search, or implement future Tune/Interfered/Proof/healing/DEF systems. The smoke test hashes `data/actions.json` before and after extraction to guard that contract.
 
+## Mornye Excel Source Audit
+
+Mornye mechanics are under source audit. Existing simulator behavior may be incomplete, especially around Interfered Marker, Tune/Tune Rupture-like systems, Syntony Field scheduling, QTE Concerto, and route timing. Do not treat current Mornye cycle timing as final until audit-based patches are reviewed and applied.
+
+The source-evidence audit outputs are written under `reports/` and `data/extracted/` with workbook sheet, row, column, and raw cell evidence. Claims that cannot be proven from the workbook are marked unresolved/source_partial/source_conflict rather than implemented.
+
+Run:
+
+```bash
+python scripts/extract_mornye_excel_source_audit.py
+python scripts/mornye_excel_source_audit_smoke_test.py
+```
+
+The audit is report-only and must not change simulator mechanics, party presets, damage formulas, action timings, resource values, or PPO reward logic.
+
 ## Mornye Intro Enabled Transition v1
 
 Mornye Intro Convergence is implemented as a non-policy incoming transition event. It is never directly selectable by PPO and is not included in the policy action space; the selected action remains `swap_to_mornye`, while the resolved enabled transition action is `transition:mornye_intro_convergence`.

@@ -1,0 +1,73 @@
+{
+  "generated_at": "2026-07-04T15:51:01.205856+00:00",
+  "routes": [
+    {
+      "route_id": "A_current_simulator_route",
+      "description": "Current implemented path to WFO / Inversion / Interfered / Outro.",
+      "actions": [
+        "Basic A1",
+        "Basic A2",
+        "Basic A3",
+        "Heavy Geopotential Shift",
+        "WFO actions / Distributed Array until 100 Relative Momentum",
+        "Heavy Inversion",
+        "optional simplified Interfered Marker",
+        "Outro when Concerto full"
+      ],
+      "estimated_combat_time": "around 20s in current route diagnostics",
+      "source_confidence": "source_partial",
+      "why_slow": "After WFO, current relative_momentum generation uses small WFO basic values plus Distributed Array +60, so Inversion usually needs extra WFO actions. Conservative GP routing also does not auto-grant Optimal Solution."
+    },
+    {
+      "route_id": "B_source_backed_shortest_wfo",
+      "description": "Shortest source-backed route to WFO using baseline core.",
+      "actions": [
+        "A1 (+20 core)",
+        "A2 (+43 core)",
+        "A3 (+37 core)",
+        "强化重击 (enter 30s 观测状态, clear core)"
+      ],
+      "estimated_combat_time": "under 10s based on source action end frames",
+      "source_confidence": "source_confirmed_for_core_and_wfo"
+    },
+    {
+      "route_id": "C_source_backed_shortest_inversion_or_observation_marker",
+      "description": "Shortest source-backed route to Observation Marker.",
+      "actions": [
+        "Reach WFO",
+        "Generate enough special resource / 相对动能",
+        "观测重击"
+      ],
+      "estimated_combat_time": "not fully provable under 10s from source without resolving WFO resource interpretation and route constraints",
+      "source_confidence": "source_partial"
+    },
+    {
+      "route_id": "D_source_backed_shortest_interfered_marker",
+      "description": "Shortest source-backed route to Interfered Marker.",
+      "actions": [],
+      "estimated_combat_time": "not provable",
+      "source_confidence": "source_unresolved",
+      "unresolved_conditions": [
+        "Requires 观测标记 + 偏移状态 + 谐度破坏伤害; current audit does not prove a complete deterministic route."
+      ]
+    },
+    {
+      "route_id": "E_source_backed_shortest_outro",
+      "description": "Shortest source-backed route to full Concerto / Outro.",
+      "actions": [
+        "unresolved"
+      ],
+      "estimated_combat_time": "not fully provable",
+      "source_confidence": "source_conflict_for_qte_concerto",
+      "unresolved_conditions": [
+        "QTE row and passive text disagree on Concerto amount; full Concerto route needs reviewed source calculation."
+      ]
+    }
+  ],
+  "answers": {
+    "excel_supports_under_10s_mornye_cycle": "WFO entry under 10s appears source-backed. Full Interfered Marker or Outro cycle under 10s is not proven by this audit.",
+    "why_current_route_takes_around_20s": "Current route requires accumulating 100 Relative Momentum after WFO through implemented WFO gains and Distributed Array, and optional Interfered Marker is tied to Inversion. Conservative Expectation Error routing does not shortcut to Optimal Solution.",
+    "current_20s_source_supported": "source_partial for current implemented route; likely incomplete for full Mornye mechanics because Interfered Marker/Tune routes are unresolved.",
+    "sub_10s_source_backed_route_found": "Yes for WFO entry only; no for full Interfered Marker or Outro route."
+  }
+}

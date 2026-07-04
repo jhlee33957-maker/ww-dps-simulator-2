@@ -1,0 +1,141 @@
+{
+  "workbook": "C:\\Users\\LJH\\Documents\\wwdps\\ww-dps-simulator-2\\data\\source\\鸣潮动作数据汇总.xlsx",
+  "sheets_inspected": [
+    "索引",
+    "角色-女",
+    "角色-男",
+    "角色技能类型",
+    "声骸",
+    "敌对属性列表",
+    "伤害配置",
+    "伤害计算",
+    "更新变动",
+    "附页1",
+    "附页2",
+    "base",
+    "prop",
+    "weapon",
+    "dmg"
+  ],
+  "row_windows": {
+    "角色-女": [
+      [
+        4092,
+        4195
+      ]
+    ],
+    "角色技能类型": [
+      [
+        2629,
+        2687
+      ]
+    ],
+    "伤害配置": [
+      [
+        244,
+        264
+      ],
+      [
+        437,
+        474
+      ],
+      [
+        2189,
+        2230
+      ],
+      [
+        2370,
+        2391
+      ],
+      [
+        2521,
+        2554
+      ]
+    ],
+    "伤害计算": [
+      [
+        269,
+        289
+      ]
+    ],
+    "更新变动": [
+      [
+        336,
+        383
+      ],
+      [
+        392,
+        414
+      ]
+    ],
+    "附页2": [
+      [
+        217,
+        237
+      ],
+      [
+        258,
+        278
+      ],
+      [
+        380,
+        400
+      ]
+    ],
+    "base": [
+      [
+        62,
+        82
+      ],
+      [
+        265,
+        285
+      ],
+      [
+        376,
+        396
+      ]
+    ],
+    "prop": [
+      [
+        9,
+        29
+      ]
+    ],
+    "weapon": [
+      [
+        6,
+        26
+      ]
+    ],
+    "dmg": [
+      [
+        2481,
+        2543
+      ]
+    ]
+  },
+  "outputs": {
+    "inventory": "C:\\Users\\LJH\\Documents\\wwdps\\ww-dps-simulator-2\\data\\extracted\\mornye_workbook_inventory.json",
+    "row_index": "C:\\Users\\LJH\\Documents\\wwdps\\ww-dps-simulator-2\\data\\extracted\\mornye_source_row_index.json",
+    "raw_rows": "C:\\Users\\LJH\\Documents\\wwdps\\ww-dps-simulator-2\\data\\extracted\\mornye_raw_rows.json",
+    "cell_context": "C:\\Users\\LJH\\Documents\\wwdps\\ww-dps-simulator-2\\data\\extracted\\mornye_cell_context_map.json",
+    "actions": "C:\\Users\\LJH\\Documents\\wwdps\\ww-dps-simulator-2\\data\\extracted\\mornye_excel_actions_source_audit.json",
+    "resource_flow": "C:\\Users\\LJH\\Documents\\wwdps\\ww-dps-simulator-2\\data\\extracted\\mornye_resource_flow_audit.json",
+    "marker_tune": "C:\\Users\\LJH\\Documents\\wwdps\\ww-dps-simulator-2\\data\\extracted\\mornye_marker_tune_audit.json",
+    "diff": "C:\\Users\\LJH\\Documents\\wwdps\\ww-dps-simulator-2\\data\\extracted\\mornye_source_vs_code_diff.json",
+    "routes": "C:\\Users\\LJH\\Documents\\wwdps\\ww-dps-simulator-2\\data\\extracted\\mornye_source_backed_cycle_candidates.json"
+  },
+  "hashes_before": {
+    "data/actions.json": "18bba72fb706497f48829c6c911ca8aa130d8be983042f1215092127ffe2ec9f",
+    "characters/mornye.py": "84a879bc708e097616740bba02860cbc90d59b9868796e024140046aa6fd6880",
+    "data/mechanics/mornye_mechanics.json": "b4913e760581673371054c35e98434cf59156c9c2e9bf814e7e22dd3435c96b6",
+    "data/transition_actions.json": "3d7990a345e869822b727616ba526f340fc469f5308650214916bb34a74304b7"
+  },
+  "hashes_after": {
+    "data/actions.json": "18bba72fb706497f48829c6c911ca8aa130d8be983042f1215092127ffe2ec9f",
+    "characters/mornye.py": "84a879bc708e097616740bba02860cbc90d59b9868796e024140046aa6fd6880",
+    "data/mechanics/mornye_mechanics.json": "b4913e760581673371054c35e98434cf59156c9c2e9bf814e7e22dd3435c96b6",
+    "data/transition_actions.json": "3d7990a345e869822b727616ba526f340fc469f5308650214916bb34a74304b7"
+  }
+}

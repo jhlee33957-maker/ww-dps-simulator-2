@@ -1,0 +1,426 @@
+{
+  "generated_at": "2026-07-04T15:51:01.203858+00:00",
+  "questions": {
+    "rest_mass_core": {
+      "verdict": "source_confirmed",
+      "answer": "Current rest_mass_energy corresponds to 静质量能 / core-like special energy. Source text states 静质量能=相对动能，上限100点; baseline rows use 核心回收1 for gains.",
+      "actions": [
+        "A1/A2/A3/A4, 重击, E1-伤害, 强化重击/QTE clear or consume core"
+      ],
+      "evidence": [
+        {
+          "id": "rest_mass_relative_momentum_source_terms",
+          "status": "source_confirmed",
+          "claim": "特殊能量 text says 静质量能=相对动能，上限100点.",
+          "evidence": [
+            {
+              "sheet": "角色-女",
+              "row": 4164,
+              "column": "D",
+              "coordinate": "角色-女!D4164",
+              "header": "备注",
+              "raw_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+              "display_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+              "data_type": "s"
+            }
+          ]
+        },
+        {
+          "id": "baseline_core_examples",
+          "evidence": [
+            {
+              "sheet": "角色-女",
+              "row": 4117,
+              "column": "D",
+              "coordinate": "角色-女!D4117",
+              "header": "备注",
+              "raw_value": "=\"第\"&ROUND(0.8*base!$B$2,0)&\"F获得30秒观测状态、清空核心\"",
+              "display_value": "第48F获得30秒观测状态、清空核心",
+              "data_type": "f"
+            }
+          ]
+        }
+      ]
+    },
+    "relative_momentum": {
+      "verdict": "source_partial",
+      "answer": "Current relative_momentum likely corresponds to 相对动能 during 观测状态. Source text states 静质量能=相对动能, and WFO rows place values under 核心回收1. The workbook does not rename the column, so this remains source_partial.",
+      "evidence": [
+        {
+          "id": "rest_mass_relative_momentum_source_terms",
+          "status": "source_confirmed",
+          "claim": "特殊能量 text says 静质量能=相对动能，上限100点.",
+          "evidence": [
+            {
+              "sheet": "角色-女",
+              "row": 4164,
+              "column": "D",
+              "coordinate": "角色-女!D4164",
+              "header": "备注",
+              "raw_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+              "display_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+              "data_type": "s"
+            }
+          ]
+        },
+        {
+          "id": "distributed_array_repeated_15",
+          "status": "source_partial",
+          "claim": "E2-1 through E2-4 each have 15 under 核心回收1; context suggests special resource in WFO, but the source header itself is 核心回收1.",
+          "evidence": [
+            {
+              "sheet": "角色-女",
+              "row": 4144,
+              "column": "V",
+              "coordinate": "角色-女!V4144",
+              "header": "核心回收1",
+              "raw_value": "=0+1500*0.01",
+              "display_value": 15,
+              "data_type": "f"
+            },
+            {
+              "sheet": "角色-女",
+              "row": 4145,
+              "column": "V",
+              "coordinate": "角色-女!V4145",
+              "header": "核心回收1",
+              "raw_value": "=0+1500*0.01",
+              "display_value": 15,
+              "data_type": "f"
+            },
+            {
+              "sheet": "角色-女",
+              "row": 4146,
+              "column": "V",
+              "coordinate": "角色-女!V4146",
+              "header": "核心回收1",
+              "raw_value": "=0+1500*0.01",
+              "display_value": 15,
+              "data_type": "f"
+            },
+            {
+              "sheet": "角色-女",
+              "row": 4147,
+              "column": "V",
+              "coordinate": "角色-女!V4147",
+              "header": "核心回收1",
+              "raw_value": "=0+1500*0.01",
+              "display_value": 15,
+              "data_type": "f"
+            }
+          ]
+        }
+      ]
+    },
+    "concerto": {
+      "verdict": "source_conflict_for_qte",
+      "answer": "Distributed Array setup row proves 协奏回收=10. Passive text proves QTE/观测A3 grants 20 Concerto, but QTE row itself has 协奏回收=10. Do not patch QTE Concerto until reviewed.",
+      "evidence": [
+        {
+          "id": "distributed_array_concerto",
+          "status": "source_confirmed",
+          "claim": "E2-分布式阵列 setup row has 协奏回收 = 10.",
+          "evidence": [
+            {
+              "sheet": "角色-女",
+              "row": 4143,
+              "column": "U",
+              "coordinate": "角色-女!U4143",
+              "header": "协奏回收",
+              "raw_value": "=0+10",
+              "display_value": 10,
+              "data_type": "f"
+            }
+          ]
+        },
+        {
+          "id": "qte_concerto_conflict",
+          "status": "source_conflict",
+          "claim": "QTE row has 协奏回收 = 10, while passive text says 施放QTE、观测A3后，获得20点协奏能量.",
+          "evidence": [
+            {
+              "sheet": "角色-女",
+              "row": 4148,
+              "column": "U",
+              "coordinate": "角色-女!U4148",
+              "header": "协奏回收",
+              "raw_value": "=0+10",
+              "display_value": 10,
+              "data_type": "f"
+            },
+            {
+              "sheet": "角色-女",
+              "row": 4164,
+              "column": "D",
+              "coordinate": "角色-女!D4164",
+              "header": "备注",
+              "raw_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+              "display_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+              "data_type": "s"
+            }
+          ]
+        },
+        {
+          "id": "observation_a3_concerto",
+          "status": "source_confirmed",
+          "claim": "Passive text says 观测A3 grants 20 Concerto.",
+          "evidence": [
+            {
+              "sheet": "角色-女",
+              "row": 4164,
+              "column": "D",
+              "coordinate": "角色-女!D4164",
+              "header": "备注",
+              "raw_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+              "display_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+              "data_type": "s"
+            }
+          ]
+        }
+      ]
+    },
+    "resonance_energy": {
+      "verdict": "source_confirmed_for_row_gains_cost_requires_current_code_review",
+      "answer": "Frame/skill rows expose 大招回收 values; current simulator separately scales Resonance Energy gain by Energy Regen. Liberation cost 175 is current code behavior and should be checked against workbook/resource system before changing.",
+      "evidence": []
+    },
+    "distributed_array": {
+      "verdict": "source_partial",
+      "answer": "E2-分布式阵列 has 协奏回收=10. E2-1..E2-4 each have 核心回收1=15. Current implementation Distributed Array = concerto +10 and relative_momentum +60 is partially source-backed, but the repeated 15 values are not literally labeled Relative Momentum.",
+      "classification": "confirmed/ambiguous",
+      "evidence": [
+        {
+          "id": "distributed_array_concerto",
+          "status": "source_confirmed",
+          "claim": "E2-分布式阵列 setup row has 协奏回收 = 10.",
+          "evidence": [
+            {
+              "sheet": "角色-女",
+              "row": 4143,
+              "column": "U",
+              "coordinate": "角色-女!U4143",
+              "header": "协奏回收",
+              "raw_value": "=0+10",
+              "display_value": 10,
+              "data_type": "f"
+            }
+          ]
+        },
+        {
+          "id": "distributed_array_repeated_15",
+          "status": "source_partial",
+          "claim": "E2-1 through E2-4 each have 15 under 核心回收1; context suggests special resource in WFO, but the source header itself is 核心回收1.",
+          "evidence": [
+            {
+              "sheet": "角色-女",
+              "row": 4144,
+              "column": "V",
+              "coordinate": "角色-女!V4144",
+              "header": "核心回收1",
+              "raw_value": "=0+1500*0.01",
+              "display_value": 15,
+              "data_type": "f"
+            },
+            {
+              "sheet": "角色-女",
+              "row": 4145,
+              "column": "V",
+              "coordinate": "角色-女!V4145",
+              "header": "核心回收1",
+              "raw_value": "=0+1500*0.01",
+              "display_value": 15,
+              "data_type": "f"
+            },
+            {
+              "sheet": "角色-女",
+              "row": 4146,
+              "column": "V",
+              "coordinate": "角色-女!V4146",
+              "header": "核心回收1",
+              "raw_value": "=0+1500*0.01",
+              "display_value": 15,
+              "data_type": "f"
+            },
+            {
+              "sheet": "角色-女",
+              "row": 4147,
+              "column": "V",
+              "coordinate": "角色-女!V4147",
+              "header": "核心回收1",
+              "raw_value": "=0+1500*0.01",
+              "display_value": 15,
+              "data_type": "f"
+            }
+          ]
+        }
+      ]
+    },
+    "qte_intro": {
+      "verdict": "source_conflict",
+      "answer": "QTE enters observation state and clears core. Concerto amount conflicts between QTE row 10 and passive text 20.",
+      "evidence": [
+        {
+          "id": "qte_enters_wfo_and_clears_core",
+          "status": "source_confirmed",
+          "claim": "QTE grants 30 seconds 观测状态 and clears core.",
+          "evidence": [
+            {
+              "sheet": "角色-女",
+              "row": 4148,
+              "column": "D",
+              "coordinate": "角色-女!D4148",
+              "header": "备注",
+              "raw_value": "=\"第\"&ROUND(1.3333334*base!$B$2,0)&\"F前不能切人、不响应输入，第\"&ROUNDUP(0.5862494*base!$B$2,0)&\"F触发上一角色延奏\n第\"&ROUNDUP(1.1381084*base!$B$2,0)&\"F获得30秒观测状态、清空核心\"",
+              "display_value": "第80F前不能切人、不响应输入，第36F触发上一角色延奏\n第69F获得30秒观测状态、清空核心",
+              "data_type": "f"
+            },
+            {
+              "sheet": "角色-女",
+              "row": 4148,
+              "column": "V",
+              "coordinate": "角色-女!V4148",
+              "header": "核心回收1",
+              "raw_value": "=0-10000*0.01",
+              "display_value": -100,
+              "data_type": "f"
+            }
+          ]
+        },
+        {
+          "id": "qte_concerto_conflict",
+          "status": "source_conflict",
+          "claim": "QTE row has 协奏回收 = 10, while passive text says 施放QTE、观测A3后，获得20点协奏能量.",
+          "evidence": [
+            {
+              "sheet": "角色-女",
+              "row": 4148,
+              "column": "U",
+              "coordinate": "角色-女!U4148",
+              "header": "协奏回收",
+              "raw_value": "=0+10",
+              "display_value": 10,
+              "data_type": "f"
+            },
+            {
+              "sheet": "角色-女",
+              "row": 4164,
+              "column": "D",
+              "coordinate": "角色-女!D4164",
+              "header": "备注",
+              "raw_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+              "display_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+              "data_type": "s"
+            }
+          ]
+        }
+      ]
+    },
+    "wfo": {
+      "verdict": "source_confirmed",
+      "answer": "WFO/观测状态 is entered by 强化重击 and QTE for 30 seconds. Source text says it clears special energy when it naturally ends and is removed by listed movement/background conditions.",
+      "evidence": [
+        {
+          "id": "geopotential_shift_enters_wfo",
+          "status": "source_confirmed",
+          "claim": "强化重击 grants 30 seconds 观测状态 and clears core.",
+          "evidence": [
+            {
+              "sheet": "角色-女",
+              "row": 4117,
+              "column": "D",
+              "coordinate": "角色-女!D4117",
+              "header": "备注",
+              "raw_value": "=\"第\"&ROUND(0.8*base!$B$2,0)&\"F获得30秒观测状态、清空核心\"",
+              "display_value": "第48F获得30秒观测状态、清空核心",
+              "data_type": "f"
+            }
+          ]
+        },
+        {
+          "id": "qte_enters_wfo_and_clears_core",
+          "status": "source_confirmed",
+          "claim": "QTE grants 30 seconds 观测状态 and clears core.",
+          "evidence": [
+            {
+              "sheet": "角色-女",
+              "row": 4148,
+              "column": "D",
+              "coordinate": "角色-女!D4148",
+              "header": "备注",
+              "raw_value": "=\"第\"&ROUND(1.3333334*base!$B$2,0)&\"F前不能切人、不响应输入，第\"&ROUNDUP(0.5862494*base!$B$2,0)&\"F触发上一角色延奏\n第\"&ROUNDUP(1.1381084*base!$B$2,0)&\"F获得30秒观测状态、清空核心\"",
+              "display_value": "第80F前不能切人、不响应输入，第36F触发上一角色延奏\n第69F获得30秒观测状态、清空核心",
+              "data_type": "f"
+            },
+            {
+              "sheet": "角色-女",
+              "row": 4148,
+              "column": "V",
+              "coordinate": "角色-女!V4148",
+              "header": "核心回收1",
+              "raw_value": "=0-10000*0.01",
+              "display_value": -100,
+              "data_type": "f"
+            }
+          ]
+        },
+        {
+          "id": "rest_mass_relative_momentum_source_terms",
+          "status": "source_confirmed",
+          "claim": "特殊能量 text says 静质量能=相对动能，上限100点.",
+          "evidence": [
+            {
+              "sheet": "角色-女",
+              "row": 4164,
+              "column": "D",
+              "coordinate": "角色-女!D4164",
+              "header": "备注",
+              "raw_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+              "display_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+              "data_type": "s"
+            }
+          ]
+        }
+      ]
+    },
+    "inversion": {
+      "verdict": "source_confirmed_marker_only",
+      "answer": "观测重击 consumes special energy on its time-stop row and applies 30s 观测标记 on hit. It is not source-proven to directly apply 干涉标记.",
+      "evidence": [
+        {
+          "id": "inversion_applies_observation_marker",
+          "status": "source_confirmed",
+          "claim": "观测重击 applies 30 seconds 观测标记 on hit.",
+          "evidence": [
+            {
+              "sheet": "角色-女",
+              "row": 4136,
+              "column": "D",
+              "coordinate": "角色-女!D4136",
+              "header": "备注",
+              "raw_value": "=\"脱手后延迟\"&ROUNDUP(0.2*base!$B$2,0)&\"F生效,命中后赋予目标30秒【观测标记】\"",
+              "display_value": "脱手后延迟12F生效,命中后赋予目标30秒【观测标记】",
+              "data_type": "f"
+            }
+          ]
+        },
+        {
+          "id": "interfered_marker_condition",
+          "status": "source_confirmed",
+          "claim": "干涉标记 requires a target with 观测标记 and 偏移状态 to receive 谐度破坏伤害; Inversion alone is not proven to directly apply 干涉标记.",
+          "evidence": [
+            {
+              "sheet": "角色-女",
+              "row": 4164,
+              "column": "D",
+              "coordinate": "角色-女!D4164",
+              "header": "备注",
+              "raw_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+              "display_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+              "data_type": "s"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
