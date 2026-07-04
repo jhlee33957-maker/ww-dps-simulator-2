@@ -22,9 +22,13 @@
       "intro_qte": {
         "enabled": false,
         "mode": "disabled",
-        "implementation_status": "review_only",
+        "implementation_status": "implemented_but_disabled_by_default",
         "candidate_source": "data/extracted/aemeath_qte_action_candidates.json",
         "source": "data/extracted/aemeath_qte_action_candidates.json",
+        "transition_actions": {
+          "human": "aemeath_qte_intro_human",
+          "mech": "aemeath_qte_intro_mech"
+        },
         "notes": "Aemeath QTE/Intro rows are extracted for review only and are not executable."
       },
       "outro": {

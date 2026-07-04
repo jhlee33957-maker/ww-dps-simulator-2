@@ -90,7 +90,7 @@ def test_d_full_concerto_dry_run() -> None:
     assert sim.execute_action("swap_to_aemeath")
     row = sim.timeline[-1]
     assert row.transition_type == "full_concerto_transition"
-    assert row.transition_reason == "concerto_ready"
+    assert row.transition_reason == "concerto_ready_qte_dry_run"
     assert row.incoming_qte_candidate_id in {"aemeath_qte_intro_human", "aemeath_qte_intro_mech"}
     assert row.incoming_qte_mode == "dry_run"
     assert row.incoming_qte_applied is False
@@ -109,6 +109,7 @@ def test_e_full_concerto_disabled() -> None:
     assert sim.execute_action("swap_to_aemeath")
     row = sim.timeline[-1]
     assert row.transition_type == "full_concerto_transition"
+    assert row.transition_reason == "concerto_ready_qte_disabled"
     assert row.incoming_qte_candidate_id in {"aemeath_qte_intro_human", "aemeath_qte_intro_mech"}
     assert row.incoming_qte_mode == "disabled"
     assert row.incoming_qte_applied is False
@@ -116,7 +117,7 @@ def test_e_full_concerto_disabled() -> None:
     assert_close(row.outgoing_concerto_after, 100.0, "disabled keeps concerto")
 
 
-def test_f_enabled_mode_scaffold() -> None:
+def test_f_enabled_mode_applies_qte() -> None:
     sim = Simulation.from_json(DATA_DIR, party="aemeath_test_party")
     assert sim.execute_action("swap_to_dummy_support")
     set_concerto(sim, "dummy_support", 100.0)
@@ -124,10 +125,11 @@ def test_f_enabled_mode_scaffold() -> None:
     assert sim.execute_action("swap_to_aemeath")
     row = sim.timeline[-1]
     assert row.incoming_qte_mode == "enabled"
-    assert row.incoming_qte_applied is False
-    assert row.damage == 0.0
-    assert row.outgoing_concerto_consumed is False
-    assert "incoming_qte_enabled_not_implemented" in row.transition_warnings
+    assert row.transition_reason == "concerto_ready_qte_enabled"
+    assert row.incoming_qte_applied is True
+    assert row.damage > 0.0
+    assert row.fallback_swap_used is False
+    assert row.outgoing_concerto_consumed is True
     assert "aemeath_qte_intro_human" not in sim.get_policy_action_ids()
     assert "aemeath_qte_intro_mech" not in sim.get_policy_action_ids()
 
@@ -155,7 +157,7 @@ def main() -> None:
     test_c_no_concerto_normal_swap()
     test_d_full_concerto_dry_run()
     test_e_full_concerto_disabled()
-    test_f_enabled_mode_scaffold()
+    test_f_enabled_mode_applies_qte()
     test_g_aemeath_solo()
     test_h_action_mask_policy_surface()
     print("Concerto-gated transition smoke test passed.")

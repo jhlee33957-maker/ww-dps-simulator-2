@@ -112,7 +112,8 @@ def _calculate_hit_damage(
     characters: dict[str, CharacterData],
     buffs: dict[str, BuffData],
 ) -> tuple[float, dict]:
-    if action.character_id is None or action.action_type == "swap":
+    transition_damage_action = bool((action.mechanic_effects or {}).get("transition_action"))
+    if action.character_id is None or (action.action_type == "swap" and not transition_damage_action):
         return 0.0, {}
 
     character = characters[action.character_id]
@@ -241,7 +242,14 @@ def execute_action(
     start_time = state.current_time
     combat_start_time = state.combat_time
     active_character_before = state.active_character_id
-    actor_character_id = active_character_before if action.action_type in {"swap", "wait"} else action.character_id
+    transition_actor_character_id = (action.mechanic_effects or {}).get("transition_actor_character_id")
+    actor_character_id = (
+        str(transition_actor_character_id)
+        if transition_actor_character_id
+        else active_character_before
+        if action.action_type in {"swap", "wait"}
+        else action.character_id
+    )
     actor_character_id = actor_character_id or active_character_before
     actor_state = state.character_mechanics_state.get(action.character_id or state.active_character_id, {})
     action_time, combat_time_cost = resolve_action_timing(action, actor_state)
@@ -441,8 +449,15 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         incoming_qte_candidate_id=result.incoming_qte_candidate_id,
         incoming_qte_mode=result.incoming_qte_mode,
         incoming_qte_applied=result.incoming_qte_applied,
+        incoming_qte_damage_bonus_category=result.incoming_qte_damage_bonus_category,
+        incoming_qte_trigger_classification=result.incoming_qte_trigger_classification,
+        incoming_qte_source_damage_label=result.incoming_qte_source_damage_label,
+        incoming_qte_previous_outro_trigger_frame=result.incoming_qte_previous_outro_trigger_frame,
+        incoming_qte_flow_light_metadata_present=result.incoming_qte_flow_light_metadata_present,
+        incoming_qte_flow_light_applied=result.incoming_qte_flow_light_applied,
         outgoing_outro_applied=result.outgoing_outro_applied,
         transition_events=result.transition_events,
+        transition_event_details=result.transition_event_details,
         outgoing_outro_event_id=result.outgoing_outro_event_id,
         incoming_intro_event_id=result.incoming_intro_event_id,
         fallback_swap_used=result.fallback_swap_used,

@@ -70,7 +70,7 @@ def main() -> None:
     assert outro_row.outgoing_character_id == "dummy_support"
     assert outro_row.incoming_character_id == "aemeath"
     assert outro_row.transition_type == "full_concerto_transition"
-    assert outro_row.transition_reason == "concerto_ready"
+    assert outro_row.transition_reason == "concerto_ready_qte_disabled"
     assert outro_row.outgoing_outro_event_id == "dummy_support_outro_damage_amp"
     assert outro_row.outgoing_outro_applied is True
     assert outro_row.incoming_qte_mode == "disabled"

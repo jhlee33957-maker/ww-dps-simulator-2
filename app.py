@@ -98,8 +98,10 @@ def run_repeating_sequence(
     sequence: list[str],
     settings: dict[str, float | int],
     selected_character_ids: list[str],
+    qte_mode: str = "disabled",
 ) -> Simulation:
     sim = Simulation.from_json(DATA_DIR, selected_character_ids=selected_character_ids)
+    sim.transition_config["concerto_transition"]["qte_mode"] = qte_mode
     apply_enemy_settings(sim, settings)
     index = 0
 
@@ -116,6 +118,7 @@ def evaluate_ppo_model(
     model_path: Path,
     settings: dict[str, float | int],
     selected_character_ids: list[str],
+    qte_mode: str = "disabled",
 ) -> tuple[Any, list[str], Simulation]:
     try:
         from sb3_contrib import MaskablePPO
@@ -126,6 +129,7 @@ def evaluate_ppo_model(
     model = MaskablePPO.load(model_path)
     env = WuwaDpsEnv(DATA_DIR, selected_character_ids=selected_character_ids)
     observation, _ = env.reset()
+    env.simulation.transition_config["concerto_transition"]["qte_mode"] = qte_mode
     apply_enemy_settings(env.simulation, settings)
     action_sequence: list[str] = []
 
@@ -202,6 +206,12 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "incoming_qte_candidate_id",
         "incoming_qte_mode",
         "incoming_qte_applied",
+        "incoming_qte_damage_bonus_category",
+        "incoming_qte_trigger_classification",
+        "incoming_qte_source_damage_label",
+        "incoming_qte_previous_outro_trigger_frame",
+        "incoming_qte_flow_light_metadata_present",
+        "incoming_qte_flow_light_applied",
         "outgoing_outro_applied",
         "outgoing_outro_event_id",
         "incoming_intro_event_id",
@@ -209,6 +219,7 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "swap_timing_is_placeholder",
         "swap_timing_source",
         "transition_events",
+        "transition_event_details",
         "transition_warnings",
         "time_start",
         "time_end",
@@ -243,6 +254,11 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         }
         if qte_modes:
             st.info("QTE candidates in disabled or dry_run mode are logged only and are not included in DPS.")
+        if "enabled" in set(timeline_df["incoming_qte_mode"].dropna().astype(str).tolist()):
+            st.warning(
+                "QTE enabled mode is experimental and uses reviewed candidate data. "
+                "Flow Light and E1-QTE follow-up are not implemented."
+            )
 
     if not timeline_df.empty and {"selected_action_id", "resolved_action_id"}.issubset(timeline_df.columns):
         st.subheader("Selected -> Resolved Actions")
@@ -314,6 +330,11 @@ if mode == "Character Mechanics":
 else:
     settings = enemy_settings()
     selected_character_ids = party_selection()
+    qte_mode = st.sidebar.selectbox(
+        "QTE Mode",
+        options=["disabled", "dry_run", "enabled"],
+        index=0,
+    )
     with st.expander("Active Anomaly System"):
         st.write("Actions apply anomaly stacks to enemy-wide combat state. Aero/Spectro/Electro deal tick damage during later action durations. Havoc Bane deals no direct damage and contributes defense reduction while active. Current durations and tick intervals are simplified assumptions.")
     with st.expander("Hit Timing Model"):
@@ -331,7 +352,7 @@ if mode == "Demo Sequence":
     )
     if not sequence:
         sequence = ["short_wait"] if "short_wait" in policy_action_ids else policy_action_ids[:1]
-    sim = run_repeating_sequence(sequence, settings, selected_character_ids)
+    sim = run_repeating_sequence(sequence, settings, selected_character_ids, qte_mode=qte_mode)
     render_simulation(sim.summary(), simulation=sim)
 elif mode == "PPO Model":
     model_path_text = st.text_input("PPO model path", value=str(DEFAULT_PPO_MODEL_PATH))
@@ -340,7 +361,12 @@ elif mode == "PPO Model":
         st.info("No trained PPO model found. Run training first: python rl/train_maskable_ppo.py --timesteps 50000")
     else:
         try:
-            ppo_summary, ppo_actions, ppo_simulation = evaluate_ppo_model(model_path, settings, selected_character_ids)
+            ppo_summary, ppo_actions, ppo_simulation = evaluate_ppo_model(
+                model_path,
+                settings,
+                selected_character_ids,
+                qte_mode=qte_mode,
+            )
             render_simulation(ppo_summary, action_sequence=ppo_actions, simulation=ppo_simulation)
         except RuntimeError as exc:
             st.error(str(exc))

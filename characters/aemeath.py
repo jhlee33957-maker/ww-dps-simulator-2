@@ -135,6 +135,30 @@ class AemeathMechanic(CharacterMechanic):
             return 3.0
         return 1.0
 
+    def resolve_incoming_qte_transition_action(
+        self,
+        character_state: Any,
+        transition_config: dict[str, Any],
+    ) -> tuple[str | None, list[str]]:
+        warnings: list[str] = []
+        intro_config = (
+            (transition_config.get("characters") or {})
+            .get(self.character_id, {})
+            .get("intro_qte", {})
+        )
+        transition_actions = intro_config.get("transition_actions") or {}
+        form = character_state.get("form") if isinstance(character_state, dict) else None
+        if form == "mech":
+            action_id = transition_actions.get("mech")
+        elif form in {"aemeath", "human"}:
+            action_id = transition_actions.get("human")
+        else:
+            action_id = transition_actions.get("human")
+            warnings.append("missing_aemeath_form_defaulted_to_human")
+        if not action_id:
+            warnings.append("aemeath_qte_transition_action_missing")
+        return action_id, warnings
+
     def after_action(self, state: Any, action: Any, result: Any) -> None:
         data = self._state(state)
         effects = action.mechanic_effects

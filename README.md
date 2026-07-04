@@ -50,9 +50,17 @@ Each party member now has per-character `concerto_energy`, `concerto_energy_cap`
 
 No-concerto swaps use the generic fallback transition, log `transition_type = normal_swap` and `transition_reason = concerto_not_ready`, change the active character, and skip outgoing Outro plus incoming QTE/Intro. Full-concerto swaps log `transition_type = full_concerto_transition` and become eligible for configured transition hooks. The generic fallback swap timing remains a placeholder and should not be interpreted as real game data.
 
-Aemeath QTE candidates exist in `data/extracted/aemeath_qte_action_candidates.json` but are disabled by default and are not policy actions. QTE modes are configured in `data/transition_config.json`: `disabled` logs candidate availability without applying QTE; `dry_run` logs candidate timing, multipliers, classification, and previous-Outro metadata without DPS effects; `enabled` is currently scaffolded with an explicit not-implemented warning because the candidates remain review-only. QTE damage, timing, resources, Flow Light, E1-QTE follow-up, and real previous-Outro timing are not applied in v1.
+Aemeath QTE candidates exist in `data/extracted/aemeath_qte_action_candidates.json` and reviewed executable transition actions exist in `data/transition_actions.json`, but QTE is disabled by default and is not a policy action. QTE modes are configured in `data/transition_config.json`: `disabled` logs candidate availability without applying QTE; `dry_run` logs candidate timing, multipliers, classification, and previous-Outro metadata without DPS effects; `enabled` applies reviewed transition action damage/time through the generic transition-action pipeline. Flow Light, E1-QTE follow-up, and real previous-Outro trigger timing are not applied in v1.
 
 The unsupported observation that a no-concerto swap into Aemeath uses Basic Stage 2 is not implemented due to insufficient source support. Aemeath solo behavior is unchanged.
+
+## Aemeath QTE Enabled Transition v1
+
+QTE is triggered only by a party swap transition when the outgoing character has full Concerto and `qte_mode == enabled`. It remains hidden from PPO and is never directly selectable; `swap_to_aemeath` is still the selected policy action, while the resolved internal action is `transition:aemeath_qte_intro_human` or `transition:aemeath_qte_intro_mech`.
+
+The enabled path is data-driven through `data/transition_actions.json` and `simulator/transition_actions.py`, so future characters can reuse the same transition action schema. Human Aemeath QTE uses `action_time = 1.0`, `combat_time_cost = 0.1667`, and `damage_bonus_category = none_or_unmodeled_intro`. Mech Aemeath QTE uses `action_time = 1.2`, `combat_time_cost = 0.4333`, and `damage_bonus_category = resonance_skill`. Transition actions preserve raw Excel metadata in UTF-8/Unicode-safe form for auditability: Human QTE raw category is `变奏 / 变奏伤害`, while Mech QTE raw category is `共鸣技能 / 变奏伤害`. Functional simulation uses `trigger_classification`, `source_damage_label`, and `damage_bonus_category`.
+
+Default `qte_mode` remains `disabled`. `dry_run` logs the selected transition action only. `enabled` applies reviewed candidate damage/time, consumes outgoing Concerto when configured, and logs trigger classification, source damage label, previous-Outro trigger frame, and Flow Light metadata. Flow Light / `流光增幅状态` and E1-QTE follow-up are not implemented yet. No-concerto swaps remain fallback only, and the unsupported A2 normal swap-in observation is not implemented.
 
 ## Aemeath-lite Character Mechanic
 
@@ -386,6 +394,8 @@ This reference page does not affect simulation results or PPO training. Update t
 
 ```bash
 python -m compileall .
+python scripts/transition_actions_metadata_encoding_smoke_test.py
+python scripts/aemeath_qte_enabled_transition_smoke_test.py
 python scripts/concerto_gated_transition_smoke_test.py
 python scripts/party_state_foundation_smoke_test.py
 python scripts/party_swap_smoke_test.py

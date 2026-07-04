@@ -271,8 +271,15 @@ class ActionResult(BaseModel):
     incoming_qte_candidate_id: str | None = None
     incoming_qte_mode: str | None = None
     incoming_qte_applied: bool = False
+    incoming_qte_damage_bonus_category: str | None = None
+    incoming_qte_trigger_classification: str | None = None
+    incoming_qte_source_damage_label: str | None = None
+    incoming_qte_previous_outro_trigger_frame: float | None = None
+    incoming_qte_flow_light_metadata_present: bool = False
+    incoming_qte_flow_light_applied: bool = False
     outgoing_outro_applied: bool = False
     transition_events: list[dict[str, Any]] = Field(default_factory=list)
+    transition_event_details: list[dict[str, Any]] = Field(default_factory=list)
     outgoing_outro_event_id: str | None = None
     incoming_intro_event_id: str | None = None
     fallback_swap_used: bool = False
@@ -339,8 +346,15 @@ class TimelineEntry(BaseModel):
     incoming_qte_candidate_id: str | None = None
     incoming_qte_mode: str | None = None
     incoming_qte_applied: bool = False
+    incoming_qte_damage_bonus_category: str | None = None
+    incoming_qte_trigger_classification: str | None = None
+    incoming_qte_source_damage_label: str | None = None
+    incoming_qte_previous_outro_trigger_frame: float | None = None
+    incoming_qte_flow_light_metadata_present: bool = False
+    incoming_qte_flow_light_applied: bool = False
     outgoing_outro_applied: bool = False
     transition_events: list[dict[str, Any]] = Field(default_factory=list)
+    transition_event_details: list[dict[str, Any]] = Field(default_factory=list)
     outgoing_outro_event_id: str | None = None
     incoming_intro_event_id: str | None = None
     fallback_swap_used: bool = False

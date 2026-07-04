@@ -13,3 +13,12 @@ def get_mechanic(character_id: str) -> CharacterMechanic:
 
 def get_mechanics_for_characters(character_ids: list[str]) -> dict[str, CharacterMechanic]:
     return {character_id: get_mechanic(character_id) for character_id in character_ids}
+
+
+def resolve_incoming_qte_transition_action(
+    character_id: str,
+    character_state: dict,
+    transition_config: dict,
+) -> tuple[str | None, list[str]]:
+    mechanic = get_mechanic(character_id)
+    return mechanic.resolve_incoming_qte_transition_action(character_state, transition_config)

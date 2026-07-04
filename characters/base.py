@@ -36,6 +36,13 @@ class CharacterMechanic:
     def apply_character_mechanics(self, resolved_action: Any, character_state: Any, party_state: Any) -> None:
         pass
 
+    def resolve_incoming_qte_transition_action(
+        self,
+        character_state: Any,
+        transition_config: dict[str, Any],
+    ) -> tuple[str | None, list[str]]:
+        return None, []
+
     def advance_time(self, state: Any, elapsed_time: float) -> None:
         pass
 

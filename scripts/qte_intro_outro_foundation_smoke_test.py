@@ -37,7 +37,7 @@ def main() -> None:
     sim = Simulation.from_json(DATA_DIR, party="aemeath_test_party")
     assert sim.transition_config["characters"]["aemeath"]["intro_qte"]["enabled"] is False
     assert sim.transition_config["characters"]["aemeath"]["intro_qte"]["mode"] == "disabled"
-    assert sim.transition_config["characters"]["aemeath"]["intro_qte"]["implementation_status"] == "review_only"
+    assert sim.transition_config["characters"]["aemeath"]["intro_qte"]["implementation_status"] == "implemented_but_disabled_by_default"
     assert sim.transition_config["characters"]["aemeath"]["outro"]["enabled"] is False
     assert sim.transition_config["concerto_transition"]["qte_mode"] == "disabled"
     assert all("qte" not in action_id.lower() for action_id in sim.get_policy_action_ids())
@@ -102,7 +102,7 @@ def main() -> None:
     assert outro_swap.outgoing_character_id == "dummy_support"
     assert outro_swap.incoming_character_id == "aemeath"
     assert outro_swap.transition_type == "full_concerto_transition"
-    assert outro_swap.transition_reason == "concerto_ready"
+    assert outro_swap.transition_reason == "concerto_ready_qte_disabled"
     assert outro_swap.outgoing_outro_event_id == "dummy_support_outro_damage_amp"
     assert outro_swap.outgoing_outro_applied is True
     assert outro_swap.incoming_qte_candidate_id in {"aemeath_qte_intro_human", "aemeath_qte_intro_mech"}

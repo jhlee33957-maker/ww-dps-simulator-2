@@ -1,0 +1,56 @@
+[
+  {
+    "id": "aemeath_qte_intro_human",
+    "name": "Aemeath QTE Intro Human",
+    "character_id": "aemeath",
+    "transition_event_type": "incoming_intro_qte",
+    "transition_only": true,
+    "policy_selectable": false,
+    "review_source": "data/extracted/aemeath_qte_action_candidates.json",
+    "trigger_classification": "qte_intro",
+    "source_damage_label": "intro_skill_damage",
+    "damage_bonus_category": "none_or_unmodeled_intro",
+    "action_time": 1.0,
+    "combat_time_cost": 0.1667,
+    "previous_outro_trigger_frame": 48,
+    "hits": [0.1346, 0.1346, 1.0766],
+    "metadata": {
+      "raw_skill_category": "\u53d8\u594f",
+      "raw_damage_type": "\u53d8\u594f\u4f24\u5bb3",
+      "cannot_switch_during_invulnerable": true,
+      "flow_light_state_grant_review_only": {
+        "state_name_raw": "\u6d41\u5149\u589e\u5e45\u72b6\u6001",
+        "start_frame": 1,
+        "duration_seconds": 15.0,
+        "implemented": false
+      }
+    }
+  },
+  {
+    "id": "aemeath_qte_intro_mech",
+    "name": "Aemeath QTE Intro Mech",
+    "character_id": "aemeath",
+    "transition_event_type": "incoming_intro_qte",
+    "transition_only": true,
+    "policy_selectable": false,
+    "review_source": "data/extracted/aemeath_qte_action_candidates.json",
+    "trigger_classification": "qte_intro",
+    "source_damage_label": "intro_skill_damage",
+    "damage_bonus_category": "resonance_skill",
+    "action_time": 1.2,
+    "combat_time_cost": 0.4333,
+    "previous_outro_trigger_frame": 40,
+    "hits": [0.653, 0.9795],
+    "metadata": {
+      "raw_skill_category": "\u5171\u9e23\u6280\u80fd",
+      "raw_damage_type": "\u53d8\u594f\u4f24\u5bb3",
+      "cannot_switch_during_invulnerable": true,
+      "flow_light_state_grant_review_only": {
+        "state_name_raw": "\u6d41\u5149\u589e\u5e45\u72b6\u6001",
+        "start_frame": 1,
+        "duration_seconds": 15.0,
+        "implemented": false
+      }
+    }
+  }
+]

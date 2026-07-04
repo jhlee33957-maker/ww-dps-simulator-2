@@ -173,6 +173,8 @@ class Simulation:
                 self.transition_config,
                 self.preset_generic_swap,
             )
+            if transition_resolution.transition_action is not None:
+                action = transition_resolution.transition_action
             action.action_time = max(transition_resolution.action_time, 0.001)
             action.duration = max(transition_resolution.action_time, 0.001)
             action.combat_time_cost = max(transition_resolution.combat_time_cost, 0.0)
@@ -181,7 +183,15 @@ class Simulation:
         if not self.is_resolved_action_available(action):
             return False
 
-        actor_character_id = self.state.active_character_id if action.action_type in {"swap", "wait"} else action.character_id
+        self._apply_pre_transition_events(transition_resolution)
+        transition_actor_character_id = (action.mechanic_effects or {}).get("transition_actor_character_id")
+        actor_character_id = (
+            str(transition_actor_character_id)
+            if transition_actor_character_id
+            else self.state.active_character_id
+            if action.action_type in {"swap", "wait"}
+            else action.character_id
+        )
         actor_character_id = actor_character_id or self.state.active_character_id
         actor_mechanic = self._mechanic_for_character(actor_character_id)
         result = execute_action(
@@ -203,7 +213,7 @@ class Simulation:
 
         for mechanic in self.character_mechanics.values():
             mechanic.advance_time(self.state, result.action_time)
-        if not result.truncated_by_combat_limit:
+        if not result.truncated_by_combat_limit and not (action.mechanic_effects or {}).get("skip_character_after_action"):
             actor_mechanic.after_action(self.state, action, result)
         result.mechanic_debug_after = {
             character_id: mechanic.get_debug_state(self.state)
@@ -311,8 +321,15 @@ class Simulation:
         result.incoming_qte_candidate_id = transition_resolution.incoming_qte_candidate_id
         result.incoming_qte_mode = transition_resolution.incoming_qte_mode
         result.incoming_qte_applied = transition_resolution.incoming_qte_applied
+        result.incoming_qte_damage_bonus_category = transition_resolution.incoming_qte_damage_bonus_category
+        result.incoming_qte_trigger_classification = transition_resolution.incoming_qte_trigger_classification
+        result.incoming_qte_source_damage_label = transition_resolution.incoming_qte_source_damage_label
+        result.incoming_qte_previous_outro_trigger_frame = transition_resolution.incoming_qte_previous_outro_trigger_frame
+        result.incoming_qte_flow_light_metadata_present = transition_resolution.incoming_qte_flow_light_metadata_present
+        result.incoming_qte_flow_light_applied = transition_resolution.incoming_qte_flow_light_applied
         result.outgoing_outro_applied = transition_resolution.outgoing_outro_applied
         result.transition_events = transition_resolution.transition_events
+        result.transition_event_details = transition_resolution.transition_events
         result.outgoing_outro_event_id = transition_resolution.outgoing_outro_event_id
         result.incoming_intro_event_id = transition_resolution.incoming_intro_event_id
         result.fallback_swap_used = transition_resolution.fallback_swap_used
@@ -320,23 +337,45 @@ class Simulation:
         result.swap_timing_source = transition_resolution.swap_timing_source
         result.transition_warnings = transition_resolution.warnings
 
+        applied_buffs = list(result.applied_buffs)
+        for event in transition_resolution.transition_events:
+            if event.get("applied_before_action"):
+                for buff_id in event.get("applies_buffs", []):
+                    applied_buffs.append(buff_id)
+        result.applied_buffs = applied_buffs
+
         if not result.truncated_by_combat_limit:
-            applied_buffs = list(result.applied_buffs)
             for event in transition_resolution.transition_events:
                 for buff_id in event.get("applies_buffs", []):
                     if buff_id not in self.buffs:
                         result.transition_warnings.append(f"Transition buff {buff_id!r} is not registered.")
                         continue
+                    if event.get("applied_before_action"):
+                        continue
                     add_team_buff(self.state, self.buffs[buff_id], event.get("character_id"))
                     applied_buffs.append(buff_id)
             result.applied_buffs = applied_buffs
-            result.active_buffs = [
-                buff.buff_id
-                for buff in self.state.active_buffs
-                if buff.remaining_duration > 0.0
-            ]
+        result.active_buffs = [
+            buff.buff_id
+            for buff in self.state.active_buffs
+            if buff.remaining_duration > 0.0
+        ]
         if self.state.action_log:
             self.state.action_log[-1] = result.model_dump(mode="json")
+
+    def _apply_pre_transition_events(self, transition_resolution) -> None:
+        if transition_resolution is None:
+            return
+        for event in transition_resolution.transition_events:
+            if not event.get("apply_before_action"):
+                continue
+            applied_buffs = event.setdefault("applied_before_action_buffs", [])
+            for buff_id in event.get("applies_buffs", []):
+                if buff_id not in self.buffs:
+                    continue
+                add_team_buff(self.state, self.buffs[buff_id], event.get("character_id"))
+                applied_buffs.append(buff_id)
+            event["applied_before_action"] = True
 
     def _mechanic_for_character(self, character_id: str) -> CharacterMechanic:
         mechanic = self.character_mechanics.get(character_id)

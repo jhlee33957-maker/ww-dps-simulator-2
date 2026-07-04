@@ -5,9 +5,15 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from characters.registry import resolve_incoming_qte_transition_action
 from simulator.models import ActionData, CombatState
 from simulator.resource_system import consume_concerto, is_concerto_ready, sync_concerto_state
 from simulator.roster import get_swap_target_character_id
+from simulator.transition_actions import (
+    get_transition_action,
+    transition_action_event,
+    transition_action_to_action_data,
+)
 
 
 PLACEHOLDER_WARNING = (
@@ -30,6 +36,12 @@ class TransitionResolution:
     incoming_qte_candidate_id: str | None
     incoming_qte_mode: str | None
     incoming_qte_applied: bool
+    incoming_qte_damage_bonus_category: str | None
+    incoming_qte_trigger_classification: str | None
+    incoming_qte_source_damage_label: str | None
+    incoming_qte_previous_outro_trigger_frame: float | None
+    incoming_qte_flow_light_metadata_present: bool
+    incoming_qte_flow_light_applied: bool
     outgoing_outro_applied: bool
     action_time: float
     combat_time_cost: float
@@ -37,6 +49,7 @@ class TransitionResolution:
     swap_timing_is_placeholder: bool
     fallback_swap_used: bool
     transition_events: list[dict[str, Any]] = field(default_factory=list)
+    transition_action: ActionData | None = None
     outgoing_outro_event_id: str | None = None
     incoming_intro_event_id: str | None = None
     warnings: list[str] = field(default_factory=list)
@@ -154,10 +167,17 @@ def resolve_party_transition(
     qte_mode = _qte_mode(concerto_config)
     incoming_qte_candidate_id: str | None = None
     incoming_qte_applied = False
+    incoming_qte_damage_bonus_category: str | None = None
+    incoming_qte_trigger_classification: str | None = None
+    incoming_qte_source_damage_label: str | None = None
+    incoming_qte_previous_outro_trigger_frame: float | None = None
+    incoming_qte_flow_light_metadata_present = False
+    incoming_qte_flow_light_applied = False
     outgoing_outro_applied = False
     outgoing_concerto_consumed = False
+    transition_action: ActionData | None = None
     transition_type = "full_concerto_transition" if outgoing_ready else "normal_swap"
-    transition_reason = "concerto_ready" if outgoing_ready else "concerto_not_ready"
+    transition_reason = _transition_reason(outgoing_ready, qte_mode)
 
     outgoing_event = None
     incoming_event = None
@@ -180,25 +200,31 @@ def resolve_party_transition(
             outgoing_event["applied"] = True
             events.append(outgoing_event)
             outgoing_outro_applied = True
-        qte_candidate, qte_candidate_warnings = _incoming_qte_candidate(
+        transition_action_record, qte_candidate_warnings = _incoming_transition_action_record(
             transition_config,
             state,
             incoming_character_id,
         )
         warnings.extend(qte_candidate_warnings)
-        if qte_candidate is not None:
-            incoming_qte_candidate_id = str(qte_candidate.get("candidate_id") or qte_candidate.get("proposed_action_id"))
-            candidate_event = _qte_candidate_event(qte_candidate, qte_mode)
+        if transition_action_record is not None:
+            incoming_qte_candidate_id = str(transition_action_record["id"])
+            incoming_qte_damage_bonus_category = transition_action_record.get("damage_bonus_category")
+            incoming_qte_trigger_classification = transition_action_record.get("trigger_classification")
+            incoming_qte_source_damage_label = transition_action_record.get("source_damage_label")
+            incoming_qte_previous_outro_trigger_frame = transition_action_record.get("previous_outro_trigger_frame")
+            metadata = transition_action_record.get("metadata") or {}
+            incoming_qte_flow_light_metadata_present = metadata.get("flow_light_state_grant_review_only") is not None
             if qte_mode == "dry_run":
+                candidate_event = transition_action_event(transition_action_record, qte_mode=qte_mode, applied=False)
                 events.append(candidate_event)
             elif qte_mode == "enabled":
-                candidate_event["implementation_status"] = "not_implemented"
-                candidate_event["notes"] = (
-                    "Aemeath QTE enabled mode is scaffolded only; candidate remains review-only "
-                    "and is not applied to damage, timing, resources, or state."
-                )
+                candidate_event = transition_action_event(transition_action_record, qte_mode=qte_mode, applied=True)
                 events.append(candidate_event)
-                warnings.append("incoming_qte_enabled_not_implemented")
+                transition_action = transition_action_to_action_data(transition_action_record)
+                incoming_qte_applied = True
+                incoming_qte_flow_light_applied = False
+                if outgoing_event is not None:
+                    outgoing_event["apply_before_action"] = True
         if incoming_event is not None:
             incoming_event["applied"] = True
             events.append(incoming_event)
@@ -252,6 +278,12 @@ def resolve_party_transition(
         incoming_qte_candidate_id=incoming_qte_candidate_id,
         incoming_qte_mode=qte_mode,
         incoming_qte_applied=incoming_qte_applied,
+        incoming_qte_damage_bonus_category=incoming_qte_damage_bonus_category,
+        incoming_qte_trigger_classification=incoming_qte_trigger_classification,
+        incoming_qte_source_damage_label=incoming_qte_source_damage_label,
+        incoming_qte_previous_outro_trigger_frame=incoming_qte_previous_outro_trigger_frame,
+        incoming_qte_flow_light_metadata_present=incoming_qte_flow_light_metadata_present,
+        incoming_qte_flow_light_applied=incoming_qte_flow_light_applied,
         outgoing_outro_applied=outgoing_outro_applied,
         action_time=action_time,
         combat_time_cost=combat_time_cost,
@@ -259,8 +291,9 @@ def resolve_party_transition(
         swap_timing_is_placeholder=is_placeholder,
         fallback_swap_used=fallback_used,
         transition_events=events,
+        transition_action=transition_action,
         outgoing_outro_event_id=outgoing_event.get("action_id") if outgoing_event else None,
-        incoming_intro_event_id=incoming_event.get("action_id") if incoming_event else None,
+        incoming_intro_event_id=incoming_qte_candidate_id if incoming_qte_applied else incoming_event.get("action_id") if incoming_event else None,
         warnings=warnings,
     )
 
@@ -307,80 +340,31 @@ def _qte_mode(concerto_config: dict[str, Any]) -> str:
     return qte_mode if qte_mode in allowed else "disabled"
 
 
-def _incoming_qte_candidate(
+def _transition_reason(outgoing_ready: bool, qte_mode: str) -> str:
+    if not outgoing_ready:
+        return "concerto_not_ready"
+    if qte_mode == "enabled":
+        return "concerto_ready_qte_enabled"
+    if qte_mode == "dry_run":
+        return "concerto_ready_qte_dry_run"
+    return "concerto_ready_qte_disabled"
+
+
+def _incoming_transition_action_record(
     transition_config: dict[str, Any],
     state: CombatState,
     incoming_character_id: str,
 ) -> tuple[dict[str, Any] | None, list[str]]:
-    if incoming_character_id != "aemeath":
-        return None, []
-
-    character_config = (transition_config.get("characters") or {}).get(incoming_character_id, {})
-    intro_config = character_config.get("intro_qte") or {}
-    candidate_source = intro_config.get("candidate_source") or intro_config.get("source")
-    if not candidate_source:
-        return None, ["incoming_qte_candidate_source_missing"]
-
-    source_path = Path(candidate_source)
-    if not source_path.is_absolute():
-        data_dir = Path(str(transition_config.get("_data_dir") or "data"))
-        source_path = data_dir / source_path
-        if not source_path.exists() and str(candidate_source).startswith("data/"):
-            source_path = data_dir.parent / str(candidate_source)
-    if not source_path.exists():
-        return None, [f"incoming_qte_candidate_source_missing:{candidate_source}"]
-
-    with source_path.open("r", encoding="utf-8-sig") as file:
-        payload = json.load(file)
-    candidates = payload.get("candidates") or []
-    candidates_by_id = {
-        str(candidate.get("candidate_id") or candidate.get("proposed_action_id")): candidate
-        for candidate in candidates
-    }
-    aemeath_state = state.character_states.get("aemeath") or state.character_mechanics_state.get("aemeath") or {}
-    form = aemeath_state.get("form")
-    warnings: list[str] = []
-    if form == "mech":
-        candidate_id = "aemeath_qte_intro_mech"
-    elif form in {"aemeath", "human"}:
-        candidate_id = "aemeath_qte_intro_human"
-    else:
-        candidate_id = "aemeath_qte_intro_human"
-        warnings.append("incoming_qte_aemeath_form_missing_defaulted_human")
-    candidate = candidates_by_id.get(candidate_id)
-    if candidate is None:
-        warnings.append(f"incoming_qte_candidate_missing:{candidate_id}")
-    return candidate, warnings
-
-
-def _qte_candidate_event(candidate: dict[str, Any], qte_mode: str) -> dict[str, Any]:
-    timing = candidate.get("timing_candidate") or {}
-    damage = candidate.get("damage_candidate") or {}
-    notice = candidate.get("notice_metadata") or {}
-    candidate_id = str(candidate.get("candidate_id") or candidate.get("proposed_action_id"))
-    return {
-        "event_type": "intro_qte",
-        "character_id": "aemeath",
-        "action_id": candidate.get("proposed_action_id") or candidate_id,
-        "candidate_id": candidate_id,
-        "implementation_status": "dry_run" if qte_mode == "dry_run" else "review_only",
-        "enabled": qte_mode == "enabled",
-        "applied": False,
-        "affects_timing": False,
-        "qte_mode": qte_mode,
-        "qte_applied": False,
-        "action_time": float(timing.get("action_time_seconds", 0.0) or 0.0),
-        "combat_time_cost": float(timing.get("combat_time_cost_seconds", 0.0) or 0.0),
-        "action_time_frames": timing.get("action_time_frames"),
-        "combat_time_cost_frames": timing.get("combat_time_cost_frames"),
-        "parsed_multipliers": damage.get("parsed_multipliers", []),
-        "trigger_classification": damage.get("trigger_classification"),
-        "source_damage_label": damage.get("source_damage_label"),
-        "damage_bonus_category": damage.get("damage_bonus_category"),
-        "previous_outro_trigger_frame": notice.get("previous_character_outro_trigger_frame")
-        or timing.get("previous_outro_trigger_frame"),
-        "previous_outro_trigger_frames": notice.get("previous_outro_trigger_frames")
-        or timing.get("previous_outro_trigger_frames", []),
-        "source": "data/extracted/aemeath_qte_action_candidates.json",
-        "notes": "Aemeath QTE candidate logged only; no damage, timing, resources, or state changes are applied.",
-    }
+    character_state = state.character_states.get(incoming_character_id) or state.character_mechanics_state.get(incoming_character_id) or {}
+    transition_action_id, warnings = resolve_incoming_qte_transition_action(
+        incoming_character_id,
+        character_state,
+        transition_config,
+    )
+    if transition_action_id is None:
+        return None, warnings
+    data_dir = Path(str(transition_config.get("_data_dir") or "data"))
+    record = get_transition_action(data_dir, transition_action_id)
+    if record is None:
+        warnings.append(f"incoming_qte_transition_action_missing:{transition_action_id}")
+    return record, warnings
