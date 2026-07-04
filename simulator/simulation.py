@@ -12,7 +12,6 @@ from simulator.party_transition import (
     build_transition_swap_action,
     default_transition_config,
     fallback_swap_timing,
-    load_transition_config,
     resolve_party_transition,
 )
 from simulator.resource_system import initialize_concerto_states
@@ -25,6 +24,7 @@ from simulator.roster import (
     resolve_party_preset,
 )
 from simulator.state import create_initial_state
+from simulator.transition_config import build_effective_transition_config, load_transition_config
 
 
 class Simulation:
@@ -86,6 +86,7 @@ class Simulation:
         party_character_ids: list[str] | str | None = None,
         party: list[str] | str | None = None,
         initial_active_character: str | None = None,
+        transition_config: dict | None = None,
     ) -> "Simulation":
         data_path = Path(data_dir)
         characters = {
@@ -118,6 +119,12 @@ class Simulation:
             else None
         )
         selection_value, preset_initial_active = resolve_party_preset(selection_value, party_presets)
+        base_transition_config = transition_config or load_transition_config(data_path)
+        effective_transition_config = (
+            base_transition_config
+            if transition_config is not None
+            else build_effective_transition_config(base_transition_config, party_preset_config)
+        )
         return cls(
             characters=characters,
             actions=actions,
@@ -125,7 +132,7 @@ class Simulation:
             enemy=enemy,
             selected_character_ids=selection_value,
             initial_active_character=initial_active_character or preset_initial_active,
-            transition_config=load_transition_config(data_path),
+            transition_config=effective_transition_config,
             party_preset_config=party_preset_config,
         )
 
@@ -220,6 +227,9 @@ class Simulation:
             for character_id, mechanic in self.character_mechanics.items()
             if mechanic.get_debug_state(self.state)
         }
+        self._apply_post_mechanic_transition_debug(result)
+        if self.state.action_log:
+            self.state.action_log[-1] = result.model_dump(mode="json")
 
         active_name = self.characters[self.state.active_character_id].name
         self.timeline.append(timeline_entry(result, active_name))
@@ -327,6 +337,12 @@ class Simulation:
         result.incoming_qte_previous_outro_trigger_frame = transition_resolution.incoming_qte_previous_outro_trigger_frame
         result.incoming_qte_flow_light_metadata_present = transition_resolution.incoming_qte_flow_light_metadata_present
         result.incoming_qte_flow_light_applied = transition_resolution.incoming_qte_flow_light_applied
+        result.incoming_intro_candidate_id = transition_resolution.incoming_intro_candidate_id
+        result.incoming_intro_mode = transition_resolution.incoming_intro_mode
+        result.incoming_intro_applied = transition_resolution.incoming_intro_applied
+        result.incoming_intro_damage_bonus_category = transition_resolution.incoming_intro_damage_bonus_category
+        result.incoming_intro_trigger_classification = transition_resolution.incoming_intro_trigger_classification
+        result.incoming_intro_source_damage_label = transition_resolution.incoming_intro_source_damage_label
         result.outgoing_outro_applied = transition_resolution.outgoing_outro_applied
         result.transition_events = transition_resolution.transition_events
         result.transition_event_details = transition_resolution.transition_events
@@ -376,6 +392,15 @@ class Simulation:
                 add_team_buff(self.state, self.buffs[buff_id], event.get("character_id"))
                 applied_buffs.append(buff_id)
             event["applied_before_action"] = True
+
+    def _apply_post_mechanic_transition_debug(self, result) -> None:
+        data = self.state.character_mechanics_state.get("mornye")
+        if not isinstance(data, dict):
+            return
+        result.mornye_mode_after = data.get("mode")
+        result.mornye_rest_mass_after = float(data.get("rest_mass_energy", 0.0))
+        result.mornye_wfo_remaining_after = float(data.get("wide_field_observation_remaining", 0.0))
+        result.mornye_syntony_field_remaining_after = float(data.get("syntony_field_remaining", 0.0))
 
     def _mechanic_for_character(self, character_id: str) -> CharacterMechanic:
         mechanic = self.character_mechanics.get(character_id)

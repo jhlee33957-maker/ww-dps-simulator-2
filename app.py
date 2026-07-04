@@ -12,6 +12,12 @@ import streamlit as st
 from simulator.models import CharacterData
 from simulator.roster import is_dummy_character, parse_character_ids, read_party_presets
 from simulator.simulation import Simulation
+from simulator.transition_config import (
+    build_effective_transition_config,
+    build_transition_mode_overrides,
+    load_transition_config,
+    transition_mode_summary,
+)
 from ui.mechanics_reference import render_mechanics_reference
 
 
@@ -48,7 +54,7 @@ def character_label(character: CharacterData) -> str:
     return f"{character.name}{suffix}"
 
 
-def party_selection() -> list[str]:
+def party_selection() -> tuple[list[str], dict[str, Any] | None, str | None]:
     characters = load_available_characters()
     presets = read_party_presets(DATA_DIR)
     if presets:
@@ -62,7 +68,7 @@ def party_selection() -> list[str]:
         selected = list(presets[selected_preset_id]["members"])
         if any(is_dummy_character(characters[character_id]) for character_id in selected):
             st.sidebar.warning("Dummy sample characters are test-only and are not intended for real DPS analysis.")
-        return parse_character_ids(selected, list(characters))
+        return parse_character_ids(selected, list(characters)), presets[selected_preset_id], selected_preset_id
 
     default_ids = parse_character_ids(None, list(characters))
     options = list(characters)
@@ -80,7 +86,7 @@ def party_selection() -> list[str]:
         st.sidebar.warning("A party can currently contain 1 to 3 characters. Using the first three selected characters.")
     if any(is_dummy_character(characters[character_id]) for character_id in selected):
         st.sidebar.warning("Dummy sample characters use intentionally low placeholder coefficients and are not intended for real DPS analysis.")
-    return parse_character_ids(selected, options)
+    return parse_character_ids(selected, options), None, None
 
 
 def apply_enemy_settings(sim: Simulation, settings: dict[str, float | int]) -> None:
@@ -98,10 +104,15 @@ def run_repeating_sequence(
     sequence: list[str],
     settings: dict[str, float | int],
     selected_character_ids: list[str],
-    qte_mode: str = "disabled",
+    transition_config: dict[str, Any] | None = None,
+    party_id: str | None = None,
 ) -> Simulation:
-    sim = Simulation.from_json(DATA_DIR, selected_character_ids=selected_character_ids)
-    sim.transition_config["concerto_transition"]["qte_mode"] = qte_mode
+    sim = Simulation.from_json(
+        DATA_DIR,
+        selected_character_ids=None if party_id else selected_character_ids,
+        party=party_id,
+        transition_config=transition_config,
+    )
     apply_enemy_settings(sim, settings)
     index = 0
 
@@ -118,7 +129,8 @@ def evaluate_ppo_model(
     model_path: Path,
     settings: dict[str, float | int],
     selected_character_ids: list[str],
-    qte_mode: str = "disabled",
+    transition_config: dict[str, Any] | None = None,
+    party_id: str | None = None,
 ) -> tuple[Any, list[str], Simulation]:
     try:
         from sb3_contrib import MaskablePPO
@@ -127,9 +139,13 @@ def evaluate_ppo_model(
         raise RuntimeError("Missing RL dependency. Run: pip install -r requirements.txt") from exc
 
     model = MaskablePPO.load(model_path)
-    env = WuwaDpsEnv(DATA_DIR, selected_character_ids=selected_character_ids)
+    env = WuwaDpsEnv(
+        DATA_DIR,
+        selected_character_ids=None if party_id else selected_character_ids,
+        party=party_id,
+        transition_config=transition_config,
+    )
     observation, _ = env.reset()
-    env.simulation.transition_config["concerto_transition"]["qte_mode"] = qte_mode
     apply_enemy_settings(env.simulation, settings)
     action_sequence: list[str] = []
 
@@ -234,6 +250,12 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "incoming_qte_previous_outro_trigger_frame",
         "incoming_qte_flow_light_metadata_present",
         "incoming_qte_flow_light_applied",
+        "incoming_intro_candidate_id",
+        "incoming_intro_mode",
+        "incoming_intro_applied",
+        "incoming_intro_damage_bonus_category",
+        "incoming_intro_trigger_classification",
+        "incoming_intro_source_damage_label",
         "outgoing_outro_applied",
         "outgoing_outro_event_id",
         "incoming_intro_event_id",
@@ -263,6 +285,10 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "applied_buffs",
         "total_damage_after",
         "active_character",
+        "mornye_mode_after",
+        "mornye_rest_mass_after",
+        "mornye_wfo_remaining_after",
+        "mornye_syntony_field_remaining_after",
         "mechanic_debug_after",
     ]
     visible_columns = [column for column in preferred_columns if column in timeline_df.columns]
@@ -280,6 +306,12 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
             st.warning(
                 "QTE enabled mode is experimental and uses reviewed candidate data. "
                 "Flow Light and E1-QTE follow-up are not implemented."
+            )
+    if not timeline_df.empty and "incoming_intro_applied" in timeline_df.columns:
+        if bool(timeline_df["incoming_intro_applied"].fillna(False).any()):
+            st.warning(
+                "Mornye Intro enabled mode is experimental. It applies Convergence damage/time "
+                "and v1 WFO/Syntony effects, but Tune/Marker/Healing/DEF systems are not implemented."
             )
 
     if not timeline_df.empty and {"selected_action_id", "resolved_action_id"}.issubset(timeline_df.columns):
@@ -356,19 +388,46 @@ if mode == "Character Mechanics":
     render_mechanics_reference(character_id)
 else:
     settings = enemy_settings()
-    selected_character_ids = party_selection()
-    qte_mode = st.sidebar.selectbox(
-        "QTE Mode",
-        options=["disabled", "dry_run", "enabled"],
+    selected_character_ids, party_preset_config, party_id = party_selection()
+    transition_mode_choice = st.sidebar.selectbox(
+        "Transition Mode",
+        options=["Use Party Preset / Default", "disabled", "dry_run", "enabled"],
         index=0,
     )
+    ui_transition_overrides = (
+        None
+        if transition_mode_choice == "Use Party Preset / Default"
+        else build_transition_mode_overrides(transition_mode=transition_mode_choice)
+    )
+    effective_transition_config = build_effective_transition_config(
+        load_transition_config(DATA_DIR),
+        party_preset_config,
+        ui_overrides=ui_transition_overrides,
+    )
+    mode_summary = transition_mode_summary(effective_transition_config)
+    st.sidebar.caption(
+        "Effective transition modes: "
+        f"Aemeath QTE={mode_summary['aemeath']['intro_qte']}, "
+        f"Mornye Intro={mode_summary['mornye']['intro_qte']}, "
+        f"Mornye Outro={'enabled' if mode_summary['mornye']['outro'] else 'disabled'}"
+    )
+    if transition_mode_choice == "enabled":
+        st.sidebar.warning(
+            "Transition enabled mode uses reviewed QTE/Intro candidate data. "
+            "Some systems such as Flow Light, E1-QTE follow-up, Tune/Marker/Healing/DEF are not implemented."
+        )
     with st.expander("Active Anomaly System"):
         st.write("Actions apply anomaly stacks to enemy-wide combat state. Aero/Spectro/Electro deal tick damage during later action durations. Havoc Bane deals no direct damage and contributes defense reduction while active. Current durations and tick intervals are simplified assumptions.")
     with st.expander("Hit Timing Model"):
         st.write("action_time is internal action lock and hit timing progression. combat_time_cost is the timed-combat timer cost; it defaults to action_time when omitted. Buffs and Havoc Bane are evaluated at each hit time. Animation-only duration and a general cancel system are not modeled.")
 
 if mode == "Demo Sequence":
-    preview_sim = Simulation.from_json(DATA_DIR, selected_character_ids=selected_character_ids)
+    preview_sim = Simulation.from_json(
+        DATA_DIR,
+        selected_character_ids=None if party_id else selected_character_ids,
+        party=party_id,
+        transition_config=effective_transition_config,
+    )
     policy_action_ids = preview_sim.get_policy_action_ids()
     valid_policy_action_ids = preview_sim.valid_action_ids()
     default_sequence = [action_id for action_id in valid_policy_action_ids if action_id != "short_wait"][:3] or valid_policy_action_ids
@@ -379,7 +438,13 @@ if mode == "Demo Sequence":
     )
     if not sequence:
         sequence = ["short_wait"] if "short_wait" in policy_action_ids else policy_action_ids[:1]
-    sim = run_repeating_sequence(sequence, settings, selected_character_ids, qte_mode=qte_mode)
+    sim = run_repeating_sequence(
+        sequence,
+        settings,
+        selected_character_ids,
+        transition_config=effective_transition_config,
+        party_id=party_id,
+    )
     render_simulation(sim.summary(), simulation=sim)
 elif mode == "PPO Model":
     model_path_text = st.text_input("PPO model path", value=str(DEFAULT_PPO_MODEL_PATH))
@@ -392,7 +457,8 @@ elif mode == "PPO Model":
                 model_path,
                 settings,
                 selected_character_ids,
-                qte_mode=qte_mode,
+                transition_config=effective_transition_config,
+                party_id=party_id,
             )
             render_simulation(ppo_summary, action_sequence=ppo_actions, simulation=ppo_simulation)
         except RuntimeError as exc:

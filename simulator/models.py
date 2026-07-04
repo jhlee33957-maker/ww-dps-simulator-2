@@ -277,6 +277,12 @@ class ActionResult(BaseModel):
     incoming_qte_previous_outro_trigger_frame: float | None = None
     incoming_qte_flow_light_metadata_present: bool = False
     incoming_qte_flow_light_applied: bool = False
+    incoming_intro_candidate_id: str | None = None
+    incoming_intro_mode: str | None = None
+    incoming_intro_applied: bool = False
+    incoming_intro_damage_bonus_category: str | None = None
+    incoming_intro_trigger_classification: str | None = None
+    incoming_intro_source_damage_label: str | None = None
     outgoing_outro_applied: bool = False
     transition_events: list[dict[str, Any]] = Field(default_factory=list)
     transition_event_details: list[dict[str, Any]] = Field(default_factory=list)
@@ -296,6 +302,10 @@ class ActionResult(BaseModel):
     concerto_energy_gained: float = 0.0
     concerto_energy_wasted: float = 0.0
     mechanic_debug_after: dict[str, Any] = Field(default_factory=dict)
+    mornye_mode_after: str | None = None
+    mornye_rest_mass_after: float | None = None
+    mornye_wfo_remaining_after: float | None = None
+    mornye_syntony_field_remaining_after: float | None = None
     reason: str | None = None
 
 
@@ -352,6 +362,12 @@ class TimelineEntry(BaseModel):
     incoming_qte_previous_outro_trigger_frame: float | None = None
     incoming_qte_flow_light_metadata_present: bool = False
     incoming_qte_flow_light_applied: bool = False
+    incoming_intro_candidate_id: str | None = None
+    incoming_intro_mode: str | None = None
+    incoming_intro_applied: bool = False
+    incoming_intro_damage_bonus_category: str | None = None
+    incoming_intro_trigger_classification: str | None = None
+    incoming_intro_source_damage_label: str | None = None
     outgoing_outro_applied: bool = False
     transition_events: list[dict[str, Any]] = Field(default_factory=list)
     transition_event_details: list[dict[str, Any]] = Field(default_factory=list)
@@ -371,6 +387,10 @@ class TimelineEntry(BaseModel):
     concerto_energy_gained: float = 0.0
     concerto_energy_wasted: float = 0.0
     mechanic_debug_after: dict[str, Any] = Field(default_factory=dict)
+    mornye_mode_after: str | None = None
+    mornye_rest_mass_after: float | None = None
+    mornye_wfo_remaining_after: float | None = None
+    mornye_syntony_field_remaining_after: float | None = None
 
 
 class PartyState(BaseModel):

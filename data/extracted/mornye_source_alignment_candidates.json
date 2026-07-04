@@ -1,0 +1,39 @@
+{
+  "source_name": "莫宁",
+  "generated_at": "2026-07-04T04:12:11.821073+00:00",
+  "safe_to_patch_count": 0,
+  "candidates": [
+    {
+      "target": "Syntony Field / High Syntony Field",
+      "aspect": "mechanic_scope",
+      "current_value": "Durations are tracked as metadata; automatic field tick scheduling is not implemented.",
+      "source_value": "Field duration and liberation conversion rows are present.",
+      "safe_to_patch": false,
+      "reason": "Future implementation needs dedicated scheduling design."
+    },
+    {
+      "target": "Tune Break / Interfered / Particle Jet",
+      "aspect": "mechanic_scope",
+      "current_value": "Only placeholder/review action metadata exists where applicable.",
+      "source_value": "Late source rows describe Tune/Interference behavior.",
+      "safe_to_patch": false,
+      "reason": "Keep out of source-alignment patch; needs new mechanic design."
+    },
+    {
+      "target": "Proof of Boundedness, healing, DEF, defensive survival",
+      "aspect": "mechanic_scope",
+      "current_value": "DPS simulator has no healing/DEF survival model for Mornye.",
+      "source_value": "Workbook rows mention healing/defensive systems.",
+      "safe_to_patch": false,
+      "reason": "Out of scope for audit/source alignment."
+    },
+    {
+      "target": "Energy Regen scaling / advanced passives",
+      "aspect": "mechanic_scope",
+      "current_value": "Mornye support buff and direct action coefficients are modeled; scaling passives are not.",
+      "source_value": "Passive/special-state rows include non-damage scaling details.",
+      "safe_to_patch": false,
+      "reason": "Review when team-buff/stat-scaling system is expanded."
+    }
+  ]
+}

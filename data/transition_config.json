@@ -68,13 +68,13 @@
       "intro_qte": {
         "enabled": false,
         "mode": "disabled",
-        "implementation_status": "reviewed_candidate_disabled_by_default",
-        "candidate_source": "data/transition_actions.json",
-        "source": "data/source/\u9e23\u6f6e\u52a8\u4f5c\u6570\u636e\u6c47\u603b.xlsx",
+        "implementation_status": "implemented_but_disabled_by_default",
+        "candidate_source": "data/extracted/mornye_excel_audit.json",
+        "source": "data/extracted/mornye_excel_audit.json",
         "transition_actions": {
           "default": "mornye_intro_convergence"
         },
-        "notes": "Mornye Intro Convergence is reviewed transition data and remains disabled by default."
+        "notes": "Mornye Intro Convergence is implemented as an incoming transition event but remains disabled by default."
       },
       "outro": {
         "enabled": true,

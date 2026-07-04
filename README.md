@@ -92,6 +92,72 @@ Not implemented in v1:
 
 Mornye Intro Convergence is present as reviewed transition data in `data/transition_actions.json` and remains disabled by default through `data/transition_config.json`. No PPO retraining was performed.
 
+## Mornye Excel Audit
+
+The read-only Mornye Excel audit compares the current Mornye v1 implementation against the workbook section for source character `莫宁`. Run it with:
+
+```bash
+python scripts/extract_mornye_excel_audit.py
+python scripts/mornye_excel_audit_smoke_test.py
+```
+
+Generated review artifacts:
+
+- `data/extracted/mornye_excel_audit.json`
+- `data/extracted/mornye_source_alignment_candidates.json`
+- `data/extracted/mornye_unresolved_rows.json`
+- `reports/mornye_excel_audit.md`
+- `reports/mornye_source_alignment_review.md`
+
+The audit is intentionally report-only. It does not modify `data/actions.json`, change Mornye gameplay behavior, enable Intro/QTE behavior, train PPO, restore Beam Search, or implement future Tune/Interfered/Proof/healing/DEF systems. The smoke test hashes `data/actions.json` before and after extraction to guard that contract.
+
+## Mornye Intro Enabled Transition v1
+
+Mornye Intro Convergence is implemented as a non-policy incoming transition event. It is never directly selectable by PPO and is not included in the policy action space; the selected action remains `swap_to_mornye`, while the resolved enabled transition action is `transition:mornye_intro_convergence`.
+
+Mornye Intro only triggers when the outgoing character has full Concerto and Mornye's Intro/QTE mode is explicitly set to `enabled`. The default mode remains `disabled`. In `disabled` mode, the candidate may be logged but no Intro damage, time, resource gain, or Mornye state effects apply. In `dry_run` mode, the candidate is logged for review only and the generic fallback swap timing is still used. In `enabled` mode, the generic transition-action pipeline applies Convergence damage/time and v1 mechanics.
+
+Implemented Mornye Intro values:
+
+- `action_time = 1.7`
+- `combat_time_cost = 1.7`
+- hit multiplier `[2.0279]`
+- `concerto_energy_gain = 10` to Mornye through the transition action
+- clears Rest Mass Energy
+- enters Wide Field Observation for 30 seconds
+- creates Syntony Field for 25 seconds
+
+Outgoing Outro hooks still run before incoming Intro hooks. When an enabled incoming transition event applies and `consume_concerto_on_enabled_transition` is true, the outgoing character's Concerto is consumed. No-concerto swaps and disabled/dry-run modes continue to use fallback swap behavior.
+
+Tune Break, Tune Rupture, Tune Strain, Observation/Interfered Marker systems, Proof of Boundedness, healing, DEF defensive calculations, and automatic Syntony Field periodic damage remain unimplemented. No PPO retraining was performed.
+
+## Party Training Transition Modes
+
+Party simulations can now choose transition modes through party preset overrides, CLI flags, and the Streamlit UI. Defaults remain disabled unless a party preset or explicit override enables them. QTE/Intro actions are never policy actions: PPO still selects swap actions such as `swap_to_aemeath` or `swap_to_mornye`, and transition events are automatic consequences when Concerto and mode conditions allow them.
+
+Mode behavior:
+
+- `disabled`: logs candidates where available but ignores QTE/Intro damage, timing, and state effects.
+- `dry_run`: logs reviewed transition candidates without affecting DPS.
+- `enabled`: applies reviewed QTE/Intro transition events through the generic transition pipeline.
+
+The `aemeath_mornye_enabled_test_party` preset enables Aemeath QTE, Mornye Intro, and Mornye Outro for deterministic transition-route testing. Generic swap timing in party presets remains placeholder metadata, not real gameplay timing.
+
+CLI examples:
+
+```bash
+python rl/train_maskable_ppo.py --party aemeath_mornye_enabled_test_party --transition-mode enabled --timesteps 50000 --model-path models/maskable_ppo_aemeath_mornye_enabled_v1.zip
+python rl/evaluate_maskable_ppo.py --model-path models/maskable_ppo_aemeath_mornye_enabled_v1.zip --party aemeath_mornye_enabled_test_party --transition-mode enabled
+```
+
+Specific flags override the broad transition mode:
+
+```bash
+python rl/train_maskable_ppo.py --party aemeath_mornye_enabled_test_party --transition-mode enabled --aemeath-qte-mode disabled
+```
+
+Models trained with different party rosters, action spaces, or transition-mode settings are not interchangeable. No PPO retraining is performed by the transition-mode support patch itself.
+
 ## Aemeath-lite Character Mechanic
 
 Aemeath-lite is a first-pass architecture validation character, not a final real-game implementation. Common combat systems remain in simulator/. Aemeath-specific form state, combo state, action replacement, Synchronization Rate, Resonance Rate, Seraphic Duet, Overdrive, and Finale behavior live in characters/aemeath.py.

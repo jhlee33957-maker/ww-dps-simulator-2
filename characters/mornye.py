@@ -100,7 +100,7 @@ class MornyeMechanic(CharacterMechanic):
             data["rest_mass_energy"] += float(effects["rest_mass_energy_delta"])
         if "relative_momentum_delta" in effects:
             data["relative_momentum"] += float(effects["relative_momentum_delta"])
-        if effects.get("consume_rest_mass_energy"):
+        if effects.get("consume_rest_mass_energy") or effects.get("clear_rest_mass_energy"):
             data["rest_mass_energy"] = 0.0
         if effects.get("consume_relative_momentum"):
             data["relative_momentum"] = 0.0
@@ -109,8 +109,13 @@ class MornyeMechanic(CharacterMechanic):
         if "wide_field_observation_duration" in effects:
             data["wide_field_observation_remaining"] = float(effects["wide_field_observation_duration"])
             data["mode"] = "wide_field_observation" if data["wide_field_observation_remaining"] > 0.0 else "baseline"
+        if "set_wide_field_observation_remaining" in effects:
+            data["wide_field_observation_remaining"] = float(effects["set_wide_field_observation_remaining"])
+            data["mode"] = "wide_field_observation" if data["wide_field_observation_remaining"] > 0.0 else "baseline"
         if "syntony_field_duration" in effects:
             data["syntony_field_remaining"] = float(effects["syntony_field_duration"])
+        if "set_syntony_field_remaining" in effects:
+            data["syntony_field_remaining"] = float(effects["set_syntony_field_remaining"])
         if effects.get("upgrade_syntony_to_high") and data["syntony_field_remaining"] > 0.0:
             data["syntony_field_remaining"] = 0.0
             data["high_syntony_field_remaining"] = float(effects.get("high_syntony_field_duration", 25.0))

@@ -42,6 +42,12 @@ class TransitionResolution:
     incoming_qte_previous_outro_trigger_frame: float | None
     incoming_qte_flow_light_metadata_present: bool
     incoming_qte_flow_light_applied: bool
+    incoming_intro_candidate_id: str | None
+    incoming_intro_mode: str | None
+    incoming_intro_applied: bool
+    incoming_intro_damage_bonus_category: str | None
+    incoming_intro_trigger_classification: str | None
+    incoming_intro_source_damage_label: str | None
     outgoing_outro_applied: bool
     action_time: float
     combat_time_cost: float
@@ -164,7 +170,7 @@ def resolve_party_transition(
     outgoing_state = sync_concerto_state(state, outgoing_character_id, default_cap=default_cap)
     outgoing_concerto_before = float(outgoing_state["concerto_energy"])
     outgoing_ready = is_concerto_ready(outgoing_state)
-    qte_mode = _qte_mode(concerto_config)
+    qte_mode = _incoming_qte_mode(concerto_config, transition_config, incoming_character_id)
     incoming_qte_candidate_id: str | None = None
     incoming_qte_applied = False
     incoming_qte_damage_bonus_category: str | None = None
@@ -214,6 +220,11 @@ def resolve_party_transition(
             incoming_qte_previous_outro_trigger_frame = transition_action_record.get("previous_outro_trigger_frame")
             metadata = transition_action_record.get("metadata") or {}
             incoming_qte_flow_light_metadata_present = metadata.get("flow_light_state_grant_review_only") is not None
+            transition_reason = _transition_reason(
+                outgoing_ready,
+                qte_mode,
+                trigger_classification=incoming_qte_trigger_classification,
+            )
             if qte_mode == "dry_run":
                 candidate_event = transition_action_event(transition_action_record, qte_mode=qte_mode, applied=False)
                 events.append(candidate_event)
@@ -288,6 +299,12 @@ def resolve_party_transition(
         incoming_qte_previous_outro_trigger_frame=incoming_qte_previous_outro_trigger_frame,
         incoming_qte_flow_light_metadata_present=incoming_qte_flow_light_metadata_present,
         incoming_qte_flow_light_applied=incoming_qte_flow_light_applied,
+        incoming_intro_candidate_id=incoming_qte_candidate_id,
+        incoming_intro_mode=qte_mode,
+        incoming_intro_applied=incoming_qte_applied,
+        incoming_intro_damage_bonus_category=incoming_qte_damage_bonus_category,
+        incoming_intro_trigger_classification=incoming_qte_trigger_classification,
+        incoming_intro_source_damage_label=incoming_qte_source_damage_label,
         outgoing_outro_applied=outgoing_outro_applied,
         action_time=action_time,
         combat_time_cost=combat_time_cost,
@@ -345,14 +362,40 @@ def _qte_mode(concerto_config: dict[str, Any]) -> str:
     return qte_mode if qte_mode in allowed else "disabled"
 
 
-def _transition_reason(outgoing_ready: bool, qte_mode: str) -> str:
+def _incoming_qte_mode(
+    concerto_config: dict[str, Any],
+    transition_config: dict[str, Any],
+    incoming_character_id: str,
+) -> str:
+    global_mode = _qte_mode(concerto_config)
+    allowed = set(concerto_config.get("qte_modes") or ["disabled", "dry_run", "enabled"])
+    intro_config = (
+        (transition_config.get("characters") or {})
+        .get(incoming_character_id, {})
+        .get("intro_qte", {})
+    )
+    character_mode = str(intro_config.get("mode", ""))
+    if bool(intro_config.get("mode_override", False)) and character_mode in allowed:
+        return character_mode
+    if character_mode in {"dry_run", "enabled"} and character_mode in allowed:
+        return character_mode
+    return global_mode
+
+
+def _transition_reason(
+    outgoing_ready: bool,
+    qte_mode: str,
+    *,
+    trigger_classification: str | None = None,
+) -> str:
     if not outgoing_ready:
         return "concerto_not_ready"
+    noun = "intro" if trigger_classification == "intro" else "qte"
     if qte_mode == "enabled":
-        return "concerto_ready_qte_enabled"
+        return f"concerto_ready_{noun}_enabled"
     if qte_mode == "dry_run":
-        return "concerto_ready_qte_dry_run"
-    return "concerto_ready_qte_disabled"
+        return f"concerto_ready_{noun}_dry_run"
+    return f"concerto_ready_{noun}_disabled"
 
 
 def _incoming_transition_action_record(

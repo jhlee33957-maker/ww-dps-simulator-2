@@ -23,6 +23,7 @@ class WuwaDpsEnv(gym.Env):
         party: list[str] | str | None = None,
         character_ids: list[str] | str | None = None,
         initial_active_character: str | None = None,
+        transition_config: dict | None = None,
     ) -> None:
         super().__init__()
         self.data_dir = Path(data_dir)
@@ -37,11 +38,14 @@ class WuwaDpsEnv(gym.Env):
             if party is not None
             else character_ids
         )
+        self.party_id_arg = party if isinstance(party, str) else selected_character_ids if isinstance(selected_character_ids, str) else None
         self.initial_active_character_arg = initial_active_character
+        self.transition_config_arg = transition_config
         self.simulation = Simulation.from_json(
             self.data_dir,
             selected_character_ids=self.selected_character_ids_arg,
             initial_active_character=self.initial_active_character_arg,
+            transition_config=self.transition_config_arg,
         )
         self.action_ids = self._get_action_order()
         self.character_ids = self._get_character_order()
@@ -60,6 +64,7 @@ class WuwaDpsEnv(gym.Env):
             self.data_dir,
             selected_character_ids=self.selected_character_ids_arg,
             initial_active_character=self.initial_active_character_arg,
+            transition_config=self.transition_config_arg,
         )
         self.action_ids = self._get_action_order()
         self.character_ids = self._get_character_order()
@@ -239,3 +244,7 @@ class WuwaDpsEnv(gym.Env):
 
     def get_initial_active_character(self) -> str:
         return self.simulation.initial_active_character
+
+    def get_party_id(self) -> str | None:
+        preset_config = self.simulation.party_preset_config or {}
+        return preset_config.get("party_id") or self.party_id_arg

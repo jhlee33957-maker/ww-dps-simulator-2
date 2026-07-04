@@ -44,15 +44,18 @@ def transition_action_to_action_data(record: dict[str, Any]) -> ActionData:
     action_time = float(record["action_time"])
     combat_time_cost = float(record["combat_time_cost"])
     damage_bonus_category = str(record.get("damage_bonus_category") or "")
+    trigger_classification = str(record.get("trigger_classification") or "")
     tags = [
         "transition",
         "party-transition",
-        "qte",
         "intro",
         str(record["transition_event_type"]),
-        str(record.get("trigger_classification") or ""),
+        trigger_classification,
         str(record.get("source_damage_label") or ""),
+        str(record.get("element") or ""),
     ]
+    if "qte" in trigger_classification:
+        tags.append("qte")
     if damage_bonus_category and damage_bonus_category != "none_or_unmodeled_intro":
         tags.append(damage_bonus_category)
 
@@ -105,6 +108,9 @@ def transition_action_event(record: dict[str, Any], *, qte_mode: str, applied: b
         "affects_timing": applied,
         "qte_mode": qte_mode,
         "qte_applied": applied,
+        "incoming_intro_mode": qte_mode,
+        "incoming_intro_applied": applied,
+        "incoming_intro_candidate_id": record["id"],
         "consume_concerto_on_apply": applied,
         "action_time": float(record["action_time"]),
         "combat_time_cost": float(record["combat_time_cost"]),

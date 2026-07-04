@@ -6,21 +6,56 @@ import json
 from pathlib import Path
 import sys
 from collections import Counter
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from simulator.roster import read_party_presets
+from simulator.transition_config import (
+    build_effective_transition_config,
+    build_transition_mode_overrides,
+    load_transition_config,
+    transition_event_counts,
+    transition_mode_summary,
+)
 
-def parse_args() -> argparse.Namespace:
+
+def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Evaluate a trained Maskable PPO model.")
     parser.add_argument("--model-path", type=Path, default=PROJECT_ROOT / "models" / "maskable_ppo_wuwa.zip")
     parser.add_argument("--character-ids", type=str, default=None)
     parser.add_argument("--party-character-ids", type=str, default=None)
     parser.add_argument("--party", type=str, default=None)
     parser.add_argument("--initial-active-character", type=str, default=None)
+    parser.add_argument("--transition-mode", choices=["disabled", "dry_run", "enabled"], default=None)
+    parser.add_argument("--aemeath-qte-mode", choices=["disabled", "dry_run", "enabled"], default=None)
+    parser.add_argument("--mornye-intro-mode", choices=["disabled", "dry_run", "enabled"], default=None)
     parser.add_argument("--allow-mismatch", action="store_true")
-    return parser.parse_args()
+    return parser
+
+
+def parse_args() -> argparse.Namespace:
+    return build_arg_parser().parse_args()
+
+
+def build_effective_config_from_args(args: argparse.Namespace) -> tuple[dict[str, Any], dict[str, Any] | None]:
+    party_presets = read_party_presets(PROJECT_ROOT / "data")
+    party_preset = party_presets.get(args.party) if args.party else None
+    cli_overrides = build_transition_mode_overrides(
+        transition_mode=args.transition_mode,
+        aemeath_qte_mode=args.aemeath_qte_mode,
+        mornye_intro_mode=args.mornye_intro_mode,
+    )
+    if not cli_overrides.get("characters"):
+        cli_overrides = None
+    config = build_effective_transition_config(
+        load_transition_config(PROJECT_ROOT / "data"),
+        party_preset,
+        cli_overrides=cli_overrides,
+    )
+    return config, party_preset
 
 
 def main() -> None:
@@ -38,13 +73,16 @@ def main() -> None:
 
     from rl.evaluate_utils import action_count_breakdown, run_masked_episode
 
+    transition_config, party_preset = build_effective_config_from_args(args)
     model = MaskablePPO.load(args.model_path)
     env, action_sequence, resolved_action_sequence = run_masked_episode(
         model,
         PROJECT_ROOT / "data",
         deterministic=True,
-        selected_character_ids=args.character_ids or args.party_character_ids or args.party,
+        selected_character_ids=args.character_ids or args.party_character_ids,
+        party=args.party,
         initial_active_character=args.initial_active_character,
+        transition_config=transition_config,
     )
     metadata_path = PROJECT_ROOT / "results" / "training_metadata.json"
     if metadata_path.exists():
@@ -103,8 +141,14 @@ def main() -> None:
         "active_character": summary.active_character,
         "selected_character_ids": env.get_selected_character_ids(),
         "selected_party_character_ids": env.get_selected_party_character_ids(),
+        "party_id": env.get_party_id() or args.party,
+        "party_members": env.get_selected_party_character_ids(),
         "initial_active_character": env.get_initial_active_character(),
         "policy_action_ids": env.get_policy_action_ids(),
+        "transition_modes": transition_mode_summary(transition_config),
+        "transition_config_source": transition_config.get("_transition_config_source", ["default"]),
+        "party_preset": party_preset.get("party_id") if party_preset else None,
+        **transition_event_counts(summary.timeline),
         "action_sequence": action_sequence,
         "resolved_action_sequence": resolved_action_sequence,
         "action_counts": counts,

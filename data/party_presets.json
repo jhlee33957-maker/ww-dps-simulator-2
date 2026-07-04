@@ -31,5 +31,39 @@
       "source": "party_presets.aemeath_mornye_test_party.generic_swap",
       "warning": "Generic swap timing is a placeholder for party-structure testing. It is not sourced from Excel/client data. Real party DPS requires QTE/Intro/Outro transition modeling."
     }
+  },
+  {
+    "party_id": "aemeath_mornye_enabled_test_party",
+    "display_name": "Aemeath + Mornye Enabled Transition Test Party",
+    "members": ["mornye", "aemeath", "dummy_sub_dps"],
+    "initial_active": "mornye",
+    "note": "Explicit test preset for enabled Aemeath QTE, Mornye Intro, and Mornye Outro transition behavior.",
+    "transition_overrides": {
+      "characters": {
+        "aemeath": {
+          "intro_qte": {
+            "mode": "enabled",
+            "enabled": true
+          }
+        },
+        "mornye": {
+          "intro_qte": {
+            "mode": "enabled",
+            "enabled": true
+          },
+          "outro": {
+            "enabled": true,
+            "requires_concerto": true
+          }
+        }
+      }
+    },
+    "generic_swap": {
+      "action_time": 0.5,
+      "combat_time_cost": 0.5,
+      "is_placeholder": true,
+      "source": "party_presets.aemeath_mornye_enabled_test_party.generic_swap",
+      "warning": "Generic swap timing is a placeholder for party-structure testing. It is not sourced from Excel/client data. Real party DPS requires QTE/Intro/Outro transition modeling."
+    }
   }
 ]
