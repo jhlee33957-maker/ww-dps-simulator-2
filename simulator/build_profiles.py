@@ -24,6 +24,34 @@ LEGACY_CATEGORY_ALIASES = {
     "resonance_skill_dmg_bonus": "resonance_skill",
     "resonance_liberation_dmg_bonus": "resonance_liberation",
 }
+RAW_DAMAGE_TYPE_ALIASES = {
+    "普通攻击伤害": "basic_attack",
+    "普攻伤害": "basic_attack",
+    "重击伤害": "heavy_attack",
+    "共鸣技能伤害": "resonance_skill",
+    "共鸣解放伤害": "resonance_liberation",
+    "变奏伤害": "intro",
+    "延奏伤害": "outro",
+    "震谐伤害": "other",
+}
+
+
+def normalize_damage_bonus_category(value: str | None) -> str:
+    if not value:
+        return "other"
+    normalized = str(value).strip()
+    if not normalized or normalized == "-":
+        return "other"
+    return normalized if normalized in DAMAGE_BONUS_CATEGORIES else "other"
+
+
+def raw_damage_type_to_damage_bonus_category(raw_damage_type: str | None) -> str:
+    if raw_damage_type is None:
+        return "other"
+    normalized = str(raw_damage_type).strip()
+    if not normalized or normalized == "-":
+        return "other"
+    return RAW_DAMAGE_TYPE_ALIASES.get(normalized, "other")
 
 
 def load_build_profiles(data_dir: Path | str = "data") -> dict[str, Any]:
@@ -162,16 +190,14 @@ def resolve_character_build_stats(
 
 
 def action_damage_bonus_category(action: ActionData) -> str:
-    explicit = getattr(action, "damage_bonus_category", None)
-    if explicit:
-        return str(explicit)
+    explicit = normalize_damage_bonus_category(getattr(action, "damage_bonus_category", None))
+    if explicit != "other":
+        return explicit
     tags = set(action.tags or [])
     for tag in ("intro", "outro", "coordinated_attack"):
         if tag in tags:
             return tag
-    if action.action_type in DAMAGE_BONUS_CATEGORIES:
-        return action.action_type
-    return "other"
+    return normalize_damage_bonus_category(getattr(action, "action_type", None))
 
 
 def action_damage_element(action: ActionData, character: CharacterData | None = None) -> str:
@@ -204,7 +230,10 @@ def damage_bonus_breakdown(
     element_bonus = float(element_bonuses.get(element, element_bonuses.get("generic", 0.0) if element == "generic" else 0.0))
     return {
         "damage_category": category,
+        "damage_bonus_category": category,
         "damage_element": element,
+        "raw_skill_category": getattr(action, "raw_skill_category", None),
+        "raw_damage_type": getattr(action, "raw_damage_type", None),
         "all_dmg_bonus": all_bonus,
         "category_dmg_bonus": category_bonus,
         "element_dmg_bonus": element_bonus,

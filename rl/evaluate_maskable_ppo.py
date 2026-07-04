@@ -133,11 +133,15 @@ def main() -> None:
     damage_by_resolved: Counter[str] = Counter()
     damage_by_character: Counter[str] = Counter()
     damage_by_category: Counter[str] = Counter()
+    damage_by_action_type: Counter[str] = Counter()
+    damage_by_damage_bonus_category: Counter[str] = Counter()
     for selected_id, resolved_id, row in zip(action_sequence, resolved_action_sequence, summary.timeline):
         damage_by_action[selected_id] += row.total_action_damage
         damage_by_resolved[resolved_id] += row.total_action_damage
         damage_by_character[row.actor_character_id or row.character_id or "unknown"] += row.total_action_damage
         damage_by_category[row.damage_category] += row.total_action_damage
+        damage_by_action_type[row.action_type or "other"] += row.total_action_damage
+        damage_by_damage_bonus_category[row.damage_bonus_category or row.damage_category] += row.total_action_damage
 
     print("Selected party:", env.get_selected_party_character_ids())
     print("Initial active character:", env.get_initial_active_character())
@@ -153,6 +157,8 @@ def main() -> None:
     print("Damage by resolved action:", dict(damage_by_resolved))
     print("Damage by character:", dict(damage_by_character))
     print("Damage by category:", dict(damage_by_category))
+    print("Damage by action type:", dict(damage_by_action_type))
+    print("Damage by damage bonus category:", dict(damage_by_damage_bonus_category))
     print("Resource summary:", summary.resources)
     print("Timeline:")
     for row in summary.timeline:
@@ -191,13 +197,19 @@ def main() -> None:
         "damage_by_resolved_action": dict(damage_by_resolved),
         "damage_by_character": dict(damage_by_character),
         "damage_by_category": dict(damage_by_category),
+        "damage_by_action_type": dict(damage_by_action_type),
+        "damage_by_damage_bonus_category": dict(damage_by_damage_bonus_category),
         "damage_bonus_breakdown_sample": [
             {
                 "selected_action_id": row.selected_action_id,
                 "resolved_action_id": row.resolved_action_id,
                 "character_id": row.actor_character_id or row.character_id,
+                "action_type": row.action_type,
                 "damage_category": row.damage_category,
+                "damage_bonus_category": row.damage_bonus_category,
                 "damage_element": row.damage_element,
+                "raw_skill_category": row.raw_skill_category,
+                "raw_damage_type": row.raw_damage_type,
                 "all_dmg_bonus": row.all_dmg_bonus,
                 "category_dmg_bonus": row.category_dmg_bonus,
                 "element_dmg_bonus": row.element_dmg_bonus,

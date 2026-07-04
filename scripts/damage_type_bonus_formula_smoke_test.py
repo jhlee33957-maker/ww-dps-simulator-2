@@ -27,12 +27,13 @@ def make_character() -> CharacterData:
     )
 
 
-def action(action_type: str, tags: list[str] | None = None) -> ActionData:
+def action(action_type: str, tags: list[str] | None = None, damage_bonus_category: str | None = None) -> ActionData:
     return ActionData(
         id=f"test_{action_type}",
         name=f"Test {action_type}",
         character_id="tester",
         action_type=action_type,
+        damage_bonus_category=damage_bonus_category,
         duration=1.0,
         cooldown=0.0,
         resonance_energy_cost=0.0,
@@ -59,6 +60,37 @@ def test_damage_bonus_buckets() -> None:
     skill = damage_bonus_breakdown(character, action("resonance_skill"))
     assert skill["damage_element"] == "generic"
     assert_close(skill["effective_damage_bonus"], 0.2 + 0.05, "generic element fallback")
+
+    skill_as_liberation = damage_bonus_breakdown(
+        character,
+        action("resonance_skill", damage_bonus_category="resonance_liberation"),
+    )
+    assert skill_as_liberation["damage_bonus_category"] == "resonance_liberation"
+    assert_close(skill_as_liberation["effective_damage_bonus"], 0.2 + 0.6 + 0.05, "skill action using liberation bonus")
+
+    heavy_as_liberation = damage_bonus_breakdown(
+        character,
+        action("heavy_attack", damage_bonus_category="resonance_liberation"),
+    )
+    assert heavy_as_liberation["damage_bonus_category"] == "resonance_liberation"
+    assert_close(heavy_as_liberation["effective_damage_bonus"], 0.2 + 0.6 + 0.05, "heavy action using liberation bonus")
+
+    future = damage_bonus_breakdown(
+        character,
+        ActionData(
+            id="future_character_skill",
+            name="Future Character Skill",
+            character_id="dummy_future_character",
+            action_type="resonance_skill",
+            damage_bonus_category="resonance_liberation",
+            duration=1.0,
+            cooldown=0.0,
+            resonance_energy_cost=0.0,
+            damage_multiplier=1.0,
+        ),
+    )
+    assert future["damage_bonus_category"] == "resonance_liberation"
+    assert_close(future["effective_damage_bonus"], 0.2 + 0.6 + 0.05, "future character data-driven category")
 
 
 def test_amp_mechanics_are_not_additive_damage_bonus() -> None:

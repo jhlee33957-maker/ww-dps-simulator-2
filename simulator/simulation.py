@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from collections import Counter
 from pathlib import Path
 
 from characters.base import CharacterMechanic
@@ -462,6 +463,17 @@ class Simulation:
             }
             for char_id in self.characters
         }
+        damage_by_selected_action: Counter[str] = Counter()
+        damage_by_resolved_action: Counter[str] = Counter()
+        damage_by_action_type: Counter[str] = Counter()
+        damage_by_damage_bonus_category: Counter[str] = Counter()
+        for row in self.timeline:
+            damage = float(row.total_action_damage)
+            damage_by_selected_action[row.selected_action_id or row.action_id] += damage
+            damage_by_resolved_action[row.resolved_action_id or row.action_id] += damage
+            damage_by_action_type[row.action_type or "other"] += damage
+            damage_by_damage_bonus_category[row.damage_bonus_category or row.damage_category or "other"] += damage
+
         return SimulationSummary(
             total_damage=self.state.total_damage,
             dps=self.state.total_damage / self.combat_duration,
@@ -470,6 +482,10 @@ class Simulation:
             active_character=active_character,
             timeline=self.timeline,
             resources=resources,
+            damage_by_selected_action=dict(damage_by_selected_action),
+            damage_by_resolved_action=dict(damage_by_resolved_action),
+            damage_by_action_type=dict(damage_by_action_type),
+            damage_by_damage_bonus_category=dict(damage_by_damage_bonus_category),
         )
 
     @property

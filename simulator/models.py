@@ -103,6 +103,9 @@ class ActionData(BaseModel):
     damage_category: DamageCategory = "normal"
     damage_bonus_category: str | None = None
     damage_element: str | None = None
+    raw_skill_category: str | None = None
+    raw_damage_type: str | None = None
+    damage_bonus_category_source: str | None = None
     damage_multiplier: float = Field(default=0.0, ge=0)
     tune_break_multiplier: float = Field(default=0.0, ge=0)
     tune_break_boost_points: float = 0.0
@@ -270,8 +273,12 @@ class ActionResult(BaseModel):
     hit_count: int = 0
     hit_damage_by_category: dict[str, float] = Field(default_factory=dict)
     hit_details: list[dict[str, Any]] = Field(default_factory=list)
+    action_type: str | None = None
     damage_category: str = "other"
+    damage_bonus_category: str = "other"
     damage_element: str = "generic"
+    raw_skill_category: str | None = None
+    raw_damage_type: str | None = None
     all_dmg_bonus: float = 0.0
     category_dmg_bonus: float = 0.0
     element_dmg_bonus: float = 0.0
@@ -378,8 +385,12 @@ class TimelineEntry(BaseModel):
     hit_count: int = 0
     hit_damage_by_category: dict[str, float] = Field(default_factory=dict)
     hit_details: list[dict[str, Any]] = Field(default_factory=list)
+    action_type: str | None = None
     damage_category: str = "other"
+    damage_bonus_category: str = "other"
     damage_element: str = "generic"
+    raw_skill_category: str | None = None
+    raw_damage_type: str | None = None
     all_dmg_bonus: float = 0.0
     category_dmg_bonus: float = 0.0
     element_dmg_bonus: float = 0.0
@@ -475,3 +486,7 @@ class SimulationSummary(BaseModel):
     active_character: str
     timeline: list[TimelineEntry]
     resources: dict[str, dict[str, float]]
+    damage_by_selected_action: dict[str, float] = Field(default_factory=dict)
+    damage_by_resolved_action: dict[str, float] = Field(default_factory=dict)
+    damage_by_action_type: dict[str, float] = Field(default_factory=dict)
+    damage_by_damage_bonus_category: dict[str, float] = Field(default_factory=dict)

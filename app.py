@@ -112,6 +112,22 @@ def build_profile_controls(
                 "Aemeath liberation_focus_test is a configurable test assumption, "
                 "not verified final real-game build data."
             )
+            profile = (build_profiles.get("profiles") or {}).get("aemeath", {}).get("liberation_focus_test", {})
+            liberation_bonus = float(((profile.get("damage_bonuses") or {}).get("by_category") or {}).get("resonance_liberation", 0.0))
+            st.write({"Resonance Liberation DMG Bonus": liberation_bonus})
+            with (DATA_DIR / "actions.json").open("r", encoding="utf-8-sig") as file:
+                actions = [item for item in json.load(file) if item.get("character_id") == "aemeath"]
+            missing = [
+                item["id"]
+                for item in actions
+                if item.get("raw_damage_type") == "共鸣解放伤害"
+                and item.get("damage_bonus_category") != "resonance_liberation"
+            ]
+            if missing:
+                st.warning(
+                    "Some Aemeath source Resonance Liberation damage rows are missing "
+                    f"damage_bonus_category=resonance_liberation: {missing}"
+                )
     return ui_overrides
 
 
@@ -315,6 +331,15 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "resolved_action_id",
         "resolved_action_name",
         "action_name",
+        "action_type",
+        "damage_bonus_category",
+        "damage_element",
+        "all_dmg_bonus",
+        "category_dmg_bonus",
+        "element_dmg_bonus",
+        "effective_damage_bonus",
+        "raw_skill_category",
+        "raw_damage_type",
         "actor_character_id",
         "active_character_before",
         "active_character_after",
@@ -425,6 +450,34 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
             hide_index=True,
         )
 
+    if not timeline_df.empty:
+        st.subheader("Damage Category Breakdown")
+        st.caption(
+            "Selected policy action is the high-level action chosen by the player/PPO. "
+            "Resolved action is the internal action after character mechanics. "
+            "Damage bonus category is the additive DMG Bonus bucket, such as Resonance Liberation DMG Bonus."
+        )
+        breakdown_cols = st.columns(3)
+        if {"selected_action_id", "total_action_damage"}.issubset(timeline_df.columns):
+            selected_damage = timeline_df.groupby("selected_action_id", as_index=False)["total_action_damage"].sum()
+            with breakdown_cols[0]:
+                st.write("Selected policy action")
+                st.dataframe(selected_damage, use_container_width=True, hide_index=True)
+        if {"resolved_action_id", "total_action_damage"}.issubset(timeline_df.columns):
+            resolved_damage = timeline_df.groupby("resolved_action_id", as_index=False)["total_action_damage"].sum()
+            with breakdown_cols[1]:
+                st.write("Resolved action")
+                st.dataframe(resolved_damage, use_container_width=True, hide_index=True)
+        if {"damage_bonus_category", "total_action_damage"}.issubset(timeline_df.columns):
+            bonus_damage = timeline_df.groupby("damage_bonus_category", as_index=False)["total_action_damage"].sum()
+            with breakdown_cols[2]:
+                st.write("Damage bonus category")
+                st.dataframe(bonus_damage, use_container_width=True, hide_index=True)
+            if not bonus_damage.empty:
+                fig = px.bar(bonus_damage, x="damage_bonus_category", y="total_action_damage", text_auto=".2s")
+                fig.update_layout(xaxis_title="Damage bonus category", yaxis_title="Total damage")
+                st.plotly_chart(fig, use_container_width=True)
+
     chart_col, resource_col = st.columns([2, 1])
 
     with chart_col:
@@ -444,7 +497,7 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
             if {"selected_action_id", "total_action_damage"}.issubset(timeline_df.columns):
                 selected_damage = timeline_df.groupby("selected_action_id", as_index=False)["total_action_damage"].sum()
                 if not selected_damage.empty:
-                    st.subheader("Total damage by selected action")
+                    st.subheader("Total damage by selected policy action")
                     fig = px.bar(selected_damage, x="selected_action_id", y="total_action_damage", text_auto=".2s")
                     fig.update_layout(xaxis_title="", yaxis_title="Total damage")
                     st.plotly_chart(fig, use_container_width=True)

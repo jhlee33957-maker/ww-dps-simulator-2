@@ -431,13 +431,26 @@ Normal damage now resolves additive DMG Bonus through three buckets:
 ```text
 effective_damage_bonus =
   damage_bonuses.all
-+ damage_bonuses.by_category[action.damage_category]
++ damage_bonuses.by_category[action.damage_bonus_category]
 + damage_bonuses.by_element[action.element or generic]
 ```
 
 Supported damage bonus categories are `basic_attack`, `heavy_attack`, `resonance_skill`, `resonance_liberation`, `intro`, `outro`, `coordinated_attack`, and `other`. Missing keys default to `0.0`, so future characters can add only the buckets they need.
 
 Mornye Outro remains an All DMG Amplification buff in the amplification bucket. Mornye Interfered Marker simplified mode remains an enemy DMG Taken amp. Neither is converted into additive `damage_bonus`.
+
+## Action Type vs Damage Bonus Category
+
+`action_type` and `damage_bonus_category` are intentionally separate. `action_type` controls action routing, cooldown grouping, policy identity, and character mechanics. `damage_bonus_category` controls which additive DMG Bonus bucket a build profile applies. If `damage_bonus_category` is missing, the simulator falls back to `action_type`; if the resulting value is unknown, it falls back to `other`.
+
+This is separate from `damage_category`, which is used inside hit data for normal, Tune Break, and anomaly hit categories. Older timeline fields may still expose `damage_category` as a compatibility alias for the damage bonus bucket, but new diagnostics should prefer `damage_bonus_category`.
+
+Examples:
+
+- Aemeath Seraphic Duet remains mechanically `action_type = resonance_skill`, but its source `伤害类型 = 共鸣解放伤害`, so it uses `damage_bonus_category = resonance_liberation`.
+- Aemeath Heavy Charged remains mechanically `action_type = heavy_attack`, but its source `伤害类型 = 共鸣解放伤害`, so it uses `damage_bonus_category = resonance_liberation`.
+
+Build profile bonuses use `damage_bonus_category`, not the mechanical `action_type`. The timeline and evaluation summaries expose selected policy action, resolved action, mechanical action type, and damage bonus category separately. Existing PPO models trained before this classification fix are stale because damage and reward values can change; retrain before making valid PPO comparisons. No PPO training was performed for this patch.
 
 ## Aemeath Liberation Focus Test Build
 
@@ -552,6 +565,7 @@ This reference page does not affect simulation results or PPO training. Update t
 
 ```bash
 python -m compileall .
+python scripts/aemeath_damage_bonus_category_source_smoke_test.py
 python scripts/transition_actions_metadata_encoding_smoke_test.py
 python scripts/mornye_character_smoke_test.py
 python scripts/mornye_outro_buff_smoke_test.py
