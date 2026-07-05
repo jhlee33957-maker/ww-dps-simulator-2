@@ -142,6 +142,74 @@
           },
           "by_element": {}
         }
+      },
+      "aemeath_user_real_01": {
+        "display_name": "Aemeath User Real Build 01",
+        "description": "Complete user-supplied Aemeath real stat profile.",
+        "implementation_status": "user_supplied_required",
+        "default_scaling_stat": "atk",
+        "required_scaling_stats": [
+          "atk"
+        ],
+        "stat_components": {
+          "atk": {
+            "character_base": 424,
+            "weapon_base": 587.5,
+            "percent": 1.133,
+            "flat": 500,
+            "final_reference": 2657
+          },
+          "def": {
+            "character_base": null,
+            "weapon_base": 0,
+            "percent": null,
+            "flat": null,
+            "final_reference": null
+          },
+          "hp": {
+            "character_base": null,
+            "weapon_base": 0,
+            "percent": null,
+            "flat": null,
+            "final_reference": null
+          }
+        },
+        "runtime_bonuses": {
+          "atk": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "def": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "hp": {
+            "percent": 0.0,
+            "flat": 0.0
+          }
+        },
+        "combat_stats": {
+          "crit_rate": 0.832,
+          "crit_damage": 2.942,
+          "energy_regen": 1.2
+        },
+        "damage_bonuses": {
+          "all": 0.0,
+          "by_category": {
+            "basic_attack": 0.0,
+            "heavy_attack": 0.0,
+            "resonance_skill": 0.101,
+            "resonance_liberation": 0.688,
+            "intro": 0.0,
+            "outro": 0.0,
+            "coordinated_attack": 0.0,
+            "other": 0.0
+          },
+          "by_element": {
+            "generic": 0.3,
+            "fusion": 0.3
+          }
+        }
       }
     },
     "mornye": {
@@ -280,6 +348,74 @@
             "other": null
           },
           "by_element": {}
+        }
+      },
+      "mornye_user_real_01": {
+        "display_name": "Mornye User Real Build 01",
+        "description": "Complete user-supplied Mornye real stat profile.",
+        "implementation_status": "user_supplied_required",
+        "default_scaling_stat": "def",
+        "required_scaling_stats": [
+          "def"
+        ],
+        "stat_components": {
+          "atk": {
+            "character_base": null,
+            "weapon_base": null,
+            "percent": null,
+            "flat": null,
+            "final_reference": null
+          },
+          "def": {
+            "character_base": 1356,
+            "weapon_base": 0,
+            "percent": 1.2006,
+            "flat": 230,
+            "final_reference": 3214
+          },
+          "hp": {
+            "character_base": null,
+            "weapon_base": 0,
+            "percent": null,
+            "flat": null,
+            "final_reference": null
+          }
+        },
+        "runtime_bonuses": {
+          "atk": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "def": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "hp": {
+            "percent": 0.0,
+            "flat": 0.0
+          }
+        },
+        "combat_stats": {
+          "crit_rate": 0.113,
+          "crit_damage": 1.752,
+          "energy_regen": 2.7944
+        },
+        "damage_bonuses": {
+          "all": 0.0,
+          "by_category": {
+            "basic_attack": 0.203,
+            "heavy_attack": 0.064,
+            "resonance_skill": 0.094,
+            "resonance_liberation": 0.086,
+            "intro": 0.0,
+            "outro": 0.0,
+            "coordinated_attack": 0.0,
+            "other": 0.0
+          },
+          "by_element": {
+            "generic": 0.0,
+            "fusion": 0.0
+          }
         }
       }
     }
