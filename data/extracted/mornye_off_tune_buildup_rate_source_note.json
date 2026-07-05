@@ -12,6 +12,8 @@
   },
   "c2_additional_bonus": 0.2,
   "c2_default_active": false,
+  "field_creation_off_tune_applies_before_halo_value": true,
+  "implementation_timing_mode": "same_action_field_creation_approximation",
   "healing_proxy_source": {
     "sheet": "角色-女",
     "row": 4120,

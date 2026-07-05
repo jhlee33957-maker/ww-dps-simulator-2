@@ -130,6 +130,8 @@ Halo of Starry Radiance 5-set is implemented for Mornye user profile `mornye_use
 - Max stacks: 1.
 - Retrigger behavior: refresh duration and recalculate value.
 
+Field-creating Mornye actions receive the Halo 5-set buff on their own damage in the current action-level approximation, `same_action_field_creation_approximation`. The Syntony Field Off-Tune +0.5 support-stat buff is applied before calculating the same-action Halo value.
+
 The Halo 5-set buff is team ATK%, so it benefits ATK-scaling party members such as Aemeath. It does not increase Mornye DEF-scaling damage. The 2-set Healing Bonus is metadata only for current DPS. Full healing amount calculation, exact heal tick scheduling, defensive survival value, full automatic Syntony Field damage scheduling, and High Syntony Field Off-Tune inheritance remain unsupported/unresolved.
 
 PPO should be retrained only after Mornye `mornye_heal_event_mode` / field proxy behavior is finalized. No PPO training was performed for this patch.

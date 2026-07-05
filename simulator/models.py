@@ -447,6 +447,9 @@ class ActionResult(BaseModel):
     team_heal_event_triggered: bool = False
     halo_of_starry_radiance_5set_active: bool = False
     halo_of_starry_radiance_5set_atk_percent_bonus: float = 0.0
+    halo_of_starry_radiance_5set_applied_before_field_creation_damage: bool = False
+    halo_of_starry_radiance_5set_same_action_application: bool = False
+    halo_of_starry_radiance_5set_application_timing: str | None = None
     halo_of_starry_radiance_5set_unavailable_reason: str | None = None
     emitted_mechanic_event_tags: list[str] = Field(default_factory=list)
     mechanic_event_triggered: bool = False
@@ -652,6 +655,9 @@ class TimelineEntry(BaseModel):
     team_heal_event_triggered: bool = False
     halo_of_starry_radiance_5set_active: bool = False
     halo_of_starry_radiance_5set_atk_percent_bonus: float = 0.0
+    halo_of_starry_radiance_5set_applied_before_field_creation_damage: bool = False
+    halo_of_starry_radiance_5set_same_action_application: bool = False
+    halo_of_starry_radiance_5set_application_timing: str | None = None
     halo_of_starry_radiance_5set_unavailable_reason: str | None = None
     emitted_mechanic_event_tags: list[str] = Field(default_factory=list)
     mechanic_event_triggered: bool = False

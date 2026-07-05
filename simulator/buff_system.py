@@ -113,6 +113,7 @@ def get_active_buffs_for_action(
     buffs: dict[str, BuffData],
     *,
     time_offset: float = 0.0,
+    force_active_buff_ids: set[str] | None = None,
 ) -> list[tuple[ActiveBuff, BuffData]]:
     character = CharacterData(
         id=actor_character_id,
@@ -121,8 +122,9 @@ def get_active_buffs_for_action(
         concerto_energy=0.0,
     )
     active_pairs: list[tuple[ActiveBuff, BuffData]] = []
+    forced_ids = force_active_buff_ids or set()
     for active in state.active_buffs:
-        if active.remaining_duration <= time_offset:
+        if active.remaining_duration <= time_offset and active.buff_id not in forced_ids:
             continue
         buff = buffs[active.buff_id]
         if not _buff_applies(buff, active, character, state):
@@ -140,6 +142,7 @@ def damage_amp_for_action(
     buffs: dict[str, BuffData],
     *,
     time_offset: float = 0.0,
+    force_active_buff_ids: set[str] | None = None,
 ) -> float:
     damage_amp = 0.0
     for active, buff in get_active_buffs_for_action(
@@ -148,6 +151,7 @@ def damage_amp_for_action(
         state,
         buffs,
         time_offset=time_offset,
+        force_active_buff_ids=force_active_buff_ids,
     ):
         buff_value = float(active.metadata.get("dynamic_value", buff.value))
         damage_amp += buff.damage_amp_modifiers.get("all", 0.0)
@@ -204,6 +208,7 @@ def support_stat_context(
     buffs: dict[str, BuffData],
     *,
     time_offset: float = 0.0,
+    force_active_buff_ids: set[str] | None = None,
 ) -> dict[str, Any]:
     support_stats = normalize_support_stats(character.support_stats)
     base_off_tune = float(support_stats.get("off_tune_buildup_rate", 1.0) or 1.0)
@@ -211,9 +216,10 @@ def support_stat_context(
     syntony_bonus = 0.0
     c2_bonus_active = False
     active_support_buffs: list[str] = []
+    forced_ids = force_active_buff_ids or set()
 
     for active in state.active_buffs:
-        if active.remaining_duration <= time_offset:
+        if active.remaining_duration <= time_offset and active.buff_id not in forced_ids:
             continue
         buff = buffs.get(active.buff_id)
         if buff is None:
@@ -247,10 +253,17 @@ def buffed_combat_stats(
     state: CombatState,
     buffs: dict[str, BuffData],
     time_offset: float = 0.0,
+    force_active_buff_ids: set[str] | None = None,
 ) -> dict[str, float]:
     stats = {
         **stat_component_log_fields(character),
-        **support_stat_context(character, state, buffs, time_offset=time_offset),
+        **support_stat_context(
+            character,
+            state,
+            buffs,
+            time_offset=time_offset,
+            force_active_buff_ids=force_active_buff_ids,
+        ),
         "atk_percent": character.static_atk_percent + character.runtime_atk_percent_bonus,
         "flat_atk": character.static_flat_atk + character.runtime_flat_atk_bonus,
         "dmg_bonus": character.dmg_bonus,
@@ -269,9 +282,10 @@ def buffed_combat_stats(
         "halo_of_starry_radiance_5set_atk_percent_bonus": 0.0,
     }
     active_buff_names: list[str] = []
+    forced_ids = force_active_buff_ids or set()
 
     for active in state.active_buffs:
-        if active.remaining_duration <= time_offset:
+        if active.remaining_duration <= time_offset and active.buff_id not in forced_ids:
             continue
         buff = buffs[active.buff_id]
         if not _buff_applies(buff, active, character, state):

@@ -25,6 +25,7 @@ from simulator.echo_sets import (
     apply_mornye_halo_of_starry_radiance_5set_event_buff,
     apply_syntony_field_off_tune_buff,
     echo_set_active_buff_ids,
+    merge_echo_set_logs,
     halo_of_starry_radiance_config,
     halo_of_starry_radiance_enabled,
     halo_of_starry_radiance_uptime_seconds,
@@ -271,6 +272,10 @@ class Simulation:
 
         self._apply_pre_transition_events(transition_resolution)
         pre_action_echo_set_log_fields = self._apply_mornye_syntony_field_uptime_heal_proxy(action)
+        pre_action_echo_set_log_fields = merge_echo_set_logs(
+            pre_action_echo_set_log_fields,
+            self._apply_mornye_same_action_field_creation_halo(action),
+        )
         transition_actor_character_id = (action.mechanic_effects or {}).get("transition_actor_character_id")
         actor_character_id = (
             str(transition_actor_character_id)
@@ -516,17 +521,93 @@ class Simulation:
         log["mornye_heal_proxy_implementation_status"] = "simplified_field_uptime_heal_proxy"
         return log
 
+    def _apply_mornye_same_action_field_creation_halo(self, action: ActionData) -> dict[str, Any]:
+        effects = action.mechanic_effects or {}
+        actor_character_id = str(effects.get("transition_actor_character_id") or action.character_id or "")
+        if actor_character_id != "mornye" or "mornye" not in self.characters:
+            return {}
+        if not self._action_deals_damage(action):
+            return {}
+        mode = self._mornye_heal_event_mode()
+        if mode not in {"field_creation_only", "simplified_syntony_field_uptime"}:
+            return {
+                "mornye_heal_event_mode": mode,
+                "halo_of_starry_radiance_5set_unavailable_reason": "mornye_heal_event_mode_disabled",
+            }
+        heal_mode_support = set(str(item) for item in effects.get("heal_event_mode_support", []))
+        if heal_mode_support and mode not in heal_mode_support:
+            return {}
+        if TEAM_HEAL_EVENT_TAG not in set(action.mechanic_event_tags or []) and effects.get("team_heal_event_tag") != TEAM_HEAL_EVENT_TAG:
+            return {}
+        if not halo_of_starry_radiance_enabled(self.characters.get("mornye")):
+            return {
+                "mornye_heal_event_mode": mode,
+                "team_heal_event_triggered": True,
+                "halo_of_starry_radiance_5set_unavailable_reason": "mornye_halo_5set_not_enabled",
+            }
+
+        syntony_duration = effects.get("syntony_field_duration", effects.get("set_syntony_field_remaining"))
+        high_syntony_heal_metadata = bool(effects.get("upgrade_syntony_to_high") or effects.get("high_syntony_field_duration"))
+        emits_team_heal_proxy = syntony_duration is not None or high_syntony_heal_metadata
+        if not emits_team_heal_proxy:
+            return {}
+
+        log_updates: dict[str, Any] = {
+            "mornye_constellation": self._mornye_constellation(),
+            "mornye_heal_event_mode": mode,
+        }
+        if syntony_duration is not None:
+            log_updates.update(
+                apply_syntony_field_off_tune_buff(
+                    state=self.state,
+                    source_character_id="mornye",
+                    duration=float(syntony_duration),
+                    constellation=self._mornye_constellation(),
+                    application_time=self.state.current_time,
+                )
+            )
+        elif high_syntony_heal_metadata:
+            log_updates["high_syntony_field_healing_metadata_present"] = True
+            log_updates["high_syntony_field_off_tune_bonus_status"] = "unresolved_not_applied"
+
+        log_updates.update(
+            apply_mornye_halo_of_starry_radiance_5set_event_buff(
+                source_character_id="mornye",
+                emitted_event_tags=[TEAM_HEAL_EVENT_TAG],
+                characters=self.characters,
+                state=self.state,
+                buffs=self.buffs,
+                application_time=self.state.current_time,
+                event_source=(
+                    "field_creation_only"
+                    if mode == "field_creation_only"
+                    else "simplified_syntony_field_creation_proxy"
+                ),
+                applied_before_field_creation_damage=True,
+            )
+        )
+        return log_updates
+
+    def _action_deals_damage(self, action: ActionData) -> bool:
+        for hit in action.effective_hits():
+            if hit.damage_category == "normal" and hit.damage_multiplier > 0.0:
+                return True
+            if hit.damage_category == "tune_break" and hit.tune_break_multiplier > 0.0:
+                return True
+        return False
+
     def _apply_mornye_post_action_support_events(self, action: ActionData, result) -> None:
         if action.character_id != "mornye" and (action.mechanic_effects or {}).get("transition_actor_character_id") != "mornye":
             return
         effects = action.mechanic_effects or {}
         mode = self._mornye_heal_event_mode()
+        same_action_halo_applied = bool(result.halo_of_starry_radiance_5set_same_action_application)
         log_updates: dict[str, Any] = {
             "mornye_constellation": self._mornye_constellation(),
             "mornye_heal_event_mode": mode,
         }
         syntony_duration = effects.get("syntony_field_duration", effects.get("set_syntony_field_remaining"))
-        if syntony_duration is not None:
+        if syntony_duration is not None and not same_action_halo_applied:
             syntony_log = apply_syntony_field_off_tune_buff(
                 state=self.state,
                 source_character_id="mornye",
@@ -542,7 +623,7 @@ class Simulation:
         )
         if mode == "disabled":
             log_updates["halo_of_starry_radiance_5set_unavailable_reason"] = "mornye_heal_event_mode_disabled"
-        elif emits_creation_heal:
+        elif emits_creation_heal and not same_action_halo_applied:
             halo_log = apply_mornye_halo_of_starry_radiance_5set_event_buff(
                 source_character_id="mornye",
                 emitted_event_tags=[TEAM_HEAL_EVENT_TAG],

@@ -19,6 +19,7 @@ from simulator.simulation import Simulation
 
 
 DATA_DIR = ROOT / "data"
+TIMING_MODE = "same_action_field_creation_approximation"
 
 
 def assert_close(actual: float, expected: float, label: str, tol: float = 1e-8) -> None:
@@ -127,10 +128,54 @@ def test_syntony_cap_expiry_refresh_and_no_healing_damage() -> None:
     assert all(float(event.get("damage_added", 0.0)) == 0.0 for event in sim.state.mechanic_event_log)
 
 
+def test_field_creation_same_action_timing() -> None:
+    for heal_mode in ("field_creation_only", "simplified_syntony_field_uptime"):
+        sim = make_sim(heal_mode=heal_mode)
+        sim.characters["mornye"].energy_regen = 9.0
+        sim.state.character_states["mornye"]["rest_mass_energy"] = 100.0
+        assert sim.execute_action("mornye_heavy_attack")
+        row = sim.timeline[-1]
+        damage_log = sim.state.damage_log[-1]
+        assert row.resolved_action_id == "mornye_heavy_geopotential_shift"
+        assert row.team_heal_event_triggered is True
+        assert row.halo_of_starry_radiance_5set_applied_before_field_creation_damage is True
+        assert row.halo_of_starry_radiance_5set_same_action_application is True
+        assert row.halo_of_starry_radiance_5set_application_timing == TIMING_MODE
+        assert_close(row.current_off_tune_buildup_rate, 1.5, f"{heal_mode} current Off-Tune")
+        assert_close(row.halo_of_starry_radiance_5set_atk_percent_bonus, 0.25, f"{heal_mode} Halo cap")
+        assert_close(row.runtime_atk_percent_bonus, 0.25, f"{heal_mode} runtime ATK")
+        assert row.syntony_field_off_tune_bonus_active is True
+        assert MORNYE_HALO_OF_STARRY_RADIANCE_5SET_BUFF_ID in row.echo_set_triggered_buff_ids
+        assert damage_log["halo_of_starry_radiance_5set_same_action_application"] is True
+        assert damage_log["halo_of_starry_radiance_5set_application_timing"] == TIMING_MODE
+        for detail in row.hit_details:
+            if detail.get("hit_damage_category") != "normal":
+                continue
+            assert detail["halo_of_starry_radiance_5set_applied_before_field_creation_damage"] is True
+            assert detail["halo_of_starry_radiance_5set_same_action_application"] is True
+            assert detail["halo_of_starry_radiance_5set_application_timing"] == TIMING_MODE
+            assert_close(detail["current_off_tune_buildup_rate"], 1.5, "hit current Off-Tune")
+            assert_close(detail["halo_of_starry_radiance_5set_atk_percent_bonus"], 0.25, "hit Halo cap")
+
+    disabled = make_sim(heal_mode="disabled")
+    disabled.state.character_states["mornye"]["rest_mass_energy"] = 100.0
+    assert disabled.execute_action("mornye_heavy_attack")
+    disabled_row = disabled.timeline[-1]
+    assert disabled_row.halo_of_starry_radiance_5set_same_action_application is False
+    assert disabled_row.halo_of_starry_radiance_5set_applied_before_field_creation_damage is False
+
+    non_trigger = make_sim(heal_mode="field_creation_only")
+    assert non_trigger.execute_action("mornye_basic_attack")
+    non_trigger_row = non_trigger.timeline[-1]
+    assert non_trigger_row.team_heal_event_triggered is False
+    assert non_trigger_row.halo_of_starry_radiance_5set_same_action_application is False
+
+
 def main() -> None:
     test_data_and_formula()
     test_runtime_application_and_scaling_scope()
     test_syntony_cap_expiry_refresh_and_no_healing_damage()
+    test_field_creation_same_action_timing()
     print("mornye_halo_of_starry_radiance_5set_runtime_buff_smoke_test ok")
 
 

@@ -4,6 +4,8 @@ Default Off-Tune Buildup Rate is treated as 100% = 1.0 per user confirmation. Th
 
 Workbook row `角色-女!D4122` confirms Syntony Field grants all party members Off-Tune Buildup Rate +50%, with an additional +20% when C2 is unlocked. The C2 bonus is disabled by default and applies only when `mornye_constellation >= 2`.
 
+For field-creating Mornye actions that emit the simplified team-heal proxy, the Syntony Field Off-Tune +0.5 support-stat buff is applied before calculating the Halo of Starry Radiance 5-set ATK% value for that same action-level damage approximation.
+
 Energy Regen is not Off-Tune Buildup Rate and is not used as a fallback for this stat.
 
 The simplified Syntony Field healing proxy is based on workbook row `角色-女!D4120`, which records a healing check every 180F / 3 seconds during Syntony Field duration. The simulator uses field uptime at action boundaries as a DPS-evaluation proxy; exact healing amount and exact tick timing are not modeled.

@@ -11,6 +11,10 @@
   "duration": 4.0,
   "max_stacks": 1,
   "stacking_rule": "refresh_duration",
+  "trigger_damage_receives_buff": true,
+  "field_creation_damage_receives_buff": true,
+  "implementation_timing_mode": "same_action_field_creation_approximation",
+  "obsolete_previous_timing_rule": "previous implementation applied Halo after field-creating actions; corrected so field-creating action damage receives the buff.",
   "trigger_event_tags": [
     "team_heal"
   ],

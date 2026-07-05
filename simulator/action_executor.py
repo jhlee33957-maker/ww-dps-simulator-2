@@ -122,13 +122,20 @@ def _calculate_hit_damage(
     characters: dict[str, CharacterData],
     buffs: dict[str, BuffData],
     temporary_stat_modifiers: dict[str, float] | None = None,
+    force_active_buff_ids: set[str] | None = None,
 ) -> tuple[float, dict]:
     transition_damage_action = bool((action.mechanic_effects or {}).get("transition_action"))
     if action.character_id is None or (action.action_type == "swap" and not transition_damage_action):
         return 0.0, {}
 
     character = characters[action.character_id]
-    stats = buffed_combat_stats(character, state, buffs, time_offset=hit.time)
+    stats = buffed_combat_stats(
+        character,
+        state,
+        buffs,
+        time_offset=hit.time,
+        force_active_buff_ids=force_active_buff_ids,
+    )
     for stat_name, stat_value in (temporary_stat_modifiers or {}).items():
         if stat_name == "atk_percent":
             stats["runtime_atk_percent_bonus"] += float(stat_value)
@@ -146,7 +153,14 @@ def _calculate_hit_damage(
         elif stat_name in stats:
             stats[stat_name] += float(stat_value)
     _recalculate_attack_stats(stats)
-    damage_amp = damage_amp_for_action(action.character_id, action, state, buffs, time_offset=hit.time)
+    damage_amp = damage_amp_for_action(
+        action.character_id,
+        action,
+        state,
+        buffs,
+        time_offset=hit.time,
+        force_active_buff_ids=force_active_buff_ids,
+    )
     damage_bonus_context = damage_bonus_breakdown(
         character,
         action,
@@ -221,6 +235,9 @@ def _calculate_hit_damage(
         "halo_of_starry_radiance_5set_atk_percent_bonus": float(
             stats.get("halo_of_starry_radiance_5set_atk_percent_bonus", 0.0) or 0.0
         ),
+        "halo_of_starry_radiance_5set_applied_before_field_creation_damage": False,
+        "halo_of_starry_radiance_5set_same_action_application": False,
+        "halo_of_starry_radiance_5set_application_timing": None,
         "aemeath_trailblazing_star_5set_applied_before_triggering_damage": False,
         "trailblazing_star_5set_same_action_application": False,
         "trailblazing_star_5set_application_timing": None,
@@ -245,6 +262,7 @@ def _calculate_hit_damage_totals(
     truncated_by_combat_limit: bool,
     action_damage_multiplier: float = 1.0,
     temporary_stat_modifiers: dict[str, float] | None = None,
+    force_active_buff_ids: set[str] | None = None,
 ) -> tuple[float, float, list[dict], dict[str, float], float, dict[str, Any]]:
     normal_damage = 0.0
     tune_break_damage = 0.0
@@ -257,7 +275,15 @@ def _calculate_hit_damage_totals(
     for hit in sorted(action.effective_hits(), key=lambda item: item.time):
         if hit.time > action_time:
             continue
-        damage, detail = _calculate_hit_damage(hit, action, state, characters, buffs, temporary_stat_modifiers)
+        damage, detail = _calculate_hit_damage(
+            hit,
+            action,
+            state,
+            characters,
+            buffs,
+            temporary_stat_modifiers,
+            force_active_buff_ids=force_active_buff_ids,
+        )
         if damage > 0.0 and action_damage_multiplier != 1.0:
             damage *= action_damage_multiplier
             detail["damage"] = damage
@@ -310,6 +336,9 @@ def _calculate_hit_damage_totals(
                         *support_stat_log_fields(detail).keys(),
                         "halo_of_starry_radiance_5set_active",
                         "halo_of_starry_radiance_5set_atk_percent_bonus",
+                        "halo_of_starry_radiance_5set_applied_before_field_creation_damage",
+                        "halo_of_starry_radiance_5set_same_action_application",
+                        "halo_of_starry_radiance_5set_application_timing",
                     )
                 }
                 action_damage_bonus_context["damage_category"] = action_damage_bonus_context.get("damage_category") or "other"
@@ -373,6 +402,16 @@ def _sync_hit_detail_runtime_event_logs(
             "trailblazing_star_5set_application_timing"
         ),
         "team_heal_event_triggered": bool(echo_set_log_fields.get("team_heal_event_triggered", False)),
+        "mornye_heal_event_mode": echo_set_log_fields.get("mornye_heal_event_mode"),
+        "halo_of_starry_radiance_5set_applied_before_field_creation_damage": bool(
+            echo_set_log_fields.get("halo_of_starry_radiance_5set_applied_before_field_creation_damage", False)
+        ),
+        "halo_of_starry_radiance_5set_same_action_application": bool(
+            echo_set_log_fields.get("halo_of_starry_radiance_5set_same_action_application", False)
+        ),
+        "halo_of_starry_radiance_5set_application_timing": echo_set_log_fields.get(
+            "halo_of_starry_radiance_5set_application_timing"
+        ),
         "halo_of_starry_radiance_5set_unavailable_reason": echo_set_log_fields.get(
             "halo_of_starry_radiance_5set_unavailable_reason"
         ),
@@ -493,6 +532,10 @@ def execute_action(
             ),
         )
 
+    force_active_buff_ids: set[str] = set()
+    if echo_set_log_fields.get("halo_of_starry_radiance_5set_same_action_application"):
+        force_active_buff_ids.add(MORNYE_HALO_OF_STARRY_RADIANCE_5SET_BUFF_ID)
+
     # Damage events use an action-start state snapshot. Trailblazing Star 5-set is
     # pre-applied for same-action trigger damage; other action-applied buffs and
     # anomalies are added after action_time and affect later actions only.
@@ -515,6 +558,7 @@ def execute_action(
         truncated_by_combat_limit=truncated_by_combat_limit,
         action_damage_multiplier=action_damage_multiplier,
         temporary_stat_modifiers=temporary_stat_modifiers,
+        force_active_buff_ids=force_active_buff_ids,
     )
     direct_damage = normal_damage + tune_break_damage
     mechanic_event_log_fields = process_mechanic_event_triggers(
@@ -564,6 +608,16 @@ def execute_action(
     profile_implementation_status = action_damage_bonus_context.get("implementation_status")
     if "implementation_status" not in mechanic_log_fields:
         mechanic_log_fields["implementation_status"] = profile_implementation_status
+    support_log_fields = support_stat_log_fields(action_damage_bonus_context)
+    for key in tuple(support_log_fields):
+        if key in echo_set_log_fields:
+            if support_log_fields[key] in (None, False, 0, 0.0):
+                support_log_fields[key] = echo_set_log_fields[key]
+    echo_set_result_log_fields = {
+        key: value
+        for key, value in echo_set_log_fields.items()
+        if key not in support_log_fields
+    }
 
     result = ActionResult(
         action_id=action.id,
@@ -613,10 +667,10 @@ def execute_action(
         scaling_value=float(action_damage_bonus_context.get("scaling_value") or 0.0),
         stat_component_source=action_damage_bonus_context.get("stat_component_source"),
         **stat_component_log_fields(action_damage_bonus_context),
-        **support_stat_log_fields(action_damage_bonus_context),
+        **support_log_fields,
         profile_completeness_status=action_damage_bonus_context.get("profile_completeness_status"),
         **mechanic_event_log_fields,
-        **echo_set_log_fields,
+        **echo_set_result_log_fields,
         aemeath_trailblazing_star_5set_active=AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID in active_buff_ids,
         halo_of_starry_radiance_5set_active=bool(
             action_damage_bonus_context.get(
@@ -656,7 +710,12 @@ def execute_action(
                 **mechanic_event_log_fields,
                 **echo_set_log_fields,
                 "aemeath_trailblazing_star_5set_active": AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID in active_buff_ids,
-                "halo_of_starry_radiance_5set_active": MORNYE_HALO_OF_STARRY_RADIANCE_5SET_BUFF_ID in active_buff_ids,
+                "halo_of_starry_radiance_5set_active": bool(
+                    action_damage_bonus_context.get(
+                        "halo_of_starry_radiance_5set_active",
+                        MORNYE_HALO_OF_STARRY_RADIANCE_5SET_BUFF_ID in active_buff_ids,
+                    )
+                ),
                 "active_buff_ids": active_buff_ids,
                 "combat_time_start": combat_start_time,
                 "combat_time_end": state.combat_time,
@@ -752,6 +811,11 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         team_heal_event_triggered=result.team_heal_event_triggered,
         halo_of_starry_radiance_5set_active=result.halo_of_starry_radiance_5set_active,
         halo_of_starry_radiance_5set_atk_percent_bonus=result.halo_of_starry_radiance_5set_atk_percent_bonus,
+        halo_of_starry_radiance_5set_applied_before_field_creation_damage=(
+            result.halo_of_starry_radiance_5set_applied_before_field_creation_damage
+        ),
+        halo_of_starry_radiance_5set_same_action_application=result.halo_of_starry_radiance_5set_same_action_application,
+        halo_of_starry_radiance_5set_application_timing=result.halo_of_starry_radiance_5set_application_timing,
         halo_of_starry_radiance_5set_unavailable_reason=result.halo_of_starry_radiance_5set_unavailable_reason,
         active_anomalies_after=result.active_anomalies_after,
         active_buffs=result.active_buffs,

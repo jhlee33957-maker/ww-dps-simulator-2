@@ -58,6 +58,9 @@ def echo_set_base_log_fields() -> dict[str, Any]:
         "trailblazing_star_5set_same_action_application": False,
         "trailblazing_star_5set_application_timing": None,
         "team_heal_event_triggered": False,
+        "halo_of_starry_radiance_5set_applied_before_field_creation_damage": False,
+        "halo_of_starry_radiance_5set_same_action_application": False,
+        "halo_of_starry_radiance_5set_application_timing": None,
         "halo_of_starry_radiance_5set_unavailable_reason": None,
     }
 
@@ -182,6 +185,7 @@ def apply_mornye_halo_of_starry_radiance_5set_event_buff(
     buffs: dict[str, BuffData],
     application_time: float,
     event_source: str,
+    applied_before_field_creation_damage: bool = False,
 ) -> dict[str, Any]:
     log = echo_set_base_log_fields()
     if source_character_id != "mornye" or TEAM_HEAL_EVENT_TAG not in set(emitted_event_tags):
@@ -235,6 +239,13 @@ def apply_mornye_halo_of_starry_radiance_5set_event_buff(
             "echo_set_triggered_buff_ids": [buff_id],
             "echo_set_buff_refreshed": was_active,
             "team_heal_event_triggered": True,
+            "halo_of_starry_radiance_5set_applied_before_field_creation_damage": bool(
+                applied_before_field_creation_damage
+            ),
+            "halo_of_starry_radiance_5set_same_action_application": bool(applied_before_field_creation_damage),
+            "halo_of_starry_radiance_5set_application_timing": (
+                "same_action_field_creation_approximation" if applied_before_field_creation_damage else None
+            ),
             "halo_of_starry_radiance_5set_unavailable_reason": None,
         }
     )
