@@ -567,7 +567,10 @@
     "mechanic_effects": {
       "relative_momentum_delta": 18,
       "set_wfo_combo_stage": 1,
-      "source_character_name": "莫宁"
+      "source_character_name": "莫宁",
+      "passive_concerto_source": "角色-女!4164",
+      "passive_concerto_gain": 20,
+      "relative_momentum_gain_source_rows": [4132, 4133]
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame rows 4131-4134 and skill rows 2660-2663. Passive note grants 20 Concerto after QTE/Observation A3."
@@ -710,7 +713,13 @@
     "mechanic_effects": {
       "consume_relative_momentum": true,
       "observation_marker_duration": 30,
-      "source_character_name": "莫宁"
+      "source_character_name": "莫宁",
+      "source_sheet": "角色-女",
+      "source_rows": [4135, 4136],
+      "time_dilation_type": "时停",
+      "has_global_time_stop": false,
+      "combat_time_cost_source": "No 全局时停 row for 观测重击; use 78F / 60",
+      "source_status": "not_source_confirmed_direct_interfered"
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame rows 4135-4136 and skill row 2664. Applies Observation Marker metadata only."
@@ -839,7 +848,13 @@
     "policy_selectable": false,
     "mechanic_effects": {
       "relative_momentum_delta": 60,
-      "source_character_name": "莫宁"
+      "source_character_name": "莫宁",
+      "source_sheet": "角色-女",
+      "source_rows": [4143, 4144, 4145, 4146, 4147],
+      "distributed_array_base_concerto_gain": 10,
+      "distributed_array_relative_momentum_gain_per_hit": [15, 15, 15, 15],
+      "distributed_array_relative_momentum_gain_total": 60,
+      "relative_momentum_gain_source_rows": [4144, 4145, 4146, 4147]
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame rows 4143-4147 and skill rows 2666-2669. Concerto regen 10."
@@ -851,7 +866,7 @@
     "action_type": "resonance_liberation",
     "duration": 4.9333,
     "action_time": 4.9333,
-    "combat_time_cost": 4.9333,
+    "combat_time_cost": 0.0,
     "cooldown": 25,
     "resonance_energy_gain": 0,
     "concerto_energy_gain": 20,
@@ -878,7 +893,13 @@
       "upgrade_syntony_to_high": true,
       "high_syntony_field_duration": 25,
       "energy_regen_scaling_metadata_only": true,
-      "source_character_name": "莫宁"
+      "source_character_name": "莫宁",
+      "source_sheet": "角色-女",
+      "source_rows": [4150, 4151, 4153, 4154],
+      "global_time_stop_frames": 300,
+      "damage_end_frame": 296,
+      "combat_time_cost_source": "大招-全局时停 covers damage end frame",
+      "has_global_time_stop": true
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame rows 4150-4154 and skill row 2671. Energy Regen crit scaling is metadata-only in v1."
@@ -1012,7 +1033,7 @@
     "combat_time_cost": 1.7,
     "cooldown": 0,
     "resonance_energy_gain": 0,
-    "concerto_energy_gain": 10,
+    "concerto_energy_gain": 30,
     "resonance_energy_cost": 0,
     "hits": [
       {
@@ -1034,11 +1055,20 @@
     "policy_selectable": false,
     "mechanic_effects": {
       "transition_only": true,
-      "timing_is_placeholder": true,
-      "source_character_name": "莫宁"
+      "timing_is_placeholder": false,
+      "source_character_name": "莫宁",
+      "source_sheet": "角色-女",
+      "source_rows": [4148, 4149, 4164],
+      "has_global_time_stop": false,
+      "time_dilation_type": "时停",
+      "base_concerto_gain": 10,
+      "passive_concerto_gain": 20,
+      "final_concerto_gain": 30,
+      "passive_concerto_source": "角色-女!4164",
+      "combat_time_cost_source": "QTE has 时停 but no 全局时停 row; use 102F / 60"
     },
     "data_status": "transition_review_only_v1",
-    "notes": "Intro/QTE convergence data from workbook skill row 2670. State effects are recorded in data/transition_actions.json and not auto-applied by default."
+    "notes": "Intro/QTE convergence data from workbook rows 4148-4149 plus passive row 4164. State effects are recorded in data/transition_actions.json and not auto-applied by default."
   },
   {
     "id": "mornye_outro_recursion",

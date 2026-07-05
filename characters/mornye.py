@@ -134,7 +134,7 @@ class MornyeMechanic(CharacterMechanic):
         }
 
     def get_action_log_fields(self, state: Any, action: Any, characters: dict[str, Any] | None = None) -> dict[str, Any]:
-        fields: dict[str, Any] = {}
+        fields: dict[str, Any] = self._source_action_log_fields(action)
         if action.id == MORNYE_LIBERATION_ACTION_ID and self._energy_regen_scaling_enabled(state):
             character_data = (characters or {}).get(self.character_id)
             crit_rate_bonus, crit_dmg_bonus = get_liberation_crit_bonuses(self._state(state), character_data)
@@ -152,6 +152,78 @@ class MornyeMechanic(CharacterMechanic):
         }:
             fields.update(self._resonance_skill_route_log_fields(state, action))
         return fields
+
+    def _source_action_log_fields(self, action: Any) -> dict[str, Any]:
+        action_id = str(getattr(action, "id", ""))
+        effects = getattr(action, "mechanic_effects", {}) or {}
+        transition_action_id = str(effects.get("transition_action_id") or "")
+        if action_id == MORNYE_LIBERATION_ACTION_ID:
+            return {
+                "source_sheet": "角色-女",
+                "source_rows": [4150, 4151, 4153, 4154],
+                "has_global_time_stop": True,
+                "global_time_stop_frames": 300.0,
+                "combat_time_cost_source": "大招-全局时停 covers damage end frame",
+                "base_concerto_gain": 20.0,
+                "passive_concerto_gain": 0.0,
+                "final_concerto_gain": 20.0,
+                "time_dilation_type": "全局时停",
+                "source_status": "source_confirmed_global_time_stop",
+            }
+        if action_id == MORNYE_HEAVY_INVERSION_ACTION_ID:
+            return {
+                "source_sheet": "角色-女",
+                "source_rows": [4135, 4136],
+                "has_global_time_stop": False,
+                "global_time_stop_frames": None,
+                "combat_time_cost_source": "No 全局时停 row for 观测重击; use 78F / 60",
+                "relative_momentum_gain": -100.0,
+                "relative_momentum_gain_source_rows": [4135],
+                "time_dilation_type": "时停",
+                "source_status": "not_source_confirmed_direct_interfered",
+            }
+        if action_id == MORNYE_DISTRIBUTED_ARRAY_ACTION_ID:
+            return {
+                "source_sheet": "角色-女",
+                "source_rows": [4143, 4144, 4145, 4146, 4147],
+                "distributed_array_base_concerto_gain": 10.0,
+                "distributed_array_relative_momentum_gain_per_hit": [15.0, 15.0, 15.0, 15.0],
+                "distributed_array_relative_momentum_gain_total": 60.0,
+                "base_concerto_gain": 10.0,
+                "passive_concerto_gain": 0.0,
+                "final_concerto_gain": 10.0,
+                "relative_momentum_gain": 60.0,
+                "relative_momentum_gain_source_rows": [4144, 4145, 4146, 4147],
+                "source_status": "source_confirmed_action_data_resource_gain",
+            }
+        if action_id == "mornye_wfo_basic_stage_3":
+            return {
+                "source_sheet": "角色-女",
+                "source_rows": [4131, 4132, 4133, 4134, 4164],
+                "base_concerto_gain": 0.0,
+                "passive_concerto_gain": 20.0,
+                "final_concerto_gain": 20.0,
+                "passive_concerto_source": "角色-女!4164 passive text: 施放QTE、观测A3后，获得20点协奏能量",
+                "relative_momentum_gain": 18.0,
+                "relative_momentum_gain_source_rows": [4132, 4133],
+                "source_status": "source_confirmed_passive_concerto",
+            }
+        if transition_action_id == "mornye_intro_convergence" or action_id == "transition:mornye_intro_convergence":
+            return {
+                "source_sheet": "角色-女",
+                "source_rows": [4148, 4149, 4164],
+                "has_global_time_stop": False,
+                "global_time_stop_frames": None,
+                "combat_time_cost_source": "QTE has 时停 but no 全局时停 row; use 102F / 60",
+                "base_concerto_gain": 10.0,
+                "passive_concerto_gain": 20.0,
+                "final_concerto_gain": 30.0,
+                "passive_concerto_source": "角色-女!4164 passive text: 施放QTE、观测A3后，获得20点协奏能量",
+                "relative_momentum_gain": 0.0,
+                "time_dilation_type": "时停",
+                "source_status": "source_confirmed_passive_concerto",
+            }
+        return {}
 
     def resolve_incoming_qte_transition_action(
         self,
@@ -393,6 +465,8 @@ class MornyeMechanic(CharacterMechanic):
         amp = get_interfered_damage_amp(data)
         result.mornye_interfered_marker_mode = mode
         result.mornye_interfered_amp = amp
+        result.implementation_status = "simplified_on_inversion" if mode == "simplified_on_inversion" else result.implementation_status
+        result.source_status = "not_source_confirmed_direct_interfered"
         data["mornye_interfered_marker_mode"] = mode
         data["mornye_interfered_marker_active"] = False
         if mode == "disabled":

@@ -102,7 +102,15 @@ def test_c_enabled_mornye_intro() -> None:
     assert row.fallback_swap_used is False
     assert row.outgoing_concerto_consumed is True
     assert row.outgoing_concerto_after == 0.0
-    assert row.concerto_gain == 10.0
+    assert row.concerto_gain == 30.0
+    assert row.base_concerto_gain == 10.0
+    assert row.passive_concerto_gain == 20.0
+    assert row.final_concerto_gain == 30.0
+    assert (row.passive_concerto_source or "").startswith("角色-女!4164")
+    assert row.has_global_time_stop is False
+    assert row.time_dilation_type == "时停"
+    assert row.source_sheet == "角色-女"
+    assert row.source_rows == [4148, 4149, 4164]
     assert state["mode"] == "wide_field_observation"
     assert state["rest_mass_energy"] == 0.0
     assert_close(state["wide_field_observation_remaining"], 30.0, "WFO remaining")
@@ -166,12 +174,17 @@ def test_g_transition_action_registry() -> None:
     assert_close(float(record["action_time"]), 1.7, "registry action_time")
     assert_close(float(record["combat_time_cost"]), 1.7, "registry combat_time_cost")
     assert record["hits"] == [2.0279]
-    assert record["concerto_energy_gain"] == 10
+    assert record["concerto_energy_gain"] == 30
     effects = record["mechanic_effects"]
     assert effects["clear_rest_mass_energy"] is True
     assert effects["set_mode"] == "wide_field_observation"
     assert effects["set_wide_field_observation_remaining"] == 30.0
     assert effects["set_syntony_field_remaining"] == 25.0
+    assert effects["base_concerto_gain"] == 10
+    assert effects["passive_concerto_gain"] == 20
+    assert effects["final_concerto_gain"] == 30
+    assert effects["passive_concerto_source"] == "角色-女!4164"
+    assert effects["has_global_time_stop"] is False
 
 
 def main() -> None:

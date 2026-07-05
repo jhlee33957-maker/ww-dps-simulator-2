@@ -913,7 +913,7 @@ def make_audit_report(audit: dict[str, Any], unresolved_rows: list[dict[str, Any
         f"- Unresolved/review-only rows: {len(unresolved_rows)}.",
         f"- Safe-to-patch candidates emitted: {candidates['safe_to_patch_count']}.",
         "",
-        "This is an audit-only artifact. It does not modify Mornye gameplay values, transition behavior, PPO reward logic, Beam Search, or RL training.",
+        "This is an audit-only artifact. It does not modify Mornye gameplay values, transition behavior, PPO reward logic, or RL training.",
         "",
         "## Current Mornye v1 scope",
         "",

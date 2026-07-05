@@ -1,0 +1,687 @@
+{
+  "workbook": "C:\\Users\\LJH\\Documents\\wwdps\\ww-dps-simulator-2\\data\\source\\鸣潮动作数据汇总.xlsx",
+  "source_table": [
+    {
+      "sheet": "角色-女",
+      "row": 4135,
+      "column": "C",
+      "coordinate": "角色-女!C4135",
+      "header": "动作",
+      "raw_value": "观测重击-时停",
+      "display_value": "观测重击-时停",
+      "interpreted_meaning": "Inversion time-stop setup row"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4135,
+      "column": "V",
+      "coordinate": "角色-女!V4135",
+      "header": "核心回收1",
+      "raw_value": "=0-10000*0.01",
+      "display_value": -100,
+      "interpreted_meaning": "Consumes 100 observation special resource/core"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4135,
+      "column": "AC",
+      "coordinate": "角色-女!AC4135",
+      "header": "时间膨胀类型",
+      "raw_value": "时停",
+      "display_value": "时停",
+      "interpreted_meaning": "Plain time stop, not global time stop"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4135,
+      "column": "AI",
+      "coordinate": "角色-女!AI4135",
+      "header": "膨胀持续",
+      "raw_value": "=INT(1.3*base!$B$2)+ROUND(1.3*base!$B$2-INT(1.3*base!$B$2),0)+(1-1.3>=1-0.5/base!$B$2)",
+      "display_value": 78,
+      "interpreted_meaning": "Enemy time-stop frame value"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4135,
+      "column": "AL",
+      "coordinate": "角色-女!AL4135",
+      "header": "膨胀持续",
+      "raw_value": "=INT(1.3*base!$B$2)+ROUND(1.3*base!$B$2-INT(1.3*base!$B$2),0)+(1-1.3>=1-0.5/base!$B$2)",
+      "display_value": 78,
+      "interpreted_meaning": "Ally time-stop frame value"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4136,
+      "column": "C",
+      "coordinate": "角色-女!C4136",
+      "header": "动作",
+      "raw_value": "观测重击",
+      "display_value": "观测重击",
+      "interpreted_meaning": "Inversion damage row"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4136,
+      "column": "D",
+      "coordinate": "角色-女!D4136",
+      "header": "备注",
+      "raw_value": "=\"脱手后延迟\"&ROUNDUP(0.2*base!$B$2,0)&\"F生效,命中后赋予目标30秒【观测标记】\"",
+      "display_value": "脱手后延迟12F生效,命中后赋予目标30秒【观测标记】",
+      "interpreted_meaning": "Applies Observation Marker text"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4136,
+      "column": "N",
+      "coordinate": "角色-女!N4136",
+      "header": "动作结束帧",
+      "raw_value": "=INT(1.3*base!$B$2)+ROUND(1.3*base!$B$2-INT(1.3*base!$B$2),0)+(1-1.3>=1-0.5/base!$B$2)",
+      "display_value": 78,
+      "interpreted_meaning": "Inversion action end frame"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4148,
+      "column": "C",
+      "coordinate": "角色-女!C4148",
+      "header": "动作",
+      "raw_value": "QTE",
+      "display_value": "QTE",
+      "interpreted_meaning": "QTE setup row"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4148,
+      "column": "D",
+      "coordinate": "角色-女!D4148",
+      "header": "备注",
+      "raw_value": "=\"第\"&ROUND(1.3333334*base!$B$2,0)&\"F前不能切人、不响应输入，第\"&ROUNDUP(0.5862494*base!$B$2,0)&\"F触发上一角色延奏\n第\"&ROUNDUP(1.1381084*base!$B$2,0)&\"F获得30秒观测状态、清空核心\"",
+      "display_value": "第80F前不能切人、不响应输入，第36F触发上一角色延奏\n第69F获得30秒观测状态、清空核心",
+      "interpreted_meaning": "QTE source note contains 80F前不能切人"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4148,
+      "column": "D",
+      "coordinate": "角色-女!D4148",
+      "header": "备注",
+      "raw_value": "=\"第\"&ROUND(1.3333334*base!$B$2,0)&\"F前不能切人、不响应输入，第\"&ROUNDUP(0.5862494*base!$B$2,0)&\"F触发上一角色延奏\n第\"&ROUNDUP(1.1381084*base!$B$2,0)&\"F获得30秒观测状态、清空核心\"",
+      "display_value": "第80F前不能切人、不响应输入，第36F触发上一角色延奏\n第69F获得30秒观测状态、清空核心",
+      "interpreted_meaning": "QTE source note contains 不响应输入"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4148,
+      "column": "D",
+      "coordinate": "角色-女!D4148",
+      "header": "备注",
+      "raw_value": "=\"第\"&ROUND(1.3333334*base!$B$2,0)&\"F前不能切人、不响应输入，第\"&ROUNDUP(0.5862494*base!$B$2,0)&\"F触发上一角色延奏\n第\"&ROUNDUP(1.1381084*base!$B$2,0)&\"F获得30秒观测状态、清空核心\"",
+      "display_value": "第80F前不能切人、不响应输入，第36F触发上一角色延奏\n第69F获得30秒观测状态、清空核心",
+      "interpreted_meaning": "QTE source note contains 69F"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4148,
+      "column": "D",
+      "coordinate": "角色-女!D4148",
+      "header": "备注",
+      "raw_value": "=\"第\"&ROUND(1.3333334*base!$B$2,0)&\"F前不能切人、不响应输入，第\"&ROUNDUP(0.5862494*base!$B$2,0)&\"F触发上一角色延奏\n第\"&ROUNDUP(1.1381084*base!$B$2,0)&\"F获得30秒观测状态、清空核心\"",
+      "display_value": "第80F前不能切人、不响应输入，第36F触发上一角色延奏\n第69F获得30秒观测状态、清空核心",
+      "interpreted_meaning": "QTE source note contains 观测状态"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4148,
+      "column": "D",
+      "coordinate": "角色-女!D4148",
+      "header": "备注",
+      "raw_value": "=\"第\"&ROUND(1.3333334*base!$B$2,0)&\"F前不能切人、不响应输入，第\"&ROUNDUP(0.5862494*base!$B$2,0)&\"F触发上一角色延奏\n第\"&ROUNDUP(1.1381084*base!$B$2,0)&\"F获得30秒观测状态、清空核心\"",
+      "display_value": "第80F前不能切人、不响应输入，第36F触发上一角色延奏\n第69F获得30秒观测状态、清空核心",
+      "interpreted_meaning": "QTE source note contains 清空核心"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4148,
+      "column": "D",
+      "coordinate": "角色-女!D4148",
+      "header": "备注",
+      "raw_value": "=\"第\"&ROUND(1.3333334*base!$B$2,0)&\"F前不能切人、不响应输入，第\"&ROUNDUP(0.5862494*base!$B$2,0)&\"F触发上一角色延奏\n第\"&ROUNDUP(1.1381084*base!$B$2,0)&\"F获得30秒观测状态、清空核心\"",
+      "display_value": "第80F前不能切人、不响应输入，第36F触发上一角色延奏\n第69F获得30秒观测状态、清空核心",
+      "interpreted_meaning": "QTE raw note, including previous Outro trigger frame text"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4148,
+      "column": "U",
+      "coordinate": "角色-女!U4148",
+      "header": "协奏回收",
+      "raw_value": "=0+10",
+      "display_value": 10,
+      "interpreted_meaning": "Base Concerto recovery +10"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4148,
+      "column": "V",
+      "coordinate": "角色-女!V4148",
+      "header": "核心回收1",
+      "raw_value": "=0-10000*0.01",
+      "display_value": -100,
+      "interpreted_meaning": "Clears core/special resource"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4148,
+      "column": "AC",
+      "coordinate": "角色-女!AC4148",
+      "header": "时间膨胀类型",
+      "raw_value": "时停",
+      "display_value": "时停",
+      "interpreted_meaning": "Plain time stop, not global time stop"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4148,
+      "column": "AI",
+      "coordinate": "角色-女!AI4148",
+      "header": "膨胀持续",
+      "raw_value": "=IF(base!$B$3=FALSE,INT(1.3333334*base!$B$2)+ROUND(1.3333334*base!$B$2-INT(1.3333334*base!$B$2),0)+(1-1.3333334>=1-0.5/base!$B$2),0)",
+      "display_value": 80,
+      "interpreted_meaning": "Enemy time-stop frame value"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4148,
+      "column": "AL",
+      "coordinate": "角色-女!AL4148",
+      "header": "膨胀持续",
+      "raw_value": "=IF(base!$B$3=FALSE,INT(1.3333334*base!$B$2)+ROUND(1.3333334*base!$B$2-INT(1.3333334*base!$B$2),0)+(1-1.3333334>=1-0.5/base!$B$2),0)",
+      "display_value": 80,
+      "interpreted_meaning": "Ally time-stop frame value"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4149,
+      "column": "C",
+      "coordinate": "角色-女!C4149",
+      "header": "动作",
+      "raw_value": "QTE-伤害",
+      "display_value": "QTE-伤害",
+      "interpreted_meaning": "QTE damage row"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4149,
+      "column": "N",
+      "coordinate": "角色-女!N4149",
+      "header": "动作结束帧",
+      "raw_value": "=INT(1.7*base!$B$2)+ROUND(1.7*base!$B$2-INT(1.7*base!$B$2),0)+(1-1.7>=1-0.5/base!$B$2)",
+      "display_value": 102,
+      "interpreted_meaning": "QTE damage/action end frame"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4143,
+      "column": "C",
+      "coordinate": "角色-女!C4143",
+      "header": "动作",
+      "raw_value": "E2-分布式阵列",
+      "display_value": "E2-分布式阵列",
+      "interpreted_meaning": "Distributed Array setup row"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4143,
+      "column": "U",
+      "coordinate": "角色-女!U4143",
+      "header": "协奏回收",
+      "raw_value": "=0+10",
+      "display_value": 10,
+      "interpreted_meaning": "Distributed Array base Concerto +10"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4144,
+      "column": "C",
+      "coordinate": "角色-女!C4144",
+      "header": "动作",
+      "raw_value": "E2-1",
+      "display_value": "E2-1",
+      "interpreted_meaning": "E2-1 damage row"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4144,
+      "column": "V",
+      "coordinate": "角色-女!V4144",
+      "header": "核心回收1",
+      "raw_value": "=0+1500*0.01",
+      "display_value": 15,
+      "interpreted_meaning": "E2-1 special resource/core +15"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4145,
+      "column": "C",
+      "coordinate": "角色-女!C4145",
+      "header": "动作",
+      "raw_value": "E2-2",
+      "display_value": "E2-2",
+      "interpreted_meaning": "E2-2 damage row"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4145,
+      "column": "V",
+      "coordinate": "角色-女!V4145",
+      "header": "核心回收1",
+      "raw_value": "=0+1500*0.01",
+      "display_value": 15,
+      "interpreted_meaning": "E2-2 special resource/core +15"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4146,
+      "column": "C",
+      "coordinate": "角色-女!C4146",
+      "header": "动作",
+      "raw_value": "E2-3",
+      "display_value": "E2-3",
+      "interpreted_meaning": "E2-3 damage row"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4146,
+      "column": "V",
+      "coordinate": "角色-女!V4146",
+      "header": "核心回收1",
+      "raw_value": "=0+1500*0.01",
+      "display_value": 15,
+      "interpreted_meaning": "E2-3 special resource/core +15"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4147,
+      "column": "C",
+      "coordinate": "角色-女!C4147",
+      "header": "动作",
+      "raw_value": "E2-4",
+      "display_value": "E2-4",
+      "interpreted_meaning": "E2-4 damage row"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4147,
+      "column": "V",
+      "coordinate": "角色-女!V4147",
+      "header": "核心回收1",
+      "raw_value": "=0+1500*0.01",
+      "display_value": 15,
+      "interpreted_meaning": "E2-4 special resource/core +15"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4150,
+      "column": "C",
+      "coordinate": "角色-女!C4150",
+      "header": "动作",
+      "raw_value": "大招-前置",
+      "display_value": "大招-前置",
+      "interpreted_meaning": "Liberation setup row"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4150,
+      "column": "D",
+      "coordinate": "角色-女!D4150",
+      "header": "备注",
+      "raw_value": "=\"无敌期间不能切人，第\"&ROUND(6*base!$B$2,0)&\"F后切人不退场\n第\"&ROUND(4.4*base!$B$2,0)+1&\"F成功销毁谐振场后，生成强谐振场\"",
+      "display_value": "无敌期间不能切人，第360F后切人不退场\n第265F成功销毁谐振场后，生成强谐振场",
+      "interpreted_meaning": "Liberation source note contains 无敌期间不能切人"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4150,
+      "column": "D",
+      "coordinate": "角色-女!D4150",
+      "header": "备注",
+      "raw_value": "=\"无敌期间不能切人，第\"&ROUND(6*base!$B$2,0)&\"F后切人不退场\n第\"&ROUND(4.4*base!$B$2,0)+1&\"F成功销毁谐振场后，生成强谐振场\"",
+      "display_value": "无敌期间不能切人，第360F后切人不退场\n第265F成功销毁谐振场后，生成强谐振场",
+      "interpreted_meaning": "Liberation source note contains 第360F后切人不退场"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4150,
+      "column": "D",
+      "coordinate": "角色-女!D4150",
+      "header": "备注",
+      "raw_value": "=\"无敌期间不能切人，第\"&ROUND(6*base!$B$2,0)&\"F后切人不退场\n第\"&ROUND(4.4*base!$B$2,0)+1&\"F成功销毁谐振场后，生成强谐振场\"",
+      "display_value": "无敌期间不能切人，第360F后切人不退场\n第265F成功销毁谐振场后，生成强谐振场",
+      "interpreted_meaning": "Liberation source note contains 第265F"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4150,
+      "column": "D",
+      "coordinate": "角色-女!D4150",
+      "header": "备注",
+      "raw_value": "=\"无敌期间不能切人，第\"&ROUND(6*base!$B$2,0)&\"F后切人不退场\n第\"&ROUND(4.4*base!$B$2,0)+1&\"F成功销毁谐振场后，生成强谐振场\"",
+      "display_value": "无敌期间不能切人，第360F后切人不退场\n第265F成功销毁谐振场后，生成强谐振场",
+      "interpreted_meaning": "Liberation source note contains 强谐振场"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4150,
+      "column": "U",
+      "coordinate": "角色-女!U4150",
+      "header": "协奏回收",
+      "raw_value": "=0+20",
+      "display_value": 20,
+      "interpreted_meaning": "Liberation Concerto +20"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4150,
+      "column": "AC",
+      "coordinate": "角色-女!AC4150",
+      "header": "时间膨胀类型",
+      "raw_value": "时停",
+      "display_value": "时停",
+      "interpreted_meaning": "Liberation setup plain time stop row"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4150,
+      "column": "AI",
+      "coordinate": "角色-女!AI4150",
+      "header": "膨胀持续",
+      "raw_value": "=IF(base!$B$3=FALSE,INT(5*base!$B$2)+ROUND(5*base!$B$2-INT(5*base!$B$2),0)+(1-5>=1-0.5/base!$B$2),0)",
+      "display_value": 300,
+      "interpreted_meaning": "Enemy time-stop frame value"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4150,
+      "column": "AL",
+      "coordinate": "角色-女!AL4150",
+      "header": "膨胀持续",
+      "raw_value": "=IF(base!$B$3=FALSE,INT(5*base!$B$2)+ROUND(5*base!$B$2-INT(5*base!$B$2),0)+(1-5>=1-0.5/base!$B$2),0)",
+      "display_value": 300,
+      "interpreted_meaning": "Ally time-stop frame value"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4151,
+      "column": "C",
+      "coordinate": "角色-女!C4151",
+      "header": "动作",
+      "raw_value": "大招-全局时停",
+      "display_value": "大招-全局时停",
+      "interpreted_meaning": "Liberation global time-stop row"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4151,
+      "column": "AC",
+      "coordinate": "角色-女!AC4151",
+      "header": "时间膨胀类型",
+      "raw_value": "全局时停",
+      "display_value": "全局时停",
+      "interpreted_meaning": "Global time stop marker"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4151,
+      "column": "AI",
+      "coordinate": "角色-女!AI4151",
+      "header": "膨胀持续",
+      "raw_value": "=INT(5*base!$B$2)+ROUND(5*base!$B$2-INT(5*base!$B$2),0)+(1-5>=1-0.5/base!$B$2)",
+      "display_value": 300,
+      "interpreted_meaning": "Global time-stop enemy frame value"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4151,
+      "column": "AL",
+      "coordinate": "角色-女!AL4151",
+      "header": "膨胀持续",
+      "raw_value": "=INT(5*base!$B$2)+ROUND(5*base!$B$2-INT(5*base!$B$2),0)+(1-5>=1-0.5/base!$B$2)",
+      "display_value": 300,
+      "interpreted_meaning": "Global time-stop ally frame value"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4153,
+      "column": "C",
+      "coordinate": "角色-女!C4153",
+      "header": "动作",
+      "raw_value": "大招-伤害",
+      "display_value": "大招-伤害",
+      "interpreted_meaning": "Liberation damage row"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4153,
+      "column": "N",
+      "coordinate": "角色-女!N4153",
+      "header": "动作结束帧",
+      "raw_value": "=INT(4.7*base!$B$2)+ROUND(4.7*base!$B$2-INT(4.7*base!$B$2),0)+(1-4.7>=1-0.5/base!$B$2)",
+      "display_value": 282,
+      "interpreted_meaning": "Normal-state damage end frame"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4154,
+      "column": "C",
+      "coordinate": "角色-女!C4154",
+      "header": "动作",
+      "raw_value": "大招-伤害",
+      "display_value": "大招-伤害",
+      "interpreted_meaning": "Liberation observation-state damage row"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4154,
+      "column": "D",
+      "coordinate": "角色-女!D4154",
+      "header": "备注",
+      "raw_value": "观测状态，圆柱(1100,0,400)",
+      "display_value": "观测状态，圆柱(1100,0,400)",
+      "interpreted_meaning": "Observation-state damage text"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4154,
+      "column": "N",
+      "coordinate": "角色-女!N4154",
+      "header": "动作结束帧",
+      "raw_value": "=INT(4.933671*base!$B$2)+ROUND(4.933671*base!$B$2-INT(4.933671*base!$B$2),0)+(1-4.933671>=1-0.5/base!$B$2)",
+      "display_value": 296,
+      "interpreted_meaning": "Observation-state damage end frame covered by 300F global time stop"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4164,
+      "column": "D",
+      "coordinate": "角色-女!D4164",
+      "header": "备注",
+      "raw_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+      "display_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+      "interpreted_meaning": "Passive source text contains QTE"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4164,
+      "column": "D",
+      "coordinate": "角色-女!D4164",
+      "header": "备注",
+      "raw_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+      "display_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+      "interpreted_meaning": "Passive source text contains 观测A3"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4164,
+      "column": "D",
+      "coordinate": "角色-女!D4164",
+      "header": "备注",
+      "raw_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+      "display_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+      "interpreted_meaning": "Passive source text contains 协奏"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4164,
+      "column": "D",
+      "coordinate": "角色-女!D4164",
+      "header": "备注",
+      "raw_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+      "display_value": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+      "interpreted_meaning": "Passive source text contains 20"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4155,
+      "column": "C",
+      "coordinate": "角色-女!C4155",
+      "header": "动作",
+      "raw_value": "谐度破坏-时停",
+      "display_value": "谐度破坏-时停",
+      "interpreted_meaning": "Tune rupture plain time-stop row"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4155,
+      "column": "AC",
+      "coordinate": "角色-女!AC4155",
+      "header": "时间膨胀类型",
+      "raw_value": "时停",
+      "display_value": "时停",
+      "interpreted_meaning": "Plain time stop"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4155,
+      "column": "AI",
+      "coordinate": "角色-女!AI4155",
+      "header": "膨胀持续",
+      "raw_value": "=INT(1.0734751*base!$B$2)+ROUND(1.0734751*base!$B$2-INT(1.0734751*base!$B$2),0)+(1-1.0734751>=1-0.5/base!$B$2)",
+      "display_value": 64,
+      "interpreted_meaning": "Enemy time-stop frame value"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4155,
+      "column": "AL",
+      "coordinate": "角色-女!AL4155",
+      "header": "膨胀持续",
+      "raw_value": "=INT(1.0734751*base!$B$2)+ROUND(1.0734751*base!$B$2-INT(1.0734751*base!$B$2),0)+(1-1.0734751>=1-0.5/base!$B$2)",
+      "display_value": 64,
+      "interpreted_meaning": "Ally time-stop frame value"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4156,
+      "column": "C",
+      "coordinate": "角色-女!C4156",
+      "header": "动作",
+      "raw_value": "谐度破坏-全局时停",
+      "display_value": "谐度破坏-全局时停",
+      "interpreted_meaning": "Tune rupture global time-stop row"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4156,
+      "column": "AC",
+      "coordinate": "角色-女!AC4156",
+      "header": "时间膨胀类型",
+      "raw_value": "全局时停",
+      "display_value": "全局时停",
+      "interpreted_meaning": "Global time stop marker"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4156,
+      "column": "AI",
+      "coordinate": "角色-女!AI4156",
+      "header": "膨胀持续",
+      "raw_value": "=INT(1.5666666*base!$B$2)+ROUND(1.5666666*base!$B$2-INT(1.5666666*base!$B$2),0)+(1-1.5666666>=1-0.5/base!$B$2)",
+      "display_value": 94,
+      "interpreted_meaning": "Global time-stop enemy frame value"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4156,
+      "column": "AL",
+      "coordinate": "角色-女!AL4156",
+      "header": "膨胀持续",
+      "raw_value": "=INT(1.5666666*base!$B$2)+ROUND(1.5666666*base!$B$2-INT(1.5666666*base!$B$2),0)+(1-1.5666666>=1-0.5/base!$B$2)",
+      "display_value": 94,
+      "interpreted_meaning": "Global time-stop ally frame value"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4159,
+      "column": "C",
+      "coordinate": "角色-女!C4159",
+      "header": "动作",
+      "raw_value": "谐度破坏-3",
+      "display_value": "谐度破坏-3",
+      "interpreted_meaning": "Tune rupture third damage row"
+    },
+    {
+      "sheet": "角色-女",
+      "row": 4159,
+      "column": "N",
+      "coordinate": "角色-女!N4159",
+      "header": "动作结束帧",
+      "raw_value": "=INT(1.5627743*base!$B$2)+ROUND(1.5627743*base!$B$2-INT(1.5627743*base!$B$2),0)+(1-1.5627743>=1-0.5/base!$B$2)",
+      "display_value": 94,
+      "interpreted_meaning": "Tune rupture end frame"
+    }
+  ],
+  "warnings": [
+    "Request expected QTE note text `35F`, but workbook display text contains `36F`; preserved as source discrepancy."
+  ],
+  "interpretation": {
+    "inversion": {
+      "has_global_time_stop": false,
+      "action_time": 1.3,
+      "combat_time_cost": 1.3,
+      "resource_delta": -100,
+      "direct_interfered_source_confirmed": false
+    },
+    "qte_intro": {
+      "has_global_time_stop": false,
+      "action_time": 1.7,
+      "combat_time_cost": 1.7,
+      "base_concerto_gain": 10,
+      "passive_concerto_source_confirmed": true,
+      "passive_concerto_gain": 20,
+      "final_concerto_gain": 30
+    },
+    "distributed_array": {
+      "base_concerto_gain": 10,
+      "relative_momentum_gain_per_hit": [
+        15,
+        15,
+        15,
+        15
+      ],
+      "relative_momentum_gain_total": 60
+    },
+    "liberation": {
+      "has_global_time_stop": true,
+      "action_time": 4.933333333333334,
+      "combat_time_cost": 0.0,
+      "global_time_stop_frames": 300,
+      "concerto_gain": 20
+    },
+    "tune_rupture": {
+      "has_global_time_stop": true,
+      "combat_time_cost_if_implemented": 0.0
+    }
+  }
+}

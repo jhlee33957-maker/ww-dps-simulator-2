@@ -101,6 +101,67 @@
       "at_260_percent_er": {"crit_rate_bonus": 0.8, "crit_dmg_bonus": 1.6}
     }
   },
+  "action_data_timing_resource_source_notes": {
+    "title": "Action Data Timing / Resource Source Notes",
+    "source_guard": "scripts/mornye_action_data_source_guard_smoke_test.py",
+    "generated_artifacts": [
+      "data/extracted/mornye_action_data_time_resource_source_guard.json",
+      "reports/mornye_action_data_time_resource_source_guard.md"
+    ],
+    "time_stop_rule": "Only source AC = 全局时停 is treated as global time stop for combat_time_cost. Source AC = 时停 alone is logged as non-global time stop and does not reduce combat_time_cost.",
+    "action_time_rule": "action_time remains animation/action lock duration. combat_time_cost is the timed-combat timer loss and can differ when a confirmed global time-stop row covers the damage timing.",
+    "liberation_critical_protocol": {
+      "action_id": "mornye_liberation_critical_protocol",
+      "source_rows": [4150, 4151, 4153, 4154],
+      "action_time": 4.9333333333,
+      "combat_time_cost": 0.0,
+      "global_time_stop_frames": 300,
+      "concerto_energy_gain": 20,
+      "notes": "Rows 4150/4151 show Liberation timing with a confirmed 全局时停 row; damage row 4154 ends at 296F inside the global time-stop window."
+    },
+    "heavy_inversion": {
+      "action_id": "mornye_heavy_inversion",
+      "source_rows": [4135, 4136],
+      "action_time": 1.3,
+      "combat_time_cost": 1.3,
+      "has_global_time_stop": false,
+      "time_dilation_type": "时停",
+      "source_status": "not_source_confirmed_direct_interfered",
+      "notes": "Source row 4135 has AC = 时停, not 全局时停. Heavy Inversion remains non-global time stop and uses 78F / 60 for combat timer loss. The optional Interfered Marker amp remains simplified_on_inversion only, not source-confirmed direct marker conversion."
+    },
+    "distributed_array": {
+      "action_id": "mornye_skill_distributed_array",
+      "source_rows": [4143, 4144, 4145, 4146, 4147],
+      "base_concerto_gain": 10,
+      "relative_momentum_gain_per_hit": [15, 15, 15, 15],
+      "relative_momentum_gain_total": 60,
+      "notes": "Row 4143 provides the +10 Concerto base value. Rows 4144-4147 provide four +15 Relative Momentum hits for +60 total."
+    },
+    "intro_convergence": {
+      "action_id": "mornye_intro_convergence",
+      "source_rows": [4148, 4149, 4164],
+      "action_time": 1.7,
+      "combat_time_cost": 1.7,
+      "has_global_time_stop": false,
+      "time_dilation_type": "时停",
+      "base_concerto_gain": 10,
+      "passive_concerto_gain": 20,
+      "final_concerto_gain": 30,
+      "passive_concerto_source": "角色-女!4164",
+      "notes": "QTE/Intro is a non-policy transition event. Row 4148 has AC = 时停 but no confirmed 全局时停 row, so it keeps 102F / 60 combat timer loss from the damage row. Row 4164 confirms +20 passive Concerto after QTE and Observation A3."
+    },
+    "observation_a3": {
+      "action_id": "mornye_wfo_basic_stage_3",
+      "source_rows": [4131, 4132, 4133, 4134, 4164],
+      "passive_concerto_gain": 20,
+      "passive_concerto_source": "角色-女!4164",
+      "notes": "The passive +20 Concerto on Observation A3 is implemented from row 4164 while preserving existing Relative Momentum gain."
+    },
+    "tune_disruption_note": {
+      "source_rows": [4155, 4156, 4159],
+      "notes": "谐度破坏 has a confirmed 全局时停 row in the source guard, but the full Tune/Tune Rupture/Tune Strain system is not implemented in Mornye v1."
+    }
+  },
   "interfered_marker": {
     "implemented": "simplified_optional",
     "default_mode": "disabled",
@@ -114,7 +175,7 @@
     {"action_id": "mornye_outro_recursion", "implemented": true, "trigger": "Mornye outgoing full-Concerto party swap", "effect": "mornye_outro_recursion_all_dmg_amp", "duration": 30, "damage_amp_modifiers": {"all": 0.25}}
   ],
   "intro": [
-    {"action_id": "mornye_intro_convergence", "implemented": "reviewed_candidate_disabled_by_default", "hits": [2.0279], "concerto_energy_gain": 10, "effects": ["clear Rest Mass Energy", "enter Wide Field Observation for 30s", "generate Syntony Field for 25s"]}
+    {"action_id": "mornye_intro_convergence", "implemented": "reviewed_candidate_disabled_by_default", "hits": [2.0279], "base_concerto_gain": 10, "passive_concerto_gain": 20, "concerto_energy_gain": 30, "effects": ["clear Rest Mass Energy", "enter Wide Field Observation for 30s", "generate Syntony Field for 25s"]}
   ],
   "syntony_field": [
     {"field": "Syntony Field", "duration": 25, "implemented": "duration_metadata", "metadata_only": ["off-tune buildup +50%", "interruption resistance", "healing"]},
@@ -145,6 +206,8 @@
     "Old direct baseline Resonance Skill routing to Optimal Solution has been removed from the default path.",
     "Particle Jet response is metadata only.",
     "Mornye Energy Regen scaling on Critical Protocol crit stats is implemented as temporary action-local stat modifiers.",
-    "Proof of Boundedness survival behavior, healing, and DEF effects do not affect DPS in v1."
+    "Proof of Boundedness survival behavior, healing, and DEF effects do not affect DPS in v1.",
+    "QTE/Intro and Heavy Inversion source rows use 时停 rather than 全局时停, so they do not receive global time-stop combat timer reduction.",
+    "谐度破坏 timing is source-audited but the full Tune system remains unimplemented."
   ]
 }

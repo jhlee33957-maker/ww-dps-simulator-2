@@ -258,6 +258,11 @@ class ActionResult(BaseModel):
     combat_time_end: float = 0.0
     combat_time_cost: float = 0.0
     effective_combat_time_cost: float = 0.0
+    combat_time_cost_source: str | None = None
+    has_global_time_stop: bool = False
+    global_time_stop_frames: float | None = None
+    source_sheet: str | None = None
+    source_rows: list[int] = Field(default_factory=list)
     truncated_by_combat_limit: bool = False
     damage_before_cutoff: float = 0.0
     damage_after_cutoff_excluded: float = 0.0
@@ -331,6 +336,17 @@ class ActionResult(BaseModel):
     concerto_ready_after: bool = False
     concerto_energy_gained: float = 0.0
     concerto_energy_wasted: float = 0.0
+    base_concerto_gain: float = 0.0
+    passive_concerto_gain: float = 0.0
+    final_concerto_gain: float = 0.0
+    passive_concerto_source: str | None = None
+    relative_momentum_gain: float = 0.0
+    relative_momentum_gain_source_rows: list[int] = Field(default_factory=list)
+    distributed_array_base_concerto_gain: float = 0.0
+    distributed_array_relative_momentum_gain_per_hit: list[float] = Field(default_factory=list)
+    distributed_array_relative_momentum_gain_total: float = 0.0
+    time_dilation_type: str | None = None
+    source_status: str | None = None
     mechanic_debug_after: dict[str, Any] = Field(default_factory=dict)
     mornye_mode_after: str | None = None
     mornye_rest_mass_after: float | None = None
@@ -370,6 +386,11 @@ class TimelineEntry(BaseModel):
     combat_time_end: float = 0.0
     combat_time_cost: float = 0.0
     effective_combat_time_cost: float = 0.0
+    combat_time_cost_source: str | None = None
+    has_global_time_stop: bool = False
+    global_time_stop_frames: float | None = None
+    source_sheet: str | None = None
+    source_rows: list[int] = Field(default_factory=list)
     truncated_by_combat_limit: bool = False
     damage_before_cutoff: float = 0.0
     damage_after_cutoff_excluded: float = 0.0
@@ -443,6 +464,17 @@ class TimelineEntry(BaseModel):
     concerto_ready_after: bool = False
     concerto_energy_gained: float = 0.0
     concerto_energy_wasted: float = 0.0
+    base_concerto_gain: float = 0.0
+    passive_concerto_gain: float = 0.0
+    final_concerto_gain: float = 0.0
+    passive_concerto_source: str | None = None
+    relative_momentum_gain: float = 0.0
+    relative_momentum_gain_source_rows: list[int] = Field(default_factory=list)
+    distributed_array_base_concerto_gain: float = 0.0
+    distributed_array_relative_momentum_gain_per_hit: list[float] = Field(default_factory=list)
+    distributed_array_relative_momentum_gain_total: float = 0.0
+    time_dilation_type: str | None = None
+    source_status: str | None = None
     mechanic_debug_after: dict[str, Any] = Field(default_factory=dict)
     mornye_mode_after: str | None = None
     mornye_rest_mass_after: float | None = None

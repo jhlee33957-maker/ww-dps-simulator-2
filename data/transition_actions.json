@@ -69,7 +69,7 @@
     "action_time": 1.7,
     "combat_time_cost": 1.7,
     "previous_outro_trigger_frame": 36,
-    "concerto_energy_gain": 10,
+    "concerto_energy_gain": 30,
     "hits": [2.0279],
     "apply_character_mechanics": true,
     "mechanic_effects": {
@@ -77,7 +77,16 @@
       "set_mode": "wide_field_observation",
       "set_wide_field_observation_remaining": 30.0,
       "set_syntony_field_remaining": 25.0,
-      "set_wfo_combo_stage": 1
+      "set_wfo_combo_stage": 1,
+      "source_sheet": "角色-女",
+      "source_rows": [4148, 4149, 4164],
+      "has_global_time_stop": false,
+      "time_dilation_type": "时停",
+      "base_concerto_gain": 10,
+      "passive_concerto_gain": 20,
+      "final_concerto_gain": 30,
+      "passive_concerto_source": "角色-女!4164",
+      "combat_time_cost_source": "QTE has 时停 but no 全局时停 row; use 102F / 60"
     },
     "metadata": {
       "source_name": "\u83ab\u5b81",
@@ -90,7 +99,10 @@
       "raw_source_character": "\u83ab\u5b81",
       "raw_skill_category": "\u53d8\u594f",
       "raw_damage_type": "\u53d8\u594f\u4f24\u5bb3",
-      "concerto_energy_gain": 10,
+      "concerto_energy_gain": 30,
+      "base_concerto_gain": 10,
+      "passive_concerto_gain": 20,
+      "final_concerto_gain": 30,
       "timing_is_placeholder": false,
       "source_rows": {
         "frame_sheet": "\u89d2\u8272-\u5973 rows 4148-4149",

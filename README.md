@@ -96,7 +96,7 @@ Not implemented in v1:
 - automatic Syntony Field damage scheduling
 - full QTE/Intro state-machine details beyond reviewed transition data
 
-Mornye Intro Convergence is present as reviewed transition data in `data/transition_actions.json` and remains disabled by default through `data/transition_config.json`. No PPO retraining was performed.
+Mornye Intro Convergence is present as reviewed transition data in `data/transition_actions.json` and remains disabled by default through `data/transition_config.json`. It is transition-only, not a policy action. No PPO retraining was performed.
 
 ## Mornye Expectation Error / Optimal Solution
 
@@ -129,7 +129,7 @@ Generated review artifacts:
 - `reports/mornye_excel_audit.md`
 - `reports/mornye_source_alignment_review.md`
 
-The audit is intentionally report-only. It does not modify `data/actions.json`, change Mornye gameplay behavior, enable Intro/QTE behavior, train PPO, restore Beam Search, or implement future Tune/Interfered/Proof/healing/DEF systems. The smoke test hashes `data/actions.json` before and after extraction to guard that contract.
+The audit is intentionally report-only. It does not modify `data/actions.json`, change Mornye gameplay behavior, enable Intro/QTE behavior, train PPO, or implement future Tune/Interfered/Proof/healing/DEF systems. The smoke test hashes `data/actions.json` before and after extraction to guard that contract.
 
 ## Mornye Excel Source Audit
 
@@ -146,6 +146,29 @@ python scripts/mornye_excel_source_audit_smoke_test.py
 
 The audit is report-only and must not change simulator mechanics, party presets, damage formulas, action timings, resource values, or PPO reward logic.
 
+## Mornye Action Data Timing / Resource Corrections
+
+The source guard `scripts/mornye_action_data_source_guard_smoke_test.py` checks the workbook `data/source/鸣潮动作数据汇总.xlsx`, sheet `角色-女`, around rows 4102-4164. It writes source evidence to `data/extracted/mornye_action_data_time_resource_source_guard.json` and `reports/mornye_action_data_time_resource_source_guard.md`.
+
+Timing now distinguishes plain source `时停` from source `全局时停`:
+
+- `action_time` is animation/action lock duration.
+- `combat_time_cost` is timed-combat timer loss.
+- Only `AC = 全局时停` reduces combat timer loss.
+- `AC = 时停` alone is logged as non-global time stop and does not reduce `combat_time_cost`.
+
+Source-confirmed corrections:
+
+- Critical Protocol Liberation uses rows 4150, 4151, 4153, and 4154. `action_time` remains `296F / 60 = 4.9333`, but `combat_time_cost = 0.0` because row 4151 confirms `全局时停` through 300F.
+- Heavy Inversion uses rows 4135 and 4136. It remains `action_time = 1.3` and `combat_time_cost = 1.3` because row 4135 has `时停`, not `全局时停`.
+- Mornye Intro Convergence uses rows 4148, 4149, and passive row 4164. It remains a non-policy transition event with `action_time = 1.7`, `combat_time_cost = 1.7`, base Concerto +10, passive Concerto +20, and final Concerto +30. The workbook text currently says previous-character Outro at 36F; the source guard records this instead of silently changing it to 35F.
+- Distributed Array uses rows 4143-4147. It gains base Concerto +10 and Relative Momentum +60 from four +15 rows.
+- Observation A3 keeps its existing Relative Momentum behavior and receives the passive +20 Concerto from row 4164.
+
+The optional simplified Interfered Marker mode remains `simplified_on_inversion`; direct Interfered Marker conversion from Inversion is not source-confirmed. The full Tune/Tune Rupture/Tune Strain system and 谐度破坏 behavior remain unimplemented beyond source-audit metadata.
+
+This correction changes combat time, damage timing, and reward-producing damage totals for some Mornye routes. Existing PPO models trained before this patch are stale for valid comparison and should be retrained when using these corrected mechanics. No PPO training was performed for this patch.
+
 ## Mornye Intro Enabled Transition v1
 
 Mornye Intro Convergence is implemented as a non-policy incoming transition event. It is never directly selectable by PPO and is not included in the policy action space; the selected action remains `swap_to_mornye`, while the resolved enabled transition action is `transition:mornye_intro_convergence`.
@@ -157,7 +180,7 @@ Implemented Mornye Intro values:
 - `action_time = 1.7`
 - `combat_time_cost = 1.7`
 - hit multiplier `[2.0279]`
-- `concerto_energy_gain = 10` to Mornye through the transition action
+- base `concerto_energy_gain = 10` plus passive +20 from source row `角色-女!4164`, for final `concerto_energy_gain = 30`
 - clears Rest Mass Energy
 - enters Wide Field Observation for 30 seconds
 - creates Syntony Field for 25 seconds
@@ -252,7 +275,7 @@ Full Aemeath is not implemented yet. Starflux is utility-related and intentional
 
 Character mechanics have an advance_time hook that runs whenever action/internal time advances, even if the character is off-field. Aemeath Seraphic Duet, Heavenfall Unbound, Stardust Resonance, and Starlume Acceleration timers use this hook, so their remaining time decreases during swaps and during other characters' actions. Heavenfall Finale is separated from Overdrive cooldown by using its own cooldown group. Aemeath-lite has selected Level 10 screenshot coefficients, while several mechanic values remain placeholder/sample values.
 
-The source-aligned coefficient pass applies two manually reviewed Excel C0/base alignments only: Overdrive uses `[2.008, 2.6774, 2.6774, 2.6774]`, and Seraphic Duet Encore uses source row order `[0.179, 0.179, 0.3579, 0.3579, 0.179, 0.179, 1.7893, 0.3579]`. Encore's total coefficient is unchanged. This pass does not change resources, action timing, combat timing, Heavy Attack timing, Form Switch timing, Sync Strike timing, simulator mechanics, PPO/rewards, or Beam Search.
+The source-aligned coefficient pass applies two manually reviewed Excel C0/base alignments only: Overdrive uses `[2.008, 2.6774, 2.6774, 2.6774]`, and Seraphic Duet Encore uses source row order `[0.179, 0.179, 0.3579, 0.3579, 0.179, 0.179, 1.7893, 0.3579]`. Encore's total coefficient is unchanged. This pass does not change resources, action timing, combat timing, Heavy Attack timing, Form Switch timing, Sync Strike timing, simulator mechanics, or PPO/rewards.
 
 The internal state field is still named `seraphic_duo_remaining` for compatibility with existing tests and saved debug output, but user-facing documentation and UI text should refer to the mechanic as Seraphic Duet.
 
@@ -483,6 +506,8 @@ The simulator does not model animation playback time and does not include a gene
 
 Buffs, Havoc Bane, and other time-sensitive effects are evaluated at each hit time. For example, if Havoc Bane has 0.30 seconds remaining at action start, a hit at 0.20 receives its DEF reduction and a hit at 0.45 does not. Current hit timing data is dummy/sample data; real character-specific hit timings are not implemented yet.
 
+Source patches must distinguish global time stop from plain time stop. For Mornye, only workbook `AC = 全局时停` reduces combat timer loss; workbook `AC = 时停` alone is logged as non-global time stop and keeps its source frame duration as `combat_time_cost`.
+
 ## Cooldown Timing Model
 
 Cooldown reduction follows `combat_time_cost`, not `action_time`. Normal actions without an explicit `combat_time_cost` still reduce cooldowns by their action time through the fallback behavior. Global time-stop actions such as Overdrive and Finale have long `action_time` but `0.0` `combat_time_cost`, so they do not advance the timed combat clock or reduce cooldowns during their cinematic time. This prevents time-stop cinematics from artificially shortening cooldown cycles.
@@ -581,6 +606,8 @@ This reference page does not affect simulation results or PPO training. Update t
 ```bash
 python -m compileall .
 python scripts/aemeath_damage_bonus_category_source_smoke_test.py
+python scripts/mornye_action_data_source_guard_smoke_test.py
+python scripts/mornye_action_data_time_resource_smoke_test.py
 python scripts/transition_actions_metadata_encoding_smoke_test.py
 python scripts/mornye_character_smoke_test.py
 python scripts/mornye_outro_buff_smoke_test.py
