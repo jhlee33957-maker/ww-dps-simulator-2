@@ -18,6 +18,7 @@ from simulator.transition_config import (
     build_aemeath_resonance_mode_override,
     build_effective_transition_config,
     build_mornye_expectation_error_mode_override,
+    build_mornye_heal_event_mode_override,
     build_transition_mode_overrides,
     load_transition_config,
     mechanics_mode_summary,
@@ -58,6 +59,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
         choices=["fusion_burst", "tune_rupture", "unresolved"],
         default=None,
     )
+    parser.add_argument(
+        "--mornye-heal-event-mode",
+        choices=["disabled", "field_creation_only", "simplified_syntony_field_uptime"],
+        default=None,
+    )
     parser.add_argument("--allow-mismatch", action="store_true")
     return parser
 
@@ -77,6 +83,7 @@ def build_effective_config_from_args(args: argparse.Namespace) -> tuple[dict[str
     for mechanic_overrides in (
         build_aemeath_resonance_mode_override(args.aemeath_resonance_mode),
         build_mornye_expectation_error_mode_override(args.mornye_expectation_error_mode),
+        build_mornye_heal_event_mode_override(args.mornye_heal_event_mode),
     ):
         _deep_update(cli_overrides, mechanic_overrides)
     if not cli_overrides.get("characters") and not cli_overrides.get("mechanics"):
@@ -204,6 +211,7 @@ def main() -> None:
         "active_character": summary.active_character,
         "selected_character_ids": env.get_selected_character_ids(),
         "selected_party_character_ids": env.get_selected_party_character_ids(),
+        "selected_party_id": env.get_party_id() or args.party,
         "party_id": env.get_party_id() or args.party,
         "party_members": env.get_selected_party_character_ids(),
         "initial_active_character": env.get_initial_active_character(),
@@ -212,6 +220,8 @@ def main() -> None:
         "mechanics_modes": mechanics_mode_summary(transition_config),
         "aemeath_resonance_mode": summary.aemeath_resonance_mode,
         "aemeath_resonance_mode_source": summary.aemeath_resonance_mode_source,
+        "mornye_heal_event_mode": summary.mornye_heal_event_mode,
+        "mornye_heal_event_mode_source": summary.mornye_heal_event_mode_source,
         "mechanic_event_trigger_action_ids": summary.mechanic_event_trigger_action_ids,
         "mechanic_event_transition_trigger_action_ids": summary.mechanic_event_transition_trigger_action_ids,
         "mechanic_event_emitted_counts": summary.mechanic_event_emitted_counts,
@@ -229,6 +239,7 @@ def main() -> None:
         "aemeath_trailblazing_star_5set_uptime_seconds": summary.aemeath_trailblazing_star_5set_uptime_seconds,
         "aemeath_trailblazing_star_5set_buff_windows": summary.aemeath_trailblazing_star_5set_buff_windows,
         "active_build_profiles": env.get_active_build_profiles(),
+        "active_party_build_profiles": env.get_active_build_profiles(),
         "effective_build_stats_summary": env.get_effective_build_stats_summary(),
         "build_profile_validation": validation,
         "stat_overrides": stat_overrides,

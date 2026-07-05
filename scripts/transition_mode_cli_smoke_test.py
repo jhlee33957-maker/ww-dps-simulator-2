@@ -29,6 +29,8 @@ def test_train_parser_accepts_transition_modes() -> None:
             "enabled",
             "--mornye-expectation-error-mode",
             "always_success",
+            "--mornye-heal-event-mode",
+            "field_creation_only",
             "--build-profile",
             "aemeath:liberation_focus_test",
         ]
@@ -37,12 +39,15 @@ def test_train_parser_accepts_transition_modes() -> None:
     assert args.aemeath_qte_mode == "dry_run"
     assert args.mornye_intro_mode == "enabled"
     assert args.mornye_expectation_error_mode == "always_success"
+    assert args.mornye_heal_event_mode == "field_creation_only"
     assert parse_build_profile_overrides(args.build_profile) == {"aemeath": "liberation_focus_test"}
     config, party_preset = build_train_config(args)
     assert party_preset is not None
     assert get_character_transition_mode(config, "aemeath", "intro_qte") == "dry_run"
     assert get_character_transition_mode(config, "mornye", "intro_qte") == "enabled"
     assert mechanics_mode_summary(config)["mornye"]["expectation_error_mode"] == "always_success"
+    assert mechanics_mode_summary(config)["mornye"]["heal_event_mode"] == "field_creation_only"
+    assert mechanics_mode_summary(config)["mornye"]["heal_event_mode_source"] == "cli_override"
     assert "cli_override" in config["_transition_config_source"]
 
 
@@ -60,6 +65,8 @@ def test_eval_parser_accepts_transition_modes() -> None:
             "dry_run",
             "--mornye-expectation-error-mode",
             "dry_run_success_candidate",
+            "--mornye-heal-event-mode",
+            "disabled",
         ]
     )
     config, party_preset = build_eval_config(args)
@@ -67,6 +74,8 @@ def test_eval_parser_accepts_transition_modes() -> None:
     assert get_character_transition_mode(config, "aemeath", "intro_qte") == "disabled"
     assert get_character_transition_mode(config, "mornye", "intro_qte") == "dry_run"
     assert mechanics_mode_summary(config)["mornye"]["expectation_error_mode"] == "dry_run_success_candidate"
+    assert mechanics_mode_summary(config)["mornye"]["heal_event_mode"] == "disabled"
+    assert mechanics_mode_summary(config)["mornye"]["heal_event_mode_source"] == "cli_override"
     assert "cli_override" in config["_transition_config_source"]
 
 
@@ -77,6 +86,10 @@ def test_no_flags_use_party_preset_or_default() -> None:
     assert get_character_transition_mode(preset_config, "aemeath", "intro_qte") == "enabled"
     assert get_character_transition_mode(preset_config, "mornye", "intro_qte") == "enabled"
     assert mechanics_mode_summary(preset_config)["mornye"]["expectation_error_mode"] == "expectation_error_only"
+    assert mechanics_mode_summary(preset_config)["aemeath"]["aemeath_resonance_mode"] == "tune_rupture"
+    assert mechanics_mode_summary(preset_config)["aemeath"]["aemeath_resonance_mode_source"] == "party_preset"
+    assert mechanics_mode_summary(preset_config)["mornye"]["heal_event_mode"] == "simplified_syntony_field_uptime"
+    assert mechanics_mode_summary(preset_config)["mornye"]["heal_event_mode_source"] == "party_preset"
     assert "party_preset" in preset_config["_transition_config_source"]
     assert "cli_override" not in preset_config["_transition_config_source"]
 
@@ -85,6 +98,8 @@ def test_no_flags_use_party_preset_or_default() -> None:
     assert default_preset is None
     assert get_character_transition_mode(default_config, "aemeath", "intro_qte") == "disabled"
     assert get_character_transition_mode(default_config, "mornye", "intro_qte") == "disabled"
+    assert mechanics_mode_summary(default_config)["aemeath"]["aemeath_resonance_mode"] == "unresolved"
+    assert mechanics_mode_summary(default_config)["aemeath"]["aemeath_resonance_mode_source"] == "default"
     assert default_config["_transition_config_source"] == ["default"]
 
 

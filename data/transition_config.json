@@ -21,7 +21,7 @@
     "aemeath": {
       "aemeath_resonance_mode": "unresolved",
       "aemeath_resonance_modes": ["fusion_burst", "tune_rupture", "unresolved"],
-      "aemeath_resonance_mode_source": "user_supplied_skill_screenshot",
+      "aemeath_resonance_mode_source": "default",
       "implementation_status": "event_trigger_only"
     },
     "mornye": {
@@ -30,6 +30,7 @@
       },
       "mornye_constellation": 0,
       "mornye_heal_event_mode": "simplified_syntony_field_uptime",
+      "mornye_heal_event_mode_source": "default",
       "mornye_heal_event_modes": [
         "disabled",
         "field_creation_only",

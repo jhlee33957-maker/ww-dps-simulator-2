@@ -770,6 +770,8 @@ class SimulationSummary(BaseModel):
     final_time: float
     final_action_time: float = 0.0
     active_character: str
+    selected_party_id: str | None = None
+    active_party_build_profiles: dict[str, str] = Field(default_factory=dict)
     timeline: list[TimelineEntry]
     resources: dict[str, dict[str, float]]
     damage_by_selected_action: dict[str, float] = Field(default_factory=dict)
@@ -800,6 +802,7 @@ class SimulationSummary(BaseModel):
     c2_off_tune_bonus_active: bool = False
     mornye_constellation: int = 0
     mornye_heal_event_mode: str = "simplified_syntony_field_uptime"
+    mornye_heal_event_mode_source: str | None = None
     team_heal_event_count: int = 0
     mornye_halo_of_starry_radiance_5set_enabled: bool = False
     mornye_halo_of_starry_radiance_5set_trigger_count: int = 0

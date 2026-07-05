@@ -63,7 +63,21 @@ def build_mornye_expectation_error_mode_override(mode: str | None = None) -> dic
     }
 
 
-def build_aemeath_resonance_mode_override(mode: str | None = None) -> dict[str, Any]:
+def build_mornye_heal_event_mode_override(mode: str | None = None, *, source: str = "cli_override") -> dict[str, Any]:
+    if not mode:
+        return {}
+    _validate_mornye_heal_event_mode(mode)
+    return {
+        "mechanics": {
+            "mornye": {
+                "mornye_heal_event_mode": mode,
+                "mornye_heal_event_mode_source": source,
+            }
+        }
+    }
+
+
+def build_aemeath_resonance_mode_override(mode: str | None = None, *, source: str = "cli_override") -> dict[str, Any]:
     if not mode:
         return {}
     _validate_aemeath_resonance_mode(mode)
@@ -71,7 +85,7 @@ def build_aemeath_resonance_mode_override(mode: str | None = None) -> dict[str, 
         "mechanics": {
             "aemeath": {
                 "aemeath_resonance_mode": mode,
-                "aemeath_resonance_mode_source": "user_supplied_skill_screenshot",
+                "aemeath_resonance_mode_source": source,
             }
         }
     }
@@ -164,12 +178,13 @@ def mechanics_mode_summary(config: dict[str, Any]) -> dict[str, Any]:
     return {
         "aemeath": {
             "aemeath_resonance_mode": aemeath_resonance_mode,
-            "aemeath_resonance_mode_source": aemeath_config.get("aemeath_resonance_mode_source"),
+            "aemeath_resonance_mode_source": aemeath_config.get("aemeath_resonance_mode_source", "default"),
         },
         "mornye": {
             "expectation_error_mode": expectation_error_mode,
             "interfered_marker_mode": str(marker_config.get("mode", "disabled")),
             "heal_event_mode": heal_event_mode,
+            "heal_event_mode_source": mornye_config.get("mornye_heal_event_mode_source", "default"),
             "mornye_constellation": int(mornye_config.get("mornye_constellation", 0) or 0),
         }
     }
@@ -224,6 +239,14 @@ def _validate_mornye_expectation_error_mode(mode: str) -> None:
         raise ValueError(
             f"Unsupported Mornye Expectation Error mode {mode!r}; "
             f"expected one of {sorted(VALID_MORNYE_EXPECTATION_ERROR_MODES)}."
+        )
+
+
+def _validate_mornye_heal_event_mode(mode: str) -> None:
+    if mode not in VALID_MORNYE_HEAL_EVENT_MODES:
+        raise ValueError(
+            f"Unsupported Mornye heal event mode {mode!r}; "
+            f"expected one of {sorted(VALID_MORNYE_HEAL_EVENT_MODES)}."
         )
 
 

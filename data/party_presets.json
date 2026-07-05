@@ -24,6 +24,16 @@
     "members": ["mornye", "aemeath", "dummy_sub_dps"],
     "initial_active": "mornye",
     "note": "Mornye is the first real support character.",
+    "mechanic_overrides": {
+      "aemeath": {
+        "aemeath_resonance_mode": "tune_rupture",
+        "aemeath_resonance_mode_source": "party_preset"
+      },
+      "mornye": {
+        "mornye_heal_event_mode": "simplified_syntony_field_uptime",
+        "mornye_heal_event_mode_source": "party_preset"
+      }
+    },
     "generic_swap": {
       "action_time": 0.5,
       "combat_time_cost": 0.5,
@@ -63,7 +73,13 @@
       }
     },
     "mechanic_overrides": {
+      "aemeath": {
+        "aemeath_resonance_mode": "tune_rupture",
+        "aemeath_resonance_mode_source": "party_preset"
+      },
       "mornye": {
+        "mornye_heal_event_mode": "simplified_syntony_field_uptime",
+        "mornye_heal_event_mode_source": "party_preset",
         "interfered_marker": {
           "mode": "simplified_on_inversion"
         }
@@ -104,7 +120,13 @@
       }
     },
     "mechanic_overrides": {
+      "aemeath": {
+        "aemeath_resonance_mode": "tune_rupture",
+        "aemeath_resonance_mode_source": "party_preset"
+      },
       "mornye": {
+        "mornye_heal_event_mode": "simplified_syntony_field_uptime",
+        "mornye_heal_event_mode_source": "party_preset",
         "interfered_marker": {
           "mode": "simplified_on_inversion"
         },

@@ -24,6 +24,7 @@ from simulator.transition_config import (
     build_aemeath_resonance_mode_override,
     build_effective_transition_config,
     build_mornye_expectation_error_mode_override,
+    build_mornye_heal_event_mode_override,
     build_transition_mode_overrides,
     load_transition_config,
     mechanics_mode_summary,
@@ -422,11 +423,16 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
                     {
                         "Formula": "min(current_off_tune_buildup_rate * 0.20, 0.25)",
                         "Heal event mode": summary.mornye_heal_event_mode,
+                        "Heal event mode source": summary.mornye_heal_event_mode_source,
                         "Team heal proxy": (
                             "simplified Syntony Field uptime"
                             if summary.mornye_heal_event_mode == "simplified_syntony_field_uptime"
                             else summary.mornye_heal_event_mode
                         ),
+                        "Syntony Field uptime maintains Halo proxy": summary.mornye_heal_event_mode
+                        == "simplified_syntony_field_uptime",
+                        "Halo expected during maintained Syntony uptime": summary.mornye_heal_event_mode
+                        == "simplified_syntony_field_uptime",
                         "Mornye constellation": summary.mornye_constellation,
                         "Halo uptime seconds": summary.mornye_halo_of_starry_radiance_5set_uptime_seconds,
                         "Unavailable reason": summary.halo_of_starry_radiance_5set_unavailable_reason,
@@ -447,6 +453,9 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
                     "Trail damage, and set follow-up damage are not added to DPS."
                 )
                 st.write("Source:", summary.aemeath_resonance_mode_source)
+                st.caption(
+                    "Aemeath supports fusion_burst and tune_rupture; party presets or manual overrides select the active mode."
+                )
                 if summary.mechanic_event_unresolved_reason:
                     st.info(summary.mechanic_event_unresolved_reason)
                 if summary.mechanic_event_trigger_action_ids:
@@ -560,6 +569,7 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "c2_off_tune_bonus_active",
         "mornye_constellation",
         "mornye_heal_event_mode",
+        "mornye_heal_event_mode_source",
         "team_heal_event_triggered",
         "halo_of_starry_radiance_5set_active",
         "halo_of_starry_radiance_5set_atk_percent_bonus",
@@ -602,6 +612,7 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "mechanic_event_trigger_id",
         "mechanic_event_cooldown_blocked",
         "aemeath_resonance_mode",
+        "aemeath_resonance_mode_source",
         "mechanic_event_source_status",
         "mechanic_event_unresolved_reason",
         "echo_set_triggered_buff_ids",
@@ -857,7 +868,7 @@ else:
         aemeath_mechanics_overrides = (
             None
             if aemeath_resonance_mode_choice == "Use Party Preset / Default"
-            else build_aemeath_resonance_mode_override(aemeath_resonance_mode_choice)
+            else build_aemeath_resonance_mode_override(aemeath_resonance_mode_choice, source="ui_override")
         )
     else:
         aemeath_resonance_mode_choice = "Use Party Preset / Default"
@@ -878,10 +889,32 @@ else:
             if mornye_expectation_error_choice == "Use Party Preset / Default"
             else build_mornye_expectation_error_mode_override(mornye_expectation_error_choice)
         )
+        mornye_heal_event_choice = st.sidebar.selectbox(
+            "Mornye Heal Event Mode",
+            options=[
+                "Use Party Preset / Default",
+                "disabled",
+                "field_creation_only",
+                "simplified_syntony_field_uptime",
+            ],
+            index=0,
+        )
+        mornye_heal_event_overrides = (
+            None
+            if mornye_heal_event_choice == "Use Party Preset / Default"
+            else build_mornye_heal_event_mode_override(mornye_heal_event_choice, source="ui_override")
+        )
     else:
         mornye_expectation_error_choice = "Use Party Preset / Default"
         ui_mechanics_overrides = None
-    ui_overrides = merge_override_blocks(ui_transition_overrides, aemeath_mechanics_overrides, ui_mechanics_overrides)
+        mornye_heal_event_choice = "Use Party Preset / Default"
+        mornye_heal_event_overrides = None
+    ui_overrides = merge_override_blocks(
+        ui_transition_overrides,
+        aemeath_mechanics_overrides,
+        ui_mechanics_overrides,
+        mornye_heal_event_overrides,
+    )
     effective_transition_config = build_effective_transition_config(
         load_transition_config(DATA_DIR),
         party_preset_config,
@@ -898,11 +931,17 @@ else:
     if "aemeath" in selected_character_ids:
         st.sidebar.caption(
             "Aemeath Resonance Mode: "
-            f"{mechanic_summary['aemeath']['aemeath_resonance_mode']}"
+            f"{mechanic_summary['aemeath']['aemeath_resonance_mode']} "
+            f"({mechanic_summary['aemeath']['aemeath_resonance_mode_source']})"
         )
     if "mornye" in selected_character_ids:
         effective_mornye_gp_mode = mechanic_summary["mornye"]["expectation_error_mode"]
         st.sidebar.caption(f"Effective Mornye Expectation Error Mode: {effective_mornye_gp_mode}")
+        st.sidebar.caption(
+            "Mornye Heal Event Mode: "
+            f"{mechanic_summary['mornye']['heal_event_mode']} "
+            f"({mechanic_summary['mornye']['heal_event_mode_source']})"
+        )
         if effective_mornye_gp_mode == "always_success":
             st.sidebar.warning(
                 "Mornye Optimal Solution is being forced by simplified always-success GP modeling. "

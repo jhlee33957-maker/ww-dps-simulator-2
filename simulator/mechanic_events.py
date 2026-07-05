@@ -39,12 +39,14 @@ def aemeath_resonance_mode_from_config(config: dict[str, Any] | None) -> str:
 
 def mechanic_event_metadata_for_config(config: dict[str, Any] | None) -> dict[str, Any]:
     mode = aemeath_resonance_mode_from_config(config)
+    aemeath_config = ((config or {}).get("aemeath") or {})
     unresolved_reason = None
     if mode == "unresolved":
         unresolved_reason = "aemeath_resonance_mode_unresolved_no_events_emit"
     return {
         "aemeath_resonance_mode": mode,
-        "aemeath_resonance_mode_source": AEMEATH_RESONANCE_MODE_SOURCE,
+        "aemeath_resonance_mode_source": aemeath_config.get("aemeath_resonance_mode_source", "default"),
+        "aemeath_resonance_mode_evidence_source": AEMEATH_RESONANCE_MODE_SOURCE,
         "mechanic_event_trigger_action_ids": list(AEMEATH_RESONANCE_MODE_TRIGGER_ACTION_IDS),
         "mechanic_event_transition_trigger_action_ids": list(AEMEATH_RESONANCE_MODE_TRANSITION_TRIGGER_ACTION_IDS),
         "mechanic_event_unresolved_reason": unresolved_reason,

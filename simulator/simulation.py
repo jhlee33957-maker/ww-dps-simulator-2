@@ -51,7 +51,7 @@ from simulator.roster import (
     resolve_party_preset,
 )
 from simulator.state import create_initial_state
-from simulator.transition_config import build_effective_transition_config, load_transition_config
+from simulator.transition_config import build_effective_transition_config, load_transition_config, mechanics_mode_summary
 
 
 class Simulation:
@@ -661,6 +661,7 @@ class Simulation:
     def summary(self) -> SimulationSummary:
         active_character = self.characters[self.state.active_character_id].name
         mechanic_event_metadata = mechanic_event_metadata_for_config(self.state.mechanics_config)
+        mechanic_modes = mechanics_mode_summary({"mechanics": self.state.mechanics_config})
         resources = {
             char_id: {
                 "resonance_energy": self.state.resonance_energy.get(char_id, 0.0),
@@ -729,6 +730,8 @@ class Simulation:
             final_time=self.state.combat_time,
             final_action_time=self.state.current_time,
             active_character=active_character,
+            selected_party_id=self.party_preset_config.get("party_id"),
+            active_party_build_profiles=dict(self.active_build_profiles),
             timeline=self.timeline,
             resources=resources,
             damage_by_selected_action=dict(damage_by_selected_action),
@@ -770,6 +773,7 @@ class Simulation:
             c2_off_tune_bonus_active=c2_active,
             mornye_constellation=self._mornye_constellation(),
             mornye_heal_event_mode=self._mornye_heal_event_mode(),
+            mornye_heal_event_mode_source=mechanic_modes["mornye"]["heal_event_mode_source"],
             team_heal_event_count=int(self.state.mechanic_event_emitted_counts.get(TEAM_HEAL_EVENT_TAG, 0)),
             mornye_halo_of_starry_radiance_5set_enabled=halo_of_starry_radiance_enabled(mornye_character),
             mornye_halo_of_starry_radiance_5set_trigger_count=int(
