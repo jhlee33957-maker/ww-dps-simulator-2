@@ -52,6 +52,51 @@ def mechanic_event_metadata_for_config(config: dict[str, Any] | None) -> dict[st
     }
 
 
+def preview_mechanic_event_trigger(
+    action: ActionData,
+    state: CombatState,
+    *,
+    action_start_combat_time: float,
+) -> dict[str, Any]:
+    log = {
+        "emitted_mechanic_event_tags": [],
+        "mechanic_event_triggered": False,
+        "mechanic_event_trigger_id": None,
+        "mechanic_event_cooldown_blocked": False,
+        "aemeath_resonance_mode": None,
+        "mechanic_event_source_status": None,
+        "mechanic_event_unresolved_reason": None,
+    }
+    if not action.mechanic_event_triggers:
+        return log
+
+    for trigger in action.mechanic_event_triggers:
+        if trigger.get("trigger_id") != AEMEATH_RESONANCE_MODE_TRIGGER_ID:
+            continue
+        log["mechanic_event_trigger_id"] = AEMEATH_RESONANCE_MODE_TRIGGER_ID
+        log["mechanic_event_source_status"] = trigger.get("source_status")
+        mode = aemeath_resonance_mode_from_config(state.mechanics_config)
+        log["aemeath_resonance_mode"] = mode
+        event_by_mode = trigger.get("event_by_aemeath_resonance_mode") or {}
+        event_tag = event_by_mode.get(mode)
+        if not event_tag:
+            log["mechanic_event_unresolved_reason"] = "aemeath_resonance_mode_unresolved_no_events_emit"
+            return log
+
+        cooldown_seconds = float(trigger.get("cooldown_seconds", 0.0) or 0.0)
+        cooldown_key = f"{action.character_id}:{action.id}:{AEMEATH_RESONANCE_MODE_TRIGGER_ID}"
+        last_trigger_time = state.mechanic_event_last_trigger_time.get(cooldown_key)
+        if last_trigger_time is not None and action_start_combat_time - last_trigger_time < cooldown_seconds:
+            log["mechanic_event_cooldown_blocked"] = True
+            return log
+
+        log["emitted_mechanic_event_tags"] = [event_tag]
+        log["mechanic_event_triggered"] = True
+        return log
+
+    return log
+
+
 def process_mechanic_event_triggers(
     action: ActionData,
     state: CombatState,

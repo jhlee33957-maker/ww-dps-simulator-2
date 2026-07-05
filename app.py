@@ -437,7 +437,9 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
                 )
                 st.caption(
                     "Trailblazing Star 2-set Fusion DMG is already included statically in the selected build profile. "
-                    "The 5-set runtime buff grants +20% Crit Rate and +20% Fusion DMG for 8s after a supported event."
+                    "The 5-set runtime buff grants +20% Crit Rate and +20% Fusion DMG for 8s from the damage that "
+                    "inflicts Fusion Burst or Tune Rupture - Shifting. Current action-level aggregate damage treats "
+                    "the whole triggering action as receiving the buff."
                 )
                 st.write("Trigger events:", summary.aemeath_trailblazing_star_5set_trigger_event_tags)
                 st.write("Current resonance mode:", summary.aemeath_resonance_mode)
@@ -551,6 +553,9 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "echo_set_triggered_buff_ids",
         "echo_set_buff_refreshed",
         "aemeath_trailblazing_star_5set_active",
+        "aemeath_trailblazing_star_5set_applied_before_triggering_damage",
+        "trailblazing_star_5set_same_action_application",
+        "trailblazing_star_5set_application_timing",
         "raw_skill_category",
         "raw_damage_type",
         "actor_character_id",

@@ -37,11 +37,15 @@ def apply_echo_set_event_buffs(
     characters: dict[str, CharacterData],
     state: CombatState,
     buffs: dict[str, BuffData],
-    action_end_time: float,
+    application_time: float,
+    applied_before_triggering_damage: bool = False,
 ) -> dict[str, Any]:
     log = {
         "echo_set_triggered_buff_ids": [],
         "echo_set_buff_refreshed": False,
+        "aemeath_trailblazing_star_5set_applied_before_triggering_damage": False,
+        "trailblazing_star_5set_same_action_application": False,
+        "trailblazing_star_5set_application_timing": None,
     }
     if not actor_character_id or not emitted_event_tags:
         return log
@@ -64,20 +68,20 @@ def apply_echo_set_event_buffs(
     apply_buff(state, buff, actor_character_id)
     state.echo_set_trigger_counts[buff_id] = state.echo_set_trigger_counts.get(buff_id, 0) + 1
 
-    window_end_time = action_end_time + float(buff.duration)
+    window_end_time = application_time + float(buff.duration)
     if was_active:
         for window in reversed(state.echo_set_buff_windows):
             if window.get("buff_id") == buff_id and window.get("character_id") == actor_character_id:
-                if float(window.get("end_time", 0.0)) >= action_end_time - 1e-9:
+                if float(window.get("end_time", 0.0)) >= application_time - 1e-9:
                     window["end_time"] = window_end_time
-                    window["duration"] = max(0.0, window_end_time - float(window.get("start_time", action_end_time)))
+                    window["duration"] = max(0.0, window_end_time - float(window.get("start_time", application_time)))
                     break
         else:
             state.echo_set_buff_windows.append(
                 {
                     "buff_id": buff_id,
                     "character_id": actor_character_id,
-                    "start_time": action_end_time,
+                    "start_time": application_time,
                     "end_time": window_end_time,
                     "duration": float(buff.duration),
                 }
@@ -87,7 +91,7 @@ def apply_echo_set_event_buffs(
             {
                 "buff_id": buff_id,
                 "character_id": actor_character_id,
-                "start_time": action_end_time,
+                "start_time": application_time,
                 "end_time": window_end_time,
                 "duration": float(buff.duration),
             }
@@ -95,6 +99,10 @@ def apply_echo_set_event_buffs(
 
     log["echo_set_triggered_buff_ids"] = [buff_id]
     log["echo_set_buff_refreshed"] = was_active
+    log["aemeath_trailblazing_star_5set_applied_before_triggering_damage"] = bool(applied_before_triggering_damage)
+    log["trailblazing_star_5set_same_action_application"] = bool(applied_before_triggering_damage)
+    if applied_before_triggering_damage:
+        log["trailblazing_star_5set_application_timing"] = "same_action_aggregate_approximation"
     return log
 
 

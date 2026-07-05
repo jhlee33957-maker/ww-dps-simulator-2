@@ -15,6 +15,10 @@ from simulator.simulation import Simulation
 from simulator.transition_config import load_transition_config
 
 
+BASE_CRIT_RATE = 0.832
+BUFFED_CRIT_RATE = 1.032
+
+
 def config_for_mode(mode: str) -> dict:
     config = copy.deepcopy(load_transition_config(DATA_DIR))
     config.setdefault("mechanics", {}).setdefault("aemeath", {})["aemeath_resonance_mode"] = mode
@@ -30,65 +34,43 @@ def make_sim(mode: str = "fusion_burst") -> Simulation:
     )
 
 
-def test_trigger_applies_after_action_and_not_retroactively() -> None:
+def assert_trigger_damage_receives_buff(row, expected_event_tag: str) -> None:
+    assert row.emitted_mechanic_event_tags == [expected_event_tag]
+    assert row.echo_set_triggered_buff_ids == [AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID]
+    assert row.aemeath_trailblazing_star_5set_active is True
+    assert row.aemeath_trailblazing_star_5set_applied_before_triggering_damage is True
+    assert row.trailblazing_star_5set_same_action_application is True
+    assert row.trailblazing_star_5set_application_timing == "same_action_aggregate_approximation"
+    assert math.isclose(row.crit_rate_before_buffs, BASE_CRIT_RATE, rel_tol=1e-9)
+    assert math.isclose(row.crit_rate_after_buffs, BUFFED_CRIT_RATE, rel_tol=1e-9)
+    assert row.damage_element == "fusion"
+    assert math.isclose(row.echo_set_damage_bonus, 0.2, rel_tol=1e-9)
+    assert math.isclose(row.runtime_element_damage_bonus, 0.2, rel_tol=1e-9)
+    assert math.isclose(row.element_dmg_bonus, 0.6, rel_tol=1e-9)
+    assert row.hit_details
+    assert all(detail["aemeath_trailblazing_star_5set_active"] for detail in row.hit_details)
+    assert all(math.isclose(detail["crit_rate_after_buffs"], BUFFED_CRIT_RATE, rel_tol=1e-9) for detail in row.hit_details)
+
+
+def test_fusion_burst_triggering_action_receives_buff() -> None:
     sim = make_sim("fusion_burst")
     assert sim.characters["aemeath"].echo_sets["trailblazing_star"]["conditional_5set_enabled"] is True
     assert sim.execute_action("aemeath_basic_form_stage_3")
 
     summary = sim.summary()
     row = summary.timeline[-1]
-    assert row.emitted_mechanic_event_tags == ["fusion_burst"]
-    assert row.echo_set_triggered_buff_ids == [AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID]
+    assert_trigger_damage_receives_buff(row, "fusion_burst")
     assert row.echo_set_buff_refreshed is False
-    assert row.aemeath_trailblazing_star_5set_active is True
     assert AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID in row.active_buffs
     assert AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID in summary.echo_set_active_buffs
     assert summary.aemeath_trailblazing_star_5set_trigger_count == 1
-    assert summary.aemeath_trailblazing_star_5set_uptime_seconds == 0.0
     assert summary.aemeath_trailblazing_star_5set_buff_windows
 
-    assert math.isclose(row.crit_rate_before_buffs, 0.832, rel_tol=1e-9)
-    assert math.isclose(row.crit_rate_after_buffs, 0.832, rel_tol=1e-9)
-    assert math.isclose(row.echo_set_damage_bonus, 0.0, abs_tol=1e-12)
-    assert math.isclose(row.runtime_element_damage_bonus, 0.0, abs_tol=1e-12)
-    assert row.hit_details
-    assert all(not detail["aemeath_trailblazing_star_5set_active"] for detail in row.hit_details)
 
-
-def test_next_action_receives_crit_and_fusion_damage_bonus() -> None:
-    sim = make_sim("fusion_burst")
-    assert sim.execute_action("aemeath_basic_form_stage_3")
-    assert sim.execute_action("aemeath_basic_form_stage_1")
-
-    row = sim.summary().timeline[-1]
-    assert sim.summary().aemeath_trailblazing_star_5set_uptime_seconds > 0.0
-    assert row.echo_set_triggered_buff_ids == []
-    assert row.aemeath_trailblazing_star_5set_active is True
-    assert math.isclose(row.crit_rate_before_buffs, 0.832, rel_tol=1e-9)
-    assert math.isclose(row.crit_rate_after_buffs, 1.032, rel_tol=1e-9)
-    assert row.damage_element == "fusion"
-    assert math.isclose(row.echo_set_damage_bonus, 0.2, rel_tol=1e-9)
-    assert math.isclose(row.runtime_element_damage_bonus, 0.2, rel_tol=1e-9)
-    assert math.isclose(row.element_dmg_bonus, 0.6, rel_tol=1e-9)
-
-
-def test_tune_rupture_event_also_triggers_and_refreshes() -> None:
+def test_tune_rupture_triggering_action_receives_buff() -> None:
     sim = make_sim("tune_rupture")
     assert sim.execute_action("aemeath_basic_form_stage_3")
-    first = sim.summary().timeline[-1]
-    assert first.emitted_mechanic_event_tags == ["tune_rupture_shifting"]
-    assert first.echo_set_triggered_buff_ids == [AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID]
-
-    sim.state.combat_time += 3.0
-    sim.state.current_time += 3.0
-    assert sim.execute_action("aemeath_basic_form_stage_3")
-    second_summary = sim.summary()
-    second = second_summary.timeline[-1]
-    assert second.emitted_mechanic_event_tags == ["tune_rupture_shifting"]
-    assert second.echo_set_triggered_buff_ids == [AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID]
-    assert second.echo_set_buff_refreshed is True
-    assert second_summary.aemeath_trailblazing_star_5set_trigger_count == 2
-    assert len(second_summary.aemeath_trailblazing_star_5set_buff_windows) == 1
+    assert_trigger_damage_receives_buff(sim.summary().timeline[-1], "tune_rupture_shifting")
 
 
 def test_unresolved_mode_does_not_activate_buff() -> None:
@@ -99,17 +81,107 @@ def test_unresolved_mode_does_not_activate_buff() -> None:
     assert row.emitted_mechanic_event_tags == []
     assert row.echo_set_triggered_buff_ids == []
     assert row.aemeath_trailblazing_star_5set_active is False
+    assert row.aemeath_trailblazing_star_5set_applied_before_triggering_damage is False
+    assert math.isclose(row.crit_rate_after_buffs, BASE_CRIT_RATE, rel_tol=1e-9)
+    assert math.isclose(row.echo_set_damage_bonus, 0.0, abs_tol=1e-12)
     assert AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID not in row.active_buffs
     assert summary.aemeath_trailblazing_star_5set_enabled is True
     assert summary.aemeath_trailblazing_star_5set_trigger_count == 0
     assert summary.echo_set_active_buffs == []
 
 
+def test_non_trigger_action_does_not_newly_activate_buff() -> None:
+    sim = make_sim("fusion_burst")
+    assert sim.execute_action("aemeath_basic_form_stage_1")
+    row = sim.summary().timeline[-1]
+    assert row.emitted_mechanic_event_tags == []
+    assert row.echo_set_triggered_buff_ids == []
+    assert row.aemeath_trailblazing_star_5set_active is False
+    assert math.isclose(row.crit_rate_after_buffs, BASE_CRIT_RATE, rel_tol=1e-9)
+
+
+def test_non_trigger_action_benefits_while_buff_is_active() -> None:
+    sim = make_sim("fusion_burst")
+    assert sim.execute_action("aemeath_basic_form_stage_3")
+    assert sim.execute_action("aemeath_basic_form_stage_1")
+    row = sim.summary().timeline[-1]
+    assert row.echo_set_triggered_buff_ids == []
+    assert row.aemeath_trailblazing_star_5set_active is True
+    assert math.isclose(row.crit_rate_after_buffs, BUFFED_CRIT_RATE, rel_tol=1e-9)
+    assert math.isclose(row.echo_set_damage_bonus, 0.2, rel_tol=1e-9)
+
+
+def test_same_action_cooldown_blocks_refresh_but_existing_buff_remains() -> None:
+    sim = make_sim("fusion_burst")
+    assert sim.execute_action("aemeath_basic_form_stage_3")
+    first_remaining = next(buff.remaining_duration for buff in sim.state.active_buffs if buff.buff_id == AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID)
+    assert sim.execute_action("aemeath_basic_form_stage_3")
+
+    summary = sim.summary()
+    row = summary.timeline[-1]
+    second_remaining = next(buff.remaining_duration for buff in sim.state.active_buffs if buff.buff_id == AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID)
+    assert row.emitted_mechanic_event_tags == []
+    assert row.mechanic_event_cooldown_blocked is True
+    assert row.echo_set_triggered_buff_ids == []
+    assert row.aemeath_trailblazing_star_5set_active is True
+    assert math.isclose(row.crit_rate_after_buffs, BUFFED_CRIT_RATE, rel_tol=1e-9)
+    assert summary.aemeath_trailblazing_star_5set_trigger_count == 1
+    assert second_remaining < first_remaining
+
+
+def test_retrigger_after_cooldown_refreshes_without_stacking() -> None:
+    sim = make_sim("fusion_burst")
+    assert sim.execute_action("aemeath_basic_form_stage_3")
+    for _ in range(6):
+        assert sim.execute_action("short_wait")
+    assert sim.execute_action("aemeath_basic_form_stage_3")
+
+    summary = sim.summary()
+    row = summary.timeline[-1]
+    assert row.emitted_mechanic_event_tags == ["fusion_burst"]
+    assert row.echo_set_triggered_buff_ids == [AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID]
+    assert row.echo_set_buff_refreshed is True
+    assert math.isclose(row.crit_rate_after_buffs, BUFFED_CRIT_RATE, rel_tol=1e-9)
+    assert summary.aemeath_trailblazing_star_5set_trigger_count == 2
+    assert len([buff for buff in sim.state.active_buffs if buff.buff_id == AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID]) == 1
+
+
+def test_buff_expires_after_eight_seconds() -> None:
+    sim = make_sim("fusion_burst")
+    assert sim.execute_action("aemeath_basic_form_stage_3")
+    for _ in range(17):
+        assert sim.execute_action("short_wait")
+    assert AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID not in [buff.buff_id for buff in sim.state.active_buffs]
+    assert sim.execute_action("aemeath_basic_form_stage_1")
+    row = sim.summary().timeline[-1]
+    assert row.aemeath_trailblazing_star_5set_active is False
+    assert math.isclose(row.crit_rate_after_buffs, BASE_CRIT_RATE, rel_tol=1e-9)
+    assert math.isclose(row.echo_set_damage_bonus, 0.0, abs_tol=1e-12)
+
+
+def test_event_mode_still_adds_no_extra_damage_events() -> None:
+    unresolved_damage = make_sim("unresolved")
+    fusion_damage = make_sim("fusion_burst")
+    assert unresolved_damage.execute_action("aemeath_basic_form_stage_3")
+    assert fusion_damage.execute_action("aemeath_basic_form_stage_3")
+    unresolved_row = unresolved_damage.summary().timeline[-1]
+    fusion_row = fusion_damage.summary().timeline[-1]
+    assert unresolved_row.hit_count == fusion_row.hit_count
+    assert unresolved_row.direct_anomaly_damage == fusion_row.direct_anomaly_damage == 0.0
+    assert unresolved_row.anomaly_tick_damage == fusion_row.anomaly_tick_damage == 0.0
+    assert set(fusion_damage.summary().damage_by_resolved_action) == {"aemeath_basic_form_stage_3"}
+
+
 def main() -> None:
-    test_trigger_applies_after_action_and_not_retroactively()
-    test_next_action_receives_crit_and_fusion_damage_bonus()
-    test_tune_rupture_event_also_triggers_and_refreshes()
+    test_fusion_burst_triggering_action_receives_buff()
+    test_tune_rupture_triggering_action_receives_buff()
     test_unresolved_mode_does_not_activate_buff()
+    test_non_trigger_action_does_not_newly_activate_buff()
+    test_non_trigger_action_benefits_while_buff_is_active()
+    test_same_action_cooldown_blocks_refresh_but_existing_buff_remains()
+    test_retrigger_after_cooldown_refreshes_without_stacking()
+    test_buff_expires_after_eight_seconds()
+    test_event_mode_still_adds_no_extra_damage_events()
     print("aemeath_trailblazing_star_5set_runtime_buff_smoke_test ok")
 
 

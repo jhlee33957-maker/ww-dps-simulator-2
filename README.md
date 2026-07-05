@@ -244,7 +244,7 @@ Not implemented yet:
 - Tune Rupture damage and follow-up mechanics
 - Fusion Burst damage and follow-up mechanics
 - Fusion Trail / Rupturous Trail damage
-- Trailblazing Star set effects
+- Trailblazing Star follow-up damage or mechanics beyond the implemented Aemeath 5-set runtime stat buff
 - Rupturous Trail
 - Stardust Resonance's full effects
 - Heavy attacks
@@ -260,7 +260,17 @@ Aemeath has a configurable `aemeath_resonance_mode` under `mechanics.aemeath` wi
 
 In `fusion_burst` mode, source-backed trigger actions emit the `fusion_burst` event tag. In `tune_rupture` mode, they emit `tune_rupture_shifting`. The same skill can trigger once every 3 seconds, keyed by character, action, and trigger id. Multi-hit actions emit at most one event per action execution.
 
-This is event metadata only: it does not add Fusion Burst damage, Tune Rupture damage, Fusion/Rupturous Trail damage, Trailblazing Star set effects, Seraphic Duet follow-up damage, stat bonuses, coefficients, timings, resources, cooldowns, or reward shaping. PPO reward remains `damage_this_action / 10000.0`.
+These event tags do not add Fusion Burst damage, Tune Rupture damage, Fusion/Rupturous Trail damage, Seraphic Duet follow-up damage, coefficients, timings, resources, cooldowns, or reward shaping. PPO reward remains `damage_this_action / 10000.0`.
+
+## Aemeath Trailblazing Star Echo Set
+
+`profiles.aemeath.aemeath_user_real_01` includes user-supplied Trailblazing Star metadata. Its 2-set Fusion DMG bonus is already included statically in the profile's element damage bonuses and is not added again at runtime.
+
+The implemented 5-set runtime buff is triggered by emitted `fusion_burst` or `tune_rupture_shifting` events. The triggering damage receives the buff: +20% Crit Rate and +20% Fusion DMG for 8 seconds, with one stack and same-name refresh behavior.
+
+The current simulator uses action-level aggregate damage for these trigger actions, so the whole triggering action is treated as receiving the buff as `same_action_aggregate_approximation`. This corrects the obsolete earlier rule where only later damage received the first activation.
+
+Full Fusion Burst explosion damage, Tune Rupture damage, Fusion Trail, Rupturous Trail, Seraphic Duet extra damage, and Stardust Resonance extra effects remain unsupported.
 
 Source-confirmed trigger metadata is currently stored from the user-supplied skill screenshot, not embedded workbook evidence. The source audit lives at `reports/aemeath_resonance_mode_mechanic_source_audit.md` and `data/extracted/aemeath_resonance_mode_mechanic_source_audit.json`.
 

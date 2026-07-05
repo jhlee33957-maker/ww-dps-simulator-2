@@ -112,7 +112,7 @@
       "echo_set_id": "trailblazing_star",
       "implementation_status": "implemented",
       "source_status": "user_supplied_set_tooltip",
-      "activation_timing": "applies after the triggering action resolves; the triggering hit does not receive this buff retroactively",
+      "activation_timing": "applies before triggering action damage is calculated; current simulator uses same_action_aggregate_approximation so the whole triggering action receives the buff",
       "unsupported_mechanics": [
         "fusion_burst_explosion_damage",
         "tune_rupture_damage",

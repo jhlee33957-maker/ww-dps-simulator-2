@@ -15,7 +15,7 @@ from simulator.buff_system import (
 from simulator.build_profiles import damage_bonus_breakdown, scaling_value_for_action, stat_component_log_fields
 from simulator.damage_formula import calculate_normal_damage, calculate_tune_break_damage
 from simulator.echo_sets import AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID, apply_echo_set_event_buffs
-from simulator.mechanic_events import process_mechanic_event_triggers
+from simulator.mechanic_events import preview_mechanic_event_trigger, process_mechanic_event_triggers
 from simulator.models import ActionData, ActionResult, BuffData, CharacterData, CombatState, HitData, TimelineEntry
 from simulator.resource_system import apply_resource_changes, can_pay_resources
 
@@ -210,6 +210,9 @@ def _calculate_hit_damage(
         "aemeath_trailblazing_star_5set_active": (
             AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID in stats.get("active_buff_summary", [])
         ),
+        "aemeath_trailblazing_star_5set_applied_before_triggering_damage": False,
+        "trailblazing_star_5set_same_action_application": False,
+        "trailblazing_star_5set_application_timing": None,
         "crit_rate_before_buffs": float(stats.get("crit_rate_before_buffs", character.crit_rate)),
         "crit_rate_after_buffs": float(stats.get("crit_rate_after_buffs", stats.get("crit_rate", 0.0))),
         "applied_damage_amp": damage_amp,
@@ -318,6 +321,19 @@ def _calculate_hit_damage_totals(
     )
 
 
+def _action_has_trigger_damage_potential(action: ActionData, action_time: float) -> bool:
+    if action.character_id is None:
+        return False
+    for hit in action.effective_hits():
+        if hit.time > action_time:
+            continue
+        if hit.damage_category == "normal" and hit.damage_multiplier > 0.0:
+            return True
+        if hit.damage_category == "tune_break" and hit.tune_break_multiplier > 0.0:
+            return True
+    return False
+
+
 def execute_action(
     action: ActionData,
     state: CombatState,
@@ -392,8 +408,36 @@ def execute_action(
     )
     mechanic_log_fields = dict(mechanic_log_fields)
 
-    # Damage events use an action-start state snapshot. Buffs/anomalies applied by
-    # this action are added after action_time and do not affect same-action hits.
+    echo_set_log_fields = {
+        "echo_set_triggered_buff_ids": [],
+        "echo_set_buff_refreshed": False,
+        "aemeath_trailblazing_star_5set_applied_before_triggering_damage": False,
+        "trailblazing_star_5set_same_action_application": False,
+        "trailblazing_star_5set_application_timing": None,
+    }
+    pre_damage_event_preview = preview_mechanic_event_trigger(
+        action,
+        state,
+        action_start_combat_time=combat_start_time,
+    )
+    if (
+        not truncated_by_combat_limit
+        and pre_damage_event_preview.get("emitted_mechanic_event_tags")
+        and _action_has_trigger_damage_potential(action, action_time)
+    ):
+        echo_set_log_fields = apply_echo_set_event_buffs(
+            actor_character_id=actor_character_id,
+            emitted_event_tags=pre_damage_event_preview.get("emitted_mechanic_event_tags", []),
+            characters=characters,
+            state=state,
+            buffs=buffs,
+            application_time=start_time,
+            applied_before_triggering_damage=True,
+        )
+
+    # Damage events use an action-start state snapshot. Trailblazing Star 5-set is
+    # pre-applied for same-action trigger damage; other action-applied buffs and
+    # anomalies are added after action_time and affect later actions only.
     (
         normal_damage,
         tune_break_damage,
@@ -445,20 +489,6 @@ def execute_action(
         for buff_id in action.applies_buffs:
             apply_buff(state, buffs[buff_id], action.character_id)
         apply_anomaly(state, action)
-
-    echo_set_log_fields = {
-        "echo_set_triggered_buff_ids": [],
-        "echo_set_buff_refreshed": False,
-    }
-    if not truncated_by_combat_limit:
-        echo_set_log_fields = apply_echo_set_event_buffs(
-            actor_character_id=actor_character_id,
-            emitted_event_tags=mechanic_event_log_fields.get("emitted_mechanic_event_tags", []),
-            characters=characters,
-            state=state,
-            buffs=buffs,
-            action_end_time=state.current_time,
-        )
 
     # Simplified cooldown model: cooldown starts at the end of the action.
     if action.cooldown > 0.0 and not truncated_by_combat_limit:
@@ -557,6 +587,7 @@ def execute_action(
                 **mechanic_event_log_fields,
                 **echo_set_log_fields,
                 "aemeath_trailblazing_star_5set_active": AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID in active_buff_ids,
+                "active_buff_ids": active_buff_ids,
                 "combat_time_start": combat_start_time,
                 "combat_time_end": state.combat_time,
             }
@@ -635,6 +666,11 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         echo_set_triggered_buff_ids=result.echo_set_triggered_buff_ids,
         echo_set_buff_refreshed=result.echo_set_buff_refreshed,
         aemeath_trailblazing_star_5set_active=result.aemeath_trailblazing_star_5set_active,
+        aemeath_trailblazing_star_5set_applied_before_triggering_damage=(
+            result.aemeath_trailblazing_star_5set_applied_before_triggering_damage
+        ),
+        trailblazing_star_5set_same_action_application=result.trailblazing_star_5set_same_action_application,
+        trailblazing_star_5set_application_timing=result.trailblazing_star_5set_application_timing,
         active_anomalies_after=result.active_anomalies_after,
         active_buffs=result.active_buffs,
         applied_buffs=result.applied_buffs,

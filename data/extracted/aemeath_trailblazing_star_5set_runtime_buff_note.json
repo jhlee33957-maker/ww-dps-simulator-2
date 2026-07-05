@@ -10,6 +10,10 @@
     "fusion_burst",
     "tune_rupture_shifting"
   ],
+  "retroactive_to_triggering_hit": true,
+  "trigger_damage_receives_buff": true,
+  "implementation_timing_mode": "same_action_aggregate_approximation",
+  "obsolete_previous_timing_rule": "previous implementation applied the first activation only after the triggering action; corrected so triggering damage receives the buff.",
   "buff_effect": {
     "duration_seconds": 8.0,
     "crit_rate_add": 0.2,
@@ -19,7 +23,7 @@
     "max_stacks": 1,
     "stacking_rule": "refresh_duration"
   },
-  "activation_timing": "applies after the triggering action resolves; the triggering hit does not receive this buff retroactively",
+  "activation_timing": "applies before triggering action damage is calculated; current simulator uses same_action_aggregate_approximation so the whole triggering action receives the buff",
   "unsupported_mechanics": [
     "fusion_burst_explosion_damage",
     "tune_rupture_damage",

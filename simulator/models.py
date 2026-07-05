@@ -444,6 +444,9 @@ class ActionResult(BaseModel):
     echo_set_triggered_buff_ids: list[str] = Field(default_factory=list)
     echo_set_buff_refreshed: bool = False
     aemeath_trailblazing_star_5set_active: bool = False
+    aemeath_trailblazing_star_5set_applied_before_triggering_damage: bool = False
+    trailblazing_star_5set_same_action_application: bool = False
+    trailblazing_star_5set_application_timing: str | None = None
     active_anomalies_after: dict[str, int] = Field(default_factory=dict)
     active_buffs: list[str] = Field(default_factory=list)
     applied_buffs: list[str] = Field(default_factory=list)
@@ -634,6 +637,9 @@ class TimelineEntry(BaseModel):
     echo_set_triggered_buff_ids: list[str] = Field(default_factory=list)
     echo_set_buff_refreshed: bool = False
     aemeath_trailblazing_star_5set_active: bool = False
+    aemeath_trailblazing_star_5set_applied_before_triggering_damage: bool = False
+    trailblazing_star_5set_same_action_application: bool = False
+    trailblazing_star_5set_application_timing: str | None = None
     active_anomalies_after: dict[str, int] = Field(default_factory=dict)
     active_buffs: list[str] = Field(default_factory=list)
     applied_buffs: list[str] = Field(default_factory=list)

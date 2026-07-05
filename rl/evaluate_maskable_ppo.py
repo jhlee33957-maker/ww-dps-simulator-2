@@ -268,6 +268,11 @@ def main() -> None:
                 "echo_set_triggered_buff_ids": row.echo_set_triggered_buff_ids,
                 "echo_set_buff_refreshed": row.echo_set_buff_refreshed,
                 "aemeath_trailblazing_star_5set_active": row.aemeath_trailblazing_star_5set_active,
+                "aemeath_trailblazing_star_5set_applied_before_triggering_damage": (
+                    row.aemeath_trailblazing_star_5set_applied_before_triggering_damage
+                ),
+                "trailblazing_star_5set_same_action_application": row.trailblazing_star_5set_same_action_application,
+                "trailblazing_star_5set_application_timing": row.trailblazing_star_5set_application_timing,
                 "build_profile_id": row.build_profile_id,
                 "damage": row.total_action_damage,
             }

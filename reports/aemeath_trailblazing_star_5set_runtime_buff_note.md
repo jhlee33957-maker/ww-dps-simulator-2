@@ -8,10 +8,15 @@ The 2-set Fusion DMG bonus is already manually reflected in `profiles.aemeath.ae
 
 Implemented behavior:
 
-- If Aemeath has `echo_sets.trailblazing_star.pieces = 5` and `conditional_5set_enabled = true`, emitted `fusion_burst` or `tune_rupture_shifting` mechanic events apply `aemeath_trailblazing_star_5set`.
+- If Aemeath has `echo_sets.trailblazing_star.pieces = 5` and `conditional_5set_enabled = true`, a successful emitted `fusion_burst` or `tune_rupture_shifting` mechanic event applies or refreshes `aemeath_trailblazing_star_5set`.
+- The triggering damage receives the buff.
+- The current simulator applies this as `same_action_aggregate_approximation`: the whole triggering action receives the buff because damage is aggregated at action level.
 - The buff grants +20% Crit Rate and +20% Fusion DMG for 8 seconds.
 - The buff has one stack and refreshes duration on repeated triggers.
-- The buff is applied after the triggering action resolves, so the triggering hit does not receive the buff retroactively.
+
+Obsolete previous timing rule:
+
+- Previous implementation applied the first activation only after the triggering action; corrected so triggering damage receives the buff.
 
 Unsupported or intentionally not implemented in this patch:
 

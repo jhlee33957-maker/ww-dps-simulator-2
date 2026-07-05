@@ -49,6 +49,7 @@ def test_profile_and_buff_metadata() -> None:
     assert buff["stat_modifiers"]["crit_rate"] == 0.2
     assert buff["damage_bonus_by_element"]["fusion"] == 0.2
     assert buff["metadata"]["source_type"] == "echo_set"
+    assert "after the triggering action resolves" not in buff["metadata"]["activation_timing"]
 
 
 def test_effective_summary_and_runtime_diagnostics() -> None:
@@ -73,25 +74,38 @@ def test_effective_summary_and_runtime_diagnostics() -> None:
     row = triggered_summary.timeline[-1]
     assert row.echo_set_triggered_buff_ids == [AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID]
     assert row.aemeath_trailblazing_star_5set_active is True
+    assert row.aemeath_trailblazing_star_5set_applied_before_triggering_damage is True
+    assert row.trailblazing_star_5set_same_action_application is True
+    assert row.trailblazing_star_5set_application_timing == "same_action_aggregate_approximation"
     assert triggered_summary.echo_set_active_buffs == [AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID]
     assert triggered_summary.aemeath_trailblazing_star_5set_buff_windows
+    assert sim.state.damage_log[-1]["aemeath_trailblazing_star_5set_applied_before_triggering_damage"] is True
 
 
-def test_source_note_files_exist() -> None:
+def test_source_note_files_record_corrected_timing() -> None:
     markdown_path = PROJECT_ROOT / "reports" / "aemeath_trailblazing_star_5set_runtime_buff_note.md"
     json_path = DATA_DIR / "extracted" / "aemeath_trailblazing_star_5set_runtime_buff_note.json"
     assert markdown_path.exists()
     assert json_path.exists()
+    markdown = markdown_path.read_text(encoding="utf-8")
+    assert "triggering damage receives the buff" in markdown
+    assert "does not receive the buff retroactively" not in markdown
+
     note = json.loads(json_path.read_text(encoding="utf-8-sig"))
     assert note["implemented_buff_id"] == AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID
     assert note["static_2set_already_in_profile"] is True
+    assert note["retroactive_to_triggering_hit"] is True
+    assert note["trigger_damage_receives_buff"] is True
+    assert note["implementation_timing_mode"] == "same_action_aggregate_approximation"
+    assert "corrected so triggering damage receives the buff" in note["obsolete_previous_timing_rule"]
+    assert "after the triggering action resolves" not in note["activation_timing"]
     assert "fusion_burst_explosion_damage" in note["unsupported_mechanics"]
 
 
 def main() -> None:
     test_profile_and_buff_metadata()
     test_effective_summary_and_runtime_diagnostics()
-    test_source_note_files_exist()
+    test_source_note_files_record_corrected_timing()
     print("aemeath_trailblazing_star_5set_runtime_metadata_smoke_test ok")
 
 
