@@ -111,11 +111,23 @@
       2.0279
     ],
     "apply_character_mechanics": true,
+    "mechanic_event_tags": [
+      "team_heal"
+    ],
     "mechanic_effects": {
       "clear_rest_mass_energy": true,
       "set_mode": "wide_field_observation",
       "set_wide_field_observation_remaining": 30.0,
       "set_syntony_field_remaining": 25.0,
+      "syntony_field_off_tune_buildup_rate_add": 0.5,
+      "syntony_field_off_tune_bonus_source": "角色-女!D4122",
+      "heal_event_mode_support": [
+        "field_creation_only",
+        "simplified_syntony_field_uptime"
+      ],
+      "team_heal_event_tag": "team_heal",
+      "healing_proxy_source": "角色-女!D4120",
+      "healing_proxy_implementation_status": "simplified_field_uptime_heal_proxy",
       "set_wfo_combo_stage": 1,
       "source_sheet": "角色-女",
       "source_rows": [

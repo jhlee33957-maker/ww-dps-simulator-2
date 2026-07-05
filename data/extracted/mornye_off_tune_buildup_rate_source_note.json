@@ -1,0 +1,24 @@
+{
+  "character_id": "mornye",
+  "default_off_tune_buildup_rate": 1.0,
+  "default_source_status": "user_confirmed_game_default",
+  "syntony_field_off_tune_bonus": 0.5,
+  "syntony_field_bonus_source": {
+    "sheet": "角色-女",
+    "row": 4122,
+    "cell": "D4122",
+    "raw_text": "全队偏谐效率+50%，解锁C2时额外+20%",
+    "display_text": "全队偏谐效率+50%，解锁C2时额外+20%"
+  },
+  "c2_additional_bonus": 0.2,
+  "c2_default_active": false,
+  "healing_proxy_source": {
+    "sheet": "角色-女",
+    "row": 4120,
+    "cell": "D4120",
+    "raw_text": "持续帧内每180F进行一次判定，被命中后回血，仅对己方生效",
+    "display_text": "持续帧内每180F进行一次判定，被命中后回血，仅对己方生效"
+  },
+  "high_syntony_field_off_tune_inheritance_status": "unresolved_not_applied_unless_source_confirmed",
+  "energy_regen_is_not_off_tune_buildup_rate": true
+}

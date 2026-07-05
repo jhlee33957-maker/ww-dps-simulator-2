@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from simulator.build_profiles import stat_component_log_fields
+from simulator.build_profiles import normalize_support_stats, stat_component_log_fields, support_stat_log_fields
 from simulator.models import ActiveBuff, BuffData, CharacterData, CombatState
 
 
@@ -198,6 +198,50 @@ def collect_runtime_flat_def_bonus(
     return float(buffed_combat_stats(character, state, buffs, time_offset=time_offset)["runtime_def_flat_bonus"])
 
 
+def support_stat_context(
+    character: CharacterData,
+    state: CombatState,
+    buffs: dict[str, BuffData],
+    *,
+    time_offset: float = 0.0,
+) -> dict[str, Any]:
+    support_stats = normalize_support_stats(character.support_stats)
+    base_off_tune = float(support_stats.get("off_tune_buildup_rate", 1.0) or 1.0)
+    runtime_bonus = 0.0
+    syntony_bonus = 0.0
+    c2_bonus_active = False
+    active_support_buffs: list[str] = []
+
+    for active in state.active_buffs:
+        if active.remaining_duration <= time_offset:
+            continue
+        buff = buffs.get(active.buff_id)
+        if buff is None:
+            continue
+        if not _buff_applies(buff, active, character, state):
+            continue
+        for stat_name, stat_value in buff.support_stat_modifiers.items():
+            if stat_name != "off_tune_buildup_rate_add":
+                continue
+            active_support_buffs.append(buff.id)
+            value = float(active.metadata.get("dynamic_support_value", stat_value))
+            runtime_bonus += value
+            if buff.id == "mornye_syntony_field_off_tune_buildup_rate":
+                syntony_bonus += value
+                c2_bonus_active = c2_bonus_active or bool(active.metadata.get("c2_off_tune_bonus_active", False))
+
+    return {
+        "support_stats": support_stats,
+        "base_off_tune_buildup_rate": base_off_tune,
+        "runtime_off_tune_buildup_rate_bonus": runtime_bonus,
+        "current_off_tune_buildup_rate": base_off_tune + runtime_bonus,
+        "syntony_field_off_tune_bonus_active": syntony_bonus > 0.0,
+        "syntony_field_off_tune_bonus_value": syntony_bonus,
+        "c2_off_tune_bonus_active": c2_bonus_active,
+        "active_support_buff_ids": active_support_buffs,
+    }
+
+
 def buffed_combat_stats(
     character: CharacterData,
     state: CombatState,
@@ -206,6 +250,7 @@ def buffed_combat_stats(
 ) -> dict[str, float]:
     stats = {
         **stat_component_log_fields(character),
+        **support_stat_context(character, state, buffs, time_offset=time_offset),
         "atk_percent": character.static_atk_percent + character.runtime_atk_percent_bonus,
         "flat_atk": character.static_flat_atk + character.runtime_flat_atk_bonus,
         "dmg_bonus": character.dmg_bonus,
@@ -220,6 +265,8 @@ def buffed_combat_stats(
         "damage_bonus_by_element_buff": {},
         "echo_set_damage_bonus_by_element": {},
         "crit_rate_before_buffs": character.crit_rate,
+        "halo_of_starry_radiance_5set_active": False,
+        "halo_of_starry_radiance_5set_atk_percent_bonus": 0.0,
     }
     active_buff_names: list[str] = []
 
@@ -231,6 +278,12 @@ def buffed_combat_stats(
             continue
         buff_value = float(active.metadata.get("dynamic_value", buff.value))
         active_buff_names.append(buff.id)
+        if buff.id == "mornye_halo_of_starry_radiance_5set":
+            stats["halo_of_starry_radiance_5set_active"] = True
+            stats["halo_of_starry_radiance_5set_atk_percent_bonus"] = max(
+                float(stats.get("halo_of_starry_radiance_5set_atk_percent_bonus", 0.0)),
+                buff_value,
+            )
         if buff.modifier_type == "attack":
             stats["runtime_atk_percent_bonus"] += buff_value
         elif buff.modifier_type == "damage_bonus":
@@ -268,6 +321,7 @@ def buffed_combat_stats(
                     )
 
     _recalculate_scaling_stats(stats)
+    stats.update(support_stat_log_fields(stats))
     stats["crit_rate_after_buffs"] = stats["crit_rate"]
     stats["active_buff_count"] = float(len(active_buff_names))
     stats["active_buff_summary"] = active_buff_names

@@ -708,10 +708,22 @@
       "source:excel"
     ],
     "policy_selectable": false,
+    "mechanic_event_tags": [
+      "team_heal"
+    ],
     "mechanic_effects": {
       "consume_rest_mass_energy": true,
       "wide_field_observation_duration": 30,
       "syntony_field_duration": 25,
+      "syntony_field_off_tune_buildup_rate_add": 0.5,
+      "syntony_field_off_tune_bonus_source": "角色-女!D4122",
+      "heal_event_mode_support": [
+        "field_creation_only",
+        "simplified_syntony_field_uptime"
+      ],
+      "team_heal_event_tag": "team_heal",
+      "healing_proxy_source": "角色-女!D4120",
+      "healing_proxy_implementation_status": "simplified_field_uptime_heal_proxy",
       "set_wfo_combo_stage": 1,
       "source_character_name": "莫宁"
     },
@@ -964,9 +976,16 @@
       "source:excel"
     ],
     "policy_selectable": false,
+    "mechanic_event_tags": [
+      "team_heal"
+    ],
     "mechanic_effects": {
       "upgrade_syntony_to_high": true,
       "high_syntony_field_duration": 25,
+      "high_syntony_field_healing_metadata_present": true,
+      "high_syntony_field_healing_source": "角色-女!D4121",
+      "high_syntony_field_off_tune_bonus_status": "unresolved_not_applied",
+      "team_heal_event_tag": "team_heal",
       "energy_regen_scaling_metadata_only": true,
       "source_character_name": "莫宁",
       "source_sheet": "角色-女",

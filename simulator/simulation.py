@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from collections import Counter
 from pathlib import Path
+from typing import Any
 
 from characters.base import CharacterMechanic
 from characters.registry import get_mechanic, get_mechanics_for_characters
@@ -18,8 +19,15 @@ from simulator.build_profiles import (
 from simulator.buff_system import add_team_buff
 from simulator.echo_sets import (
     AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID,
+    MORNYE_HALO_OF_STARRY_RADIANCE_5SET_BUFF_ID,
+    TEAM_HEAL_EVENT_TAG,
     active_echo_sets_for_characters,
+    apply_mornye_halo_of_starry_radiance_5set_event_buff,
+    apply_syntony_field_off_tune_buff,
     echo_set_active_buff_ids,
+    halo_of_starry_radiance_config,
+    halo_of_starry_radiance_enabled,
+    halo_of_starry_radiance_uptime_seconds,
     trailblazing_star_config,
     trailblazing_star_enabled,
     trailblazing_star_uptime_seconds,
@@ -262,6 +270,7 @@ class Simulation:
             return False
 
         self._apply_pre_transition_events(transition_resolution)
+        pre_action_echo_set_log_fields = self._apply_mornye_syntony_field_uptime_heal_proxy(action)
         transition_actor_character_id = (action.mechanic_effects or {}).get("transition_actor_character_id")
         actor_character_id = (
             str(transition_actor_character_id)
@@ -279,6 +288,7 @@ class Simulation:
             self.buffs,
             mechanic=actor_mechanic,
             combat_duration=self.combat_duration,
+            pre_action_echo_set_log_fields=pre_action_echo_set_log_fields,
         )
         if not result.valid:
             return False
@@ -293,6 +303,8 @@ class Simulation:
             mechanic.advance_time(self.state, result.action_time)
         if not result.truncated_by_combat_limit and not (action.mechanic_effects or {}).get("skip_character_after_action"):
             actor_mechanic.after_action(self.state, action, result)
+        if not result.truncated_by_combat_limit:
+            self._apply_mornye_post_action_support_events(action, result)
         result.mechanic_debug_after = {
             character_id: mechanic.get_debug_state(self.state)
             for character_id, mechanic in self.character_mechanics.items()
@@ -473,6 +485,90 @@ class Simulation:
         result.mornye_wfo_remaining_after = float(data.get("wide_field_observation_remaining", 0.0))
         result.mornye_syntony_field_remaining_after = float(data.get("syntony_field_remaining", 0.0))
 
+    def _mornye_mechanics_config(self) -> dict[str, Any]:
+        return dict(((self.state.mechanics_config or {}).get("mornye") or {}))
+
+    def _mornye_constellation(self) -> int:
+        return max(0, int(self._mornye_mechanics_config().get("mornye_constellation", 0) or 0))
+
+    def _mornye_heal_event_mode(self) -> str:
+        mode = str(self._mornye_mechanics_config().get("mornye_heal_event_mode", "simplified_syntony_field_uptime"))
+        return mode if mode in {"disabled", "field_creation_only", "simplified_syntony_field_uptime"} else "disabled"
+
+    def _apply_mornye_syntony_field_uptime_heal_proxy(self, action: ActionData) -> dict[str, Any]:
+        if "mornye" not in self.characters:
+            return {}
+        mode = self._mornye_heal_event_mode()
+        if mode != "simplified_syntony_field_uptime":
+            return {}
+        data = self.state.character_mechanics_state.get("mornye") or {}
+        if float(data.get("syntony_field_remaining", 0.0) or 0.0) <= 0.0:
+            return {}
+        log = apply_mornye_halo_of_starry_radiance_5set_event_buff(
+            source_character_id="mornye",
+            emitted_event_tags=[TEAM_HEAL_EVENT_TAG],
+            characters=self.characters,
+            state=self.state,
+            buffs=self.buffs,
+            application_time=self.state.current_time,
+            event_source="simplified_syntony_field_uptime_action_boundary",
+        )
+        log["mornye_heal_proxy_implementation_status"] = "simplified_field_uptime_heal_proxy"
+        return log
+
+    def _apply_mornye_post_action_support_events(self, action: ActionData, result) -> None:
+        if action.character_id != "mornye" and (action.mechanic_effects or {}).get("transition_actor_character_id") != "mornye":
+            return
+        effects = action.mechanic_effects or {}
+        mode = self._mornye_heal_event_mode()
+        log_updates: dict[str, Any] = {
+            "mornye_constellation": self._mornye_constellation(),
+            "mornye_heal_event_mode": mode,
+        }
+        syntony_duration = effects.get("syntony_field_duration", effects.get("set_syntony_field_remaining"))
+        if syntony_duration is not None:
+            syntony_log = apply_syntony_field_off_tune_buff(
+                state=self.state,
+                source_character_id="mornye",
+                duration=float(syntony_duration),
+                constellation=self._mornye_constellation(),
+                application_time=result.end_time,
+            )
+            log_updates.update(syntony_log)
+        high_syntony_heal_metadata = bool(effects.get("upgrade_syntony_to_high") or effects.get("high_syntony_field_duration"))
+        emits_creation_heal = (
+            mode in {"field_creation_only", "simplified_syntony_field_uptime"}
+            and (syntony_duration is not None or high_syntony_heal_metadata)
+        )
+        if mode == "disabled":
+            log_updates["halo_of_starry_radiance_5set_unavailable_reason"] = "mornye_heal_event_mode_disabled"
+        elif emits_creation_heal:
+            halo_log = apply_mornye_halo_of_starry_radiance_5set_event_buff(
+                source_character_id="mornye",
+                emitted_event_tags=[TEAM_HEAL_EVENT_TAG],
+                characters=self.characters,
+                state=self.state,
+                buffs=self.buffs,
+                application_time=result.end_time,
+                event_source="field_creation_only" if mode == "field_creation_only" else "simplified_syntony_field_creation_proxy",
+            )
+            log_updates.update(halo_log)
+        if high_syntony_heal_metadata:
+            log_updates["high_syntony_field_healing_metadata_present"] = True
+            log_updates["high_syntony_field_off_tune_bonus_status"] = "unresolved_not_applied"
+
+        active_buff_ids = [buff.buff_id for buff in self.state.active_buffs if buff.remaining_duration > 0.0]
+        result.active_buffs = active_buff_ids
+        result.applied_buffs = list(dict.fromkeys([*result.applied_buffs, *log_updates.get("echo_set_triggered_buff_ids", [])]))
+        for key, value in log_updates.items():
+            if hasattr(result, key):
+                setattr(result, key, value)
+        result.halo_of_starry_radiance_5set_active = MORNYE_HALO_OF_STARRY_RADIANCE_5SET_BUFF_ID in active_buff_ids
+        if self.state.action_log:
+            self.state.action_log[-1].update(result.model_dump(mode="json"))
+        if self.state.damage_log and self.state.damage_log[-1].get("action_id") == action.id:
+            self.state.damage_log[-1].update(log_updates)
+
     def _mechanic_for_character(self, character_id: str) -> CharacterMechanic:
         mechanic = self.character_mechanics.get(character_id)
         if mechanic is None:
@@ -513,6 +609,38 @@ class Simulation:
             for window in self.state.echo_set_buff_windows
             if window.get("buff_id") == AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID
         ]
+        mornye_character = self.characters.get("mornye")
+        halo_config = halo_of_starry_radiance_config(mornye_character)
+        active_halo = next(
+            (
+                buff
+                for buff in self.state.active_buffs
+                if buff.buff_id == MORNYE_HALO_OF_STARRY_RADIANCE_5SET_BUFF_ID and buff.remaining_duration > 0.0
+            ),
+            None,
+        )
+        mornye_state = self.state.character_mechanics_state.get("mornye", {})
+        syntony_active = float(mornye_state.get("syntony_field_remaining", 0.0) or 0.0) > 0.0
+        base_off_tune = 1.0
+        runtime_off_tune_bonus = 0.0
+        current_off_tune = 1.0
+        c2_active = False
+        syntony_bonus_value = 0.0
+        if mornye_character is not None:
+            from simulator.buff_system import support_stat_context
+
+            support_context = support_stat_context(mornye_character, self.state, self.buffs)
+            base_off_tune = float(support_context["base_off_tune_buildup_rate"])
+            runtime_off_tune_bonus = float(support_context["runtime_off_tune_buildup_rate_bonus"])
+            current_off_tune = float(support_context["current_off_tune_buildup_rate"])
+            c2_active = bool(support_context["c2_off_tune_bonus_active"])
+            syntony_bonus_value = float(support_context["syntony_field_off_tune_bonus_value"])
+        halo_unavailable_reason = None
+        if mornye_character is not None and halo_of_starry_radiance_enabled(mornye_character):
+            if self.state.mechanic_event_emitted_counts.get(TEAM_HEAL_EVENT_TAG, 0) <= 0:
+                halo_unavailable_reason = "no_team_heal_event_occurred"
+        elif mornye_character is not None:
+            halo_unavailable_reason = "mornye_halo_5set_not_enabled"
 
         return SimulationSummary(
             total_damage=self.state.total_damage,
@@ -553,6 +681,27 @@ class Simulation:
                 self.state.current_time,
             ),
             aemeath_trailblazing_star_5set_buff_windows=trailblazing_windows,
+            base_off_tune_buildup_rate=base_off_tune,
+            runtime_off_tune_buildup_rate_bonus=runtime_off_tune_bonus,
+            current_off_tune_buildup_rate=current_off_tune,
+            syntony_field_off_tune_bonus_active=syntony_active and syntony_bonus_value > 0.0,
+            syntony_field_off_tune_bonus_value=syntony_bonus_value,
+            c2_off_tune_bonus_active=c2_active,
+            mornye_constellation=self._mornye_constellation(),
+            mornye_heal_event_mode=self._mornye_heal_event_mode(),
+            team_heal_event_count=int(self.state.mechanic_event_emitted_counts.get(TEAM_HEAL_EVENT_TAG, 0)),
+            mornye_halo_of_starry_radiance_5set_enabled=halo_of_starry_radiance_enabled(mornye_character),
+            mornye_halo_of_starry_radiance_5set_trigger_count=int(
+                self.state.echo_set_trigger_counts.get(MORNYE_HALO_OF_STARRY_RADIANCE_5SET_BUFF_ID, 0)
+            ),
+            mornye_halo_of_starry_radiance_5set_atk_percent_bonus=float(
+                (active_halo.metadata or {}).get("dynamic_value", 0.0) if active_halo is not None else 0.0
+            ),
+            mornye_halo_of_starry_radiance_5set_uptime_seconds=halo_of_starry_radiance_uptime_seconds(
+                self.state,
+                self.state.current_time,
+            ),
+            halo_of_starry_radiance_5set_unavailable_reason=halo_unavailable_reason,
         )
 
     @property

@@ -415,6 +415,11 @@
           "crit_damage": 1.752,
           "energy_regen": 2.7944
         },
+        "support_stats": {
+          "off_tune_buildup_rate": 1.0,
+          "off_tune_buildup_rate_source_status": "game_default_user_confirmed",
+          "off_tune_buildup_rate_note": "Default Off-Tune Buildup Rate is 100% = 1.0. Mornye Syntony Field can add +50%; C2 can add another +20% when enabled."
+        },
         "damage_bonuses": {
           "all": 0.0,
           "by_category": {
@@ -430,6 +435,20 @@
           "by_element": {
             "generic": 0.0,
             "fusion": 0.0
+          }
+        },
+        "echo_sets": {
+          "halo_of_starry_radiance": {
+            "pieces": 5,
+            "static_2set_healing_bonus_metadata_only": true,
+            "conditional_5set_enabled": true,
+            "conditional_5set_status": "implemented",
+            "source_status": "user_supplied_set_tooltip",
+            "trigger_event_tags": [
+              "team_heal"
+            ],
+            "buff_id": "mornye_halo_of_starry_radiance_5set",
+            "notes": "2-set Healing Bonus is metadata only for DPS. 5-set party ATK buff uses current Off-Tune Buildup Rate. Base value is 1.0; Syntony Field can raise it by +0.5, and C2 can add +0.2 if enabled."
           }
         }
       }

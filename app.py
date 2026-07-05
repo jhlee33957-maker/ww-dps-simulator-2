@@ -151,6 +151,7 @@ def build_profile_controls(
                         "crit_rate": summary.get("crit_rate"),
                         "crit_damage": summary.get("crit_damage"),
                         "energy_regen": summary.get("energy_regen"),
+                        "support_stats": summary.get("support_stats"),
                         "damage_bonuses": summary.get("damage_bonuses"),
                     }
                 )
@@ -189,6 +190,7 @@ def build_profile_controls(
                         {
                             "Mornye DEF effective stat": summary.get("effective_def"),
                             "Energy Regen": er,
+                            "Base Off-Tune Buildup Rate": (summary.get("support_stats") or {}).get("off_tune_buildup_rate", 1.0),
                             "ER Excess Percent": excess,
                             "Interfered Amp Potential": min(excess * 0.0025, 0.40),
                             "Liberation Crit Rate Bonus": min(excess * 0.005, 0.80),
@@ -394,6 +396,46 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
                         "Mornye Interfered Marker is running in simplified optional mode. "
                         "It applies an enemy DMG Taken amp on Heavy Inversion; full Tune conversion is not implemented."
                     )
+            with st.expander("Mornye Echo / Off-Tune"):
+                off_tune_cols = st.columns(4)
+                off_tune_cols[0].metric(
+                    "Base Off-Tune",
+                    f"{summary.base_off_tune_buildup_rate * 100:.0f}% / {summary.base_off_tune_buildup_rate:.1f}",
+                )
+                off_tune_cols[1].metric(
+                    "Syntony Bonus",
+                    f"+{summary.syntony_field_off_tune_bonus_value * 100:.0f}%"
+                    if summary.syntony_field_off_tune_bonus_active
+                    else "+0%",
+                )
+                off_tune_cols[2].metric("C2 Bonus", "+20%" if summary.c2_off_tune_bonus_active else "+0%")
+                off_tune_cols[3].metric("Current Off-Tune", f"{summary.current_off_tune_buildup_rate:.1f}")
+                halo_cols = st.columns(4)
+                halo_cols[0].metric("Halo 5-set", "Enabled" if summary.mornye_halo_of_starry_radiance_5set_enabled else "Disabled")
+                halo_cols[1].metric("Team heal events", summary.team_heal_event_count)
+                halo_cols[2].metric("Halo triggers", summary.mornye_halo_of_starry_radiance_5set_trigger_count)
+                halo_cols[3].metric(
+                    "Party ATK% buff",
+                    f"{summary.mornye_halo_of_starry_radiance_5set_atk_percent_bonus * 100:.1f}%",
+                )
+                st.write(
+                    {
+                        "Formula": "min(current_off_tune_buildup_rate * 0.20, 0.25)",
+                        "Heal event mode": summary.mornye_heal_event_mode,
+                        "Team heal proxy": (
+                            "simplified Syntony Field uptime"
+                            if summary.mornye_heal_event_mode == "simplified_syntony_field_uptime"
+                            else summary.mornye_heal_event_mode
+                        ),
+                        "Mornye constellation": summary.mornye_constellation,
+                        "Halo uptime seconds": summary.mornye_halo_of_starry_radiance_5set_uptime_seconds,
+                        "Unavailable reason": summary.halo_of_starry_radiance_5set_unavailable_reason,
+                        "Energy Regen is Off-Tune": False,
+                        "2-set Healing Bonus": "metadata only for DPS",
+                        "ATK% affects": "ATK-scaling party members",
+                        "Mornye DEF-scaling damage increased by Halo ATK%": False,
+                    }
+                )
         if "aemeath" in simulation.selected_party_character_ids:
             with st.expander("Aemeath Resonance Mode Events"):
                 event_cols = st.columns(3)
@@ -510,6 +552,18 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "runtime_atk_percent_bonus",
         "runtime_atk_flat_bonus",
         "runtime_flat_atk_bonus",
+        "base_off_tune_buildup_rate",
+        "runtime_off_tune_buildup_rate_bonus",
+        "current_off_tune_buildup_rate",
+        "syntony_field_off_tune_bonus_active",
+        "syntony_field_off_tune_bonus_value",
+        "c2_off_tune_bonus_active",
+        "mornye_constellation",
+        "mornye_heal_event_mode",
+        "team_heal_event_triggered",
+        "halo_of_starry_radiance_5set_active",
+        "halo_of_starry_radiance_5set_atk_percent_bonus",
+        "halo_of_starry_radiance_5set_unavailable_reason",
         "static_atk",
         "static_attack",
         "effective_atk",

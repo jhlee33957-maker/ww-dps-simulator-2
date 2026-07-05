@@ -112,6 +112,28 @@ Mornye helper formulas live in `characters/mornye.py`. ER excess percent is `max
 
 `data/transition_config.json` keeps Mornye ER scaling enabled and Interfered Marker mode disabled by default. The supported marker modes are `disabled`, `dry_run`, and `simplified_on_inversion`. The `aemeath_mornye_enabled_test_party` preset opts into `simplified_on_inversion` for deterministic support-testing because that preset already enables experimental transition behavior. Full Tune/Tune Rupture/Tune Strain marker conversion, Proof of Boundedness, healing, and DEF survival value remain out of scope.
 
+## Mornye Off-Tune Buildup Rate and Halo of Starry Radiance Echo Set
+
+Off-Tune Buildup Rate is modeled as an explicit support stat, `support_stats.off_tune_buildup_rate`. The default is 100% = `1.0` for every character when a profile does not provide a value. Energy Regen is separate and is never used as Off-Tune Buildup Rate.
+
+Mornye Syntony Field grants party Off-Tune Buildup Rate +50% from workbook row `角色-女!D4122`. C2 can add another +20%, but the default `mornye_constellation` is `0`, so that bonus is disabled unless config sets `mornye_constellation >= 2`.
+
+Halo of Starry Radiance 5-set is implemented for Mornye user profile `mornye_user_real_01`:
+
+- Trigger: `team_heal` event.
+- Current `team_heal` support: simplified Syntony Field healing proxy.
+- Exact healing amount and exact 180F / 3s tick timing are not modeled.
+- Formula: `ATK% = min(current_off_tune_buildup_rate * 0.20, 0.25)`.
+- Base `1.0` -> ATK +20%.
+- Syntony Field `1.5` -> ATK +25% cap.
+- Duration: 4s.
+- Max stacks: 1.
+- Retrigger behavior: refresh duration and recalculate value.
+
+The Halo 5-set buff is team ATK%, so it benefits ATK-scaling party members such as Aemeath. It does not increase Mornye DEF-scaling damage. The 2-set Healing Bonus is metadata only for current DPS. Full healing amount calculation, exact heal tick scheduling, defensive survival value, full automatic Syntony Field damage scheduling, and High Syntony Field Off-Tune inheritance remain unsupported/unresolved.
+
+PPO should be retrained only after Mornye `mornye_heal_event_mode` / field proxy behavior is finalized. No PPO training was performed for this patch.
+
 ## Mornye Excel Audit
 
 The read-only Mornye Excel audit compares the current Mornye v1 implementation against the workbook section for source character `莫宁`. Run it with:
@@ -697,6 +719,10 @@ python scripts/manual_real_profile_scaling_guard_smoke_test.py
 python scripts/actual_stat_component_build_profile_smoke_test.py
 python scripts/manual_real_profile_guard_smoke_test.py
 python scripts/attack_runtime_buff_formula_smoke_test.py
+python scripts/off_tune_buildup_rate_support_smoke_test.py
+python scripts/mornye_halo_of_starry_radiance_5set_runtime_buff_smoke_test.py
+python scripts/mornye_halo_of_starry_radiance_5set_metadata_smoke_test.py
+python scripts/mornye_heal_event_trigger_smoke_test.py
 python scripts/damage_formula_effective_attack_smoke_test.py
 python scripts/aemeath_damage_bonus_category_source_smoke_test.py
 python scripts/aemeath_resonance_mode_mechanic_event_smoke_test.py

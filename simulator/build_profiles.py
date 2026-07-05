@@ -21,6 +21,9 @@ DAMAGE_BONUS_CATEGORIES = {
 ELEMENT_KEYS = {"generic", "spectro", "aero", "fusion", "electro", "glacio", "havoc"}
 SCALING_STATS = {"atk", "def", "hp", "none", "unresolved"}
 COMPONENT_STATS = ("atk", "def", "hp")
+DEFAULT_SUPPORT_STATS = {
+    "off_tune_buildup_rate": 1.0,
+}
 LEGACY_CATEGORY_ALIASES = {
     "basic_attack_dmg_bonus": "basic_attack",
     "heavy_attack_dmg_bonus": "heavy_attack",
@@ -101,6 +104,25 @@ def raw_damage_type_to_damage_bonus_category(raw_damage_type: str | None) -> str
     if not normalized or normalized == "-":
         return "other"
     return RAW_DAMAGE_TYPE_ALIASES.get(normalized, "other")
+
+
+def normalize_support_stats(support_stats: dict[str, Any] | None = None) -> dict[str, Any]:
+    normalized: dict[str, Any] = dict(DEFAULT_SUPPORT_STATS)
+    for key, value in (support_stats or {}).items():
+        if key == "off_tune_buildup_rate":
+            normalized[key] = 1.0 if value is None else float(value)
+        else:
+            normalized[str(key)] = value
+    if normalized.get("off_tune_buildup_rate") is None:
+        normalized["off_tune_buildup_rate"] = 1.0
+    return normalized
+
+
+def merge_support_stats(base: dict[str, Any] | None, overlay: dict[str, Any] | None) -> dict[str, Any]:
+    merged = normalize_support_stats(base)
+    for key, value in (overlay or {}).items():
+        merged[str(key)] = 1.0 if key == "off_tune_buildup_rate" and value is None else value
+    return normalize_support_stats(merged)
 
 
 def normalize_scaling_stat(value: str | None, *, default: str = "unresolved") -> str:
@@ -456,6 +478,7 @@ def resolve_character_build_stats(
     if profile_id is None:
         effective = character_data.model_copy(deep=True)
         effective.energy_regen = effective.energy_regen or 1.0
+        effective.support_stats = normalize_support_stats(effective.support_stats)
         effective.damage_bonuses = normalize_damage_bonuses({}, legacy_all=effective.dmg_bonus)
         effective.profile_completeness_status = "fallback_character_stats"
         effective.implementation_status = effective.implementation_status or "character_data_fallback"
@@ -465,6 +488,7 @@ def resolve_character_build_stats(
 
     effective = character_data.model_copy(deep=True)
     effective.energy_regen = effective.energy_regen or 1.0
+    effective.support_stats = normalize_support_stats(effective.support_stats)
     effective.damage_bonuses = normalize_damage_bonuses(
         effective.damage_bonuses,
         legacy_all=effective.dmg_bonus,
@@ -490,6 +514,7 @@ def resolve_character_build_stats(
             effective.damage_bonuses = merge_damage_bonuses(effective.damage_bonuses, {"all": profile.get("damage_bonus")})
         if profile.get("echo_sets") is not None:
             effective.echo_sets = dict(profile.get("echo_sets") or {})
+        effective.support_stats = merge_support_stats(effective.support_stats, profile.get("support_stats"))
         effective.build_profile_id = resolved_id
         effective.build_profile_display_name = profile.get("display_name", resolved_id)
         effective.build_profile_description = profile.get("description")
@@ -506,6 +531,7 @@ def resolve_character_build_stats(
             raise ValueError(f"Unknown stat override {stat_name!r} for {character_data.id}.")
 
     effective.energy_regen = effective.energy_regen or 1.0
+    effective.support_stats = normalize_support_stats(effective.support_stats)
     effective.missing_required_fields = profile_missing_required_fields(
         profiles.get(profile_id, {}),
         effective.damage_bonuses,
@@ -656,6 +682,28 @@ def stat_component_log_fields(source: CharacterData | dict[str, Any]) -> dict[st
     return fields
 
 
+def support_stat_log_fields(source: CharacterData | dict[str, Any]) -> dict[str, Any]:
+    get = source.get if isinstance(source, dict) else lambda name, default=None: getattr(source, name, default)
+    support_stats = get("support_stats", {}) or {}
+    base_off_tune = get("base_off_tune_buildup_rate", None)
+    if base_off_tune is None:
+        base_off_tune = support_stats.get("off_tune_buildup_rate", 1.0)
+    runtime_bonus = float(get("runtime_off_tune_buildup_rate_bonus", 0.0) or 0.0)
+    current = get("current_off_tune_buildup_rate", None)
+    if current is None:
+        current = float(base_off_tune or 1.0) + runtime_bonus
+    return {
+        "base_off_tune_buildup_rate": float(base_off_tune or 1.0),
+        "runtime_off_tune_buildup_rate_bonus": runtime_bonus,
+        "current_off_tune_buildup_rate": float(current or 1.0),
+        "syntony_field_off_tune_bonus_active": bool(get("syntony_field_off_tune_bonus_active", False)),
+        "syntony_field_off_tune_bonus_value": float(get("syntony_field_off_tune_bonus_value", 0.0) or 0.0),
+        "c2_off_tune_bonus_active": bool(get("c2_off_tune_bonus_active", False)),
+        "mornye_constellation": int(get("mornye_constellation", 0) or 0),
+        "mornye_heal_event_mode": get("mornye_heal_event_mode", None),
+    }
+
+
 def effective_build_stats_summary(
     characters: dict[str, CharacterData],
     action_scaling_summary: dict[str, Any] | None = None,
@@ -677,7 +725,9 @@ def effective_build_stats_summary(
             "crit_damage": character.crit_damage,
             "damage_bonuses": character.damage_bonuses,
             "echo_sets": character.echo_sets,
+            "support_stats": normalize_support_stats(character.support_stats),
             **stat_fields,
+            **support_stat_log_fields(character),
         }
         if action_scaling_summary and character_id in action_scaling_summary:
             summary[character_id].update(action_scaling_summary[character_id])

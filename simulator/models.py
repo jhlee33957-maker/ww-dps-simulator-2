@@ -35,6 +35,7 @@ class CharacterData(BaseModel):
     dmg_bonus: float = 0.0
     damage_bonuses: dict[str, Any] = Field(default_factory=dict)
     echo_sets: dict[str, Any] = Field(default_factory=dict)
+    support_stats: dict[str, Any] = Field(default_factory=dict)
     element: str | None = None
     damage_attribute: str | None = None
     build_profile_id: str | None = None
@@ -267,6 +268,7 @@ class BuffData(BaseModel):
     target_character_id: str | None = None
     affected_tags: list[str] = Field(default_factory=list)
     stat_modifiers: dict[str, float] = Field(default_factory=dict)
+    support_stat_modifiers: dict[str, float] = Field(default_factory=dict)
     damage_amp_modifiers: dict[str, float] = Field(default_factory=dict)
     damage_bonus_by_element: dict[str, float] = Field(default_factory=dict)
     source_character_id: str | None = None
@@ -434,6 +436,18 @@ class ActionResult(BaseModel):
     hp_reference_delta_percent: float | None = None
     profile_completeness_status: str | None = None
     implementation_status: str | None = None
+    base_off_tune_buildup_rate: float = 1.0
+    runtime_off_tune_buildup_rate_bonus: float = 0.0
+    current_off_tune_buildup_rate: float = 1.0
+    syntony_field_off_tune_bonus_active: bool = False
+    syntony_field_off_tune_bonus_value: float = 0.0
+    c2_off_tune_bonus_active: bool = False
+    mornye_constellation: int = 0
+    mornye_heal_event_mode: str | None = None
+    team_heal_event_triggered: bool = False
+    halo_of_starry_radiance_5set_active: bool = False
+    halo_of_starry_radiance_5set_atk_percent_bonus: float = 0.0
+    halo_of_starry_radiance_5set_unavailable_reason: str | None = None
     emitted_mechanic_event_tags: list[str] = Field(default_factory=list)
     mechanic_event_triggered: bool = False
     mechanic_event_trigger_id: str | None = None
@@ -627,6 +641,18 @@ class TimelineEntry(BaseModel):
     hp_reference_delta_percent: float | None = None
     profile_completeness_status: str | None = None
     implementation_status: str | None = None
+    base_off_tune_buildup_rate: float = 1.0
+    runtime_off_tune_buildup_rate_bonus: float = 0.0
+    current_off_tune_buildup_rate: float = 1.0
+    syntony_field_off_tune_bonus_active: bool = False
+    syntony_field_off_tune_bonus_value: float = 0.0
+    c2_off_tune_bonus_active: bool = False
+    mornye_constellation: int = 0
+    mornye_heal_event_mode: str | None = None
+    team_heal_event_triggered: bool = False
+    halo_of_starry_radiance_5set_active: bool = False
+    halo_of_starry_radiance_5set_atk_percent_bonus: float = 0.0
+    halo_of_starry_radiance_5set_unavailable_reason: str | None = None
     emitted_mechanic_event_tags: list[str] = Field(default_factory=list)
     mechanic_event_triggered: bool = False
     mechanic_event_trigger_id: str | None = None
@@ -760,3 +786,17 @@ class SimulationSummary(BaseModel):
     aemeath_trailblazing_star_5set_trigger_count: int = 0
     aemeath_trailblazing_star_5set_uptime_seconds: float = 0.0
     aemeath_trailblazing_star_5set_buff_windows: list[dict[str, Any]] = Field(default_factory=list)
+    base_off_tune_buildup_rate: float = 1.0
+    runtime_off_tune_buildup_rate_bonus: float = 0.0
+    current_off_tune_buildup_rate: float = 1.0
+    syntony_field_off_tune_bonus_active: bool = False
+    syntony_field_off_tune_bonus_value: float = 0.0
+    c2_off_tune_bonus_active: bool = False
+    mornye_constellation: int = 0
+    mornye_heal_event_mode: str = "simplified_syntony_field_uptime"
+    team_heal_event_count: int = 0
+    mornye_halo_of_starry_radiance_5set_enabled: bool = False
+    mornye_halo_of_starry_radiance_5set_trigger_count: int = 0
+    mornye_halo_of_starry_radiance_5set_atk_percent_bonus: float = 0.0
+    mornye_halo_of_starry_radiance_5set_uptime_seconds: float = 0.0
+    halo_of_starry_radiance_5set_unavailable_reason: str | None = None

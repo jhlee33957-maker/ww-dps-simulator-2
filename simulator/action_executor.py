@@ -12,9 +12,15 @@ from simulator.buff_system import (
     has_required_buffs,
     tick_buffs,
 )
-from simulator.build_profiles import damage_bonus_breakdown, scaling_value_for_action, stat_component_log_fields
+from simulator.build_profiles import damage_bonus_breakdown, scaling_value_for_action, stat_component_log_fields, support_stat_log_fields
 from simulator.damage_formula import calculate_normal_damage, calculate_tune_break_damage
-from simulator.echo_sets import AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID, apply_echo_set_event_buffs
+from simulator.echo_sets import (
+    AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID,
+    MORNYE_HALO_OF_STARRY_RADIANCE_5SET_BUFF_ID,
+    apply_echo_set_event_buffs,
+    echo_set_base_log_fields,
+    merge_echo_set_logs,
+)
 from simulator.mechanic_events import preview_mechanic_event_trigger, process_mechanic_event_triggers
 from simulator.models import ActionData, ActionResult, BuffData, CharacterData, CombatState, HitData, TimelineEntry
 from simulator.resource_system import apply_resource_changes, can_pay_resources
@@ -202,6 +208,7 @@ def _calculate_hit_damage(
         "scaling_value": scaling_value,
         "stat_component_source": character.build_profile_id,
         **stat_component_log_fields(stats),
+        **support_stat_log_fields(stats),
         "profile_completeness_status": character.profile_completeness_status,
         "implementation_status": character.implementation_status,
         "applied_havoc_bane_def_reduction": havoc_def_reduction,
@@ -209,6 +216,10 @@ def _calculate_hit_damage(
         "active_buff_ids": stats.get("active_buff_summary", []),
         "aemeath_trailblazing_star_5set_active": (
             AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID in stats.get("active_buff_summary", [])
+        ),
+        "halo_of_starry_radiance_5set_active": bool(stats.get("halo_of_starry_radiance_5set_active", False)),
+        "halo_of_starry_radiance_5set_atk_percent_bonus": float(
+            stats.get("halo_of_starry_radiance_5set_atk_percent_bonus", 0.0) or 0.0
         ),
         "aemeath_trailblazing_star_5set_applied_before_triggering_damage": False,
         "trailblazing_star_5set_same_action_application": False,
@@ -296,6 +307,9 @@ def _calculate_hit_damage_totals(
                         "profile_completeness_status",
                         "implementation_status",
                         *stat_component_log_fields(detail).keys(),
+                        *support_stat_log_fields(detail).keys(),
+                        "halo_of_starry_radiance_5set_active",
+                        "halo_of_starry_radiance_5set_atk_percent_bonus",
                     )
                 }
                 action_damage_bonus_context["damage_category"] = action_damage_bonus_context.get("damage_category") or "other"
@@ -358,8 +372,25 @@ def _sync_hit_detail_runtime_event_logs(
         "trailblazing_star_5set_application_timing": echo_set_log_fields.get(
             "trailblazing_star_5set_application_timing"
         ),
+        "team_heal_event_triggered": bool(echo_set_log_fields.get("team_heal_event_triggered", False)),
+        "halo_of_starry_radiance_5set_unavailable_reason": echo_set_log_fields.get(
+            "halo_of_starry_radiance_5set_unavailable_reason"
+        ),
     }
     for detail in hit_details:
+        event_fields["halo_of_starry_radiance_5set_active"] = bool(
+            echo_set_log_fields.get(
+                "halo_of_starry_radiance_5set_active",
+                detail.get("halo_of_starry_radiance_5set_active", False),
+            )
+        )
+        event_fields["halo_of_starry_radiance_5set_atk_percent_bonus"] = float(
+            echo_set_log_fields.get(
+                "halo_of_starry_radiance_5set_atk_percent_bonus",
+                detail.get("halo_of_starry_radiance_5set_atk_percent_bonus", 0.0),
+            )
+            or 0.0
+        )
         detail.update(event_fields)
 
 
@@ -370,6 +401,7 @@ def execute_action(
     buffs: dict[str, BuffData],
     mechanic: Any | None = None,
     combat_duration: float | None = None,
+    pre_action_echo_set_log_fields: dict[str, Any] | None = None,
 ) -> ActionResult:
     valid, reason = is_action_valid(action, state)
     start_time = state.current_time
@@ -437,13 +469,7 @@ def execute_action(
     )
     mechanic_log_fields = dict(mechanic_log_fields)
 
-    echo_set_log_fields = {
-        "echo_set_triggered_buff_ids": [],
-        "echo_set_buff_refreshed": False,
-        "aemeath_trailblazing_star_5set_applied_before_triggering_damage": False,
-        "trailblazing_star_5set_same_action_application": False,
-        "trailblazing_star_5set_application_timing": None,
-    }
+    echo_set_log_fields = merge_echo_set_logs(echo_set_base_log_fields(), pre_action_echo_set_log_fields or {})
     pre_damage_event_preview = preview_mechanic_event_trigger(
         action,
         state,
@@ -454,7 +480,9 @@ def execute_action(
         and pre_damage_event_preview.get("emitted_mechanic_event_tags")
         and _action_has_trigger_damage_potential(action, action_time)
     ):
-        echo_set_log_fields = apply_echo_set_event_buffs(
+        echo_set_log_fields = merge_echo_set_logs(
+            echo_set_log_fields,
+            apply_echo_set_event_buffs(
             actor_character_id=actor_character_id,
             emitted_event_tags=pre_damage_event_preview.get("emitted_mechanic_event_tags", []),
             characters=characters,
@@ -462,6 +490,7 @@ def execute_action(
             buffs=buffs,
             application_time=start_time,
             applied_before_triggering_damage=True,
+            ),
         )
 
     # Damage events use an action-start state snapshot. Trailblazing Star 5-set is
@@ -584,10 +613,20 @@ def execute_action(
         scaling_value=float(action_damage_bonus_context.get("scaling_value") or 0.0),
         stat_component_source=action_damage_bonus_context.get("stat_component_source"),
         **stat_component_log_fields(action_damage_bonus_context),
+        **support_stat_log_fields(action_damage_bonus_context),
         profile_completeness_status=action_damage_bonus_context.get("profile_completeness_status"),
         **mechanic_event_log_fields,
         **echo_set_log_fields,
         aemeath_trailblazing_star_5set_active=AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID in active_buff_ids,
+        halo_of_starry_radiance_5set_active=bool(
+            action_damage_bonus_context.get(
+                "halo_of_starry_radiance_5set_active",
+                MORNYE_HALO_OF_STARRY_RADIANCE_5SET_BUFF_ID in active_buff_ids,
+            )
+        ),
+        halo_of_starry_radiance_5set_atk_percent_bonus=float(
+            action_damage_bonus_context.get("halo_of_starry_radiance_5set_atk_percent_bonus", 0.0) or 0.0
+        ),
         active_anomalies_after=active_anomalies_after,
         active_buffs=active_buff_ids,
         applied_buffs=applied_buff_ids,
@@ -617,6 +656,7 @@ def execute_action(
                 **mechanic_event_log_fields,
                 **echo_set_log_fields,
                 "aemeath_trailblazing_star_5set_active": AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID in active_buff_ids,
+                "halo_of_starry_radiance_5set_active": MORNYE_HALO_OF_STARRY_RADIANCE_5SET_BUFF_ID in active_buff_ids,
                 "active_buff_ids": active_buff_ids,
                 "combat_time_start": combat_start_time,
                 "combat_time_end": state.combat_time,
@@ -701,6 +741,18 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         ),
         trailblazing_star_5set_same_action_application=result.trailblazing_star_5set_same_action_application,
         trailblazing_star_5set_application_timing=result.trailblazing_star_5set_application_timing,
+        base_off_tune_buildup_rate=result.base_off_tune_buildup_rate,
+        runtime_off_tune_buildup_rate_bonus=result.runtime_off_tune_buildup_rate_bonus,
+        current_off_tune_buildup_rate=result.current_off_tune_buildup_rate,
+        syntony_field_off_tune_bonus_active=result.syntony_field_off_tune_bonus_active,
+        syntony_field_off_tune_bonus_value=result.syntony_field_off_tune_bonus_value,
+        c2_off_tune_bonus_active=result.c2_off_tune_bonus_active,
+        mornye_constellation=result.mornye_constellation,
+        mornye_heal_event_mode=result.mornye_heal_event_mode,
+        team_heal_event_triggered=result.team_heal_event_triggered,
+        halo_of_starry_radiance_5set_active=result.halo_of_starry_radiance_5set_active,
+        halo_of_starry_radiance_5set_atk_percent_bonus=result.halo_of_starry_radiance_5set_atk_percent_bonus,
+        halo_of_starry_radiance_5set_unavailable_reason=result.halo_of_starry_radiance_5set_unavailable_reason,
         active_anomalies_after=result.active_anomalies_after,
         active_buffs=result.active_buffs,
         applied_buffs=result.applied_buffs,

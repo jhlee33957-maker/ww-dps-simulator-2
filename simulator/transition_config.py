@@ -13,6 +13,11 @@ VALID_MORNYE_EXPECTATION_ERROR_MODES = {
     "dry_run_success_candidate",
     "always_success",
 }
+VALID_MORNYE_HEAL_EVENT_MODES = {
+    "disabled",
+    "field_creation_only",
+    "simplified_syntony_field_uptime",
+}
 VALID_AEMEATH_RESONANCE_MODES = {"fusion_burst", "tune_rupture", "unresolved"}
 SUPPORTED_CHARACTER_TRANSITIONS = (
     ("aemeath", "intro_qte"),
@@ -153,6 +158,9 @@ def mechanics_mode_summary(config: dict[str, Any]) -> dict[str, Any]:
     if expectation_error_mode not in VALID_MORNYE_EXPECTATION_ERROR_MODES:
         expectation_error_mode = "expectation_error_only"
     marker_config = mornye_config.get("interfered_marker") or {}
+    heal_event_mode = str(mornye_config.get("mornye_heal_event_mode", "simplified_syntony_field_uptime"))
+    if heal_event_mode not in VALID_MORNYE_HEAL_EVENT_MODES:
+        heal_event_mode = "disabled"
     return {
         "aemeath": {
             "aemeath_resonance_mode": aemeath_resonance_mode,
@@ -161,6 +169,8 @@ def mechanics_mode_summary(config: dict[str, Any]) -> dict[str, Any]:
         "mornye": {
             "expectation_error_mode": expectation_error_mode,
             "interfered_marker_mode": str(marker_config.get("mode", "disabled")),
+            "heal_event_mode": heal_event_mode,
+            "mornye_constellation": int(mornye_config.get("mornye_constellation", 0) or 0),
         }
     }
 

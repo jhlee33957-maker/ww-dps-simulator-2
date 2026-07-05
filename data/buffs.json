@@ -90,6 +90,62 @@
     }
   },
   {
+    "id": "mornye_syntony_field_off_tune_buildup_rate",
+    "name": "Mornye Syntony Field Off-Tune Buildup Rate",
+    "duration": 25.0,
+    "modifier_type": "boost",
+    "value": 0.0,
+    "target": "team",
+    "target_scope": "team",
+    "source_character_id": "mornye",
+    "stacking_rule": "refresh_duration",
+    "max_stacks": 1,
+    "support_stat_modifiers": {
+      "off_tune_buildup_rate_add": 0.5
+    },
+    "metadata": {
+      "source_character_id": "mornye",
+      "source_status": "workbook_confirmed",
+      "source": "角色-女!D4122",
+      "implementation_status": "implemented",
+      "duration_seconds": 25.0,
+      "c2_additional_bonus": 0.2,
+      "c2_default_active": false,
+      "notes": "Syntony Field grants party Off-Tune Buildup Rate +50%; C2 adds +20% only when mornye_constellation >= 2."
+    }
+  },
+  {
+    "id": "mornye_halo_of_starry_radiance_5set",
+    "name": "Halo of Starry Radiance 5-set",
+    "duration": 4.0,
+    "modifier_type": "attack",
+    "value": 0.0,
+    "target": "team",
+    "target_scope": "team",
+    "source_character_id": "mornye",
+    "stacking_rule": "refresh_duration",
+    "max_stacks": 1,
+    "stat_modifiers": {
+      "atk_percent": 0.0
+    },
+    "metadata": {
+      "source_type": "echo_set",
+      "source_character_id": "mornye",
+      "echo_set_id": "halo_of_starry_radiance",
+      "echo_set_pieces": 5,
+      "dynamic_value_formula": "min(current_off_tune_buildup_rate * 0.20, 0.25)",
+      "dynamic_value_source_stat": "current_off_tune_buildup_rate",
+      "duration_seconds": 4.0,
+      "trigger_event_tags": [
+        "team_heal"
+      ],
+      "max_atk_percent_bonus": 0.25,
+      "source_status": "user_supplied_set_tooltip",
+      "implementation_status": "implemented_simplified_heal_proxy",
+      "source_note": "Halo of Starry Radiance 5-set grants party ATK% after healing team members. Off-Tune Buildup Rate defaults to 1.0 and can be increased by Mornye Syntony Field +50%; Energy Regen is not used."
+    }
+  },
+  {
     "id": "aemeath_trailblazing_star_5set",
     "name": "Aemeath Trailblazing Star 5-set Runtime Buff",
     "duration": 8.0,

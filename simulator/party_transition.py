@@ -90,6 +90,13 @@ def default_transition_config() -> dict[str, Any]:
             },
             "mornye": {
                 "energy_regen_scaling": {"enabled": True},
+                "mornye_constellation": 0,
+                "mornye_heal_event_mode": "simplified_syntony_field_uptime",
+                "mornye_heal_event_modes": [
+                    "disabled",
+                    "field_creation_only",
+                    "simplified_syntony_field_uptime",
+                ],
                 "mornye_expectation_error_mode": "expectation_error_only",
                 "mornye_expectation_error_modes": [
                     "expectation_error_only",

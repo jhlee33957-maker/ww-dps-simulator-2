@@ -1,0 +1,24 @@
+{
+  "character_id": "mornye",
+  "echo_set_id": "halo_of_starry_radiance",
+  "buff_id": "mornye_halo_of_starry_radiance_5set",
+  "formula": "min(current_off_tune_buildup_rate * 0.20, 0.25)",
+  "examples": {
+    "base_1_0": 0.2,
+    "syntony_field_1_5": 0.25,
+    "syntony_field_plus_c2_1_7": 0.25
+  },
+  "duration": 4.0,
+  "max_stacks": 1,
+  "stacking_rule": "refresh_duration",
+  "trigger_event_tags": [
+    "team_heal"
+  ],
+  "healing_proxy": "simplified_syntony_field_uptime",
+  "unsupported": [
+    "exact healing amount",
+    "exact heal tick timing",
+    "defensive survival value",
+    "full automatic Syntony Field damage scheduling"
+  ]
+}
