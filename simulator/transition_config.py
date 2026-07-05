@@ -13,6 +13,7 @@ VALID_MORNYE_EXPECTATION_ERROR_MODES = {
     "dry_run_success_candidate",
     "always_success",
 }
+VALID_AEMEATH_RESONANCE_MODES = {"fusion_burst", "tune_rupture", "unresolved"}
 SUPPORTED_CHARACTER_TRANSITIONS = (
     ("aemeath", "intro_qte"),
     ("mornye", "intro_qte"),
@@ -52,6 +53,20 @@ def build_mornye_expectation_error_mode_override(mode: str | None = None) -> dic
         "mechanics": {
             "mornye": {
                 "mornye_expectation_error_mode": mode,
+            }
+        }
+    }
+
+
+def build_aemeath_resonance_mode_override(mode: str | None = None) -> dict[str, Any]:
+    if not mode:
+        return {}
+    _validate_aemeath_resonance_mode(mode)
+    return {
+        "mechanics": {
+            "aemeath": {
+                "aemeath_resonance_mode": mode,
+                "aemeath_resonance_mode_source": "user_supplied_skill_screenshot",
             }
         }
     }
@@ -129,12 +144,20 @@ def transition_mode_summary(config: dict[str, Any]) -> dict[str, Any]:
 
 
 def mechanics_mode_summary(config: dict[str, Any]) -> dict[str, Any]:
+    aemeath_config = (config.get("mechanics") or {}).get("aemeath", {})
+    aemeath_resonance_mode = str(aemeath_config.get("aemeath_resonance_mode", "unresolved"))
+    if aemeath_resonance_mode not in VALID_AEMEATH_RESONANCE_MODES:
+        aemeath_resonance_mode = "unresolved"
     mornye_config = (config.get("mechanics") or {}).get("mornye", {})
     expectation_error_mode = str(mornye_config.get("mornye_expectation_error_mode", "expectation_error_only"))
     if expectation_error_mode not in VALID_MORNYE_EXPECTATION_ERROR_MODES:
         expectation_error_mode = "expectation_error_only"
     marker_config = mornye_config.get("interfered_marker") or {}
     return {
+        "aemeath": {
+            "aemeath_resonance_mode": aemeath_resonance_mode,
+            "aemeath_resonance_mode_source": aemeath_config.get("aemeath_resonance_mode_source"),
+        },
         "mornye": {
             "expectation_error_mode": expectation_error_mode,
             "interfered_marker_mode": str(marker_config.get("mode", "disabled")),
@@ -191,4 +214,12 @@ def _validate_mornye_expectation_error_mode(mode: str) -> None:
         raise ValueError(
             f"Unsupported Mornye Expectation Error mode {mode!r}; "
             f"expected one of {sorted(VALID_MORNYE_EXPECTATION_ERROR_MODES)}."
+        )
+
+
+def _validate_aemeath_resonance_mode(mode: str) -> None:
+    if mode not in VALID_AEMEATH_RESONANCE_MODES:
+        raise ValueError(
+            f"Unsupported Aemeath Resonance Mode {mode!r}; "
+            f"expected one of {sorted(VALID_AEMEATH_RESONANCE_MODES)}."
         )

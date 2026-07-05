@@ -16,6 +16,7 @@ from simulator.build_profiles import (
     validate_effective_build_profiles,
 )
 from simulator.buff_system import add_team_buff
+from simulator.mechanic_events import mechanic_event_metadata_for_config
 from simulator.models import ActionData, BuffData, CharacterData, CombatState, EnemyData, PartyState, SimulationSummary, TimelineEntry
 from simulator.party_transition import (
     build_transition_swap_action,
@@ -474,6 +475,7 @@ class Simulation:
 
     def summary(self) -> SimulationSummary:
         active_character = self.characters[self.state.active_character_id].name
+        mechanic_event_metadata = mechanic_event_metadata_for_config(self.state.mechanics_config)
         resources = {
             char_id: {
                 "resonance_energy": self.state.resonance_energy.get(char_id, 0.0),
@@ -509,6 +511,19 @@ class Simulation:
             damage_by_resolved_action=dict(damage_by_resolved_action),
             damage_by_action_type=dict(damage_by_action_type),
             damage_by_damage_bonus_category=dict(damage_by_damage_bonus_category),
+            aemeath_resonance_mode=mechanic_event_metadata["aemeath_resonance_mode"],
+            aemeath_resonance_mode_source=mechanic_event_metadata["aemeath_resonance_mode_source"],
+            mechanic_event_trigger_action_ids=mechanic_event_metadata["mechanic_event_trigger_action_ids"],
+            mechanic_event_transition_trigger_action_ids=mechanic_event_metadata[
+                "mechanic_event_transition_trigger_action_ids"
+            ],
+            mechanic_event_emitted_counts=dict(self.state.mechanic_event_emitted_counts),
+            fusion_burst_event_count=int(self.state.mechanic_event_emitted_counts.get("fusion_burst", 0)),
+            tune_rupture_shifting_event_count=int(
+                self.state.mechanic_event_emitted_counts.get("tune_rupture_shifting", 0)
+            ),
+            mechanic_event_unresolved_reason=mechanic_event_metadata["mechanic_event_unresolved_reason"],
+            unsupported_aemeath_followup_mechanics=mechanic_event_metadata["unsupported_aemeath_followup_mechanics"],
         )
 
     @property

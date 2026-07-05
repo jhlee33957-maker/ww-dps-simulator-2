@@ -12,7 +12,9 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from simulator.roster import read_party_presets
 from simulator.build_profiles import parse_build_profile_overrides, parse_stat_overrides
+from simulator.mechanic_events import mechanic_event_metadata_for_config
 from simulator.transition_config import (
+    build_aemeath_resonance_mode_override,
     build_effective_transition_config,
     build_mornye_expectation_error_mode_override,
     build_transition_mode_overrides,
@@ -51,6 +53,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
         choices=["expectation_error_only", "dry_run_success_candidate", "always_success"],
         default=None,
     )
+    parser.add_argument(
+        "--aemeath-resonance-mode",
+        choices=["fusion_burst", "tune_rupture", "unresolved"],
+        default=None,
+    )
     return parser
 
 
@@ -66,9 +73,11 @@ def build_effective_config_from_args(args: argparse.Namespace) -> tuple[dict[str
         aemeath_qte_mode=args.aemeath_qte_mode,
         mornye_intro_mode=args.mornye_intro_mode,
     )
-    mechanic_overrides = build_mornye_expectation_error_mode_override(args.mornye_expectation_error_mode)
-    if mechanic_overrides:
-        cli_overrides.update(mechanic_overrides)
+    for mechanic_overrides in (
+        build_aemeath_resonance_mode_override(args.aemeath_resonance_mode),
+        build_mornye_expectation_error_mode_override(args.mornye_expectation_error_mode),
+    ):
+        _deep_update(cli_overrides, mechanic_overrides)
     if not cli_overrides.get("characters") and not cli_overrides.get("mechanics"):
         cli_overrides = None
     config = build_effective_transition_config(
@@ -134,6 +143,7 @@ def main() -> None:
 
     args.model_path.parent.mkdir(parents=True, exist_ok=True)
     model.save(args.model_path)
+    mechanic_event_metadata = mechanic_event_metadata_for_config(transition_config.get("mechanics"))
 
     metadata: dict[str, Any] = {
         "algorithm": "MaskablePPO",
@@ -149,6 +159,17 @@ def main() -> None:
         "policy_action_ids": env.get_policy_action_ids(),
         "transition_modes": transition_mode_summary(transition_config),
         "mechanics_modes": mechanics_mode_summary(transition_config),
+        "aemeath_resonance_mode": mechanic_event_metadata["aemeath_resonance_mode"],
+        "aemeath_resonance_mode_source": mechanic_event_metadata["aemeath_resonance_mode_source"],
+        "mechanic_event_trigger_action_ids": mechanic_event_metadata["mechanic_event_trigger_action_ids"],
+        "mechanic_event_transition_trigger_action_ids": mechanic_event_metadata[
+            "mechanic_event_transition_trigger_action_ids"
+        ],
+        "mechanic_event_emitted_counts": {},
+        "fusion_burst_event_count": 0,
+        "tune_rupture_shifting_event_count": 0,
+        "mechanic_event_unresolved_reason": mechanic_event_metadata["mechanic_event_unresolved_reason"],
+        "unsupported_aemeath_followup_mechanics": mechanic_event_metadata["unsupported_aemeath_followup_mechanics"],
         "active_build_profiles": env.get_active_build_profiles(),
         "effective_build_stats_summary": env.get_effective_build_stats_summary(),
         "build_profile_validation": validation,
@@ -171,6 +192,15 @@ def main() -> None:
 
     print(f"Saved model to {args.model_path}")
     print(f"Saved metadata to {results_path}")
+
+
+def _deep_update(target: dict[str, Any], updates: dict[str, Any]) -> dict[str, Any]:
+    for key, value in updates.items():
+        if isinstance(value, dict) and isinstance(target.get(key), dict):
+            _deep_update(target[key], value)
+        else:
+            target[key] = value
+    return target
 
 
 if __name__ == "__main__":

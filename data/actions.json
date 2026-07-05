@@ -2196,6 +2196,20 @@
     "raw_skill_category": "普攻",
     "raw_damage_type": "普攻伤害",
     "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "mechanic_event_tags": [],
+    "mechanic_event_triggers": [
+      {
+        "trigger_id": "aemeath_resonance_mode_damage_trigger",
+        "trigger_on": "damage_dealt",
+        "cooldown_seconds": 3.0,
+        "event_by_aemeath_resonance_mode": {
+          "fusion_burst": "fusion_burst",
+          "tune_rupture": "tune_rupture_shifting"
+        },
+        "source_status": "user_supplied_skill_screenshot_not_embedded",
+        "source_note": "Aemeath skill screenshot states that this skill inflicts Fusion Burst or Tune Rupture - Shifting depending on Aemeath's Resonance Mode when it deals damage. Same skill can trigger once every 3s."
+      }
+    ],
     "scaling_stat": "atk"
   },
   {
@@ -2279,6 +2293,20 @@
     "raw_skill_category": "普攻",
     "raw_damage_type": "普攻伤害",
     "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "mechanic_event_tags": [],
+    "mechanic_event_triggers": [
+      {
+        "trigger_id": "aemeath_resonance_mode_damage_trigger",
+        "trigger_on": "damage_dealt",
+        "cooldown_seconds": 3.0,
+        "event_by_aemeath_resonance_mode": {
+          "fusion_burst": "fusion_burst",
+          "tune_rupture": "tune_rupture_shifting"
+        },
+        "source_status": "user_supplied_skill_screenshot_not_embedded",
+        "source_note": "Aemeath skill screenshot states that this skill inflicts Fusion Burst or Tune Rupture - Shifting depending on Aemeath's Resonance Mode when it deals damage. Same skill can trigger once every 3s."
+      }
+    ],
     "scaling_stat": "atk"
   },
   {
@@ -2485,6 +2513,20 @@
     "raw_skill_category": "普攻",
     "raw_damage_type": "普攻伤害",
     "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "mechanic_event_tags": [],
+    "mechanic_event_triggers": [
+      {
+        "trigger_id": "aemeath_resonance_mode_damage_trigger",
+        "trigger_on": "damage_dealt",
+        "cooldown_seconds": 3.0,
+        "event_by_aemeath_resonance_mode": {
+          "fusion_burst": "fusion_burst",
+          "tune_rupture": "tune_rupture_shifting"
+        },
+        "source_status": "user_supplied_skill_screenshot_not_embedded",
+        "source_note": "Aemeath skill screenshot states that this skill inflicts Fusion Burst or Tune Rupture - Shifting depending on Aemeath's Resonance Mode when it deals damage. Same skill can trigger once every 3s."
+      }
+    ],
     "scaling_stat": "atk"
   },
   {
@@ -2536,6 +2578,20 @@
     "raw_skill_category": "普攻",
     "raw_damage_type": "普攻伤害",
     "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "mechanic_event_tags": [],
+    "mechanic_event_triggers": [
+      {
+        "trigger_id": "aemeath_resonance_mode_damage_trigger",
+        "trigger_on": "damage_dealt",
+        "cooldown_seconds": 3.0,
+        "event_by_aemeath_resonance_mode": {
+          "fusion_burst": "fusion_burst",
+          "tune_rupture": "tune_rupture_shifting"
+        },
+        "source_status": "user_supplied_skill_screenshot_not_embedded",
+        "source_note": "Aemeath skill screenshot states that this skill inflicts Fusion Burst or Tune Rupture - Shifting depending on Aemeath's Resonance Mode when it deals damage. Same skill can trigger once every 3s."
+      }
+    ],
     "scaling_stat": "atk"
   },
   {
@@ -2749,6 +2805,20 @@
       "sync_delta": 18.29,
       "set_mech_combo_stage": 2
     },
+    "mechanic_event_tags": [],
+    "mechanic_event_triggers": [
+      {
+        "trigger_id": "aemeath_resonance_mode_damage_trigger",
+        "trigger_on": "damage_dealt",
+        "cooldown_seconds": 3.0,
+        "event_by_aemeath_resonance_mode": {
+          "fusion_burst": "fusion_burst",
+          "tune_rupture": "tune_rupture_shifting"
+        },
+        "source_status": "user_supplied_skill_screenshot_not_embedded",
+        "source_note": "Aemeath skill screenshot states that this skill inflicts Fusion Burst or Tune Rupture - Shifting depending on Aemeath's Resonance Mode when it deals damage. Same skill can trigger once every 3s."
+      }
+    ],
     "scaling_stat": "atk"
   },
   {
@@ -2815,6 +2885,20 @@
       "sync_delta": 22.18,
       "set_aemeath_combo_stage": 2
     },
+    "mechanic_event_tags": [],
+    "mechanic_event_triggers": [
+      {
+        "trigger_id": "aemeath_resonance_mode_damage_trigger",
+        "trigger_on": "damage_dealt",
+        "cooldown_seconds": 3.0,
+        "event_by_aemeath_resonance_mode": {
+          "fusion_burst": "fusion_burst",
+          "tune_rupture": "tune_rupture_shifting"
+        },
+        "source_status": "user_supplied_skill_screenshot_not_embedded",
+        "source_note": "Aemeath skill screenshot states that this skill inflicts Fusion Burst or Tune Rupture - Shifting depending on Aemeath's Resonance Mode when it deals damage. Same skill can trigger once every 3s."
+      }
+    ],
     "scaling_stat": "atk"
   },
   {

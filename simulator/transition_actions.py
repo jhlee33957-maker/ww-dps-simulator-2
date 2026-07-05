@@ -98,6 +98,8 @@ def transition_action_to_action_data(record: dict[str, Any]) -> ActionData:
         concerto_energy_gain=float(record.get("concerto_energy_gain", 0.0) or 0.0),
         resonance_energy_cost=0.0,
         hits=_transition_hits(record),
+        mechanic_event_tags=list(record.get("mechanic_event_tags") or []),
+        mechanic_event_triggers=list(record.get("mechanic_event_triggers") or []),
         tags=sorted({tag for tag in tags if tag}),
         policy_selectable=False,
         mechanic_effects=mechanic_effects,

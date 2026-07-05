@@ -241,9 +241,10 @@ Not implemented yet:
 
 - Starflux utility behavior and natural recovery
 - Tune Break
-- Tune Rupture
-- Fusion Burst
-- Fusion Trail
+- Tune Rupture damage and follow-up mechanics
+- Fusion Burst damage and follow-up mechanics
+- Fusion Trail / Rupturous Trail damage
+- Trailblazing Star set effects
 - Rupturous Trail
 - Stardust Resonance's full effects
 - Heavy attacks
@@ -252,6 +253,16 @@ Not implemented yet:
 - full passive effects
 - mid-air attacks and dodge counters
 - exact real hit timings or final damage values
+
+## Aemeath Resonance Mode Mechanic Events
+
+Aemeath has a configurable `aemeath_resonance_mode` under `mechanics.aemeath` with supported values `unresolved`, `fusion_burst`, and `tune_rupture`. The default is `unresolved`, which emits no event and logs that the mode is unresolved. Streamlit exposes this selector for Demo Sequence and PPO Model evaluation; CLI training/evaluation can set `--aemeath-resonance-mode`.
+
+In `fusion_burst` mode, source-backed trigger actions emit the `fusion_burst` event tag. In `tune_rupture` mode, they emit `tune_rupture_shifting`. The same skill can trigger once every 3 seconds, keyed by character, action, and trigger id. Multi-hit actions emit at most one event per action execution.
+
+This is event metadata only: it does not add Fusion Burst damage, Tune Rupture damage, Fusion/Rupturous Trail damage, Trailblazing Star set effects, Seraphic Duet follow-up damage, stat bonuses, coefficients, timings, resources, cooldowns, or reward shaping. PPO reward remains `damage_this_action / 10000.0`.
+
+Source-confirmed trigger metadata is currently stored from the user-supplied skill screenshot, not embedded workbook evidence. The source audit lives at `reports/aemeath_resonance_mode_mechanic_source_audit.md` and `data/extracted/aemeath_resonance_mode_mechanic_source_audit.json`.
 
 ## Aemeath-lite Data Accuracy
 
@@ -678,6 +689,8 @@ python scripts/manual_real_profile_guard_smoke_test.py
 python scripts/attack_runtime_buff_formula_smoke_test.py
 python scripts/damage_formula_effective_attack_smoke_test.py
 python scripts/aemeath_damage_bonus_category_source_smoke_test.py
+python scripts/aemeath_resonance_mode_mechanic_event_smoke_test.py
+python scripts/aemeath_resonance_mode_source_audit_smoke_test.py
 python scripts/mornye_action_data_source_guard_smoke_test.py
 python scripts/mornye_action_data_time_resource_smoke_test.py
 python scripts/transition_actions_metadata_encoding_smoke_test.py

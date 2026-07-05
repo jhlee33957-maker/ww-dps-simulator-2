@@ -1,0 +1,87 @@
+{
+  "character_id": "aemeath",
+  "topic": "Aemeath Resonance Mode mechanic event triggers",
+  "source_status": "user_supplied_skill_screenshot_not_embedded",
+  "implemented_status": "event_trigger_only",
+  "workbook_checked": "data/source/鸣潮动作数据汇总.xlsx",
+  "fallback_workbook_checked": "data/source/#U9e23*.xlsx",
+  "sheets_scanned": [
+    "索引",
+    "角色-女",
+    "角色-男",
+    "角色技能类型",
+    "声骸",
+    "敌对属性列表",
+    "伤害配置",
+    "伤害计算",
+    "更新变动",
+    "附页1",
+    "附页2",
+    "base",
+    "prop",
+    "weapon",
+    "dmg"
+  ],
+  "workbook_confirmation": {
+    "status": "not_clearly_confirmed",
+    "notes": [
+      "The workbook and extracted Aemeath rows contain action, frame, coefficient, QTE, energy, and trail-related notes, but no clear embedded cell was found that maps the listed actions to Fusion Burst or Tune Rupture - Shifting trigger emission.",
+      "The simulator therefore stores the trigger mapping as user-supplied skill screenshot evidence rather than workbook-confirmed evidence."
+    ]
+  },
+  "reviewed_source_rows": [
+    {
+      "location": "角色-女!2806",
+      "notes": "Aemeath special energy and trail-related notes reviewed; does not clearly confirm the event trigger mapping."
+    },
+    {
+      "location": "角色-女!2789-2792",
+      "notes": "Human QTE frame rows reviewed."
+    },
+    {
+      "location": "角色技能类型!2726-2728",
+      "notes": "Human QTE skill/type rows reviewed."
+    },
+    {
+      "location": "角色-女!2934-2936",
+      "notes": "Mech QTE frame rows reviewed."
+    },
+    {
+      "location": "角色技能类型!2781-2782",
+      "notes": "Mech QTE skill/type rows reviewed."
+    }
+  ],
+  "trigger_action_ids": [
+    "aemeath_basic_form_stage_3",
+    "aemeath_basic_form_stage_4",
+    "aemeath_mech_basic_stage_3",
+    "aemeath_mech_basic_stage_4",
+    "aemeath_sync_strike_armament_merge",
+    "aemeath_sync_strike_call_of_dawn"
+  ],
+  "transition_trigger_action_ids": [
+    "aemeath_qte_intro_human",
+    "aemeath_qte_intro_mech"
+  ],
+  "unmapped_expected_trigger_skills": [],
+  "trigger_rule": {
+    "trigger_on": "damage_dealt",
+    "same_skill_cooldown_seconds": 3.0,
+    "multi_hit_action_max_events_per_execution": 1,
+    "event_by_aemeath_resonance_mode": {
+      "fusion_burst": "fusion_burst",
+      "tune_rupture": "tune_rupture_shifting",
+      "unresolved": null
+    }
+  },
+  "unsupported_followup_mechanics": [
+    "fusion_burst_explosion_damage",
+    "fusion_trail",
+    "rupturous_trail",
+    "seraphic_duet_extra_tune_rupture_damage",
+    "seraphic_duet_fusion_burst_multiplier",
+    "stardust_resonance_extra_effects"
+  ],
+  "damage_added_by_this_patch": 0.0,
+  "reward_formula_changed": false
+}

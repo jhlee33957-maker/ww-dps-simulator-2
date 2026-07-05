@@ -21,6 +21,7 @@ from simulator.build_profiles import (
 from simulator.roster import is_dummy_character, parse_character_ids, read_party_presets
 from simulator.simulation import Simulation
 from simulator.transition_config import (
+    build_aemeath_resonance_mode_override,
     build_effective_transition_config,
     build_mornye_expectation_error_mode_override,
     build_transition_mode_overrides,
@@ -33,6 +34,24 @@ from ui.mechanics_reference import render_mechanics_reference
 
 DATA_DIR = Path(__file__).parent / "data"
 DEFAULT_PPO_MODEL_PATH = Path(__file__).parent / "models" / "maskable_ppo_wuwa.zip"
+
+
+def merge_override_blocks(*blocks: dict[str, Any] | None) -> dict[str, Any]:
+    merged: dict[str, Any] = {}
+    for block in blocks:
+        if not block:
+            continue
+        _merge_nested_dict(merged, block)
+    return merged
+
+
+def _merge_nested_dict(target: dict[str, Any], updates: dict[str, Any]) -> dict[str, Any]:
+    for key, value in updates.items():
+        if isinstance(value, dict) and isinstance(target.get(key), dict):
+            _merge_nested_dict(target[key], value)
+        else:
+            target[key] = value
+    return target
 
 def enemy_settings() -> dict[str, float | int]:
     st.sidebar.header("Damage Formula Settings")
@@ -375,6 +394,37 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
                         "Mornye Interfered Marker is running in simplified optional mode. "
                         "It applies an enemy DMG Taken amp on Heavy Inversion; full Tune conversion is not implemented."
                     )
+        if "aemeath" in simulation.selected_party_character_ids:
+            with st.expander("Aemeath Resonance Mode Events"):
+                event_cols = st.columns(3)
+                event_cols[0].metric("Mode", summary.aemeath_resonance_mode)
+                event_cols[1].metric("Fusion Burst events", summary.fusion_burst_event_count)
+                event_cols[2].metric("Tune Rupture - Shifting events", summary.tune_rupture_shifting_event_count)
+                st.caption(
+                    "These are source-backed mechanic event emissions only. Fusion Burst, Tune Rupture, "
+                    "Trail damage, and set follow-up damage are not added to DPS."
+                )
+                st.write("Source:", summary.aemeath_resonance_mode_source)
+                if summary.mechanic_event_unresolved_reason:
+                    st.info(summary.mechanic_event_unresolved_reason)
+                if summary.mechanic_event_trigger_action_ids:
+                    st.write("Damage trigger actions:", summary.mechanic_event_trigger_action_ids)
+                if summary.mechanic_event_transition_trigger_action_ids:
+                    st.write("Transition trigger actions:", summary.mechanic_event_transition_trigger_action_ids)
+                if summary.mechanic_event_emitted_counts:
+                    st.dataframe(
+                        pd.DataFrame(
+                            sorted(summary.mechanic_event_emitted_counts.items()),
+                            columns=["event_tag", "count"],
+                        ),
+                        use_container_width=True,
+                        hide_index=True,
+                    )
+                if summary.unsupported_aemeath_followup_mechanics:
+                    st.warning(
+                        "Unimplemented follow-up mechanics: "
+                        + ", ".join(summary.unsupported_aemeath_followup_mechanics)
+                    )
         if len(simulation.selected_party_character_ids) > 1 and simulation.has_placeholder_swap_timing:
             st.warning(
                 "Generic swap timing is a placeholder for party-structure testing. "
@@ -457,6 +507,13 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "attack_reference_delta_percent",
         "profile_completeness_status",
         "implementation_status",
+        "emitted_mechanic_event_tags",
+        "mechanic_event_triggered",
+        "mechanic_event_trigger_id",
+        "mechanic_event_cooldown_blocked",
+        "aemeath_resonance_mode",
+        "mechanic_event_source_status",
+        "mechanic_event_unresolved_reason",
         "raw_skill_category",
         "raw_damage_type",
         "actor_character_id",
@@ -695,6 +752,20 @@ else:
         if transition_mode_choice == "Use Party Preset / Default"
         else build_transition_mode_overrides(transition_mode=transition_mode_choice)
     )
+    if "aemeath" in selected_character_ids:
+        aemeath_resonance_mode_choice = st.sidebar.selectbox(
+            "Aemeath Resonance Mode",
+            options=["Use Party Preset / Default", "unresolved", "fusion_burst", "tune_rupture"],
+            index=0,
+        )
+        aemeath_mechanics_overrides = (
+            None
+            if aemeath_resonance_mode_choice == "Use Party Preset / Default"
+            else build_aemeath_resonance_mode_override(aemeath_resonance_mode_choice)
+        )
+    else:
+        aemeath_resonance_mode_choice = "Use Party Preset / Default"
+        aemeath_mechanics_overrides = None
     if "mornye" in selected_character_ids:
         mornye_expectation_error_choice = st.sidebar.selectbox(
             "Mornye Expectation Error Mode",
@@ -714,11 +785,7 @@ else:
     else:
         mornye_expectation_error_choice = "Use Party Preset / Default"
         ui_mechanics_overrides = None
-    ui_overrides = {}
-    if ui_transition_overrides:
-        ui_overrides.update(ui_transition_overrides)
-    if ui_mechanics_overrides:
-        ui_overrides.update(ui_mechanics_overrides)
+    ui_overrides = merge_override_blocks(ui_transition_overrides, aemeath_mechanics_overrides, ui_mechanics_overrides)
     effective_transition_config = build_effective_transition_config(
         load_transition_config(DATA_DIR),
         party_preset_config,
@@ -732,6 +799,11 @@ else:
         f"Mornye Intro={mode_summary['mornye']['intro_qte']}, "
         f"Mornye Outro={'enabled' if mode_summary['mornye']['outro'] else 'disabled'}"
     )
+    if "aemeath" in selected_character_ids:
+        st.sidebar.caption(
+            "Aemeath Resonance Mode: "
+            f"{mechanic_summary['aemeath']['aemeath_resonance_mode']}"
+        )
     if "mornye" in selected_character_ids:
         effective_mornye_gp_mode = mechanic_summary["mornye"]["expectation_error_mode"]
         st.sidebar.caption(f"Effective Mornye Expectation Error Mode: {effective_mornye_gp_mode}")

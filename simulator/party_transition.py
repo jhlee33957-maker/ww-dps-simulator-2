@@ -82,6 +82,12 @@ def default_transition_config() -> dict[str, Any]:
             "normal_swap_when_concerto_not_ready": True,
         },
         "mechanics": {
+            "aemeath": {
+                "aemeath_resonance_mode": "unresolved",
+                "aemeath_resonance_modes": ["fusion_burst", "tune_rupture", "unresolved"],
+                "aemeath_resonance_mode_source": "user_supplied_skill_screenshot",
+                "implementation_status": "event_trigger_only",
+            },
             "mornye": {
                 "energy_regen_scaling": {"enabled": True},
                 "mornye_expectation_error_mode": "expectation_error_only",

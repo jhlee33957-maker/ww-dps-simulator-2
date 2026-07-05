@@ -14,6 +14,7 @@ from simulator.buff_system import (
 )
 from simulator.build_profiles import damage_bonus_breakdown, scaling_value_for_action, stat_component_log_fields
 from simulator.damage_formula import calculate_normal_damage, calculate_tune_break_damage
+from simulator.mechanic_events import process_mechanic_event_triggers
 from simulator.models import ActionData, ActionResult, BuffData, CharacterData, CombatState, HitData, TimelineEntry
 from simulator.resource_system import apply_resource_changes, can_pay_resources
 
@@ -401,6 +402,12 @@ def execute_action(
         temporary_stat_modifiers=temporary_stat_modifiers,
     )
     direct_damage = normal_damage + tune_break_damage
+    mechanic_event_log_fields = process_mechanic_event_triggers(
+        action,
+        state,
+        direct_damage=direct_damage,
+        action_start_combat_time=combat_start_time,
+    )
 
     if action.action_type == "swap" and action.character_id is not None:
         state.active_character_id = action.character_id
@@ -487,6 +494,7 @@ def execute_action(
         stat_component_source=action_damage_bonus_context.get("stat_component_source"),
         **stat_component_log_fields(action_damage_bonus_context),
         profile_completeness_status=action_damage_bonus_context.get("profile_completeness_status"),
+        **mechanic_event_log_fields,
         active_anomalies_after=active_anomalies_after,
         active_buffs=active_buff_ids,
         applied_buffs=applied_buff_ids,
@@ -513,6 +521,7 @@ def execute_action(
                 "damage_before_cutoff": total_action_damage,
                 "damage_after_cutoff_excluded": damage_after_cutoff_excluded,
                 **action_damage_bonus_context,
+                **mechanic_event_log_fields,
                 "combat_time_start": combat_start_time,
                 "combat_time_end": state.combat_time,
             }
@@ -577,6 +586,13 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         **stat_component_log_fields(result),
         profile_completeness_status=result.profile_completeness_status,
         implementation_status=result.implementation_status,
+        emitted_mechanic_event_tags=result.emitted_mechanic_event_tags,
+        mechanic_event_triggered=result.mechanic_event_triggered,
+        mechanic_event_trigger_id=result.mechanic_event_trigger_id,
+        mechanic_event_cooldown_blocked=result.mechanic_event_cooldown_blocked,
+        aemeath_resonance_mode=result.aemeath_resonance_mode,
+        mechanic_event_source_status=result.mechanic_event_source_status,
+        mechanic_event_unresolved_reason=result.mechanic_event_unresolved_reason,
         active_anomalies_after=result.active_anomalies_after,
         active_buffs=result.active_buffs,
         applied_buffs=result.applied_buffs,

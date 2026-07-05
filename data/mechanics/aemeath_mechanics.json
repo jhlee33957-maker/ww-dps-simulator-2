@@ -15,11 +15,15 @@
       "Instant Response",
       "Heavy Attack normal timing and Instant Response timing override",
       "action_time / combat_time_cost separation",
-      "Aemeath solo/party selection structure"
+      "Aemeath solo/party selection structure",
+      "Resonance Mode event trigger metadata for Fusion Burst / Tune Rupture - Shifting"
     ],
     "excluded": [
       "Starflux utility system",
-      "Tune Rupture / Fusion Burst / Trail systems",
+      "Fusion Burst explosion damage",
+      "Tune Rupture damage",
+      "Fusion Trail / Rupturous Trail systems",
+      "Trailblazing Star 5-set effects",
       "QTE / Intro / Outro",
       "aerial attack",
       "dodge counter",
@@ -392,8 +396,61 @@
   "known_limitations": [
     "This page describes the simulator's modeled interpretation, not a complete game-client recreation.",
     "The current goal is 2-minute DPS and balance comparison, not exact frame-perfect combat reproduction.",
-    "Several utility, trail, QTE, aerial, dodge, movement, hit loss, and full team systems remain outside Aemeath-lite scope."
+    "Aemeath Resonance Mode emits source-backed mechanic event tags only; Fusion Burst, Tune Rupture, Trail, set-bonus follow-up damage, QTE follow-up state, aerial, dodge, movement, hit loss, and full team systems remain outside Aemeath-lite scope."
   ],
+  "resonance_mode_mechanic_events": {
+    "title": "Aemeath Resonance Mode Mechanic Events",
+    "implementation_status": "event_trigger_only",
+    "source_status": "user_supplied_skill_screenshot_not_embedded",
+    "source_audit": [
+      "Workbook data/source/鸣潮动作数据汇总.xlsx was scanned, but the current workbook/extracted rows do not clearly confirm the Fusion Burst / Tune Rupture - Shifting trigger mapping.",
+      "The simulator stores the trigger mapping as user-supplied screenshot metadata until an embedded source row is available."
+    ],
+    "mode_config": {
+      "config_path": "mechanics.aemeath.aemeath_resonance_mode",
+      "supported_modes": [
+        "fusion_burst",
+        "tune_rupture",
+        "unresolved"
+      ],
+      "default_mode": "unresolved"
+    },
+    "mode_behavior": [
+      "fusion_burst mode emits event tag fusion_burst when a listed trigger action deals damage.",
+      "tune_rupture mode emits event tag tune_rupture_shifting when a listed trigger action deals damage.",
+      "unresolved mode emits no event and logs aemeath_resonance_mode_unresolved_no_events_emit."
+    ],
+    "cooldown_rule": "The same skill can trigger once every 3 seconds. Cooldown keys include character_id, action_id, and trigger_id. Multi-hit actions emit at most one event per action execution.",
+    "damage_rule": "Mechanic event emission adds 0 damage and does not change coefficients, timings, resources, cooldowns, scaling_stat, damage_bonus_category, or PPO reward formula.",
+    "trigger_action_ids": [
+      "aemeath_basic_form_stage_3",
+      "aemeath_basic_form_stage_4",
+      "aemeath_mech_basic_stage_3",
+      "aemeath_mech_basic_stage_4",
+      "aemeath_sync_strike_armament_merge",
+      "aemeath_sync_strike_call_of_dawn"
+    ],
+    "transition_trigger_action_ids": [
+      "aemeath_qte_intro_human",
+      "aemeath_qte_intro_mech"
+    ],
+    "not_mapped_without_source_evidence": [
+      "Aemeath basic stages 1-2",
+      "Mech basic stages 1-2",
+      "Seraphic Duet",
+      "Heavy Charged",
+      "Overdrive / Finale",
+      "Form Switch"
+    ],
+    "unsupported_followup_mechanics": [
+      "fusion_burst_explosion_damage",
+      "fusion_trail",
+      "rupturous_trail",
+      "seraphic_duet_extra_tune_rupture_damage",
+      "seraphic_duet_fusion_burst_multiplier",
+      "stardust_resonance_extra_effects"
+    ]
+  },
   "damage_bonus_category_source_damage_type": {
     "title": "Damage Bonus Category / Source Damage Type",
     "modeled_behavior": [

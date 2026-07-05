@@ -191,6 +191,8 @@ class ActionData(BaseModel):
     tune_break_multiplier: float = Field(default=0.0, ge=0)
     tune_break_boost_points: float = 0.0
     hits: list[HitData] = Field(default_factory=list)
+    mechanic_event_tags: list[str] = Field(default_factory=list)
+    mechanic_event_triggers: list[dict[str, Any]] = Field(default_factory=list)
     anomaly_type: AnomalyType | None = None
     anomaly_stacks: int = 0
     applies_anomaly_type: AnomalyType | None = None
@@ -313,6 +315,9 @@ class CombatState(BaseModel):
     active_anomalies: dict[str, AnomalyState] = Field(default_factory=dict)
     character_mechanics_state: dict[str, dict] = Field(default_factory=dict)
     mechanics_config: dict[str, Any] = Field(default_factory=dict)
+    mechanic_event_last_trigger_time: dict[str, float] = Field(default_factory=dict)
+    mechanic_event_emitted_counts: dict[str, int] = Field(default_factory=dict)
+    mechanic_event_log: list[dict[str, Any]] = Field(default_factory=list)
     action_log: list[dict[str, Any]] = Field(default_factory=list)
     damage_log: list[dict[str, Any]] = Field(default_factory=list)
     resonance_energy: dict[str, float] = Field(default_factory=dict)
@@ -419,6 +424,13 @@ class ActionResult(BaseModel):
     hp_reference_delta_percent: float | None = None
     profile_completeness_status: str | None = None
     implementation_status: str | None = None
+    emitted_mechanic_event_tags: list[str] = Field(default_factory=list)
+    mechanic_event_triggered: bool = False
+    mechanic_event_trigger_id: str | None = None
+    mechanic_event_cooldown_blocked: bool = False
+    aemeath_resonance_mode: str | None = None
+    mechanic_event_source_status: str | None = None
+    mechanic_event_unresolved_reason: str | None = None
     active_anomalies_after: dict[str, int] = Field(default_factory=dict)
     active_buffs: list[str] = Field(default_factory=list)
     applied_buffs: list[str] = Field(default_factory=list)
@@ -595,6 +607,13 @@ class TimelineEntry(BaseModel):
     hp_reference_delta_percent: float | None = None
     profile_completeness_status: str | None = None
     implementation_status: str | None = None
+    emitted_mechanic_event_tags: list[str] = Field(default_factory=list)
+    mechanic_event_triggered: bool = False
+    mechanic_event_trigger_id: str | None = None
+    mechanic_event_cooldown_blocked: bool = False
+    aemeath_resonance_mode: str | None = None
+    mechanic_event_source_status: str | None = None
+    mechanic_event_unresolved_reason: str | None = None
     active_anomalies_after: dict[str, int] = Field(default_factory=dict)
     active_buffs: list[str] = Field(default_factory=list)
     applied_buffs: list[str] = Field(default_factory=list)
@@ -699,3 +718,12 @@ class SimulationSummary(BaseModel):
     damage_by_resolved_action: dict[str, float] = Field(default_factory=dict)
     damage_by_action_type: dict[str, float] = Field(default_factory=dict)
     damage_by_damage_bonus_category: dict[str, float] = Field(default_factory=dict)
+    aemeath_resonance_mode: str = "unresolved"
+    aemeath_resonance_mode_source: str | None = None
+    mechanic_event_trigger_action_ids: list[str] = Field(default_factory=list)
+    mechanic_event_transition_trigger_action_ids: list[str] = Field(default_factory=list)
+    mechanic_event_emitted_counts: dict[str, int] = Field(default_factory=dict)
+    fusion_burst_event_count: int = 0
+    tune_rupture_shifting_event_count: int = 0
+    mechanic_event_unresolved_reason: str | None = None
+    unsupported_aemeath_followup_mechanics: list[str] = Field(default_factory=list)
