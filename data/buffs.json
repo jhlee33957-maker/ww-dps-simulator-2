@@ -115,6 +115,56 @@
     }
   },
   {
+    "id": "mornye_high_syntony_field_def_bonus",
+    "name": "High Syntony Field DEF Bonus",
+    "duration": 25.0,
+    "modifier_type": "boost",
+    "value": 0.0,
+    "target": "team",
+    "target_scope": "team",
+    "source_character_id": "mornye",
+    "stacking_rule": "refresh_duration",
+    "max_stacks": 1,
+    "stat_modifiers": {
+      "def_percent": 0.2
+    },
+    "metadata": {
+      "source_type": "mornye_high_syntony_field",
+      "source_character_id": "mornye",
+      "field_id": "high_syntony_field",
+      "source_status": "workbook_and_user_screenshot_confirmed",
+      "workbook_source_hint": "角色-女!D4124",
+      "implementation_status": "implemented_runtime_support_buff",
+      "source_note": "High Syntony Field increases DEF of all nearby Resonators in the team by 20%."
+    }
+  },
+  {
+    "id": "mornye_high_syntony_field_off_tune_buildup_rate",
+    "name": "Mornye High Syntony Field Off-Tune Buildup Rate",
+    "duration": 25.0,
+    "modifier_type": "boost",
+    "value": 0.0,
+    "target": "team",
+    "target_scope": "team",
+    "source_character_id": "mornye",
+    "stacking_rule": "refresh_duration",
+    "max_stacks": 1,
+    "support_stat_modifiers": {
+      "off_tune_buildup_rate_add": 0.5
+    },
+    "metadata": {
+      "source_type": "mornye_high_syntony_field",
+      "source_character_id": "mornye",
+      "field_id": "high_syntony_field",
+      "source_status": "workbook_and_user_screenshot_confirmed",
+      "source_note": "High Syntony Field inherits Syntony Field's Off-Tune Buildup Rate boost; C2 remains disabled by default unless mornye_constellation >= 2.",
+      "implementation_status": "implemented_simplified_inheritance",
+      "duration_seconds": 25.0,
+      "c2_additional_bonus": 0.2,
+      "c2_default_active": false
+    }
+  },
+  {
     "id": "mornye_halo_of_starry_radiance_5set",
     "name": "Halo of Starry Radiance 5-set",
     "duration": 4.0,

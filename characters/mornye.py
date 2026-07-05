@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import Any
 
 from characters.base import CharacterMechanic
@@ -58,6 +59,9 @@ class MornyeMechanic(CharacterMechanic):
         "wide_field_observation_remaining": 0.0,
         "syntony_field_remaining": 0.0,
         "high_syntony_field_remaining": 0.0,
+        "high_syntony_field_source_action_id": None,
+        "high_syntony_field_created_count": 0,
+        "high_syntony_field_buff_windows": [],
         "observation_marker_active": False,
         "observation_marker_remaining": 0.0,
         "energy_regen": 1.0,
@@ -78,7 +82,7 @@ class MornyeMechanic(CharacterMechanic):
     }
 
     def initialize_state(self, state: Any) -> None:
-        data = state.character_mechanics_state.setdefault(self.character_id, dict(self._DEFAULT_STATE))
+        data = state.character_mechanics_state.setdefault(self.character_id, deepcopy(self._DEFAULT_STATE))
         for key, value in self._DEFAULT_STATE.items():
             data.setdefault(key, value)
         self._clamp(data)
@@ -271,6 +275,7 @@ class MornyeMechanic(CharacterMechanic):
         if "observation_marker_duration" in effects:
             data["observation_marker_remaining"] = float(effects["observation_marker_duration"])
             data["observation_marker_active"] = data["observation_marker_remaining"] > 0.0
+            result.observation_marker_applied = data["observation_marker_active"]
         if "set_baseline_combo_stage" in effects:
             data["baseline_combo_stage"] = int(effects["set_baseline_combo_stage"])
         if "set_wfo_combo_stage" in effects:
@@ -332,6 +337,9 @@ class MornyeMechanic(CharacterMechanic):
             "wide_field_observation_remaining": data["wide_field_observation_remaining"],
             "syntony_field_remaining": data["syntony_field_remaining"],
             "high_syntony_field_remaining": data["high_syntony_field_remaining"],
+            "high_syntony_field_source_action_id": data.get("high_syntony_field_source_action_id"),
+            "high_syntony_field_created_count": data.get("high_syntony_field_created_count", 0),
+            "high_syntony_field_buff_windows": list(data.get("high_syntony_field_buff_windows", [])),
             "observation_marker_active": data["observation_marker_active"],
             "observation_marker_remaining": data["observation_marker_remaining"],
             "energy_regen": data.get("energy_regen", 1.0),
@@ -464,6 +472,7 @@ class MornyeMechanic(CharacterMechanic):
         data = self._state(state)
         amp = get_interfered_damage_amp(data)
         result.mornye_interfered_marker_mode = mode
+        result.interfered_marker_mode = mode
         result.mornye_interfered_amp = amp
         result.implementation_status = "simplified_on_inversion" if mode == "simplified_on_inversion" else result.implementation_status
         result.source_status = "not_source_confirmed_direct_interfered"
@@ -494,6 +503,7 @@ class MornyeMechanic(CharacterMechanic):
         )
         apply_buff(state, buff, self.character_id)
         result.mornye_interfered_marker_applied = True
+        result.interfered_marker_applied_by_simplified_inversion = True
         if INTERFERED_MARKER_BUFF_ID not in result.applied_buffs:
             result.applied_buffs.append(INTERFERED_MARKER_BUFF_ID)
         result.active_buffs = [buff.buff_id for buff in state.active_buffs if buff.remaining_duration > 0.0]

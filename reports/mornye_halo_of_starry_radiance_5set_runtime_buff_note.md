@@ -16,4 +16,6 @@ Duration is 4.0 seconds, max stacks is 1, and retriggers refresh duration/recalc
 
 Current team-heal support uses the simplified Syntony Field uptime heal proxy. Exact healing amount, exact 180F tick timing, defensive survival value, and full automatic Syntony Field damage scheduling are not implemented. The ATK% buff benefits ATK-scaling party damage but does not increase Mornye DEF-scaling damage.
 
+High Syntony Field now inherits Syntony Field Off-Tune and the simplified healing proxy. During High Syntony uptime, default Off-Tune remains 1.5, Halo stays at its ATK +25% cap when the heal proxy is active, and the Halo ATK% buff still does not increase Mornye DEF-scaling damage.
+
 Previous timing rule obsolete: the earlier implementation applied Halo after field-creating actions; this is corrected so field-creating action damage receives the buff.

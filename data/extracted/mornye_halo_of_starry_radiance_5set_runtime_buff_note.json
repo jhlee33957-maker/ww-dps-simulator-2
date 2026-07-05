@@ -14,6 +14,13 @@
   "trigger_damage_receives_buff": true,
   "field_creation_damage_receives_buff": true,
   "implementation_timing_mode": "same_action_field_creation_approximation",
+  "high_syntony_field_support": {
+    "off_tune_inheritance_status": "implemented_simplified_inheritance",
+    "off_tune_inherited_bonus": 0.5,
+    "heal_proxy_inheritance_status": "implemented_simplified_field_uptime_proxy",
+    "critical_protocol_timing_mode": "same_action_high_syntony_field_creation_approximation",
+    "halo_atk_buff_does_not_affect_mornye_def_damage": true
+  },
   "obsolete_previous_timing_rule": "previous implementation applied Halo after field-creating actions; corrected so field-creating action damage receives the buff.",
   "trigger_event_tags": [
     "team_heal"

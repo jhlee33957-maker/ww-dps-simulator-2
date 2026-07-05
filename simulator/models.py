@@ -326,6 +326,7 @@ class CombatState(BaseModel):
     mechanic_event_log: list[dict[str, Any]] = Field(default_factory=list)
     echo_set_trigger_counts: dict[str, int] = Field(default_factory=dict)
     echo_set_buff_windows: list[dict[str, Any]] = Field(default_factory=list)
+    high_syntony_field_buff_windows: list[dict[str, Any]] = Field(default_factory=list)
     action_log: list[dict[str, Any]] = Field(default_factory=list)
     damage_log: list[dict[str, Any]] = Field(default_factory=list)
     resonance_energy: dict[str, float] = Field(default_factory=dict)
@@ -445,6 +446,20 @@ class ActionResult(BaseModel):
     mornye_constellation: int = 0
     mornye_heal_event_mode: str | None = None
     team_heal_event_triggered: bool = False
+    high_syntony_field_active: bool = False
+    high_syntony_field_remaining: float = 0.0
+    high_syntony_field_created_count: int = 0
+    high_syntony_field_def_bonus_active: bool = False
+    high_syntony_field_def_percent_bonus: float = 0.0
+    high_syntony_field_off_tune_inherited: bool = False
+    high_syntony_field_heal_proxy_active: bool = False
+    high_syntony_field_healing_multiplier_bonus: float = 0.0
+    high_syntony_field_healing_multiplier_metadata_only: bool = True
+    critical_protocol_high_syntony_created_before_damage: bool = False
+    high_syntony_field_same_action_application: bool = False
+    high_syntony_field_application_timing: str | None = None
+    high_syntony_field_unavailable_reason: str | None = None
+    halo_atk_buff_does_not_affect_mornye_def_damage: bool = False
     halo_of_starry_radiance_5set_active: bool = False
     halo_of_starry_radiance_5set_atk_percent_bonus: float = 0.0
     halo_of_starry_radiance_5set_applied_before_field_creation_damage: bool = False
@@ -527,12 +542,16 @@ class ActionResult(BaseModel):
     mornye_rest_mass_after: float | None = None
     mornye_wfo_remaining_after: float | None = None
     mornye_syntony_field_remaining_after: float | None = None
+    mornye_high_syntony_field_remaining_after: float | None = None
     mornye_er_excess_percent: float | None = None
     mornye_liberation_crit_rate_bonus: float | None = None
     mornye_liberation_crit_dmg_bonus: float | None = None
     mornye_interfered_marker_mode: str | None = None
     mornye_interfered_amp: float | None = None
     mornye_interfered_marker_applied: bool = False
+    observation_marker_applied: bool = False
+    interfered_marker_mode: str | None = None
+    interfered_marker_applied_by_simplified_inversion: bool = False
     mornye_expectation_error_mode: str | None = None
     base_policy_action_id: str | None = None
     optimal_solution_triggered: bool = False
@@ -653,6 +672,20 @@ class TimelineEntry(BaseModel):
     mornye_constellation: int = 0
     mornye_heal_event_mode: str | None = None
     team_heal_event_triggered: bool = False
+    high_syntony_field_active: bool = False
+    high_syntony_field_remaining: float = 0.0
+    high_syntony_field_created_count: int = 0
+    high_syntony_field_def_bonus_active: bool = False
+    high_syntony_field_def_percent_bonus: float = 0.0
+    high_syntony_field_off_tune_inherited: bool = False
+    high_syntony_field_heal_proxy_active: bool = False
+    high_syntony_field_healing_multiplier_bonus: float = 0.0
+    high_syntony_field_healing_multiplier_metadata_only: bool = True
+    critical_protocol_high_syntony_created_before_damage: bool = False
+    high_syntony_field_same_action_application: bool = False
+    high_syntony_field_application_timing: str | None = None
+    high_syntony_field_unavailable_reason: str | None = None
+    halo_atk_buff_does_not_affect_mornye_def_damage: bool = False
     halo_of_starry_radiance_5set_active: bool = False
     halo_of_starry_radiance_5set_atk_percent_bonus: float = 0.0
     halo_of_starry_radiance_5set_applied_before_field_creation_damage: bool = False
@@ -735,12 +768,16 @@ class TimelineEntry(BaseModel):
     mornye_rest_mass_after: float | None = None
     mornye_wfo_remaining_after: float | None = None
     mornye_syntony_field_remaining_after: float | None = None
+    mornye_high_syntony_field_remaining_after: float | None = None
     mornye_er_excess_percent: float | None = None
     mornye_liberation_crit_rate_bonus: float | None = None
     mornye_liberation_crit_dmg_bonus: float | None = None
     mornye_interfered_marker_mode: str | None = None
     mornye_interfered_amp: float | None = None
     mornye_interfered_marker_applied: bool = False
+    observation_marker_applied: bool = False
+    interfered_marker_mode: str | None = None
+    interfered_marker_applied_by_simplified_inversion: bool = False
     mornye_expectation_error_mode: str | None = None
     base_policy_action_id: str | None = None
     optimal_solution_triggered: bool = False
@@ -809,3 +846,19 @@ class SimulationSummary(BaseModel):
     mornye_halo_of_starry_radiance_5set_atk_percent_bonus: float = 0.0
     mornye_halo_of_starry_radiance_5set_uptime_seconds: float = 0.0
     halo_of_starry_radiance_5set_unavailable_reason: str | None = None
+    high_syntony_field_active: bool = False
+    high_syntony_field_remaining: float = 0.0
+    high_syntony_field_created_count: int = 0
+    high_syntony_field_def_bonus_active: bool = False
+    high_syntony_field_def_percent_bonus: float = 0.0
+    high_syntony_field_off_tune_inherited: bool = False
+    high_syntony_field_heal_proxy_active: bool = False
+    high_syntony_field_healing_multiplier_bonus: float = 0.0
+    critical_protocol_high_syntony_created_before_damage: bool = False
+    high_syntony_field_same_action_application: bool = False
+    high_syntony_field_application_timing: str | None = None
+    runtime_def_percent_bonus: float = 0.0
+    halo_of_starry_radiance_5set_active: bool = False
+    halo_of_starry_radiance_5set_atk_percent_bonus: float = 0.0
+    halo_atk_buff_does_not_affect_mornye_def_damage: bool = False
+    high_syntony_field_unavailable_reason: str | None = None

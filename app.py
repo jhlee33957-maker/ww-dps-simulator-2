@@ -442,6 +442,31 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
                         "Mornye DEF-scaling damage increased by Halo ATK%": False,
                     }
                 )
+            with st.expander("Mornye High Syntony Field"):
+                high_cols = st.columns(4)
+                high_cols[0].metric("Status", "Active" if summary.high_syntony_field_active else "Inactive")
+                high_cols[1].metric("Remaining", f"{summary.high_syntony_field_remaining:.1f}s")
+                high_cols[2].metric(
+                    "DEF Bonus",
+                    f"+{summary.high_syntony_field_def_percent_bonus * 100:.0f}%"
+                    if summary.high_syntony_field_def_bonus_active
+                    else "+0%",
+                )
+                high_cols[3].metric(
+                    "Off-Tune",
+                    "+50%" if summary.high_syntony_field_off_tune_inherited else "+0%",
+                )
+                st.write(
+                    {
+                        "Heal proxy inherited": summary.high_syntony_field_heal_proxy_active,
+                        "Healing multiplier bonus": f"+{summary.high_syntony_field_healing_multiplier_bonus * 100:.0f}% metadata only",
+                        "Halo maintained through High Syntony": summary.high_syntony_field_heal_proxy_active
+                        and summary.halo_of_starry_radiance_5set_active,
+                        "Critical Protocol same-action approximation": summary.high_syntony_field_application_timing,
+                        "Exact heal amount modeled": False,
+                        "Exact heal tick timing modeled": False,
+                    }
+                )
         if "aemeath" in simulation.selected_party_character_ids:
             with st.expander("Aemeath Resonance Mode Events"):
                 event_cols = st.columns(3)
@@ -571,6 +596,19 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "mornye_heal_event_mode",
         "mornye_heal_event_mode_source",
         "team_heal_event_triggered",
+        "high_syntony_field_active",
+        "high_syntony_field_remaining",
+        "high_syntony_field_created_count",
+        "high_syntony_field_def_bonus_active",
+        "high_syntony_field_def_percent_bonus",
+        "high_syntony_field_off_tune_inherited",
+        "high_syntony_field_heal_proxy_active",
+        "high_syntony_field_healing_multiplier_bonus",
+        "critical_protocol_high_syntony_created_before_damage",
+        "high_syntony_field_same_action_application",
+        "high_syntony_field_application_timing",
+        "high_syntony_field_unavailable_reason",
+        "halo_atk_buff_does_not_affect_mornye_def_damage",
         "halo_of_starry_radiance_5set_active",
         "halo_of_starry_radiance_5set_atk_percent_bonus",
         "halo_of_starry_radiance_5set_unavailable_reason",
@@ -717,6 +755,7 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "mornye_rest_mass_after",
         "mornye_wfo_remaining_after",
         "mornye_syntony_field_remaining_after",
+        "mornye_high_syntony_field_remaining_after",
         "mechanic_debug_after",
     ]
     visible_columns = []

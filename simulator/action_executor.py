@@ -16,6 +16,8 @@ from simulator.build_profiles import damage_bonus_breakdown, scaling_value_for_a
 from simulator.damage_formula import calculate_normal_damage, calculate_tune_break_damage
 from simulator.echo_sets import (
     AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID,
+    MORNYE_HIGH_SYNTONY_FIELD_DEF_BUFF_ID,
+    MORNYE_HIGH_SYNTONY_FIELD_OFF_TUNE_BUFF_ID,
     MORNYE_HALO_OF_STARRY_RADIANCE_5SET_BUFF_ID,
     apply_echo_set_event_buffs,
     echo_set_base_log_fields,
@@ -231,6 +233,22 @@ def _calculate_hit_damage(
         "aemeath_trailblazing_star_5set_active": (
             AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID in stats.get("active_buff_summary", [])
         ),
+        "high_syntony_field_def_bonus_active": bool(stats.get("high_syntony_field_def_bonus_active", False)),
+        "high_syntony_field_def_percent_bonus": float(stats.get("high_syntony_field_def_percent_bonus", 0.0) or 0.0),
+        "high_syntony_field_off_tune_inherited": bool(stats.get("high_syntony_field_off_tune_inherited", False)),
+        "high_syntony_field_heal_proxy_active": bool(stats.get("high_syntony_field_heal_proxy_active", False)),
+        "high_syntony_field_healing_multiplier_bonus": float(
+            stats.get("high_syntony_field_healing_multiplier_bonus", 0.0) or 0.0
+        ),
+        "high_syntony_field_healing_multiplier_metadata_only": bool(
+            stats.get("high_syntony_field_healing_multiplier_metadata_only", True)
+        ),
+        "critical_protocol_high_syntony_created_before_damage": False,
+        "high_syntony_field_same_action_application": False,
+        "high_syntony_field_application_timing": None,
+        "halo_atk_buff_does_not_affect_mornye_def_damage": (
+            action.character_id == "mornye" and scaling_stat == "def"
+        ),
         "halo_of_starry_radiance_5set_active": bool(stats.get("halo_of_starry_radiance_5set_active", False)),
         "halo_of_starry_radiance_5set_atk_percent_bonus": float(
             stats.get("halo_of_starry_radiance_5set_atk_percent_bonus", 0.0) or 0.0
@@ -336,6 +354,16 @@ def _calculate_hit_damage_totals(
                         *support_stat_log_fields(detail).keys(),
                         "halo_of_starry_radiance_5set_active",
                         "halo_of_starry_radiance_5set_atk_percent_bonus",
+                        "high_syntony_field_def_bonus_active",
+                        "high_syntony_field_def_percent_bonus",
+                        "high_syntony_field_off_tune_inherited",
+                        "high_syntony_field_heal_proxy_active",
+                        "high_syntony_field_healing_multiplier_bonus",
+                        "high_syntony_field_healing_multiplier_metadata_only",
+                        "critical_protocol_high_syntony_created_before_damage",
+                        "high_syntony_field_same_action_application",
+                        "high_syntony_field_application_timing",
+                        "halo_atk_buff_does_not_affect_mornye_def_damage",
                         "halo_of_starry_radiance_5set_applied_before_field_creation_damage",
                         "halo_of_starry_radiance_5set_same_action_application",
                         "halo_of_starry_radiance_5set_application_timing",
@@ -403,6 +431,38 @@ def _sync_hit_detail_runtime_event_logs(
         ),
         "team_heal_event_triggered": bool(echo_set_log_fields.get("team_heal_event_triggered", False)),
         "mornye_heal_event_mode": echo_set_log_fields.get("mornye_heal_event_mode"),
+        "high_syntony_field_active": bool(echo_set_log_fields.get("high_syntony_field_active", False)),
+        "high_syntony_field_remaining": float(echo_set_log_fields.get("high_syntony_field_remaining", 0.0) or 0.0),
+        "high_syntony_field_created_count": int(echo_set_log_fields.get("high_syntony_field_created_count", 0) or 0),
+        "high_syntony_field_def_bonus_active": bool(
+            echo_set_log_fields.get("high_syntony_field_def_bonus_active", False)
+        ),
+        "high_syntony_field_def_percent_bonus": float(
+            echo_set_log_fields.get("high_syntony_field_def_percent_bonus", 0.0) or 0.0
+        ),
+        "high_syntony_field_off_tune_inherited": bool(
+            echo_set_log_fields.get("high_syntony_field_off_tune_inherited", False)
+        ),
+        "high_syntony_field_heal_proxy_active": bool(
+            echo_set_log_fields.get("high_syntony_field_heal_proxy_active", False)
+        ),
+        "high_syntony_field_healing_multiplier_bonus": float(
+            echo_set_log_fields.get("high_syntony_field_healing_multiplier_bonus", 0.0) or 0.0
+        ),
+        "high_syntony_field_healing_multiplier_metadata_only": bool(
+            echo_set_log_fields.get("high_syntony_field_healing_multiplier_metadata_only", True)
+        ),
+        "critical_protocol_high_syntony_created_before_damage": bool(
+            echo_set_log_fields.get("critical_protocol_high_syntony_created_before_damage", False)
+        ),
+        "high_syntony_field_same_action_application": bool(
+            echo_set_log_fields.get("high_syntony_field_same_action_application", False)
+        ),
+        "high_syntony_field_application_timing": echo_set_log_fields.get("high_syntony_field_application_timing"),
+        "high_syntony_field_unavailable_reason": echo_set_log_fields.get("high_syntony_field_unavailable_reason"),
+        "halo_atk_buff_does_not_affect_mornye_def_damage": bool(
+            echo_set_log_fields.get("halo_atk_buff_does_not_affect_mornye_def_damage", False)
+        ),
         "halo_of_starry_radiance_5set_applied_before_field_creation_damage": bool(
             echo_set_log_fields.get("halo_of_starry_radiance_5set_applied_before_field_creation_damage", False)
         ),
@@ -417,6 +477,22 @@ def _sync_hit_detail_runtime_event_logs(
         ),
     }
     for detail in hit_details:
+        event_fields["high_syntony_field_def_bonus_active"] = bool(
+            echo_set_log_fields.get("high_syntony_field_def_bonus_active", False)
+            or detail.get("high_syntony_field_def_bonus_active", False)
+        )
+        event_fields["high_syntony_field_def_percent_bonus"] = max(
+            float(echo_set_log_fields.get("high_syntony_field_def_percent_bonus", 0.0) or 0.0),
+            float(detail.get("high_syntony_field_def_percent_bonus", 0.0) or 0.0),
+        )
+        event_fields["high_syntony_field_off_tune_inherited"] = bool(
+            echo_set_log_fields.get("high_syntony_field_off_tune_inherited", False)
+            or detail.get("high_syntony_field_off_tune_inherited", False)
+        )
+        event_fields["halo_atk_buff_does_not_affect_mornye_def_damage"] = bool(
+            echo_set_log_fields.get("halo_atk_buff_does_not_affect_mornye_def_damage", False)
+            or detail.get("halo_atk_buff_does_not_affect_mornye_def_damage", False)
+        )
         event_fields["halo_of_starry_radiance_5set_active"] = bool(
             echo_set_log_fields.get(
                 "halo_of_starry_radiance_5set_active",
@@ -535,6 +611,9 @@ def execute_action(
     force_active_buff_ids: set[str] = set()
     if echo_set_log_fields.get("halo_of_starry_radiance_5set_same_action_application"):
         force_active_buff_ids.add(MORNYE_HALO_OF_STARRY_RADIANCE_5SET_BUFF_ID)
+    if echo_set_log_fields.get("high_syntony_field_same_action_application"):
+        force_active_buff_ids.add(MORNYE_HIGH_SYNTONY_FIELD_DEF_BUFF_ID)
+        force_active_buff_ids.add(MORNYE_HIGH_SYNTONY_FIELD_OFF_TUNE_BUFF_ID)
 
     # Damage events use an action-start state snapshot. Trailblazing Star 5-set is
     # pre-applied for same-action trigger damage; other action-applied buffs and
@@ -613,10 +692,26 @@ def execute_action(
         if key in echo_set_log_fields:
             if support_log_fields[key] in (None, False, 0, 0.0):
                 support_log_fields[key] = echo_set_log_fields[key]
+    explicit_result_log_keys = {
+        "high_syntony_field_active",
+        "high_syntony_field_remaining",
+        "high_syntony_field_created_count",
+        "high_syntony_field_def_bonus_active",
+        "high_syntony_field_def_percent_bonus",
+        "high_syntony_field_off_tune_inherited",
+        "high_syntony_field_heal_proxy_active",
+        "high_syntony_field_healing_multiplier_bonus",
+        "high_syntony_field_healing_multiplier_metadata_only",
+        "critical_protocol_high_syntony_created_before_damage",
+        "high_syntony_field_same_action_application",
+        "high_syntony_field_application_timing",
+        "high_syntony_field_unavailable_reason",
+        "halo_atk_buff_does_not_affect_mornye_def_damage",
+    }
     echo_set_result_log_fields = {
         key: value
         for key, value in echo_set_log_fields.items()
-        if key not in support_log_fields
+        if key not in support_log_fields and key not in explicit_result_log_keys
     }
 
     result = ActionResult(
@@ -672,6 +767,54 @@ def execute_action(
         **mechanic_event_log_fields,
         **echo_set_result_log_fields,
         aemeath_trailblazing_star_5set_active=AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID in active_buff_ids,
+        high_syntony_field_active=bool(
+            action_damage_bonus_context.get(
+                "high_syntony_field_active",
+                echo_set_log_fields.get("high_syntony_field_active", False),
+            )
+        ),
+        high_syntony_field_remaining=float(echo_set_log_fields.get("high_syntony_field_remaining", 0.0) or 0.0),
+        high_syntony_field_created_count=int(echo_set_log_fields.get("high_syntony_field_created_count", 0) or 0),
+        high_syntony_field_def_bonus_active=bool(
+            action_damage_bonus_context.get(
+                "high_syntony_field_def_bonus_active",
+                echo_set_log_fields.get("high_syntony_field_def_bonus_active", False),
+            )
+        ),
+        high_syntony_field_def_percent_bonus=float(
+            action_damage_bonus_context.get(
+                "high_syntony_field_def_percent_bonus",
+                echo_set_log_fields.get("high_syntony_field_def_percent_bonus", 0.0),
+            )
+            or 0.0
+        ),
+        high_syntony_field_off_tune_inherited=bool(
+            action_damage_bonus_context.get(
+                "high_syntony_field_off_tune_inherited",
+                echo_set_log_fields.get("high_syntony_field_off_tune_inherited", False),
+            )
+        ),
+        high_syntony_field_heal_proxy_active=bool(echo_set_log_fields.get("high_syntony_field_heal_proxy_active", False)),
+        high_syntony_field_healing_multiplier_bonus=float(
+            echo_set_log_fields.get("high_syntony_field_healing_multiplier_bonus", 0.0) or 0.0
+        ),
+        high_syntony_field_healing_multiplier_metadata_only=bool(
+            echo_set_log_fields.get("high_syntony_field_healing_multiplier_metadata_only", True)
+        ),
+        critical_protocol_high_syntony_created_before_damage=bool(
+            echo_set_log_fields.get("critical_protocol_high_syntony_created_before_damage", False)
+        ),
+        high_syntony_field_same_action_application=bool(
+            echo_set_log_fields.get("high_syntony_field_same_action_application", False)
+        ),
+        high_syntony_field_application_timing=echo_set_log_fields.get("high_syntony_field_application_timing"),
+        high_syntony_field_unavailable_reason=echo_set_log_fields.get("high_syntony_field_unavailable_reason"),
+        halo_atk_buff_does_not_affect_mornye_def_damage=bool(
+            action_damage_bonus_context.get(
+                "halo_atk_buff_does_not_affect_mornye_def_damage",
+                echo_set_log_fields.get("halo_atk_buff_does_not_affect_mornye_def_damage", False),
+            )
+        ),
         halo_of_starry_radiance_5set_active=bool(
             action_damage_bonus_context.get(
                 "halo_of_starry_radiance_5set_active",
@@ -880,12 +1023,29 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         mornye_rest_mass_after=result.mornye_rest_mass_after,
         mornye_wfo_remaining_after=result.mornye_wfo_remaining_after,
         mornye_syntony_field_remaining_after=result.mornye_syntony_field_remaining_after,
+        high_syntony_field_active=result.high_syntony_field_active,
+        high_syntony_field_remaining=result.high_syntony_field_remaining,
+        high_syntony_field_created_count=result.high_syntony_field_created_count,
+        high_syntony_field_def_bonus_active=result.high_syntony_field_def_bonus_active,
+        high_syntony_field_def_percent_bonus=result.high_syntony_field_def_percent_bonus,
+        high_syntony_field_off_tune_inherited=result.high_syntony_field_off_tune_inherited,
+        high_syntony_field_heal_proxy_active=result.high_syntony_field_heal_proxy_active,
+        high_syntony_field_healing_multiplier_bonus=result.high_syntony_field_healing_multiplier_bonus,
+        high_syntony_field_healing_multiplier_metadata_only=result.high_syntony_field_healing_multiplier_metadata_only,
+        critical_protocol_high_syntony_created_before_damage=result.critical_protocol_high_syntony_created_before_damage,
+        high_syntony_field_same_action_application=result.high_syntony_field_same_action_application,
+        high_syntony_field_application_timing=result.high_syntony_field_application_timing,
+        high_syntony_field_unavailable_reason=result.high_syntony_field_unavailable_reason,
+        halo_atk_buff_does_not_affect_mornye_def_damage=result.halo_atk_buff_does_not_affect_mornye_def_damage,
         mornye_er_excess_percent=result.mornye_er_excess_percent,
         mornye_liberation_crit_rate_bonus=result.mornye_liberation_crit_rate_bonus,
         mornye_liberation_crit_dmg_bonus=result.mornye_liberation_crit_dmg_bonus,
         mornye_interfered_marker_mode=result.mornye_interfered_marker_mode,
         mornye_interfered_amp=result.mornye_interfered_amp,
         mornye_interfered_marker_applied=result.mornye_interfered_marker_applied,
+        observation_marker_applied=result.observation_marker_applied,
+        interfered_marker_mode=result.interfered_marker_mode,
+        interfered_marker_applied_by_simplified_inversion=result.interfered_marker_applied_by_simplified_inversion,
         mornye_expectation_error_mode=result.mornye_expectation_error_mode,
         base_policy_action_id=result.base_policy_action_id,
         optimal_solution_triggered=result.optimal_solution_triggered,

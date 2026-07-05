@@ -232,7 +232,10 @@ def support_stat_context(
             active_support_buffs.append(buff.id)
             value = float(active.metadata.get("dynamic_support_value", stat_value))
             runtime_bonus += value
-            if buff.id == "mornye_syntony_field_off_tune_buildup_rate":
+            if buff.id in {
+                "mornye_syntony_field_off_tune_buildup_rate",
+                "mornye_high_syntony_field_off_tune_buildup_rate",
+            }:
                 syntony_bonus += value
                 c2_bonus_active = c2_bonus_active or bool(active.metadata.get("c2_off_tune_bonus_active", False))
 
@@ -278,6 +281,13 @@ def buffed_combat_stats(
         "damage_bonus_by_element_buff": {},
         "echo_set_damage_bonus_by_element": {},
         "crit_rate_before_buffs": character.crit_rate,
+        "high_syntony_field_def_bonus_active": False,
+        "high_syntony_field_def_percent_bonus": 0.0,
+        "high_syntony_field_off_tune_inherited": False,
+        "high_syntony_field_heal_proxy_active": False,
+        "high_syntony_field_healing_multiplier_bonus": 0.0,
+        "high_syntony_field_healing_multiplier_metadata_only": True,
+        "halo_atk_buff_does_not_affect_mornye_def_damage": False,
         "halo_of_starry_radiance_5set_active": False,
         "halo_of_starry_radiance_5set_atk_percent_bonus": 0.0,
     }
@@ -298,6 +308,15 @@ def buffed_combat_stats(
                 float(stats.get("halo_of_starry_radiance_5set_atk_percent_bonus", 0.0)),
                 buff_value,
             )
+        if buff.id == "mornye_high_syntony_field_def_bonus":
+            stats["high_syntony_field_def_bonus_active"] = True
+            stats["high_syntony_field_def_percent_bonus"] = max(
+                float(stats.get("high_syntony_field_def_percent_bonus", 0.0)),
+                float(buff.stat_modifiers.get("def_percent", 0.0)),
+            )
+        if buff.id == "mornye_high_syntony_field_off_tune_buildup_rate":
+            stats["high_syntony_field_off_tune_inherited"] = True
+            stats["high_syntony_field_healing_multiplier_bonus"] = 0.40
         if buff.modifier_type == "attack":
             stats["runtime_atk_percent_bonus"] += buff_value
         elif buff.modifier_type == "damage_bonus":

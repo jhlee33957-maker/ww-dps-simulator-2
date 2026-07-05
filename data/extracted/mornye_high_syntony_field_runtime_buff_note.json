@@ -1,0 +1,75 @@
+{
+  "character_id": "mornye",
+  "action_id": "mornye_liberation_critical_protocol",
+  "field_id": "high_syntony_field",
+  "duration_seconds": 25.0,
+  "def_percent_bonus": 0.2,
+  "off_tune_buildup_rate_inherited_bonus": 0.5,
+  "healing_inherited": true,
+  "healing_multiplier_bonus": 0.4,
+  "exact_healing_amount_modeled": false,
+  "exact_heal_tick_timing_modeled": false,
+  "implementation_timing_mode": "same_action_high_syntony_field_creation_approximation",
+  "high_syntony_field_requires_active_syntony_field": true,
+  "source_references": [
+    {
+      "source_type": "workbook_cell",
+      "workbook": "data/source/鸣潮动作数据汇总.xlsx",
+      "sheet": "角色-女",
+      "cell": "D4120",
+      "raw_text": "持续帧内每180F进行一次判定，被命中后回血，仅对己方生效",
+      "supports": "Syntony Field healing proxy source"
+    },
+    {
+      "source_type": "workbook_row",
+      "workbook": "data/source/鸣潮动作数据汇总.xlsx",
+      "sheet": "角色-女",
+      "row": 4121,
+      "cells_found": {
+        "C4121": "强谐振场-治疗",
+        "E4121": 1,
+        "F4121": 1500,
+        "AM4121": "队伍",
+        "AN4121": "莫宁",
+        "AT4121": "球形(3100,0,0)"
+      },
+      "source_status": "workbook_row_confirmed_d4121_blank",
+      "supports": "High Syntony Field healing row exists"
+    },
+    {
+      "source_type": "workbook_cell",
+      "workbook": "data/source/鸣潮动作数据汇总.xlsx",
+      "sheet": "角色-女",
+      "cell": "D4122",
+      "raw_text": "全队偏谐效率+50%，解锁C2时额外+20%",
+      "supports": "Syntony Field Off-Tune Buildup Rate +50%; inherited by High Syntony Field from skill screenshot/source text"
+    },
+    {
+      "source_type": "workbook_cell",
+      "workbook": "data/source/鸣潮动作数据汇总.xlsx",
+      "sheet": "角色-女",
+      "cell": "D4124",
+      "raw_text": "强场状态用，全队获得20%防御加成",
+      "supports": "High Syntony Field party DEF +20%"
+    },
+    {
+      "source_type": "workbook_cell",
+      "workbook": "data/source/鸣潮动作数据汇总.xlsx",
+      "sheet": "角色-女",
+      "cell": "D4150",
+      "raw_text": "无敌期间不能切人，第360F后切人不退场\n第265F成功销毁谐振场后，生成强谐振场",
+      "supports": "Critical Protocol destroys/removes Syntony Field and generates High Syntony Field before damage timing"
+    },
+    {
+      "source_type": "user_supplied_skill_screenshot_not_embedded",
+      "source_status": "user_supplied_skill_screenshot_not_embedded",
+      "supports": "High Syntony Field lasts 25s, inherits Off-Tune and healing, and increases Healing Multiplier by 40%"
+    }
+  ],
+  "unsupported_followup_mechanics": [
+    "exact_healing_amount_calculation",
+    "exact_heal_tick_timing",
+    "automatic_syntony_field_damage_scheduling",
+    "full_tune_break_interfered_system"
+  ]
+}

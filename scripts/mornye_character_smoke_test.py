@@ -102,7 +102,9 @@ def test_wfo_basic_and_liberation_high_syntony() -> None:
     state = mornye_state(sim)
     assert row.resolved_action_id == "mornye_liberation_critical_protocol"
     assert state["syntony_field_remaining"] == 0.0
-    assert state["high_syntony_field_remaining"] == 25.0
+    assert 0.0 < state["high_syntony_field_remaining"] < 25.0
+    assert row.high_syntony_field_same_action_application is True
+    assert row.high_syntony_field_def_bonus_active is True
 
 
 def test_wfo_inversion_requires_relative_momentum() -> None:

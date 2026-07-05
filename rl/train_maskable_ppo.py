@@ -192,6 +192,29 @@ def main() -> None:
             training_summary.aemeath_trailblazing_star_5set_uptime_seconds
         ),
         "aemeath_trailblazing_star_5set_buff_windows": training_summary.aemeath_trailblazing_star_5set_buff_windows,
+        "high_syntony_field_active": training_summary.high_syntony_field_active,
+        "high_syntony_field_remaining": training_summary.high_syntony_field_remaining,
+        "high_syntony_field_created_count": training_summary.high_syntony_field_created_count,
+        "high_syntony_field_def_bonus_active": training_summary.high_syntony_field_def_bonus_active,
+        "high_syntony_field_def_percent_bonus": training_summary.high_syntony_field_def_percent_bonus,
+        "high_syntony_field_off_tune_inherited": training_summary.high_syntony_field_off_tune_inherited,
+        "high_syntony_field_heal_proxy_active": training_summary.high_syntony_field_heal_proxy_active,
+        "high_syntony_field_healing_multiplier_bonus": training_summary.high_syntony_field_healing_multiplier_bonus,
+        "critical_protocol_high_syntony_created_before_damage": (
+            training_summary.critical_protocol_high_syntony_created_before_damage
+        ),
+        "high_syntony_field_same_action_application": training_summary.high_syntony_field_same_action_application,
+        "high_syntony_field_application_timing": training_summary.high_syntony_field_application_timing,
+        "runtime_def_percent_bonus": training_summary.runtime_def_percent_bonus,
+        "current_off_tune_buildup_rate": training_summary.current_off_tune_buildup_rate,
+        "halo_of_starry_radiance_5set_active": training_summary.halo_of_starry_radiance_5set_active,
+        "halo_of_starry_radiance_5set_atk_percent_bonus": (
+            training_summary.halo_of_starry_radiance_5set_atk_percent_bonus
+        ),
+        "halo_atk_buff_does_not_affect_mornye_def_damage": (
+            training_summary.halo_atk_buff_does_not_affect_mornye_def_damage
+        ),
+        "high_syntony_field_unavailable_reason": training_summary.high_syntony_field_unavailable_reason,
         "active_build_profiles": env.get_active_build_profiles(),
         "active_party_build_profiles": env.get_active_build_profiles(),
         "effective_build_stats_summary": env.get_effective_build_stats_summary(),

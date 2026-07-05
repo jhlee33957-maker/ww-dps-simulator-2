@@ -9,9 +9,12 @@ from simulator.models import BuffData, CharacterData, CombatState
 AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID = "aemeath_trailblazing_star_5set"
 TRAILBLAZING_STAR_SET_KEY = "trailblazing_star"
 MORNYE_SYNTONY_FIELD_OFF_TUNE_BUFF_ID = "mornye_syntony_field_off_tune_buildup_rate"
+MORNYE_HIGH_SYNTONY_FIELD_DEF_BUFF_ID = "mornye_high_syntony_field_def_bonus"
+MORNYE_HIGH_SYNTONY_FIELD_OFF_TUNE_BUFF_ID = "mornye_high_syntony_field_off_tune_buildup_rate"
 MORNYE_HALO_OF_STARRY_RADIANCE_5SET_BUFF_ID = "mornye_halo_of_starry_radiance_5set"
 HALO_OF_STARRY_RADIANCE_SET_KEY = "halo_of_starry_radiance"
 TEAM_HEAL_EVENT_TAG = "team_heal"
+HIGH_SYNTONY_SAME_ACTION_TIMING_MODE = "same_action_high_syntony_field_creation_approximation"
 
 
 def active_echo_sets_for_characters(characters: dict[str, CharacterData]) -> dict[str, dict[str, Any]]:
@@ -58,6 +61,20 @@ def echo_set_base_log_fields() -> dict[str, Any]:
         "trailblazing_star_5set_same_action_application": False,
         "trailblazing_star_5set_application_timing": None,
         "team_heal_event_triggered": False,
+        "high_syntony_field_active": False,
+        "high_syntony_field_remaining": 0.0,
+        "high_syntony_field_created_count": 0,
+        "high_syntony_field_def_bonus_active": False,
+        "high_syntony_field_def_percent_bonus": 0.0,
+        "high_syntony_field_off_tune_inherited": False,
+        "high_syntony_field_heal_proxy_active": False,
+        "high_syntony_field_healing_multiplier_bonus": 0.0,
+        "high_syntony_field_healing_multiplier_metadata_only": True,
+        "critical_protocol_high_syntony_created_before_damage": False,
+        "high_syntony_field_same_action_application": False,
+        "high_syntony_field_application_timing": None,
+        "high_syntony_field_unavailable_reason": None,
+        "halo_atk_buff_does_not_affect_mornye_def_damage": False,
         "halo_of_starry_radiance_5set_applied_before_field_creation_damage": False,
         "halo_of_starry_radiance_5set_same_action_application": False,
         "halo_of_starry_radiance_5set_application_timing": None,
@@ -173,6 +190,82 @@ def apply_syntony_field_off_tune_buff(
         "syntony_field_off_tune_buff_duration": float(duration),
         "syntony_field_off_tune_bonus_source": "角色-女!D4122",
         "syntony_field_off_tune_bonus_application_time": application_time,
+    }
+
+
+def remove_syntony_field_support_buffs(state: CombatState) -> None:
+    state.active_buffs = [
+        active
+        for active in state.active_buffs
+        if active.buff_id != MORNYE_SYNTONY_FIELD_OFF_TUNE_BUFF_ID
+    ]
+    state.team_buffs = list(state.active_buffs)
+
+
+def apply_high_syntony_field_support_buffs(
+    *,
+    state: CombatState,
+    buffs: dict[str, BuffData],
+    source_character_id: str = "mornye",
+    duration: float = 25.0,
+    constellation: int = 0,
+    application_time: float = 0.0,
+) -> dict[str, Any]:
+    remove_syntony_field_support_buffs(state)
+    c2_active = int(constellation or 0) >= 2
+    off_tune_value = 0.5 + (0.2 if c2_active else 0.0)
+
+    off_tune_buff = BuffData(
+        id=MORNYE_HIGH_SYNTONY_FIELD_OFF_TUNE_BUFF_ID,
+        name="Mornye High Syntony Field Off-Tune Buildup Rate",
+        duration=float(duration),
+        modifier_type="boost",
+        value=0.0,
+        target="team",
+        target_scope="team",
+        source_character_id=source_character_id,
+        max_stacks=1,
+        stacking_rule="refresh_duration",
+        support_stat_modifiers={"off_tune_buildup_rate_add": off_tune_value},
+        metadata={
+            "source_type": "mornye_high_syntony_field",
+            "source_character_id": source_character_id,
+            "field_id": "high_syntony_field",
+            "source_status": "workbook_and_user_screenshot_confirmed",
+            "source": "角色-女!D4122 inherited by Critical Protocol screenshot/source text",
+            "dynamic_support_value": off_tune_value,
+            "c2_off_tune_bonus_active": c2_active,
+            "mornye_constellation": int(constellation or 0),
+            "implementation_status": "implemented_simplified_inheritance",
+        },
+    )
+    was_off_tune_active = _active_buff_exists(state, off_tune_buff.id)
+    apply_buff(state, off_tune_buff, source_character_id)
+
+    def_buff = buffs.get(MORNYE_HIGH_SYNTONY_FIELD_DEF_BUFF_ID)
+    was_def_active = _active_buff_exists(state, MORNYE_HIGH_SYNTONY_FIELD_DEF_BUFF_ID)
+    if def_buff is not None:
+        apply_buff(state, def_buff, source_character_id)
+
+    return {
+        "high_syntony_field_active": True,
+        "high_syntony_field_remaining": float(duration),
+        "high_syntony_field_def_bonus_active": def_buff is not None,
+        "high_syntony_field_def_percent_bonus": 0.20 if def_buff is not None else 0.0,
+        "high_syntony_field_off_tune_inherited": True,
+        "high_syntony_field_healing_multiplier_bonus": 0.40,
+        "high_syntony_field_healing_multiplier_metadata_only": True,
+        "syntony_field_off_tune_bonus_active": True,
+        "syntony_field_off_tune_bonus_value": off_tune_value,
+        "c2_off_tune_bonus_active": c2_active,
+        "mornye_constellation": int(constellation or 0),
+        "high_syntony_field_def_buff_refreshed": was_def_active,
+        "high_syntony_field_off_tune_buff_refreshed": was_off_tune_active,
+        "high_syntony_field_buff_duration": float(duration),
+        "high_syntony_field_source_action_id": "mornye_liberation_critical_protocol",
+        "high_syntony_field_off_tune_bonus_source": "Critical Protocol source text inherits Syntony Field Off-Tune",
+        "high_syntony_field_def_bonus_source": "角色-女!D4124",
+        "high_syntony_field_application_time": application_time,
     }
 
 

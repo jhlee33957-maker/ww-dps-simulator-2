@@ -88,6 +88,7 @@ Implemented in v1:
 - Heavy Inversion at 100 Relative Momentum, applying Observation Marker metadata for 30s
 - Expectation Error / Optimal Solution Resonance Skill routing: baseline resolves conservatively to Expectation Error by default; WFO resolves to Distributed Array
 - Critical Protocol Resonance Liberation, including Syntony Field to High Syntony Field conversion
+- High Syntony Field simplified runtime support: 25s duration, party DEF +20%, inherited Off-Tune +50%, inherited simplified healing proxy, and Critical Protocol same-action support application
 - Mornye Energy Regen scaling v1: Mornye uses `energy_regen = 2.60` as a configurable support-test assumption, and Critical Protocol gets temporary ER-derived crit bonuses only on that Liberation action
 - optional simplified Interfered Marker mode: when explicitly enabled, Heavy Inversion refreshes a 30s enemy damage-taken amp based on Mornye ER excess; global default remains disabled
 - Mornye Outro Recursion as a real transition buff: `mornye_outro_recursion_all_dmg_amp` gives the party 25% All DMG Amplification for 30s and consumes Mornye outgoing Concerto when applied
@@ -138,9 +139,17 @@ Halo of Starry Radiance 5-set is implemented for Mornye user profile `mornye_use
 
 Field-creating Mornye actions receive the Halo 5-set buff on their own damage in the current action-level approximation, `same_action_field_creation_approximation`. The Syntony Field Off-Tune +0.5 support-stat buff is applied before calculating the same-action Halo value.
 
-The Halo 5-set buff is team ATK%, so it benefits ATK-scaling party members such as Aemeath. It does not increase Mornye DEF-scaling damage. The 2-set Healing Bonus is metadata only for current DPS. Full healing amount calculation, exact heal tick scheduling, defensive survival value, full automatic Syntony Field damage scheduling, and High Syntony Field Off-Tune inheritance remain unsupported/unresolved.
+The Halo 5-set buff is team ATK%, so it benefits ATK-scaling party members such as Aemeath. It does not increase Mornye DEF-scaling damage. The 2-set Healing Bonus is metadata only for current DPS. Full healing amount calculation, exact heal tick scheduling, defensive survival value, and full automatic Syntony/High Syntony Field damage scheduling remain unsupported.
 
 PPO should be retrained only after Mornye `mornye_heal_event_mode` / field proxy behavior is finalized. No PPO training was performed for this patch.
+
+## Mornye High Syntony Field / Critical Protocol
+
+Critical Protocol can generate High Syntony Field when Syntony Field is active. The runtime model consumes/replaces Syntony Field, creates High Syntony Field for 25s, and applies party DEF +20% as a real runtime `def_percent` buff.
+
+High Syntony Field inherits Syntony Field's Off-Tune +50% and the simplified healing proxy. The inherited healing multiplier +40% is metadata only because exact healing amount and exact heal tick timing are not modeled. Halo of Starry Radiance 5-set can remain active through the High Syntony heal proxy, but Halo ATK% does not increase Mornye DEF-scaling damage.
+
+Critical Protocol receives High Syntony Field DEF +20% under `same_action_high_syntony_field_creation_approximation` when active Syntony Field exists before casting. Automatic Syntony/High Syntony field damage scheduling, full Tune Break / Interfered systems, and exact healing remain unsupported. PPO should be retrained after this correction because Mornye Liberation's support value changed; no PPO training was performed for this patch.
 
 ## Mornye Excel Audit
 

@@ -21,6 +21,9 @@
     "raw_text": "持续帧内每180F进行一次判定，被命中后回血，仅对己方生效",
     "display_text": "持续帧内每180F进行一次判定，被命中后回血，仅对己方生效"
   },
-  "high_syntony_field_off_tune_inheritance_status": "unresolved_not_applied_unless_source_confirmed",
+  "high_syntony_field_off_tune_inheritance_status": "implemented_simplified_inheritance",
+  "high_syntony_field_off_tune_inherited_bonus": 0.5,
+  "high_syntony_field_source_status": "workbook_and_user_screenshot_confirmed",
+  "high_syntony_field_source_note": "Workbook D4122 confirms Syntony Field Off-Tune +50%; user-provided Critical Protocol/High Syntony Field skill screenshot source says High Syntony Field inherits Syntony Field Off-Tune Buildup Rate.",
   "energy_regen_is_not_off_tune_buildup_rate": true
 }
