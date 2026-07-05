@@ -1,0 +1,32 @@
+{
+  "id": "aemeath_trailblazing_star_5set_runtime_buff_note",
+  "source_status": "user_supplied_set_tooltip",
+  "profile_id": "aemeath_user_real_01",
+  "echo_set_id": "trailblazing_star",
+  "static_2set_already_in_profile": true,
+  "conditional_5set_enabled": true,
+  "implemented_buff_id": "aemeath_trailblazing_star_5set",
+  "trigger_event_tags": [
+    "fusion_burst",
+    "tune_rupture_shifting"
+  ],
+  "buff_effect": {
+    "duration_seconds": 8.0,
+    "crit_rate_add": 0.2,
+    "damage_bonus_by_element": {
+      "fusion": 0.2
+    },
+    "max_stacks": 1,
+    "stacking_rule": "refresh_duration"
+  },
+  "activation_timing": "applies after the triggering action resolves; the triggering hit does not receive this buff retroactively",
+  "unsupported_mechanics": [
+    "fusion_burst_explosion_damage",
+    "tune_rupture_damage",
+    "fusion_trail",
+    "rupturous_trail",
+    "seraphic_duet_trail_removal_extra_damage",
+    "stardust_extra_mechanics"
+  ],
+  "implementation_note": "The runtime buff consumes emitted mechanic event tags and generic buff fields. No Aemeath-specific damage formula branch is used."
+}

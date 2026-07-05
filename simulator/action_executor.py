@@ -14,6 +14,7 @@ from simulator.buff_system import (
 )
 from simulator.build_profiles import damage_bonus_breakdown, scaling_value_for_action, stat_component_log_fields
 from simulator.damage_formula import calculate_normal_damage, calculate_tune_break_damage
+from simulator.echo_sets import AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID, apply_echo_set_event_buffs
 from simulator.mechanic_events import process_mechanic_event_triggers
 from simulator.models import ActionData, ActionResult, BuffData, CharacterData, CombatState, HitData, TimelineEntry
 from simulator.resource_system import apply_resource_changes, can_pay_resources
@@ -144,6 +145,8 @@ def _calculate_hit_damage(
         character,
         action,
         additive_buff_bonus=float(stats.get("damage_bonus_buff", 0.0)),
+        additive_element_bonuses=stats.get("damage_bonus_by_element_buff") or {},
+        echo_set_element_bonuses=stats.get("echo_set_damage_bonus_by_element") or {},
     )
     havoc_def_reduction = get_havoc_bane_def_reduction_at_time(state, hit.time)
     final_def_reduction = state.def_reduction + havoc_def_reduction
@@ -203,6 +206,12 @@ def _calculate_hit_damage(
         "implementation_status": character.implementation_status,
         "applied_havoc_bane_def_reduction": havoc_def_reduction,
         "applied_buff_summary": stats.get("active_buff_summary", []),
+        "active_buff_ids": stats.get("active_buff_summary", []),
+        "aemeath_trailblazing_star_5set_active": (
+            AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID in stats.get("active_buff_summary", [])
+        ),
+        "crit_rate_before_buffs": float(stats.get("crit_rate_before_buffs", character.crit_rate)),
+        "crit_rate_after_buffs": float(stats.get("crit_rate_after_buffs", stats.get("crit_rate", 0.0))),
         "applied_damage_amp": damage_amp,
         "name": hit.name,
     }
@@ -272,7 +281,11 @@ def _calculate_hit_damage_totals(
                         "all_dmg_bonus",
                         "category_dmg_bonus",
                         "element_dmg_bonus",
+                        "runtime_element_damage_bonus",
+                        "echo_set_damage_bonus",
                         "effective_damage_bonus",
+                        "crit_rate_before_buffs",
+                        "crit_rate_after_buffs",
                         "build_profile_id",
                         "scaling_stat",
                         "scaling_value",
@@ -433,6 +446,20 @@ def execute_action(
             apply_buff(state, buffs[buff_id], action.character_id)
         apply_anomaly(state, action)
 
+    echo_set_log_fields = {
+        "echo_set_triggered_buff_ids": [],
+        "echo_set_buff_refreshed": False,
+    }
+    if not truncated_by_combat_limit:
+        echo_set_log_fields = apply_echo_set_event_buffs(
+            actor_character_id=actor_character_id,
+            emitted_event_tags=mechanic_event_log_fields.get("emitted_mechanic_event_tags", []),
+            characters=characters,
+            state=state,
+            buffs=buffs,
+            action_end_time=state.current_time,
+        )
+
     # Simplified cooldown model: cooldown starts at the end of the action.
     if action.cooldown > 0.0 and not truncated_by_combat_limit:
         state.cooldowns[cooldown_key(action)] = action.cooldown
@@ -487,7 +514,11 @@ def execute_action(
         all_dmg_bonus=float(action_damage_bonus_context.get("all_dmg_bonus", 0.0)),
         category_dmg_bonus=float(action_damage_bonus_context.get("category_dmg_bonus", 0.0)),
         element_dmg_bonus=float(action_damage_bonus_context.get("element_dmg_bonus", 0.0)),
+        runtime_element_damage_bonus=float(action_damage_bonus_context.get("runtime_element_damage_bonus", 0.0)),
+        echo_set_damage_bonus=float(action_damage_bonus_context.get("echo_set_damage_bonus", 0.0)),
         effective_damage_bonus=float(action_damage_bonus_context.get("effective_damage_bonus", 0.0)),
+        crit_rate_before_buffs=float(action_damage_bonus_context.get("crit_rate_before_buffs", 0.0)),
+        crit_rate_after_buffs=float(action_damage_bonus_context.get("crit_rate_after_buffs", 0.0)),
         build_profile_id=action_damage_bonus_context.get("build_profile_id"),
         scaling_stat=action_damage_bonus_context.get("scaling_stat"),
         scaling_value=float(action_damage_bonus_context.get("scaling_value") or 0.0),
@@ -495,6 +526,8 @@ def execute_action(
         **stat_component_log_fields(action_damage_bonus_context),
         profile_completeness_status=action_damage_bonus_context.get("profile_completeness_status"),
         **mechanic_event_log_fields,
+        **echo_set_log_fields,
+        aemeath_trailblazing_star_5set_active=AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID in active_buff_ids,
         active_anomalies_after=active_anomalies_after,
         active_buffs=active_buff_ids,
         applied_buffs=applied_buff_ids,
@@ -522,6 +555,8 @@ def execute_action(
                 "damage_after_cutoff_excluded": damage_after_cutoff_excluded,
                 **action_damage_bonus_context,
                 **mechanic_event_log_fields,
+                **echo_set_log_fields,
+                "aemeath_trailblazing_star_5set_active": AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID in active_buff_ids,
                 "combat_time_start": combat_start_time,
                 "combat_time_end": state.combat_time,
             }
@@ -577,7 +612,11 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         all_dmg_bonus=result.all_dmg_bonus,
         category_dmg_bonus=result.category_dmg_bonus,
         element_dmg_bonus=result.element_dmg_bonus,
+        runtime_element_damage_bonus=result.runtime_element_damage_bonus,
+        echo_set_damage_bonus=result.echo_set_damage_bonus,
         effective_damage_bonus=result.effective_damage_bonus,
+        crit_rate_before_buffs=result.crit_rate_before_buffs,
+        crit_rate_after_buffs=result.crit_rate_after_buffs,
         build_profile_id=result.build_profile_id,
         scaling_stat=result.scaling_stat,
         scaling_value=result.scaling_value,
@@ -593,6 +632,9 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         aemeath_resonance_mode=result.aemeath_resonance_mode,
         mechanic_event_source_status=result.mechanic_event_source_status,
         mechanic_event_unresolved_reason=result.mechanic_event_unresolved_reason,
+        echo_set_triggered_buff_ids=result.echo_set_triggered_buff_ids,
+        echo_set_buff_refreshed=result.echo_set_buff_refreshed,
+        aemeath_trailblazing_star_5set_active=result.aemeath_trailblazing_star_5set_active,
         active_anomalies_after=result.active_anomalies_after,
         active_buffs=result.active_buffs,
         applied_buffs=result.applied_buffs,

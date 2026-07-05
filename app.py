@@ -425,6 +425,36 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
                         "Unimplemented follow-up mechanics: "
                         + ", ".join(summary.unsupported_aemeath_followup_mechanics)
                     )
+            with st.expander("Aemeath Echo Set - Trailblazing Star"):
+                trail_config = (summary.active_echo_sets.get("aemeath") or {}).get("trailblazing_star") or {}
+                echo_cols = st.columns(4)
+                echo_cols[0].metric("5-set enabled", "Yes" if summary.aemeath_trailblazing_star_5set_enabled else "No")
+                echo_cols[1].metric("Trigger count", summary.aemeath_trailblazing_star_5set_trigger_count)
+                echo_cols[2].metric("Uptime", f"{summary.aemeath_trailblazing_star_5set_uptime_seconds:.2f}s")
+                echo_cols[3].metric(
+                    "Active now",
+                    "Yes" if "aemeath_trailblazing_star_5set" in summary.echo_set_active_buffs else "No",
+                )
+                st.caption(
+                    "Trailblazing Star 2-set Fusion DMG is already included statically in the selected build profile. "
+                    "The 5-set runtime buff grants +20% Crit Rate and +20% Fusion DMG for 8s after a supported event."
+                )
+                st.write("Trigger events:", summary.aemeath_trailblazing_star_5set_trigger_event_tags)
+                st.write("Current resonance mode:", summary.aemeath_resonance_mode)
+                can_emit = summary.aemeath_resonance_mode in {"fusion_burst", "tune_rupture"}
+                st.write("Simulation can emit trigger events:", can_emit)
+                if trail_config:
+                    st.write("Profile metadata:", trail_config)
+                if summary.aemeath_trailblazing_star_5set_enabled and not can_emit:
+                    st.info("Trailblazing Star 5-set is enabled, but the current resonance mode does not emit trigger events.")
+                if summary.aemeath_trailblazing_star_5set_enabled and summary.aemeath_trailblazing_star_5set_trigger_count == 0:
+                    st.info("No Trailblazing Star trigger occurred in this run.")
+                if summary.aemeath_trailblazing_star_5set_buff_windows:
+                    st.dataframe(
+                        pd.DataFrame(summary.aemeath_trailblazing_star_5set_buff_windows),
+                        use_container_width=True,
+                        hide_index=True,
+                    )
         if len(simulation.selected_party_character_ids) > 1 and simulation.has_placeholder_swap_timing:
             st.warning(
                 "Generic swap timing is a placeholder for party-structure testing. "
@@ -461,7 +491,11 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "all_dmg_bonus",
         "category_dmg_bonus",
         "element_dmg_bonus",
+        "runtime_element_damage_bonus",
+        "echo_set_damage_bonus",
         "effective_damage_bonus",
+        "crit_rate_before_buffs",
+        "crit_rate_after_buffs",
         "scaling_stat",
         "scaling_value",
         "stat_component_source",
@@ -514,6 +548,9 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "aemeath_resonance_mode",
         "mechanic_event_source_status",
         "mechanic_event_unresolved_reason",
+        "echo_set_triggered_buff_ids",
+        "echo_set_buff_refreshed",
+        "aemeath_trailblazing_star_5set_active",
         "raw_skill_category",
         "raw_damage_type",
         "actor_character_id",

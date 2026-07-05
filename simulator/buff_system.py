@@ -217,6 +217,9 @@ def buffed_combat_stats(
         "final_dmg_bonus": character.final_dmg_bonus,
         "dmg_taken": state.dmg_taken,
         "damage_bonus_buff": 0.0,
+        "damage_bonus_by_element_buff": {},
+        "echo_set_damage_bonus_by_element": {},
+        "crit_rate_before_buffs": character.crit_rate,
     }
     active_buff_names: list[str] = []
 
@@ -253,8 +256,19 @@ def buffed_combat_stats(
                 stats["runtime_hp_flat_bonus"] += stat_value
             elif stat_name in stats:
                 stats[stat_name] += stat_value
+        if buff.damage_bonus_by_element:
+            for element, element_bonus in buff.damage_bonus_by_element.items():
+                element_key = str(element).strip().lower()
+                stats["damage_bonus_by_element_buff"][element_key] = (
+                    stats["damage_bonus_by_element_buff"].get(element_key, 0.0) + float(element_bonus)
+                )
+                if buff.metadata.get("source_type") == "echo_set":
+                    stats["echo_set_damage_bonus_by_element"][element_key] = (
+                        stats["echo_set_damage_bonus_by_element"].get(element_key, 0.0) + float(element_bonus)
+                    )
 
     _recalculate_scaling_stats(stats)
+    stats["crit_rate_after_buffs"] = stats["crit_rate"]
     stats["active_buff_count"] = float(len(active_buff_names))
     stats["active_buff_summary"] = active_buff_names
     return stats

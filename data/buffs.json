@@ -88,5 +88,39 @@
       "source": "Mornye Interfered Marker simplified optional mode",
       "source_note": "Simplified optional enemy damage-taken amp applied on Heavy Inversion. Full Tune/Tune Rupture/Tune Strain marker conversion is not implemented."
     }
+  },
+  {
+    "id": "aemeath_trailblazing_star_5set",
+    "name": "Aemeath Trailblazing Star 5-set Runtime Buff",
+    "duration": 8.0,
+    "modifier_type": "boost",
+    "value": 0.0,
+    "target": "self",
+    "target_scope": "self",
+    "target_character_id": "aemeath",
+    "source_character_id": "aemeath",
+    "stacking_rule": "refresh_duration",
+    "max_stacks": 1,
+    "stat_modifiers": {
+      "crit_rate": 0.2
+    },
+    "damage_bonus_by_element": {
+      "fusion": 0.2
+    },
+    "metadata": {
+      "source_type": "echo_set",
+      "echo_set_id": "trailblazing_star",
+      "implementation_status": "implemented",
+      "source_status": "user_supplied_set_tooltip",
+      "activation_timing": "applies after the triggering action resolves; the triggering hit does not receive this buff retroactively",
+      "unsupported_mechanics": [
+        "fusion_burst_explosion_damage",
+        "tune_rupture_damage",
+        "fusion_trail",
+        "rupturous_trail",
+        "seraphic_duet_trail_removal_extra_damage",
+        "stardust_extra_mechanics"
+      ]
+    }
   }
 ]

@@ -131,6 +131,8 @@
         "crit_damage":  2.35,
         "damage_bonus":  0.36,
         "dmg_bonus":  0.36,
+        "element":  "fusion",
+        "damage_attribute":  "fusion",
         "boost":  0.06,
         "attacker_level":  90,
         "def_ignore":  0.03,

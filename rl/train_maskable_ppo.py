@@ -144,6 +144,7 @@ def main() -> None:
     args.model_path.parent.mkdir(parents=True, exist_ok=True)
     model.save(args.model_path)
     mechanic_event_metadata = mechanic_event_metadata_for_config(transition_config.get("mechanics"))
+    training_summary = env.simulation.summary()
 
     metadata: dict[str, Any] = {
         "algorithm": "MaskablePPO",
@@ -170,6 +171,17 @@ def main() -> None:
         "tune_rupture_shifting_event_count": 0,
         "mechanic_event_unresolved_reason": mechanic_event_metadata["mechanic_event_unresolved_reason"],
         "unsupported_aemeath_followup_mechanics": mechanic_event_metadata["unsupported_aemeath_followup_mechanics"],
+        "active_echo_sets": training_summary.active_echo_sets,
+        "echo_set_active_buffs": training_summary.echo_set_active_buffs,
+        "aemeath_trailblazing_star_5set_enabled": training_summary.aemeath_trailblazing_star_5set_enabled,
+        "aemeath_trailblazing_star_5set_trigger_event_tags": (
+            training_summary.aemeath_trailblazing_star_5set_trigger_event_tags
+        ),
+        "aemeath_trailblazing_star_5set_trigger_count": training_summary.aemeath_trailblazing_star_5set_trigger_count,
+        "aemeath_trailblazing_star_5set_uptime_seconds": (
+            training_summary.aemeath_trailblazing_star_5set_uptime_seconds
+        ),
+        "aemeath_trailblazing_star_5set_buff_windows": training_summary.aemeath_trailblazing_star_5set_buff_windows,
         "active_build_profiles": env.get_active_build_profiles(),
         "effective_build_stats_summary": env.get_effective_build_stats_summary(),
         "build_profile_validation": validation,

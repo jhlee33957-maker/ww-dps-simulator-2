@@ -16,6 +16,14 @@ from simulator.build_profiles import (
     validate_effective_build_profiles,
 )
 from simulator.buff_system import add_team_buff
+from simulator.echo_sets import (
+    AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID,
+    active_echo_sets_for_characters,
+    echo_set_active_buff_ids,
+    trailblazing_star_config,
+    trailblazing_star_enabled,
+    trailblazing_star_uptime_seconds,
+)
 from simulator.mechanic_events import mechanic_event_metadata_for_config
 from simulator.models import ActionData, BuffData, CharacterData, CombatState, EnemyData, PartyState, SimulationSummary, TimelineEntry
 from simulator.party_transition import (
@@ -498,6 +506,13 @@ class Simulation:
             damage_by_resolved_action[row.resolved_action_id or row.action_id] += damage
             damage_by_action_type[row.action_type or "other"] += damage
             damage_by_damage_bonus_category[row.damage_bonus_category or row.damage_category or "other"] += damage
+        aemeath_character = self.characters.get("aemeath")
+        trailblazing_config = trailblazing_star_config(aemeath_character)
+        trailblazing_windows = [
+            dict(window)
+            for window in self.state.echo_set_buff_windows
+            if window.get("buff_id") == AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID
+        ]
 
         return SimulationSummary(
             total_damage=self.state.total_damage,
@@ -524,6 +539,20 @@ class Simulation:
             ),
             mechanic_event_unresolved_reason=mechanic_event_metadata["mechanic_event_unresolved_reason"],
             unsupported_aemeath_followup_mechanics=mechanic_event_metadata["unsupported_aemeath_followup_mechanics"],
+            active_echo_sets=active_echo_sets_for_characters(self.characters),
+            echo_set_active_buffs=echo_set_active_buff_ids(self.state, self.buffs),
+            aemeath_trailblazing_star_5set_enabled=trailblazing_star_enabled(aemeath_character),
+            aemeath_trailblazing_star_5set_trigger_event_tags=list(
+                trailblazing_config.get("trigger_event_tags", [])
+            ),
+            aemeath_trailblazing_star_5set_trigger_count=int(
+                self.state.echo_set_trigger_counts.get(AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID, 0)
+            ),
+            aemeath_trailblazing_star_5set_uptime_seconds=trailblazing_star_uptime_seconds(
+                self.state,
+                self.state.current_time,
+            ),
+            aemeath_trailblazing_star_5set_buff_windows=trailblazing_windows,
         )
 
     @property

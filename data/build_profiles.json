@@ -209,6 +209,21 @@
             "generic": 0.4,
             "fusion": 0.4
           }
+        },
+        "echo_sets": {
+          "trailblazing_star": {
+            "pieces": 5,
+            "static_2set_already_in_profile": true,
+            "conditional_5set_enabled": true,
+            "conditional_5set_status": "implemented",
+            "source_status": "user_supplied_set_tooltip",
+            "trigger_event_tags": [
+              "fusion_burst",
+              "tune_rupture_shifting"
+            ],
+            "buff_id": "aemeath_trailblazing_star_5set",
+            "notes": "2-set Fusion DMG is already manually reflected in this build profile. 5-set is implemented as a runtime buff triggered by emitted fusion_burst or tune_rupture_shifting mechanic events."
+          }
         }
       }
     },

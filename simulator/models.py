@@ -34,6 +34,7 @@ class CharacterData(BaseModel):
     damage_bonus: float = 0.0
     dmg_bonus: float = 0.0
     damage_bonuses: dict[str, Any] = Field(default_factory=dict)
+    echo_sets: dict[str, Any] = Field(default_factory=dict)
     element: str | None = None
     damage_attribute: str | None = None
     build_profile_id: str | None = None
@@ -267,6 +268,9 @@ class BuffData(BaseModel):
     affected_tags: list[str] = Field(default_factory=list)
     stat_modifiers: dict[str, float] = Field(default_factory=dict)
     damage_amp_modifiers: dict[str, float] = Field(default_factory=dict)
+    damage_bonus_by_element: dict[str, float] = Field(default_factory=dict)
+    source_character_id: str | None = None
+    stacking_rule: str = "refresh_duration"
     stack_count: int = Field(default=1, ge=1)
     max_stacks: int = Field(default=1, ge=1)
     is_off_field: bool = False
@@ -318,6 +322,8 @@ class CombatState(BaseModel):
     mechanic_event_last_trigger_time: dict[str, float] = Field(default_factory=dict)
     mechanic_event_emitted_counts: dict[str, int] = Field(default_factory=dict)
     mechanic_event_log: list[dict[str, Any]] = Field(default_factory=list)
+    echo_set_trigger_counts: dict[str, int] = Field(default_factory=dict)
+    echo_set_buff_windows: list[dict[str, Any]] = Field(default_factory=list)
     action_log: list[dict[str, Any]] = Field(default_factory=list)
     damage_log: list[dict[str, Any]] = Field(default_factory=list)
     resonance_energy: dict[str, float] = Field(default_factory=dict)
@@ -373,7 +379,11 @@ class ActionResult(BaseModel):
     all_dmg_bonus: float = 0.0
     category_dmg_bonus: float = 0.0
     element_dmg_bonus: float = 0.0
+    runtime_element_damage_bonus: float = 0.0
+    echo_set_damage_bonus: float = 0.0
     effective_damage_bonus: float = 0.0
+    crit_rate_before_buffs: float = 0.0
+    crit_rate_after_buffs: float = 0.0
     build_profile_id: str | None = None
     scaling_stat: str | None = None
     scaling_value: float = 0.0
@@ -431,6 +441,9 @@ class ActionResult(BaseModel):
     aemeath_resonance_mode: str | None = None
     mechanic_event_source_status: str | None = None
     mechanic_event_unresolved_reason: str | None = None
+    echo_set_triggered_buff_ids: list[str] = Field(default_factory=list)
+    echo_set_buff_refreshed: bool = False
+    aemeath_trailblazing_star_5set_active: bool = False
     active_anomalies_after: dict[str, int] = Field(default_factory=dict)
     active_buffs: list[str] = Field(default_factory=list)
     applied_buffs: list[str] = Field(default_factory=list)
@@ -556,7 +569,11 @@ class TimelineEntry(BaseModel):
     all_dmg_bonus: float = 0.0
     category_dmg_bonus: float = 0.0
     element_dmg_bonus: float = 0.0
+    runtime_element_damage_bonus: float = 0.0
+    echo_set_damage_bonus: float = 0.0
     effective_damage_bonus: float = 0.0
+    crit_rate_before_buffs: float = 0.0
+    crit_rate_after_buffs: float = 0.0
     build_profile_id: str | None = None
     scaling_stat: str | None = None
     scaling_value: float = 0.0
@@ -614,6 +631,9 @@ class TimelineEntry(BaseModel):
     aemeath_resonance_mode: str | None = None
     mechanic_event_source_status: str | None = None
     mechanic_event_unresolved_reason: str | None = None
+    echo_set_triggered_buff_ids: list[str] = Field(default_factory=list)
+    echo_set_buff_refreshed: bool = False
+    aemeath_trailblazing_star_5set_active: bool = False
     active_anomalies_after: dict[str, int] = Field(default_factory=dict)
     active_buffs: list[str] = Field(default_factory=list)
     applied_buffs: list[str] = Field(default_factory=list)
@@ -727,3 +747,10 @@ class SimulationSummary(BaseModel):
     tune_rupture_shifting_event_count: int = 0
     mechanic_event_unresolved_reason: str | None = None
     unsupported_aemeath_followup_mechanics: list[str] = Field(default_factory=list)
+    active_echo_sets: dict[str, dict[str, Any]] = Field(default_factory=dict)
+    echo_set_active_buffs: list[str] = Field(default_factory=list)
+    aemeath_trailblazing_star_5set_enabled: bool = False
+    aemeath_trailblazing_star_5set_trigger_event_tags: list[str] = Field(default_factory=list)
+    aemeath_trailblazing_star_5set_trigger_count: int = 0
+    aemeath_trailblazing_star_5set_uptime_seconds: float = 0.0
+    aemeath_trailblazing_star_5set_buff_windows: list[dict[str, Any]] = Field(default_factory=list)
