@@ -12,6 +12,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from simulator.build_profiles import build_action_scaling_summary
 from simulator.models import ActionData
 from simulator.simulation import Simulation
+from simulator.transition_actions import get_transition_action, transition_action_to_action_data
 
 
 EXPECTED_DEF_ACTIONS = {
@@ -70,10 +71,29 @@ def test_mornye_real_manual_requires_def() -> None:
     assert "stat_components.def.final_reference" in message
 
 
+def test_mornye_intro_transition_is_def_scaling() -> None:
+    record = get_transition_action(DATA_DIR, "mornye_intro_convergence")
+    assert record is not None
+    assert record["scaling_stat"] == "def"
+    assert record["scaling_stat_source"] == "user_supplied_skill_screenshot"
+    assert record["scaling_stat_source_status"] == "user_supplied_screenshot_not_embedded"
+    assert "DEF-scaling" in record["scaling_stat_note"]
+
+    action = transition_action_to_action_data(record)
+    assert action.id == "transition:mornye_intro_convergence"
+    assert action.action_type == "swap"
+    assert action.policy_selectable is False
+    assert action.scaling_stat == "def"
+    assert action.scaling_stat_source == "user_supplied_skill_screenshot"
+    assert action.scaling_stat_source_status == "user_supplied_screenshot_not_embedded"
+    assert action.scaling_stat_note == record["scaling_stat_note"]
+
+
 def main() -> None:
     test_mornye_damage_actions_are_def_scaling()
     test_source_note_and_summary()
     test_mornye_real_manual_requires_def()
+    test_mornye_intro_transition_is_def_scaling()
     print("mornye_def_scaling_source_guard_smoke_test ok")
 
 

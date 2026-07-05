@@ -11,10 +11,22 @@ from openpyxl.utils import get_column_letter
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_ROOT / "data"
-WORKBOOK = DATA_DIR / "source" / "鸣潮动作数据汇总.xlsx"
+EXPECTED_WORKBOOK = DATA_DIR / "source" / "鸣潮动作数据汇总.xlsx"
+ESCAPED_WORKBOOK = DATA_DIR / "source" / "#U9e23#U6f6e#U52a8#U4f5c#U6570#U636e#U6c47#U603b.xlsx"
+WORKBOOK = EXPECTED_WORKBOOK
 SHEET = "角色-女"
 REPORT = PROJECT_ROOT / "reports" / "mornye_action_data_time_resource_source_guard.md"
 OUTPUT = DATA_DIR / "extracted" / "mornye_action_data_time_resource_source_guard.json"
+
+
+def resolve_workbook_path() -> Path:
+    for path in (EXPECTED_WORKBOOK, ESCAPED_WORKBOOK):
+        if path.exists():
+            return path
+    raise AssertionError(
+        "Missing workbook. Expected one of: "
+        f"{EXPECTED_WORKBOOK} or {ESCAPED_WORKBOOK}"
+    )
 
 
 def cell(raw_ws: Any, data_ws: Any, row: int, col: int | str) -> dict[str, Any]:
@@ -82,9 +94,9 @@ def write_outputs(payload: dict[str, Any]) -> None:
 
 
 def main() -> None:
-    assert WORKBOOK.exists(), f"Missing workbook: {WORKBOOK}"
-    raw_wb = load_workbook(WORKBOOK, data_only=False, read_only=False)
-    data_wb = load_workbook(WORKBOOK, data_only=True, read_only=False)
+    workbook = resolve_workbook_path()
+    raw_wb = load_workbook(workbook, data_only=False, read_only=False)
+    data_wb = load_workbook(workbook, data_only=True, read_only=False)
     raw_ws = raw_wb[SHEET]
     data_ws = data_wb[SHEET]
     source_table: list[dict[str, Any]] = []
@@ -163,7 +175,7 @@ def main() -> None:
     source_table.append(meaning(assert_cell(raw_ws, data_ws, 4159, "N", 94), "Tune rupture end frame"))
 
     payload = {
-        "workbook": str(WORKBOOK),
+        "workbook": str(workbook),
         "source_table": source_table,
         "warnings": warnings,
         "interpretation": {

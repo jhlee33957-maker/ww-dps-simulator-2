@@ -45,6 +45,10 @@ def transition_action_to_action_data(record: dict[str, Any]) -> ActionData:
     combat_time_cost = float(record["combat_time_cost"])
     damage_bonus_category = str(record.get("damage_bonus_category") or "")
     trigger_classification = str(record.get("trigger_classification") or "")
+    metadata = dict(record.get("metadata") or {})
+    raw_skill_category = record.get("raw_skill_category", metadata.get("raw_skill_category"))
+    raw_damage_type = record.get("raw_damage_type", metadata.get("raw_damage_type"))
+    damage_element = record.get("damage_element", record.get("element"))
     tags = [
         "transition",
         "party-transition",
@@ -81,6 +85,15 @@ def transition_action_to_action_data(record: dict[str, Any]) -> ActionData:
         cooldown=0.0,
         damage_multiplier=0.0,
         tune_break_multiplier=0.0,
+        damage_bonus_category=record.get("damage_bonus_category"),
+        damage_element=damage_element,
+        raw_skill_category=raw_skill_category,
+        raw_damage_type=raw_damage_type,
+        damage_bonus_category_source=record.get("damage_bonus_category_source"),
+        scaling_stat=record.get("scaling_stat"),
+        scaling_stat_source=record.get("scaling_stat_source"),
+        scaling_stat_source_status=record.get("scaling_stat_source_status"),
+        scaling_stat_note=record.get("scaling_stat_note"),
         resonance_energy_gain=float(record.get("resonance_energy_gain", 0.0) or 0.0),
         concerto_energy_gain=float(record.get("concerto_energy_gain", 0.0) or 0.0),
         resonance_energy_cost=0.0,
@@ -172,3 +185,10 @@ def _validate_transition_action_record(record: dict[str, Any]) -> None:
         raise TransitionActionError(f"Transition action {action_id!r} has unsupported transition_event_type.")
     if record.get("transition_event_type") == "incoming_intro_qte" and not _multipliers(record):
         raise TransitionActionError(f"Transition action {action_id!r} must define QTE hit multipliers.")
+    if _multipliers(record):
+        scaling_stat = record.get("scaling_stat")
+        if scaling_stat not in {"atk", "def", "hp", "unresolved"}:
+            raise TransitionActionError(
+                f"Transition action {action_id!r} has direct damage and must set scaling_stat to "
+                "atk, def, hp, or unresolved."
+            )

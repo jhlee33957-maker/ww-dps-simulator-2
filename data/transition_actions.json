@@ -29,7 +29,7 @@
         "implemented": false
       }
     },
-    "scaling_stat": "none"
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_qte_intro_mech",
@@ -60,7 +60,7 @@
         "implemented": false
       }
     },
-    "scaling_stat": "none"
+    "scaling_stat": "atk"
   },
   {
     "id": "mornye_intro_convergence",
@@ -128,6 +128,9 @@
         "Full Tune Break, Interfered Marker, healing, and defensive survival systems are not implemented in v1."
       ]
     },
-    "scaling_stat": "none"
+    "scaling_stat": "def",
+    "scaling_stat_source": "user_supplied_skill_screenshot",
+    "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
   }
 ]

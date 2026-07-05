@@ -10,7 +10,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from simulator.resource_system import ensure_concerto_state
 from simulator.simulation import Simulation
-from simulator.transition_actions import get_transition_action
+from simulator.transition_actions import get_transition_action, transition_action_to_action_data
 
 
 DATA_DIR = PROJECT_ROOT / "data"
@@ -95,6 +95,7 @@ def test_c_enabled_mornye_intro() -> None:
     assert row.incoming_intro_applied is True
     assert row.incoming_qte_applied is True
     assert row.damage > 0.0
+    assert row.scaling_stat == "def"
     assert_close(row.action_time, 1.7, "Mornye Intro action_time")
     assert_close(row.combat_time_cost, 1.7, "Mornye Intro combat_time_cost")
     assert row.incoming_intro_damage_bonus_category == "none_or_unmodeled_intro"
@@ -171,6 +172,10 @@ def test_g_transition_action_registry() -> None:
     assert record["trigger_classification"] == "intro"
     assert record["damage_bonus_category"] == "none_or_unmodeled_intro"
     assert record["element"] == "fusion"
+    assert record["scaling_stat"] == "def"
+    assert record["scaling_stat_source"] == "user_supplied_skill_screenshot"
+    assert record["scaling_stat_source_status"] == "user_supplied_screenshot_not_embedded"
+    assert "DEF-scaling" in record["scaling_stat_note"]
     assert_close(float(record["action_time"]), 1.7, "registry action_time")
     assert_close(float(record["combat_time_cost"]), 1.7, "registry combat_time_cost")
     assert record["hits"] == [2.0279]
@@ -185,6 +190,14 @@ def test_g_transition_action_registry() -> None:
     assert effects["final_concerto_gain"] == 30
     assert effects["passive_concerto_source"] == "角色-女!4164"
     assert effects["has_global_time_stop"] is False
+
+    action = transition_action_to_action_data(record)
+    assert action.id == f"transition:{INTRO_ID}"
+    assert action.action_type == "swap"
+    assert action.policy_selectable is False
+    assert action.scaling_stat == "def"
+    assert action.scaling_stat_source == "user_supplied_skill_screenshot"
+    assert action.damage_element == "fusion"
 
 
 def main() -> None:

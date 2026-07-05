@@ -77,6 +77,7 @@ def test_c_enabled_human_qte() -> None:
     assert row.incoming_qte_candidate_id == "aemeath_qte_intro_human"
     assert row.incoming_qte_applied is True
     assert row.damage > 0.0
+    assert row.scaling_stat == "atk"
     assert_close(row.action_time, 1.0, "human qte action_time")
     assert_close(row.combat_time_cost, 0.1667, "human qte combat_time_cost")
     assert row.incoming_qte_damage_bonus_category == "none_or_unmodeled_intro"
@@ -99,6 +100,7 @@ def test_d_enabled_mech_qte() -> None:
     assert row.incoming_qte_candidate_id == "aemeath_qte_intro_mech"
     assert row.incoming_qte_applied is True
     assert row.damage > 0.0
+    assert row.scaling_stat == "atk"
     assert_close(row.action_time, 1.2, "mech qte action_time")
     assert_close(row.combat_time_cost, 0.4333, "mech qte combat_time_cost")
     assert row.incoming_qte_damage_bonus_category == "resonance_skill"
@@ -147,6 +149,8 @@ def test_h_generic_registry() -> None:
     mech = get_transition_action(DATA_DIR, "aemeath_qte_intro_mech")
     assert human is not None and human["transition_only"] is True and human["policy_selectable"] is False
     assert mech is not None and mech["transition_only"] is True and mech["policy_selectable"] is False
+    assert human["scaling_stat"] == "atk"
+    assert mech["scaling_stat"] == "atk"
 
     sim = Simulation.from_json(DATA_DIR, party="aemeath_test_party")
     action_id, warnings = resolve_incoming_qte_transition_action(
