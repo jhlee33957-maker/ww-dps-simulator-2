@@ -50,6 +50,21 @@ def assert_trigger_damage_receives_buff(row, expected_event_tag: str) -> None:
     assert row.hit_details
     assert all(detail["aemeath_trailblazing_star_5set_active"] for detail in row.hit_details)
     assert all(math.isclose(detail["crit_rate_after_buffs"], BUFFED_CRIT_RATE, rel_tol=1e-9) for detail in row.hit_details)
+    for detail in row.hit_details:
+        if detail["hit_damage_category"] != "normal":
+            continue
+        assert detail["aemeath_trailblazing_star_5set_applied_before_triggering_damage"] is True
+        assert detail["trailblazing_star_5set_same_action_application"] is True
+        assert detail["trailblazing_star_5set_application_timing"] == "same_action_aggregate_approximation"
+        assert detail["echo_set_triggered_buff_ids"] == [AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID]
+        assert detail["echo_set_buff_refreshed"] == row.echo_set_buff_refreshed
+        assert detail["emitted_mechanic_event_tags"] == [expected_event_tag]
+        assert detail["mechanic_event_triggered"] is True
+        assert detail["mechanic_event_trigger_id"] == "aemeath_resonance_mode_damage_trigger"
+        assert detail["mechanic_event_cooldown_blocked"] is False
+        assert detail["aemeath_resonance_mode"] in {"fusion_burst", "tune_rupture"}
+        assert math.isclose(detail["echo_set_damage_bonus"], 0.2, rel_tol=1e-9)
+        assert math.isclose(detail["runtime_element_damage_bonus"], 0.2, rel_tol=1e-9)
 
 
 def test_fusion_burst_triggering_action_receives_buff() -> None:
@@ -65,6 +80,7 @@ def test_fusion_burst_triggering_action_receives_buff() -> None:
     assert AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID in summary.echo_set_active_buffs
     assert summary.aemeath_trailblazing_star_5set_trigger_count == 1
     assert summary.aemeath_trailblazing_star_5set_buff_windows
+    assert sim.state.damage_log[-1]["aemeath_trailblazing_star_5set_applied_before_triggering_damage"] is True
 
 
 def test_tune_rupture_triggering_action_receives_buff() -> None:
@@ -84,6 +100,15 @@ def test_unresolved_mode_does_not_activate_buff() -> None:
     assert row.aemeath_trailblazing_star_5set_applied_before_triggering_damage is False
     assert math.isclose(row.crit_rate_after_buffs, BASE_CRIT_RATE, rel_tol=1e-9)
     assert math.isclose(row.echo_set_damage_bonus, 0.0, abs_tol=1e-12)
+    for detail in row.hit_details:
+        assert detail["aemeath_trailblazing_star_5set_applied_before_triggering_damage"] is False
+        assert detail["trailblazing_star_5set_same_action_application"] is False
+        assert detail["trailblazing_star_5set_application_timing"] is None
+        assert detail.get("echo_set_triggered_buff_ids", []) == []
+        assert detail["emitted_mechanic_event_tags"] == []
+        assert detail["mechanic_event_triggered"] is False
+        assert math.isclose(detail["crit_rate_after_buffs"], BASE_CRIT_RATE, rel_tol=1e-9)
+        assert math.isclose(detail["echo_set_damage_bonus"], 0.0, abs_tol=1e-12)
     assert AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID not in row.active_buffs
     assert summary.aemeath_trailblazing_star_5set_enabled is True
     assert summary.aemeath_trailblazing_star_5set_trigger_count == 0
@@ -109,6 +134,11 @@ def test_non_trigger_action_benefits_while_buff_is_active() -> None:
     assert row.aemeath_trailblazing_star_5set_active is True
     assert math.isclose(row.crit_rate_after_buffs, BUFFED_CRIT_RATE, rel_tol=1e-9)
     assert math.isclose(row.echo_set_damage_bonus, 0.2, rel_tol=1e-9)
+    for detail in row.hit_details:
+        assert detail["aemeath_trailblazing_star_5set_active"] is True
+        assert detail["aemeath_trailblazing_star_5set_applied_before_triggering_damage"] is False
+        assert detail["trailblazing_star_5set_same_action_application"] is False
+        assert detail.get("echo_set_triggered_buff_ids", []) == []
 
 
 def test_same_action_cooldown_blocks_refresh_but_existing_buff_remains() -> None:
@@ -124,9 +154,16 @@ def test_same_action_cooldown_blocks_refresh_but_existing_buff_remains() -> None
     assert row.mechanic_event_cooldown_blocked is True
     assert row.echo_set_triggered_buff_ids == []
     assert row.aemeath_trailblazing_star_5set_active is True
+    assert row.aemeath_trailblazing_star_5set_applied_before_triggering_damage is False
     assert math.isclose(row.crit_rate_after_buffs, BUFFED_CRIT_RATE, rel_tol=1e-9)
     assert summary.aemeath_trailblazing_star_5set_trigger_count == 1
     assert second_remaining < first_remaining
+    for detail in row.hit_details:
+        assert detail["mechanic_event_cooldown_blocked"] is True
+        assert detail["aemeath_trailblazing_star_5set_active"] is True
+        assert detail["aemeath_trailblazing_star_5set_applied_before_triggering_damage"] is False
+        assert detail["trailblazing_star_5set_same_action_application"] is False
+        assert detail.get("echo_set_triggered_buff_ids", []) == []
 
 
 def test_retrigger_after_cooldown_refreshes_without_stacking() -> None:

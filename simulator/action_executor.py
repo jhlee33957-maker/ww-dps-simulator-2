@@ -334,6 +334,35 @@ def _action_has_trigger_damage_potential(action: ActionData, action_time: float)
     return False
 
 
+def _sync_hit_detail_runtime_event_logs(
+    hit_details: list[dict],
+    echo_set_log_fields: dict[str, Any],
+    mechanic_event_log_fields: dict[str, Any],
+) -> None:
+    event_fields = {
+        "emitted_mechanic_event_tags": list(mechanic_event_log_fields.get("emitted_mechanic_event_tags", [])),
+        "mechanic_event_triggered": bool(mechanic_event_log_fields.get("mechanic_event_triggered", False)),
+        "mechanic_event_trigger_id": mechanic_event_log_fields.get("mechanic_event_trigger_id"),
+        "mechanic_event_cooldown_blocked": bool(mechanic_event_log_fields.get("mechanic_event_cooldown_blocked", False)),
+        "aemeath_resonance_mode": mechanic_event_log_fields.get("aemeath_resonance_mode"),
+        "mechanic_event_source_status": mechanic_event_log_fields.get("mechanic_event_source_status"),
+        "mechanic_event_unresolved_reason": mechanic_event_log_fields.get("mechanic_event_unresolved_reason"),
+        "echo_set_triggered_buff_ids": list(echo_set_log_fields.get("echo_set_triggered_buff_ids", [])),
+        "echo_set_buff_refreshed": bool(echo_set_log_fields.get("echo_set_buff_refreshed", False)),
+        "aemeath_trailblazing_star_5set_applied_before_triggering_damage": bool(
+            echo_set_log_fields.get("aemeath_trailblazing_star_5set_applied_before_triggering_damage", False)
+        ),
+        "trailblazing_star_5set_same_action_application": bool(
+            echo_set_log_fields.get("trailblazing_star_5set_same_action_application", False)
+        ),
+        "trailblazing_star_5set_application_timing": echo_set_log_fields.get(
+            "trailblazing_star_5set_application_timing"
+        ),
+    }
+    for detail in hit_details:
+        detail.update(event_fields)
+
+
 def execute_action(
     action: ActionData,
     state: CombatState,
@@ -465,6 +494,7 @@ def execute_action(
         direct_damage=direct_damage,
         action_start_combat_time=combat_start_time,
     )
+    _sync_hit_detail_runtime_event_logs(hit_details, echo_set_log_fields, mechanic_event_log_fields)
 
     if action.action_type == "swap" and action.character_id is not None:
         state.active_character_id = action.character_id

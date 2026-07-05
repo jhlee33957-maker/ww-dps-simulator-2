@@ -79,7 +79,23 @@ def test_effective_summary_and_runtime_diagnostics() -> None:
     assert row.trailblazing_star_5set_application_timing == "same_action_aggregate_approximation"
     assert triggered_summary.echo_set_active_buffs == [AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID]
     assert triggered_summary.aemeath_trailblazing_star_5set_buff_windows
-    assert sim.state.damage_log[-1]["aemeath_trailblazing_star_5set_applied_before_triggering_damage"] is True
+    damage_log = sim.state.damage_log[-1]
+    assert damage_log["aemeath_trailblazing_star_5set_applied_before_triggering_damage"] is True
+    assert damage_log["emitted_mechanic_event_tags"] == row.emitted_mechanic_event_tags
+    assert damage_log["echo_set_triggered_buff_ids"] == row.echo_set_triggered_buff_ids
+
+    assert row.hit_details
+    for detail in row.hit_details:
+        assert detail["aemeath_trailblazing_star_5set_applied_before_triggering_damage"] == (
+            row.aemeath_trailblazing_star_5set_applied_before_triggering_damage
+        )
+        assert detail["trailblazing_star_5set_same_action_application"] == (
+            row.trailblazing_star_5set_same_action_application
+        )
+        assert detail["trailblazing_star_5set_application_timing"] == row.trailblazing_star_5set_application_timing
+        assert detail["emitted_mechanic_event_tags"] == damage_log["emitted_mechanic_event_tags"]
+        assert detail["echo_set_triggered_buff_ids"] == damage_log["echo_set_triggered_buff_ids"]
+        assert detail["aemeath_trailblazing_star_5set_applied_before_triggering_damage"] is True
 
 
 def test_source_note_files_record_corrected_timing() -> None:
