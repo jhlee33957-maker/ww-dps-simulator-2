@@ -430,13 +430,17 @@ python rl/evaluate_maskable_ppo.py --model-path models/maskable_ppo_wuwa.zip --c
 The formula layer lives in simulator/damage_formula.py and currently supports normal damage, Tune Break damage, and simplified attribute anomaly tick damage.
 
 Normal Damage =
-Skill Multiplier x Effective ATK x DMG Bonus Multiplier x Expected Crit Multiplier x Boost Multiplier x RES Multiplier x DEF Multiplier x DMG Taken Multiplier x Final DMG Multiplier
+Skill Multiplier x Scaling Value x DMG Bonus Multiplier x Expected Crit Multiplier x Boost Multiplier x RES Multiplier x DEF Multiplier x DMG Taken Multiplier x Final DMG Multiplier
 
-Base ATK = Character Base ATK + Weapon Base ATK
+`Scaling Value` is selected from the action's `scaling_stat`: `effective_atk`, `effective_def`, or `effective_hp`.
 
-Static ATK = Base ATK x (1 + Static ATK%) + Static Flat ATK
+For each supported stat:
 
-Effective ATK = Static ATK + Base ATK x Runtime ATK% + Runtime Flat ATK
+Base Total = Character Base + Weapon Base
+
+Static Value = Base Total x (1 + Static %) + Static Flat
+
+Effective Value = Static Value + Base Total x Runtime % + Runtime Flat
 
 Expected Crit Multiplier = 1 + Crit Rate x (Crit DMG - 1)
 
@@ -464,43 +468,60 @@ python rl/evaluate_maskable_ppo.py --model-path models/maskable_ppo_wuwa.zip --b
 
 Training and evaluation metadata include `active_build_profiles` and `effective_build_stats_summary`. Build profile changes affect damage and therefore PPO reward; models trained under different build profiles should not be compared blindly and should normally be retrained.
 
-## Actual Stat Component Build Profiles
+## Scaling Stat Components
 
-Build profile schema v2 separates ATK into explicit components:
+Build profile schema v3 stores ATK, DEF, and HP components separately under `stat_components.atk`, `stat_components.def`, and `stat_components.hp`. Older ATK-only fields such as `character_base_atk`, `weapon_base_atk`, `static_atk_percent`, `static_flat_atk`, and `final_attack_reference` still work as legacy aliases for `stat_components.atk`.
 
-- `character_base_atk`
-- `weapon_base_atk`
-- `static_atk_percent`
-- `static_flat_atk`
-- `runtime_atk_percent_bonus`
-- `runtime_flat_atk_bonus`
+Each damage action declares `scaling_stat`:
 
-`final_attack_reference` is validation-only. It is compared against calculated `static_attack`, but it is never multiplied, buffed, or used as the primary damage source. Runtime ATK buffs are applied to `base_attack_total`, not to `final_attack_reference`, and runtime ATK% is kept separate from static ATK%.
+- `atk` uses `effective_atk`
+- `def` uses `effective_def`
+- `hp` uses `effective_hp`
+- `none` is non-damaging or not coefficient-scaled
+- `unresolved` blocks real/manual profile validation
+
+`scaling_stat` and `damage_bonus_category` are different. `scaling_stat` chooses the ATK/DEF/HP base value multiplied by the coefficient. `damage_bonus_category` chooses the additive damage bonus bucket, such as Resonance Liberation DMG Bonus.
+
+`final_reference` values are validation-only for all stats. They are compared against calculated static values, but are never multiplied, buffed, or used as the primary damage source. Runtime stat bonuses apply to that stat's `base_total`, not to final references.
+
+Mornye is modeled as DEF-scaling based on user-provided skill description screenshots. The screenshot source is not embedded in this project yet, so affected actions are marked with `scaling_stat_source_status = user_supplied_screenshot_not_embedded`; see `reports/mornye_scaling_stat_source_note.md`.
 
 Current component profiles such as `aemeath:component_test`, `aemeath:liberation_focus_test`, `mornye:support_er_component_test`, and `mornye:support_er_cap` are `test_assumption` profiles. They are useful for simulator and RL plumbing, but they are not verified real-game stat builds. Models trained with test profiles should not be treated as final balance results.
 
-Manual real-stat profiles exist as `aemeath:aemeath_real_manual` and `mornye:mornye_real_manual`. They are marked `user_supplied_required` and intentionally contain null required fields. Training and evaluation fail loudly if one of these incomplete profiles is selected.
+Manual real-stat profiles exist as `aemeath:aemeath_real_manual` and `mornye:mornye_real_manual`. They are marked `user_supplied_required` and intentionally contain null required fields. Training and evaluation fail loudly if one of these incomplete profiles is selected. Mornye real profiles require DEF fields for DEF-scaling actions and cannot pass with only ATK fields filled.
 
-Required manual stats:
+Required manual stats for ATK-scaling characters:
 
-- character_base_atk
-- weapon_base_atk
-- static_atk_percent
-- static_flat_atk
-- final_attack_reference
-- crit_rate
-- crit_damage
-- energy_regen
-- all damage bonus
-- elemental damage bonus if applicable
-- basic/heavy/skill/liberation damage bonuses
+- character ATK
+- weapon ATK
+- ATK%
+- flat ATK
+- final ATK reference
 
-Do not let the assistant/Codex invent real stat values. Use in-game character screens or user-supplied build data to fill real profiles manually. Changing build profiles changes damage and PPO reward, so valid PPO comparisons require retraining under the selected profile set.
+Required manual stats for DEF-scaling characters:
+
+- character DEF
+- DEF%
+- flat DEF
+- final DEF reference
+- weapon DEF only if source/game data has it
+
+Required manual stats for HP-scaling characters:
+
+- character HP
+- HP%
+- flat HP
+- final HP reference
+
+All real/manual profiles also require crit rate, crit damage, Energy Regen, all damage bonus, elemental damage bonus if applicable, and basic/heavy/skill/liberation damage bonuses.
+
+Do not let the assistant/Codex invent real stat values. Use in-game character screens or user-supplied build data to fill real profiles manually. Changing scaling stats or build profiles changes damage and PPO reward, so valid PPO comparisons require retraining under the selected profile set.
 
 Quick stat testing can use repeated CLI overrides:
 
 ```bash
 python rl/evaluate_maskable_ppo.py --model-path models/maskable_ppo_wuwa.zip --build-profile aemeath:component_test --stat aemeath:static_atk_percent:0.72 --stat aemeath:static_flat_atk:430 --stat aemeath:final_attack_reference:2711
+python rl/evaluate_maskable_ppo.py --model-path models/maskable_ppo_wuwa.zip --build-profile mornye:support_er_component_test --stat mornye:def.percent:0.72 --stat mornye:def.flat:430
 ```
 
 ## Damage Type Bonuses
@@ -523,6 +544,8 @@ Mornye Outro remains an All DMG Amplification buff in the amplification bucket. 
 `action_type` and `damage_bonus_category` are intentionally separate. `action_type` controls action routing, cooldown grouping, policy identity, and character mechanics. `damage_bonus_category` controls which additive DMG Bonus bucket a build profile applies. If `damage_bonus_category` is missing, the simulator falls back to `action_type`; if the resulting value is unknown, it falls back to `other`.
 
 This is separate from `damage_category`, which is used inside hit data for normal, Tune Break, and anomaly hit categories. Older timeline fields may still expose `damage_category` as a compatibility alias for the damage bonus bucket, but new diagnostics should prefer `damage_bonus_category`.
+
+This is also separate from `scaling_stat`. For example, a DEF-scaling Mornye action can still have `action_type = resonance_liberation` and `damage_bonus_category = resonance_liberation`; the coefficient uses DEF, while the additive bonus bucket remains Resonance Liberation.
 
 Examples:
 
@@ -646,6 +669,10 @@ This reference page does not affect simulation results or PPO training. Update t
 
 ```bash
 python -m compileall .
+python scripts/generic_scaling_stat_component_smoke_test.py
+python scripts/action_scaling_stat_damage_formula_smoke_test.py
+python scripts/mornye_def_scaling_source_guard_smoke_test.py
+python scripts/manual_real_profile_scaling_guard_smoke_test.py
 python scripts/actual_stat_component_build_profile_smoke_test.py
 python scripts/manual_real_profile_guard_smoke_test.py
 python scripts/attack_runtime_buff_formula_smoke_test.py

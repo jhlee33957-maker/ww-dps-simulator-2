@@ -1,0 +1,29 @@
+{
+  "character_id": "mornye",
+  "scaling_stat": "def",
+  "source": "user_supplied_skill_screenshot",
+  "source_status": "user_supplied_screenshot_not_embedded",
+  "affected_action_ids": [
+    "mornye_basic_stage_1",
+    "mornye_basic_stage_2",
+    "mornye_basic_stage_3",
+    "mornye_basic_stage_4",
+    "mornye_wfo_basic_stage_1",
+    "mornye_wfo_basic_stage_2",
+    "mornye_wfo_basic_stage_3",
+    "mornye_heavy_attack_normal",
+    "mornye_heavy_geopotential_shift",
+    "mornye_heavy_inversion",
+    "mornye_skill_optimal_solution",
+    "mornye_skill_distributed_array",
+    "mornye_liberation_critical_protocol",
+    "mornye_syntony_field_damage",
+    "mornye_intro_convergence"
+  ],
+  "unresolved_action_ids": [],
+  "notes": [
+    "Mornye damage is modeled as DEF-scaling based on user-provided skill description screenshots.",
+    "The source screenshot or raw skill text is not embedded in this project yet.",
+    "Excel coefficient rows alone are not treated as sufficient scaling-stat evidence unless a workbook row or cell explicitly identifies the stat basis."
+  ]
+}

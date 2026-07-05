@@ -13,18 +13,23 @@
     "action_time": 1.0,
     "combat_time_cost": 0.1667,
     "previous_outro_trigger_frame": 48,
-    "hits": [0.1346, 0.1346, 1.0766],
+    "hits": [
+      0.1346,
+      0.1346,
+      1.0766
+    ],
     "metadata": {
-      "raw_skill_category": "\u53d8\u594f",
-      "raw_damage_type": "\u53d8\u594f\u4f24\u5bb3",
+      "raw_skill_category": "变奏",
+      "raw_damage_type": "变奏伤害",
       "cannot_switch_during_invulnerable": true,
       "flow_light_state_grant_review_only": {
-        "state_name_raw": "\u6d41\u5149\u589e\u5e45\u72b6\u6001",
+        "state_name_raw": "流光增幅状态",
         "start_frame": 1,
         "duration_seconds": 15.0,
         "implemented": false
       }
-    }
+    },
+    "scaling_stat": "none"
   },
   {
     "id": "aemeath_qte_intro_mech",
@@ -40,18 +45,22 @@
     "action_time": 1.2,
     "combat_time_cost": 0.4333,
     "previous_outro_trigger_frame": 40,
-    "hits": [0.653, 0.9795],
+    "hits": [
+      0.653,
+      0.9795
+    ],
     "metadata": {
-      "raw_skill_category": "\u5171\u9e23\u6280\u80fd",
-      "raw_damage_type": "\u53d8\u594f\u4f24\u5bb3",
+      "raw_skill_category": "共鸣技能",
+      "raw_damage_type": "变奏伤害",
       "cannot_switch_during_invulnerable": true,
       "flow_light_state_grant_review_only": {
-        "state_name_raw": "\u6d41\u5149\u589e\u5e45\u72b6\u6001",
+        "state_name_raw": "流光增幅状态",
         "start_frame": 1,
         "duration_seconds": 15.0,
         "implemented": false
       }
-    }
+    },
+    "scaling_stat": "none"
   },
   {
     "id": "mornye_intro_convergence",
@@ -70,7 +79,9 @@
     "combat_time_cost": 1.7,
     "previous_outro_trigger_frame": 36,
     "concerto_energy_gain": 30,
-    "hits": [2.0279],
+    "hits": [
+      2.0279
+    ],
     "apply_character_mechanics": true,
     "mechanic_effects": {
       "clear_rest_mass_energy": true,
@@ -79,7 +90,11 @@
       "set_syntony_field_remaining": 25.0,
       "set_wfo_combo_stage": 1,
       "source_sheet": "角色-女",
-      "source_rows": [4148, 4149, 4164],
+      "source_rows": [
+        4148,
+        4149,
+        4164
+      ],
       "has_global_time_stop": false,
       "time_dilation_type": "时停",
       "base_concerto_gain": 10,
@@ -89,29 +104,30 @@
       "combat_time_cost_source": "QTE has 时停 but no 全局时停 row; use 102F / 60"
     },
     "metadata": {
-      "source_name": "\u83ab\u5b81",
+      "source_name": "莫宁",
       "source_skill": "Convergence",
       "review_source": "data/extracted/mornye_excel_audit.json",
       "implementation_status": "implemented_v1",
       "notes": [
         "Flow/Tune/defensive systems are not part of this intro implementation."
       ],
-      "raw_source_character": "\u83ab\u5b81",
-      "raw_skill_category": "\u53d8\u594f",
-      "raw_damage_type": "\u53d8\u594f\u4f24\u5bb3",
+      "raw_source_character": "莫宁",
+      "raw_skill_category": "变奏",
+      "raw_damage_type": "变奏伤害",
       "concerto_energy_gain": 30,
       "base_concerto_gain": 10,
       "passive_concerto_gain": 20,
       "final_concerto_gain": 30,
       "timing_is_placeholder": false,
       "source_rows": {
-        "frame_sheet": "\u89d2\u8272-\u5973 rows 4148-4149",
-        "skill_type_sheet": "\u89d2\u8272\u6280\u80fd\u7c7b\u578b row 2670"
+        "frame_sheet": "角色-女 rows 4148-4149",
+        "skill_type_sheet": "角色技能类型 row 2670"
       },
       "v1_limitations": [
         "Intro/QTE is disabled by default through transition config.",
         "Full Tune Break, Interfered Marker, healing, and defensive survival systems are not implemented in v1."
       ]
-    }
+    },
+    "scaling_stat": "none"
   }
 ]

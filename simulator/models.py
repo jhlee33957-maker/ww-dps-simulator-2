@@ -18,6 +18,7 @@ DamageCategory = Literal["normal", "tune_break", "anomaly"]
 AnomalyType = Literal["aero_erosion", "spectro_frazzle", "electro_flare", "havoc_bane"]
 BuffModifierType = Literal["attack", "damage_bonus", "boost", "dmg_taken", "damage_amp"]
 BuffTarget = Literal["self", "active", "team", "party", "next_active", "specific_character", "enemy"]
+ScalingStat = Literal["atk", "def", "hp", "none", "unresolved"]
 
 
 class CharacterData(BaseModel):
@@ -42,16 +43,50 @@ class CharacterData(BaseModel):
     profile_completeness_status: str = "fallback_character_stats"
     missing_required_fields: list[str] = Field(default_factory=list)
     profile_warnings: list[str] = Field(default_factory=list)
+    stat_components: dict[str, Any] = Field(default_factory=dict)
+    runtime_bonuses: dict[str, Any] = Field(default_factory=dict)
+    default_scaling_stat: str = "atk"
+    character_base_def: float = 0.0
+    weapon_base_def: float = 0.0
+    static_def_percent: float = 0.0
+    static_flat_def: float = 0.0
+    runtime_def_percent_bonus: float = 0.0
+    runtime_def_flat_bonus: float = 0.0
+    base_def_total: float = 0.0
+    static_def: float = 0.0
+    effective_def: float = 0.0
+    final_def_reference: float | None = None
+    def_reference_delta: float | None = None
+    def_reference_delta_percent: float | None = None
+    character_base_hp: float = 0.0
+    weapon_base_hp: float = 0.0
+    static_hp_percent: float = 0.0
+    static_flat_hp: float = 0.0
+    runtime_hp_percent_bonus: float = 0.0
+    runtime_hp_flat_bonus: float = 0.0
+    base_hp_total: float = 0.0
+    static_hp: float = 0.0
+    effective_hp: float = 0.0
+    final_hp_reference: float | None = None
+    hp_reference_delta: float | None = None
+    hp_reference_delta_percent: float | None = None
     base_attack_total: float = 0.0
+    base_atk_total: float = 0.0
     static_atk_percent: float = 0.0
     static_flat_atk: float = 0.0
     runtime_atk_percent_bonus: float = 0.0
     runtime_flat_atk_bonus: float = 0.0
+    runtime_atk_flat_bonus: float = 0.0
     static_attack: float = 0.0
+    static_atk: float = 0.0
     effective_attack: float = 0.0
+    effective_atk: float = 0.0
     final_attack_reference: float | None = None
+    final_atk_reference: float | None = None
     attack_reference_delta: float | None = None
     attack_reference_delta_percent: float | None = None
+    atk_reference_delta: float | None = None
+    atk_reference_delta_percent: float | None = None
     boost: float = 0.0
     attacker_level: int = Field(default=90, ge=1)
     def_ignore: float = 0.0
@@ -77,14 +112,28 @@ class CharacterData(BaseModel):
             self.static_flat_atk = self.flat_atk
         if self.base_attack_total <= 0.0:
             self.base_attack_total = self.character_base_atk + self.weapon_base_atk
+        if self.base_atk_total <= 0.0:
+            self.base_atk_total = self.base_attack_total
         if self.static_attack <= 0.0:
             self.static_attack = self.base_attack_total * (1.0 + self.static_atk_percent) + self.static_flat_atk
+        if self.static_atk <= 0.0:
+            self.static_atk = self.static_attack
+        if self.runtime_atk_flat_bonus == 0.0 and self.runtime_flat_atk_bonus != 0.0:
+            self.runtime_atk_flat_bonus = self.runtime_flat_atk_bonus
         if self.effective_attack <= 0.0:
             self.effective_attack = (
                 self.static_attack
                 + self.base_attack_total * self.runtime_atk_percent_bonus
                 + self.runtime_flat_atk_bonus
             )
+        if self.effective_atk <= 0.0:
+            self.effective_atk = self.effective_attack
+        if self.final_atk_reference is None and self.final_attack_reference is not None:
+            self.final_atk_reference = self.final_attack_reference
+        if self.atk_reference_delta is None:
+            self.atk_reference_delta = self.attack_reference_delta
+        if self.atk_reference_delta_percent is None:
+            self.atk_reference_delta_percent = self.attack_reference_delta_percent
         if self.dmg_bonus == 0.0 and self.damage_bonus != 0.0:
             self.dmg_bonus = self.damage_bonus
         if self.damage_bonus == 0.0 and self.dmg_bonus != 0.0:
@@ -131,6 +180,10 @@ class ActionData(BaseModel):
     damage_category: DamageCategory = "normal"
     damage_bonus_category: str | None = None
     damage_element: str | None = None
+    scaling_stat: ScalingStat | None = None
+    scaling_stat_source: str | None = None
+    scaling_stat_source_status: str | None = None
+    scaling_stat_note: str | None = None
     raw_skill_category: str | None = None
     raw_damage_type: str | None = None
     damage_bonus_category_source: str | None = None
@@ -317,18 +370,53 @@ class ActionResult(BaseModel):
     element_dmg_bonus: float = 0.0
     effective_damage_bonus: float = 0.0
     build_profile_id: str | None = None
+    scaling_stat: str | None = None
+    scaling_value: float = 0.0
+    stat_component_source: str | None = None
+    unresolved_scaling_actions: list[str] = Field(default_factory=list)
     character_base_atk: float = 0.0
     weapon_base_atk: float = 0.0
     base_attack_total: float = 0.0
+    base_atk_total: float = 0.0
     static_atk_percent: float = 0.0
     static_flat_atk: float = 0.0
     runtime_atk_percent_bonus: float = 0.0
     runtime_flat_atk_bonus: float = 0.0
+    runtime_atk_flat_bonus: float = 0.0
     static_attack: float = 0.0
+    static_atk: float = 0.0
     effective_attack: float = 0.0
+    effective_atk: float = 0.0
     final_attack_reference: float | None = None
+    final_atk_reference: float | None = None
     attack_reference_delta: float | None = None
     attack_reference_delta_percent: float | None = None
+    atk_reference_delta: float | None = None
+    atk_reference_delta_percent: float | None = None
+    character_base_def: float = 0.0
+    weapon_base_def: float = 0.0
+    base_def_total: float = 0.0
+    static_def_percent: float = 0.0
+    static_flat_def: float = 0.0
+    runtime_def_percent_bonus: float = 0.0
+    runtime_def_flat_bonus: float = 0.0
+    static_def: float = 0.0
+    effective_def: float = 0.0
+    final_def_reference: float | None = None
+    def_reference_delta: float | None = None
+    def_reference_delta_percent: float | None = None
+    character_base_hp: float = 0.0
+    weapon_base_hp: float = 0.0
+    base_hp_total: float = 0.0
+    static_hp_percent: float = 0.0
+    static_flat_hp: float = 0.0
+    runtime_hp_percent_bonus: float = 0.0
+    runtime_hp_flat_bonus: float = 0.0
+    static_hp: float = 0.0
+    effective_hp: float = 0.0
+    final_hp_reference: float | None = None
+    hp_reference_delta: float | None = None
+    hp_reference_delta_percent: float | None = None
     profile_completeness_status: str | None = None
     implementation_status: str | None = None
     active_anomalies_after: dict[str, int] = Field(default_factory=dict)
@@ -458,18 +546,53 @@ class TimelineEntry(BaseModel):
     element_dmg_bonus: float = 0.0
     effective_damage_bonus: float = 0.0
     build_profile_id: str | None = None
+    scaling_stat: str | None = None
+    scaling_value: float = 0.0
+    stat_component_source: str | None = None
+    unresolved_scaling_actions: list[str] = Field(default_factory=list)
     character_base_atk: float = 0.0
     weapon_base_atk: float = 0.0
     base_attack_total: float = 0.0
+    base_atk_total: float = 0.0
     static_atk_percent: float = 0.0
     static_flat_atk: float = 0.0
     runtime_atk_percent_bonus: float = 0.0
     runtime_flat_atk_bonus: float = 0.0
+    runtime_atk_flat_bonus: float = 0.0
     static_attack: float = 0.0
+    static_atk: float = 0.0
     effective_attack: float = 0.0
+    effective_atk: float = 0.0
     final_attack_reference: float | None = None
+    final_atk_reference: float | None = None
     attack_reference_delta: float | None = None
     attack_reference_delta_percent: float | None = None
+    atk_reference_delta: float | None = None
+    atk_reference_delta_percent: float | None = None
+    character_base_def: float = 0.0
+    weapon_base_def: float = 0.0
+    base_def_total: float = 0.0
+    static_def_percent: float = 0.0
+    static_flat_def: float = 0.0
+    runtime_def_percent_bonus: float = 0.0
+    runtime_def_flat_bonus: float = 0.0
+    static_def: float = 0.0
+    effective_def: float = 0.0
+    final_def_reference: float | None = None
+    def_reference_delta: float | None = None
+    def_reference_delta_percent: float | None = None
+    character_base_hp: float = 0.0
+    weapon_base_hp: float = 0.0
+    base_hp_total: float = 0.0
+    static_hp_percent: float = 0.0
+    static_flat_hp: float = 0.0
+    runtime_hp_percent_bonus: float = 0.0
+    runtime_hp_flat_bonus: float = 0.0
+    static_hp: float = 0.0
+    effective_hp: float = 0.0
+    final_hp_reference: float | None = None
+    hp_reference_delta: float | None = None
+    hp_reference_delta_percent: float | None = None
     profile_completeness_status: str | None = None
     implementation_status: str | None = None
     active_anomalies_after: dict[str, int] = Field(default_factory=dict)

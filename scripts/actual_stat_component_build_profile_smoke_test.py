@@ -22,7 +22,7 @@ def assert_close(actual: float, expected: float, label: str, tolerance: float = 
 
 def test_schema_and_required_profiles() -> None:
     data = load_build_profiles(DATA_DIR)
-    assert data["schema_version"] == 2
+    assert data["schema_version"] == 3
     profiles = data["profiles"]
     assert "component_test" in profiles["aemeath"]
     assert "support_er_component_test" in profiles["mornye"]
@@ -64,7 +64,7 @@ def test_component_formula_and_reference_validation_only() -> None:
 def test_energy_regen_default_and_old_aliases() -> None:
     character = CharacterData(id="alias_test", name="Alias Test", resonance_energy=0.0, concerto_energy=0.0)
     data = {
-        "schema_version": 2,
+        "schema_version": 3,
         "profiles": {
             "alias_test": {
                 "legacy_profile": {

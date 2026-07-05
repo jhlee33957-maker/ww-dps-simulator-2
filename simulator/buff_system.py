@@ -2,31 +2,51 @@ from __future__ import annotations
 
 from typing import Any
 
+from simulator.build_profiles import stat_component_log_fields
 from simulator.models import ActiveBuff, BuffData, CharacterData, CombatState
 
 
-def _recalculate_attack_stats(stats: dict[str, Any]) -> None:
-    base_attack_total = float(stats.get("character_base_atk", 0.0)) + float(stats.get("weapon_base_atk", 0.0))
-    static_attack = (
-        base_attack_total * (1.0 + float(stats.get("static_atk_percent", 0.0)))
-        + float(stats.get("static_flat_atk", 0.0))
-    )
-    effective_attack = (
-        static_attack
-        + base_attack_total * float(stats.get("runtime_atk_percent_bonus", 0.0))
-        + float(stats.get("runtime_flat_atk_bonus", 0.0))
-    )
-    stats["base_attack_total"] = base_attack_total
-    stats["static_attack"] = static_attack
-    stats["effective_attack"] = effective_attack
+def _recalculate_scaling_stats(stats: dict[str, Any]) -> None:
+    for stat in ("atk", "def", "hp"):
+        character_base = float(stats.get(f"character_base_{stat}", 0.0))
+        weapon_base = float(stats.get(f"weapon_base_{stat}", 0.0))
+        base_total = character_base + weapon_base
+        static_value = (
+            base_total * (1.0 + float(stats.get(f"static_{stat}_percent", 0.0)))
+            + float(stats.get(f"static_flat_{stat}", 0.0))
+        )
+        runtime_flat = float(stats.get(f"runtime_{stat}_flat_bonus", 0.0))
+        if stat == "atk":
+            runtime_flat = float(stats.get("runtime_flat_atk_bonus", runtime_flat))
+        effective_value = (
+            static_value
+            + base_total * float(stats.get(f"runtime_{stat}_percent_bonus", 0.0))
+            + runtime_flat
+        )
+        stats[f"base_{stat}_total"] = base_total
+        stats[f"static_{stat}"] = static_value
+        stats[f"effective_{stat}"] = effective_value
+        stats[f"runtime_{stat}_flat_bonus"] = runtime_flat
+        reference = stats.get(f"final_{stat}_reference")
+        stats[f"{stat}_reference_delta"] = None
+        stats[f"{stat}_reference_delta_percent"] = None
+        if reference not in (None, 0):
+            stats[f"{stat}_reference_delta"] = static_value - float(reference)
+            stats[f"{stat}_reference_delta_percent"] = stats[f"{stat}_reference_delta"] / float(reference)
+
+    stats["base_attack_total"] = stats["base_atk_total"]
+    stats["static_attack"] = stats["static_atk"]
+    stats["effective_attack"] = stats["effective_atk"]
+    stats["final_attack_reference"] = stats.get("final_atk_reference")
+    stats["attack_reference_delta"] = stats.get("atk_reference_delta")
+    stats["attack_reference_delta_percent"] = stats.get("atk_reference_delta_percent")
+    stats["runtime_flat_atk_bonus"] = stats["runtime_atk_flat_bonus"]
     stats["atk_percent"] = float(stats.get("static_atk_percent", 0.0)) + float(stats.get("runtime_atk_percent_bonus", 0.0))
-    stats["flat_atk"] = float(stats.get("static_flat_atk", 0.0)) + float(stats.get("runtime_flat_atk_bonus", 0.0))
-    reference = stats.get("final_attack_reference")
-    stats["attack_reference_delta"] = None
-    stats["attack_reference_delta_percent"] = None
-    if reference not in (None, 0):
-        stats["attack_reference_delta"] = static_attack - float(reference)
-        stats["attack_reference_delta_percent"] = stats["attack_reference_delta"] / float(reference)
+    stats["flat_atk"] = float(stats.get("static_flat_atk", 0.0)) + float(stats.get("runtime_atk_flat_bonus", 0.0))
+
+
+def _recalculate_attack_stats(stats: dict[str, Any]) -> None:
+    _recalculate_scaling_stats(stats)
 
 
 def tick_buffs(state: CombatState, elapsed: float) -> None:
@@ -160,6 +180,24 @@ def collect_runtime_flat_atk_bonus(
     return float(buffed_combat_stats(character, state, buffs, time_offset=time_offset)["runtime_flat_atk_bonus"])
 
 
+def collect_runtime_def_percent_bonus(
+    character: CharacterData,
+    state: CombatState,
+    buffs: dict[str, BuffData],
+    time_offset: float = 0.0,
+) -> float:
+    return float(buffed_combat_stats(character, state, buffs, time_offset=time_offset)["runtime_def_percent_bonus"])
+
+
+def collect_runtime_flat_def_bonus(
+    character: CharacterData,
+    state: CombatState,
+    buffs: dict[str, BuffData],
+    time_offset: float = 0.0,
+) -> float:
+    return float(buffed_combat_stats(character, state, buffs, time_offset=time_offset)["runtime_def_flat_bonus"])
+
+
 def buffed_combat_stats(
     character: CharacterData,
     state: CombatState,
@@ -167,18 +205,7 @@ def buffed_combat_stats(
     time_offset: float = 0.0,
 ) -> dict[str, float]:
     stats = {
-        "character_base_atk": character.character_base_atk,
-        "weapon_base_atk": character.weapon_base_atk,
-        "base_attack_total": character.base_attack_total,
-        "static_atk_percent": character.static_atk_percent,
-        "static_flat_atk": character.static_flat_atk,
-        "runtime_atk_percent_bonus": character.runtime_atk_percent_bonus,
-        "runtime_flat_atk_bonus": character.runtime_flat_atk_bonus,
-        "static_attack": character.static_attack,
-        "effective_attack": character.effective_attack,
-        "final_attack_reference": character.final_attack_reference,
-        "attack_reference_delta": character.attack_reference_delta,
-        "attack_reference_delta_percent": character.attack_reference_delta_percent,
+        **stat_component_log_fields(character),
         "atk_percent": character.static_atk_percent + character.runtime_atk_percent_bonus,
         "flat_atk": character.static_flat_atk + character.runtime_flat_atk_bonus,
         "dmg_bonus": character.dmg_bonus,
@@ -214,11 +241,20 @@ def buffed_combat_stats(
             if stat_name == "atk_percent":
                 stats["runtime_atk_percent_bonus"] += stat_value
             elif stat_name == "flat_atk":
+                stats["runtime_atk_flat_bonus"] += stat_value
                 stats["runtime_flat_atk_bonus"] += stat_value
+            elif stat_name == "def_percent":
+                stats["runtime_def_percent_bonus"] += stat_value
+            elif stat_name == "flat_def":
+                stats["runtime_def_flat_bonus"] += stat_value
+            elif stat_name == "hp_percent":
+                stats["runtime_hp_percent_bonus"] += stat_value
+            elif stat_name == "flat_hp":
+                stats["runtime_hp_flat_bonus"] += stat_value
             elif stat_name in stats:
                 stats[stat_name] += stat_value
 
-    _recalculate_attack_stats(stats)
+    _recalculate_scaling_stats(stats)
     stats["active_buff_count"] = float(len(active_buff_names))
     stats["active_buff_summary"] = active_buff_names
     return stats

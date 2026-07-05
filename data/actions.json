@@ -19,7 +19,8 @@
     ],
     "policy_selectable": true,
     "data_status": "mornye_support_v1_selector",
-    "notes": "High-level policy action; resolves in characters/mornye.py."
+    "notes": "High-level policy action; resolves in characters/mornye.py.",
+    "scaling_stat": "none"
   },
   {
     "id": "mornye_heavy_attack",
@@ -41,7 +42,8 @@
     ],
     "policy_selectable": true,
     "data_status": "mornye_support_v1_selector",
-    "notes": "High-level policy action; resolves to normal Heavy, Geopotential Shift, or Inversion."
+    "notes": "High-level policy action; resolves to normal Heavy, Geopotential Shift, or Inversion.",
+    "scaling_stat": "none"
   },
   {
     "id": "mornye_resonance_skill",
@@ -63,7 +65,8 @@
     ],
     "policy_selectable": true,
     "data_status": "mornye_support_v1_selector",
-    "notes": "High-level policy action; baseline resolves to Expectation Error by default, may force Optimal Solution only in explicit always_success GP mode, and WFO resolves to Distributed Array."
+    "notes": "High-level policy action; baseline resolves to Expectation Error by default, may force Optimal Solution only in explicit always_success GP mode, and WFO resolves to Distributed Array.",
+    "scaling_stat": "none"
   },
   {
     "id": "mornye_resonance_liberation",
@@ -85,7 +88,8 @@
     ],
     "policy_selectable": true,
     "data_status": "mornye_support_v1_selector",
-    "notes": "High-level policy action; resolves to Critical Protocol."
+    "notes": "High-level policy action; resolves to Critical Protocol.",
+    "scaling_stat": "none"
   },
   {
     "id": "mornye_basic_stage_1",
@@ -141,7 +145,11 @@
       "source_character_name": "莫宁"
     },
     "data_status": "partial_real_support_v1",
-    "notes": "Workbook \\u83ab\\u5b81 frame rows 4102-4104 and skill rows 2640-2642. Timing uses action end frame 61/60."
+    "notes": "Workbook \\u83ab\\u5b81 frame rows 4102-4104 and skill rows 2640-2642. Timing uses action end frame 61/60.",
+    "scaling_stat": "def",
+    "scaling_stat_source": "user_supplied_skill_screenshot",
+    "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
   },
   {
     "id": "mornye_basic_stage_2",
@@ -224,7 +232,11 @@
       "source_character_name": "莫宁"
     },
     "data_status": "partial_real_support_v1",
-    "notes": "Workbook \\u83ab\\u5b81 frame rows 4105-4107 and skill rows 2643-2645. Timing uses action end frame 68/60."
+    "notes": "Workbook \\u83ab\\u5b81 frame rows 4105-4107 and skill rows 2643-2645. Timing uses action end frame 68/60.",
+    "scaling_stat": "def",
+    "scaling_stat_source": "user_supplied_skill_screenshot",
+    "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
   },
   {
     "id": "mornye_basic_stage_3",
@@ -316,7 +328,11 @@
       "source_character_name": "莫宁"
     },
     "data_status": "partial_real_support_v1",
-    "notes": "Workbook \\u83ab\\u5b81 frame rows 4108-4109 and skill rows 2646-2647. Timing uses action end frame 91/60."
+    "notes": "Workbook \\u83ab\\u5b81 frame rows 4108-4109 and skill rows 2646-2647. Timing uses action end frame 91/60.",
+    "scaling_stat": "def",
+    "scaling_stat_source": "user_supplied_skill_screenshot",
+    "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
   },
   {
     "id": "mornye_basic_stage_4",
@@ -354,7 +370,11 @@
       "source_character_name": "莫宁"
     },
     "data_status": "partial_real_support_v1",
-    "notes": "Workbook \\u83ab\\u5b81 frame row 4110 and skill row 2648. Timing uses action end frame 170/60."
+    "notes": "Workbook \\u83ab\\u5b81 frame row 4110 and skill row 2648. Timing uses action end frame 170/60.",
+    "scaling_stat": "def",
+    "scaling_stat_source": "user_supplied_skill_screenshot",
+    "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
   },
   {
     "id": "mornye_wfo_basic_stage_1",
@@ -420,7 +440,11 @@
       "source_character_name": "莫宁"
     },
     "data_status": "partial_real_support_v1",
-    "notes": "Workbook \\u83ab\\u5b81 frame row 4128 and skill row 2657. Timing uses action end frame 43/60."
+    "notes": "Workbook \\u83ab\\u5b81 frame row 4128 and skill row 2657. Timing uses action end frame 43/60.",
+    "scaling_stat": "def",
+    "scaling_stat_source": "user_supplied_skill_screenshot",
+    "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
   },
   {
     "id": "mornye_wfo_basic_stage_2",
@@ -486,7 +510,11 @@
       "source_character_name": "莫宁"
     },
     "data_status": "partial_real_support_v1",
-    "notes": "Workbook \\u83ab\\u5b81 frame row 4129 and skill row 2658. Timing uses action end frame 68/60."
+    "notes": "Workbook \\u83ab\\u5b81 frame row 4129 and skill row 2658. Timing uses action end frame 68/60.",
+    "scaling_stat": "def",
+    "scaling_stat_source": "user_supplied_skill_screenshot",
+    "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
   },
   {
     "id": "mornye_wfo_basic_stage_3",
@@ -570,10 +598,17 @@
       "source_character_name": "莫宁",
       "passive_concerto_source": "角色-女!4164",
       "passive_concerto_gain": 20,
-      "relative_momentum_gain_source_rows": [4132, 4133]
+      "relative_momentum_gain_source_rows": [
+        4132,
+        4133
+      ]
     },
     "data_status": "partial_real_support_v1",
-    "notes": "Workbook \\u83ab\\u5b81 frame rows 4131-4134 and skill rows 2660-2663. Passive note grants 20 Concerto after QTE/Observation A3."
+    "notes": "Workbook \\u83ab\\u5b81 frame rows 4131-4134 and skill rows 2660-2663. Passive note grants 20 Concerto after QTE/Observation A3.",
+    "scaling_stat": "def",
+    "scaling_stat_source": "user_supplied_skill_screenshot",
+    "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
   },
   {
     "id": "mornye_heavy_attack_normal",
@@ -628,7 +663,11 @@
       "source_character_name": "莫宁"
     },
     "data_status": "partial_real_support_v1",
-    "notes": "Workbook \\u83ab\\u5b81 frame rows 4114-4116 and skill rows 2651-2653. Timing uses action end frame 140/60."
+    "notes": "Workbook \\u83ab\\u5b81 frame rows 4114-4116 and skill rows 2651-2653. Timing uses action end frame 140/60.",
+    "scaling_stat": "def",
+    "scaling_stat_source": "user_supplied_skill_screenshot",
+    "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
   },
   {
     "id": "mornye_heavy_geopotential_shift",
@@ -677,7 +716,11 @@
       "source_character_name": "莫宁"
     },
     "data_status": "partial_real_support_v1",
-    "notes": "Workbook \\u83ab\\u5b81 frame row 4117 and skill rows 2654/2656. Enters Wide Field Observation and generates Syntony Field."
+    "notes": "Workbook \\u83ab\\u5b81 frame row 4117 and skill rows 2654/2656. Enters Wide Field Observation and generates Syntony Field.",
+    "scaling_stat": "def",
+    "scaling_stat_source": "user_supplied_skill_screenshot",
+    "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
   },
   {
     "id": "mornye_heavy_inversion",
@@ -715,14 +758,21 @@
       "observation_marker_duration": 30,
       "source_character_name": "莫宁",
       "source_sheet": "角色-女",
-      "source_rows": [4135, 4136],
+      "source_rows": [
+        4135,
+        4136
+      ],
       "time_dilation_type": "时停",
       "has_global_time_stop": false,
       "combat_time_cost_source": "No 全局时停 row for 观测重击; use 78F / 60",
       "source_status": "not_source_confirmed_direct_interfered"
     },
     "data_status": "partial_real_support_v1",
-    "notes": "Workbook \\u83ab\\u5b81 frame rows 4135-4136 and skill row 2664. Applies Observation Marker metadata only."
+    "notes": "Workbook \\u83ab\\u5b81 frame rows 4135-4136 and skill row 2664. Applies Observation Marker metadata only.",
+    "scaling_stat": "def",
+    "scaling_stat_source": "user_supplied_skill_screenshot",
+    "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
   },
   {
     "id": "mornye_skill_expectation_error",
@@ -746,7 +796,8 @@
     ],
     "policy_selectable": false,
     "data_status": "metadata_only_v1",
-    "notes": "Baseline Resonance Skill / GP judgment action. Full GP/counter success detection is not modeled; this action does not automatically apply Optimal Solution damage or resources."
+    "notes": "Baseline Resonance Skill / GP judgment action. Full GP/counter success detection is not modeled; this action does not automatically apply Optimal Solution damage or resources.",
+    "scaling_stat": "none"
   },
   {
     "id": "mornye_skill_optimal_solution",
@@ -785,7 +836,11 @@
       "parry_state_behavior_modeled": false
     },
     "data_status": "partial_real_support_v1",
-    "notes": "Workbook \\u83ab\\u5b81 frame rows 4141-4142 and skill row 2665. Optimal Solution is treated as a GP/counter success follow-up and is applied only by explicit always_success diagnostics or a future modeled GP success trigger."
+    "notes": "Workbook \\u83ab\\u5b81 frame rows 4141-4142 and skill row 2665. Optimal Solution is treated as a GP/counter success follow-up and is applied only by explicit always_success diagnostics or a future modeled GP success trigger.",
+    "scaling_stat": "def",
+    "scaling_stat_source": "user_supplied_skill_screenshot",
+    "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
   },
   {
     "id": "mornye_skill_distributed_array",
@@ -850,14 +905,34 @@
       "relative_momentum_delta": 60,
       "source_character_name": "莫宁",
       "source_sheet": "角色-女",
-      "source_rows": [4143, 4144, 4145, 4146, 4147],
+      "source_rows": [
+        4143,
+        4144,
+        4145,
+        4146,
+        4147
+      ],
       "distributed_array_base_concerto_gain": 10,
-      "distributed_array_relative_momentum_gain_per_hit": [15, 15, 15, 15],
+      "distributed_array_relative_momentum_gain_per_hit": [
+        15,
+        15,
+        15,
+        15
+      ],
       "distributed_array_relative_momentum_gain_total": 60,
-      "relative_momentum_gain_source_rows": [4144, 4145, 4146, 4147]
+      "relative_momentum_gain_source_rows": [
+        4144,
+        4145,
+        4146,
+        4147
+      ]
     },
     "data_status": "partial_real_support_v1",
-    "notes": "Workbook \\u83ab\\u5b81 frame rows 4143-4147 and skill rows 2666-2669. Concerto regen 10."
+    "notes": "Workbook \\u83ab\\u5b81 frame rows 4143-4147 and skill rows 2666-2669. Concerto regen 10.",
+    "scaling_stat": "def",
+    "scaling_stat_source": "user_supplied_skill_screenshot",
+    "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
   },
   {
     "id": "mornye_liberation_critical_protocol",
@@ -895,14 +970,23 @@
       "energy_regen_scaling_metadata_only": true,
       "source_character_name": "莫宁",
       "source_sheet": "角色-女",
-      "source_rows": [4150, 4151, 4153, 4154],
+      "source_rows": [
+        4150,
+        4151,
+        4153,
+        4154
+      ],
       "global_time_stop_frames": 300,
       "damage_end_frame": 296,
       "combat_time_cost_source": "大招-全局时停 covers damage end frame",
       "has_global_time_stop": true
     },
     "data_status": "partial_real_support_v1",
-    "notes": "Workbook \\u83ab\\u5b81 frame rows 4150-4154 and skill row 2671. Energy Regen crit scaling is metadata-only in v1."
+    "notes": "Workbook \\u83ab\\u5b81 frame rows 4150-4154 and skill row 2671. Energy Regen crit scaling is metadata-only in v1.",
+    "scaling_stat": "def",
+    "scaling_stat_source": "user_supplied_skill_screenshot",
+    "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
   },
   {
     "id": "mornye_syntony_field_damage",
@@ -977,7 +1061,11 @@
     ],
     "policy_selectable": false,
     "data_status": "review_optional_v1",
-    "notes": "Syntony Field damage is available as reviewed data but is not auto-scheduled by v1 mechanics."
+    "notes": "Syntony Field damage is available as reviewed data but is not auto-scheduled by v1 mechanics.",
+    "scaling_stat": "def",
+    "scaling_stat_source": "user_supplied_skill_screenshot",
+    "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
   },
   {
     "id": "mornye_high_syntony_field_state",
@@ -999,7 +1087,8 @@
     ],
     "policy_selectable": false,
     "data_status": "metadata_only_v1",
-    "notes": "High Syntony Field DEF/healing metadata only; no DPS impact."
+    "notes": "High Syntony Field DEF/healing metadata only; no DPS impact.",
+    "scaling_stat": "none"
   },
   {
     "id": "mornye_tune_rupture_response_particle_jet",
@@ -1021,7 +1110,8 @@
     ],
     "policy_selectable": false,
     "data_status": "metadata_only_v1",
-    "notes": "Tune Break / Interfered Marker response is explicitly not implemented in Mornye Support v1."
+    "notes": "Tune Break / Interfered Marker response is explicitly not implemented in Mornye Support v1.",
+    "scaling_stat": "none"
   },
   {
     "id": "mornye_intro_convergence",
@@ -1058,7 +1148,11 @@
       "timing_is_placeholder": false,
       "source_character_name": "莫宁",
       "source_sheet": "角色-女",
-      "source_rows": [4148, 4149, 4164],
+      "source_rows": [
+        4148,
+        4149,
+        4164
+      ],
       "has_global_time_stop": false,
       "time_dilation_type": "时停",
       "base_concerto_gain": 10,
@@ -1068,7 +1162,11 @@
       "combat_time_cost_source": "QTE has 时停 but no 全局时停 row; use 102F / 60"
     },
     "data_status": "transition_review_only_v1",
-    "notes": "Intro/QTE convergence data from workbook rows 4148-4149 plus passive row 4164. State effects are recorded in data/transition_actions.json and not auto-applied by default."
+    "notes": "Intro/QTE convergence data from workbook rows 4148-4149 plus passive row 4164. State effects are recorded in data/transition_actions.json and not auto-applied by default.",
+    "scaling_stat": "def",
+    "scaling_stat_source": "user_supplied_skill_screenshot",
+    "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
   },
   {
     "id": "mornye_outro_recursion",
@@ -1098,7 +1196,8 @@
       "outro_recursion_all_dmg_amp": 0.25
     },
     "data_status": "implemented_v1",
-    "notes": "Mornye Outro Recursion applies 25% All DMG Amplification to the party for 30s through transition_config."
+    "notes": "Mornye Outro Recursion applies 25% All DMG Amplification to the party for 30s through transition_config.",
+    "scaling_stat": "none"
   },
   {
     "damage_category": "normal",
@@ -1369,7 +1468,8 @@
     "combat_time_cost": 0.55,
     "hits": [],
     "data_status": "dummy_sample",
-    "notes": "Intentionally low dummy coefficient for system testing."
+    "notes": "Intentionally low dummy coefficient for system testing.",
+    "scaling_stat": "none"
   },
   {
     "damage_category": "normal",
@@ -1767,7 +1867,8 @@
     "action_time": 0.3,
     "hits": [],
     "data_status": "dummy_sample",
-    "notes": "Intentionally low dummy coefficient for system testing."
+    "notes": "Intentionally low dummy coefficient for system testing.",
+    "scaling_stat": "none"
   },
   {
     "damage_category": "normal",
@@ -1796,7 +1897,8 @@
     "anomaly_duration": 6,
     "anomaly_tick_interval": 1,
     "action_time": 0.3,
-    "hits": []
+    "hits": [],
+    "scaling_stat": "none"
   },
   {
     "id": "aemeath_basic_attack",
@@ -1826,7 +1928,8 @@
       "aemeath-lite",
       "policy"
     ],
-    "policy_selectable": true
+    "policy_selectable": true,
+    "scaling_stat": "none"
   },
   {
     "id": "aemeath_resonance_skill",
@@ -1856,7 +1959,8 @@
       "aemeath-lite",
       "policy"
     ],
-    "policy_selectable": true
+    "policy_selectable": true,
+    "scaling_stat": "none"
   },
   {
     "id": "aemeath_heavy_attack",
@@ -1886,7 +1990,8 @@
       "aemeath-lite",
       "policy"
     ],
-    "policy_selectable": true
+    "policy_selectable": true,
+    "scaling_stat": "none"
   },
   {
     "id": "aemeath_resonance_liberation",
@@ -1916,7 +2021,8 @@
       "aemeath-lite",
       "policy"
     ],
-    "policy_selectable": true
+    "policy_selectable": true,
+    "scaling_stat": "none"
   },
   {
     "id": "aemeath_basic_form_stage_1",
@@ -1957,7 +2063,8 @@
     "damage_bonus_category": "basic_attack",
     "raw_skill_category": "普攻",
     "raw_damage_type": "普攻伤害",
-    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json"
+    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_basic_form_stage_2",
@@ -2014,7 +2121,8 @@
     "damage_bonus_category": "basic_attack",
     "raw_skill_category": "普攻",
     "raw_damage_type": "普攻伤害",
-    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json"
+    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_basic_form_stage_3",
@@ -2087,7 +2195,8 @@
     "damage_bonus_category": "basic_attack",
     "raw_skill_category": "普攻",
     "raw_damage_type": "普攻伤害",
-    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json"
+    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_basic_form_stage_4",
@@ -2169,7 +2278,8 @@
     "damage_bonus_category": "basic_attack",
     "raw_skill_category": "普攻",
     "raw_damage_type": "普攻伤害",
-    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json"
+    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_mech_basic_stage_1",
@@ -2226,7 +2336,8 @@
     "damage_bonus_category": "basic_attack",
     "raw_skill_category": "普攻",
     "raw_damage_type": "普攻伤害",
-    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json"
+    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_mech_basic_stage_2",
@@ -2275,7 +2386,8 @@
     "damage_bonus_category": "basic_attack",
     "raw_skill_category": "普攻",
     "raw_damage_type": "普攻伤害",
-    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json"
+    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_mech_basic_stage_3",
@@ -2372,7 +2484,8 @@
     "damage_bonus_category": "basic_attack",
     "raw_skill_category": "普攻",
     "raw_damage_type": "普攻伤害",
-    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json"
+    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_mech_basic_stage_4",
@@ -2422,7 +2535,8 @@
     "damage_bonus_category": "basic_attack",
     "raw_skill_category": "普攻",
     "raw_damage_type": "普攻伤害",
-    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json"
+    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_form_switch_to_mech_normal",
@@ -2478,7 +2592,8 @@
       "set_form": "mech",
       "sync_delta": 6.45,
       "set_mech_combo_stage": 2
-    }
+    },
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_form_switch_to_aemeath_normal",
@@ -2518,7 +2633,8 @@
       "set_form": "aemeath",
       "sync_delta": 3.29,
       "set_aemeath_combo_stage": 2
-    }
+    },
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_form_switch_to_aemeath_after_overdrive",
@@ -2574,7 +2690,8 @@
       "set_form": "aemeath",
       "sync_delta": 6.44,
       "set_aemeath_combo_stage": 3
-    }
+    },
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_sync_strike_armament_merge",
@@ -2631,7 +2748,8 @@
       "set_form": "mech",
       "sync_delta": 18.29,
       "set_mech_combo_stage": 2
-    }
+    },
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_sync_strike_call_of_dawn",
@@ -2696,7 +2814,8 @@
       "set_form": "aemeath",
       "sync_delta": 22.18,
       "set_aemeath_combo_stage": 2
-    }
+    },
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_seraphic_duet_overturn",
@@ -2838,7 +2957,8 @@
     "damage_bonus_category": "resonance_liberation",
     "raw_skill_category": "共鸣技能",
     "raw_damage_type": "共鸣解放伤害",
-    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json"
+    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_seraphic_duet_encore",
@@ -2940,7 +3060,8 @@
     "damage_bonus_category": "resonance_liberation",
     "raw_skill_category": "共鸣技能",
     "raw_damage_type": "共鸣解放伤害",
-    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json"
+    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_heavy_aemeath_charged_1",
@@ -2992,7 +3113,8 @@
     "damage_bonus_category": "resonance_liberation",
     "raw_skill_category": "重击",
     "raw_damage_type": "共鸣解放伤害",
-    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json"
+    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_heavy_aemeath_charged_2",
@@ -3078,7 +3200,8 @@
     "damage_bonus_category": "resonance_liberation",
     "raw_skill_category": "重击",
     "raw_damage_type": "共鸣解放伤害",
-    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json"
+    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_heavy_mech_charged_1",
@@ -3122,7 +3245,8 @@
     "damage_bonus_category": "resonance_liberation",
     "raw_skill_category": "重击",
     "raw_damage_type": "共鸣解放伤害",
-    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json"
+    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_heavy_mech_charged_2",
@@ -3176,7 +3300,8 @@
     "damage_bonus_category": "resonance_liberation",
     "raw_skill_category": "重击",
     "raw_damage_type": "共鸣解放伤害",
-    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json"
+    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_liberation_overdrive",
@@ -3248,7 +3373,8 @@
     "damage_bonus_category": "resonance_liberation",
     "raw_skill_category": "共鸣解放",
     "raw_damage_type": "共鸣解放伤害",
-    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json"
+    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "scaling_stat": "atk"
   },
   {
     "id": "aemeath_heavenfall_finale",
@@ -3300,7 +3426,8 @@
     "damage_bonus_category": "resonance_liberation",
     "raw_skill_category": "共鸣解放",
     "raw_damage_type": "共鸣解放伤害",
-    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json"
+    "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
+    "scaling_stat": "atk"
   },
   {
     "id": "dummy_support_attack",
@@ -3369,7 +3496,8 @@
       "party-foundation"
     ],
     "data_status": "dummy_sample",
-    "notes": "Applies a test-only party damage amp buff. No Intro/Outro/QTE behavior."
+    "notes": "Applies a test-only party damage amp buff. No Intro/Outro/QTE behavior.",
+    "scaling_stat": "none"
   },
   {
     "id": "dummy_sub_dps_attack",
@@ -3481,7 +3609,8 @@
     "action_time": 0.3,
     "hits": [],
     "data_status": "dummy_sample",
-    "notes": "Intentionally low dummy coefficient for system testing."
+    "notes": "Intentionally low dummy coefficient for system testing.",
+    "scaling_stat": "none"
   },
   {
     "damage_category": "normal",
@@ -3511,7 +3640,8 @@
     "action_time": 0.3,
     "hits": [],
     "data_status": "dummy_sample",
-    "notes": "Intentionally low dummy coefficient for system testing."
+    "notes": "Intentionally low dummy coefficient for system testing.",
+    "scaling_stat": "none"
   },
   {
     "damage_category": "normal",
@@ -3539,6 +3669,7 @@
     "anomaly_duration": 6,
     "anomaly_tick_interval": 1,
     "action_time": 0.5,
-    "hits": []
+    "hits": [],
+    "scaling_stat": "none"
   }
 ]

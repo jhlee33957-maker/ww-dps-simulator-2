@@ -181,6 +181,15 @@
     {"field": "Syntony Field", "duration": 25, "implemented": "duration_metadata", "metadata_only": ["off-tune buildup +50%", "interruption resistance", "healing"]},
     {"field": "High Syntony Field", "duration": 25, "implemented": "duration_metadata", "metadata_only": ["DEF +20%", "healing multiplier +40%"]}
   ],
+  "scaling_stat_notes": {
+    "title": "Scaling Stat Notes",
+    "damage_scaling_stat": "def",
+    "source": "user_supplied_skill_screenshot",
+    "source_status": "user_supplied_screenshot_not_embedded",
+    "report": "reports/mornye_scaling_stat_source_note.md",
+    "structured_note": "data/extracted/mornye_scaling_stat_source_note.json",
+    "notes": "Mornye direct damage is modeled as DEF-scaling based on user-provided skill description evidence. This is not labeled Excel-confirmed because the workbook coefficient rows alone do not explicitly encode scaling stat."
+  },
   "build_profile_damage_type_bonus_notes": {
     "title": "Build Profile / Damage Type Bonus Notes",
     "profiles": {

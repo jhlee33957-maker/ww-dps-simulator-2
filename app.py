@@ -107,7 +107,13 @@ def build_profile_controls(
         }
         st.write("Effective profiles")
         st.write(effective_profiles)
-        stats_summary = effective_build_stats_summary(effective_characters)
+        with (DATA_DIR / "actions.json").open("r", encoding="utf-8-sig") as file:
+            from simulator.models import ActionData
+            from simulator.build_profiles import build_action_scaling_summary
+
+            all_actions = [ActionData.model_validate(item) for item in json.load(file)]
+        scaling_summary = build_action_scaling_summary(all_actions, selected_character_ids)
+        stats_summary = effective_build_stats_summary(effective_characters, scaling_summary)
         validation = validate_effective_build_profiles(stats_summary)
         for error in validation.get("errors", []):
             st.error(f"This real/manual profile is incomplete. Fill required stats before training/evaluation. {error}")
@@ -121,25 +127,33 @@ def build_profile_controls(
                         "implementation_status": summary.get("implementation_status"),
                         "profile_completeness_status": summary.get("profile_completeness_status"),
                         "missing_required_fields": summary.get("missing_required_fields"),
-                        "character_base_atk": summary.get("character_base_atk"),
-                        "weapon_base_atk": summary.get("weapon_base_atk"),
-                        "base_attack_total": summary.get("base_attack_total"),
-                        "static_atk_percent": summary.get("static_atk_percent"),
-                        "static_flat_atk": summary.get("static_flat_atk"),
-                        "runtime_atk_percent_bonus": summary.get("runtime_atk_percent_bonus"),
-                        "runtime_flat_atk_bonus": summary.get("runtime_flat_atk_bonus"),
-                        "static_attack": summary.get("static_attack"),
-                        "effective_attack": summary.get("effective_attack"),
-                        "final_attack_reference": summary.get("final_attack_reference"),
-                        "attack_reference_delta": summary.get("attack_reference_delta"),
-                        "attack_reference_delta_percent": summary.get("attack_reference_delta_percent"),
+                        "scaling_stat_distribution": summary.get("scaling_stat_distribution"),
+                        "unresolved_scaling_actions": summary.get("unresolved_scaling_actions"),
                         "crit_rate": summary.get("crit_rate"),
                         "crit_damage": summary.get("crit_damage"),
                         "energy_regen": summary.get("energy_regen"),
                         "damage_bonuses": summary.get("damage_bonuses"),
                     }
                 )
+                for stat in ("atk", "def", "hp"):
+                    st.write(
+                        {
+                            f"{stat.upper()} character_base": summary.get(f"character_base_{stat}"),
+                            f"{stat.upper()} weapon_base": summary.get(f"weapon_base_{stat}"),
+                            f"{stat.upper()} base_total": summary.get(f"base_{stat}_total"),
+                            f"{stat.upper()} percent": summary.get(f"static_{stat}_percent"),
+                            f"{stat.upper()} flat": summary.get(f"static_flat_{stat}"),
+                            f"{stat.upper()} static_value": summary.get(f"static_{stat}"),
+                            f"{stat.upper()} runtime_percent_bonus": summary.get(f"runtime_{stat}_percent_bonus"),
+                            f"{stat.upper()} runtime_flat_bonus": summary.get(f"runtime_{stat}_flat_bonus"),
+                            f"{stat.upper()} effective_value": summary.get(f"effective_{stat}"),
+                            f"{stat.upper()} final_reference": summary.get(f"final_{stat}_reference"),
+                            f"{stat.upper()} reference_delta": summary.get(f"{stat}_reference_delta"),
+                            f"{stat.upper()} reference_delta_percent": summary.get(f"{stat}_reference_delta_percent"),
+                        }
+                    )
                 if character_id == "aemeath":
+                    st.write({"Aemeath ATK effective stat": summary.get("effective_atk")})
                     st.write(
                         {
                             "Resonance Liberation DMG Bonus": (
@@ -150,8 +164,11 @@ def build_profile_controls(
                 if character_id == "mornye":
                     er = float(summary.get("energy_regen") or 1.0)
                     excess = max(0.0, (er - 1.0) * 100.0)
+                    if summary.get("actions_requiring_def_stats") and summary.get("effective_def", 0.0) <= 0:
+                        st.warning("Mornye has DEF-scaling actions but the selected profile lacks usable DEF fields.")
                     st.write(
                         {
+                            "Mornye DEF effective stat": summary.get("effective_def"),
                             "Energy Regen": er,
                             "ER Excess Percent": excess,
                             "Interfered Amp Potential": min(excess * 0.0025, 0.40),
@@ -395,15 +412,46 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "category_dmg_bonus",
         "element_dmg_bonus",
         "effective_damage_bonus",
+        "scaling_stat",
+        "scaling_value",
+        "stat_component_source",
         "character_base_atk",
         "weapon_base_atk",
+        "base_atk_total",
         "base_attack_total",
         "static_atk_percent",
         "static_flat_atk",
         "runtime_atk_percent_bonus",
+        "runtime_atk_flat_bonus",
         "runtime_flat_atk_bonus",
+        "static_atk",
         "static_attack",
+        "effective_atk",
         "effective_attack",
+        "character_base_def",
+        "weapon_base_def",
+        "base_def_total",
+        "static_def_percent",
+        "static_flat_def",
+        "runtime_def_percent_bonus",
+        "runtime_def_flat_bonus",
+        "static_def",
+        "effective_def",
+        "final_def_reference",
+        "def_reference_delta",
+        "def_reference_delta_percent",
+        "character_base_hp",
+        "weapon_base_hp",
+        "base_hp_total",
+        "static_hp_percent",
+        "static_flat_hp",
+        "runtime_hp_percent_bonus",
+        "runtime_hp_flat_bonus",
+        "static_hp",
+        "effective_hp",
+        "final_hp_reference",
+        "hp_reference_delta",
+        "hp_reference_delta_percent",
         "final_attack_reference",
         "attack_reference_delta",
         "attack_reference_delta_percent",

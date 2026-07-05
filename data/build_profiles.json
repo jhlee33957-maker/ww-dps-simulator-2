@@ -1,5 +1,6 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
+  "reference_tolerance": 0.01,
   "attack_reference_tolerance": 0.01,
   "profiles": {
     "aemeath": {
@@ -7,20 +8,50 @@
         "display_name": "Aemeath Default Component Test Build",
         "description": "Backward-compatible default test build using explicit stat components from existing sample data.",
         "inherits_from": "component_test",
-        "implementation_status": "test_assumption"
+        "implementation_status": "test_assumption",
+        "default_scaling_stat": "atk"
       },
       "component_test": {
         "display_name": "Aemeath Component Test Build",
         "description": "Component-based test build. Replace with user-supplied real stat values when available.",
         "implementation_status": "test_assumption",
+        "default_scaling_stat": "atk",
         "stat_components": {
-          "character_base_atk": 820,
-          "weapon_base_atk": 560,
-          "static_atk_percent": 0.45,
-          "static_flat_atk": 300,
-          "runtime_atk_percent_bonus": 0.0,
-          "runtime_flat_atk_bonus": 0.0,
-          "final_attack_reference": null
+          "atk": {
+            "character_base": 820,
+            "weapon_base": 560,
+            "percent": 0.45,
+            "flat": 300,
+            "final_reference": null
+          },
+          "def": {
+            "character_base": null,
+            "weapon_base": 0,
+            "percent": null,
+            "flat": null,
+            "final_reference": null
+          },
+          "hp": {
+            "character_base": null,
+            "weapon_base": 0,
+            "percent": null,
+            "flat": null,
+            "final_reference": null
+          }
+        },
+        "runtime_bonuses": {
+          "atk": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "def": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "hp": {
+            "percent": 0.0,
+            "flat": 0.0
+          }
         },
         "combat_stats": {
           "crit_rate": 0.65,
@@ -38,6 +69,7 @@
         "description": "Editable test build assumption for Aemeath. Uses Resonance Liberation DMG bonus to better represent Liberation-heavy damage distribution. Not verified as a final real-game build.",
         "inherits_from": "component_test",
         "implementation_status": "test_assumption",
+        "default_scaling_stat": "atk",
         "damage_bonuses": {
           "all": 0.0,
           "by_category": {
@@ -48,16 +80,48 @@
       },
       "aemeath_real_manual": {
         "display_name": "Aemeath Real Manual Build",
-        "description": "User-supplied real stat profile. Fill all required fields manually before training/evaluation.",
+        "description": "User-supplied real stat profile. Fill all required ATK, combat, and damage bonus fields manually before training/evaluation.",
         "implementation_status": "user_supplied_required",
+        "default_scaling_stat": "atk",
+        "required_scaling_stats": [
+          "atk"
+        ],
         "stat_components": {
-          "character_base_atk": null,
-          "weapon_base_atk": null,
-          "static_atk_percent": null,
-          "static_flat_atk": null,
-          "runtime_atk_percent_bonus": 0.0,
-          "runtime_flat_atk_bonus": 0.0,
-          "final_attack_reference": null
+          "atk": {
+            "character_base": null,
+            "weapon_base": null,
+            "percent": null,
+            "flat": null,
+            "final_reference": null
+          },
+          "def": {
+            "character_base": null,
+            "weapon_base": 0,
+            "percent": null,
+            "flat": null,
+            "final_reference": null
+          },
+          "hp": {
+            "character_base": null,
+            "weapon_base": 0,
+            "percent": null,
+            "flat": null,
+            "final_reference": null
+          }
+        },
+        "runtime_bonuses": {
+          "atk": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "def": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "hp": {
+            "percent": 0.0,
+            "flat": 0.0
+          }
         },
         "combat_stats": {
           "crit_rate": null,
@@ -82,23 +146,53 @@
     },
     "mornye": {
       "default": {
-        "display_name": "Mornye Default Component Test Build",
-        "description": "Backward-compatible default test build using explicit stat components from existing sample data.",
+        "display_name": "Mornye Default DEF Component Test Build",
+        "description": "Backward-compatible default test build using placeholder DEF components. Not verified as a real-game build.",
         "inherits_from": "support_er_component_test",
-        "implementation_status": "test_assumption"
+        "implementation_status": "test_assumption",
+        "default_scaling_stat": "def"
       },
       "support_er_component_test": {
-        "display_name": "Mornye Support ER Component Test Build",
-        "description": "Component-based support test build using 260% Energy Regen.",
+        "display_name": "Mornye Support ER DEF Component Test Build",
+        "description": "DEF-scaling placeholder support test build using 260% Energy Regen. The DEF numbers are test assumptions for smoke tests only.",
         "implementation_status": "test_assumption",
+        "default_scaling_stat": "def",
         "stat_components": {
-          "character_base_atk": 780,
-          "weapon_base_atk": 520,
-          "static_atk_percent": 0.42,
-          "static_flat_atk": 260,
-          "runtime_atk_percent_bonus": 0.0,
-          "runtime_flat_atk_bonus": 0.0,
-          "final_attack_reference": null
+          "atk": {
+            "character_base": 780,
+            "weapon_base": 520,
+            "percent": 0.42,
+            "flat": 260,
+            "final_reference": null
+          },
+          "def": {
+            "character_base": 1300,
+            "weapon_base": 0,
+            "percent": 0.42,
+            "flat": 260,
+            "final_reference": null
+          },
+          "hp": {
+            "character_base": null,
+            "weapon_base": 0,
+            "percent": null,
+            "flat": null,
+            "final_reference": null
+          }
+        },
+        "runtime_bonuses": {
+          "atk": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "def": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "hp": {
+            "percent": 0.0,
+            "flat": 0.0
+          }
         },
         "combat_stats": {
           "crit_rate": 0.55,
@@ -112,10 +206,11 @@
         }
       },
       "support_er_cap": {
-        "display_name": "Mornye Support ER Cap Test Build",
-        "description": "Support-test build assumption using 260% Energy Regen to reach Mornye Energy Regen scaling cap.",
+        "display_name": "Mornye Support ER Cap DEF Test Build",
+        "description": "Support-test build assumption using 260% Energy Regen to reach Mornye Energy Regen scaling cap. DEF values are placeholders for smoke tests only.",
         "inherits_from": "support_er_component_test",
         "implementation_status": "test_assumption",
+        "default_scaling_stat": "def",
         "damage_bonuses": {
           "all": 0.0,
           "by_category": {},
@@ -124,16 +219,48 @@
       },
       "mornye_real_manual": {
         "display_name": "Mornye Real Manual Build",
-        "description": "User-supplied real stat profile. Fill all required fields manually before training/evaluation.",
+        "description": "User-supplied real stat profile. Fill required DEF, combat, and damage bonus fields manually before training/evaluation.",
         "implementation_status": "user_supplied_required",
+        "default_scaling_stat": "def",
+        "required_scaling_stats": [
+          "def"
+        ],
         "stat_components": {
-          "character_base_atk": null,
-          "weapon_base_atk": null,
-          "static_atk_percent": null,
-          "static_flat_atk": null,
-          "runtime_atk_percent_bonus": 0.0,
-          "runtime_flat_atk_bonus": 0.0,
-          "final_attack_reference": null
+          "atk": {
+            "character_base": null,
+            "weapon_base": null,
+            "percent": null,
+            "flat": null,
+            "final_reference": null
+          },
+          "def": {
+            "character_base": null,
+            "weapon_base": 0,
+            "percent": null,
+            "flat": null,
+            "final_reference": null
+          },
+          "hp": {
+            "character_base": null,
+            "weapon_base": 0,
+            "percent": null,
+            "flat": null,
+            "final_reference": null
+          }
+        },
+        "runtime_bonuses": {
+          "atk": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "def": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "hp": {
+            "percent": 0.0,
+            "flat": 0.0
+          }
         },
         "combat_stats": {
           "crit_rate": null,

@@ -12,7 +12,7 @@ from simulator.buff_system import (
     has_required_buffs,
     tick_buffs,
 )
-from simulator.build_profiles import damage_bonus_breakdown
+from simulator.build_profiles import damage_bonus_breakdown, scaling_value_for_action, stat_component_log_fields
 from simulator.damage_formula import calculate_normal_damage, calculate_tune_break_damage
 from simulator.models import ActionData, ActionResult, BuffData, CharacterData, CombatState, HitData, TimelineEntry
 from simulator.resource_system import apply_resource_changes, can_pay_resources
@@ -125,7 +125,16 @@ def _calculate_hit_damage(
         if stat_name == "atk_percent":
             stats["runtime_atk_percent_bonus"] += float(stat_value)
         elif stat_name == "flat_atk":
+            stats["runtime_atk_flat_bonus"] += float(stat_value)
             stats["runtime_flat_atk_bonus"] += float(stat_value)
+        elif stat_name == "def_percent":
+            stats["runtime_def_percent_bonus"] += float(stat_value)
+        elif stat_name == "flat_def":
+            stats["runtime_def_flat_bonus"] += float(stat_value)
+        elif stat_name == "hp_percent":
+            stats["runtime_hp_percent_bonus"] += float(stat_value)
+        elif stat_name == "flat_hp":
+            stats["runtime_hp_flat_bonus"] += float(stat_value)
         elif stat_name in stats:
             stats[stat_name] += float(stat_value)
     _recalculate_attack_stats(stats)
@@ -137,6 +146,7 @@ def _calculate_hit_damage(
     )
     havoc_def_reduction = get_havoc_bane_def_reduction_at_time(state, hit.time)
     final_def_reduction = state.def_reduction + havoc_def_reduction
+    scaling_stat, scaling_value = scaling_value_for_action(stats, action, character)
 
     damage = 0.0
     if hit.damage_category == "normal" and hit.damage_multiplier > 0.0:
@@ -147,6 +157,7 @@ def _calculate_hit_damage(
             atk_percent=stats["atk_percent"],
             flat_atk=stats["flat_atk"],
             effective_attack=stats["effective_attack"],
+            scaling_value=scaling_value,
             dmg_bonus=float(damage_bonus_context["effective_damage_bonus"]),
             crit_rate=stats["crit_rate"],
             crit_damage=stats["crit_damage"],
@@ -183,18 +194,10 @@ def _calculate_hit_damage(
         "damage_multiplier": hit.damage_multiplier,
         "tune_break_multiplier": hit.tune_break_multiplier,
         **damage_bonus_context,
-        "character_base_atk": stats["character_base_atk"],
-        "weapon_base_atk": stats["weapon_base_atk"],
-        "base_attack_total": stats["base_attack_total"],
-        "static_atk_percent": stats["static_atk_percent"],
-        "static_flat_atk": stats["static_flat_atk"],
-        "runtime_atk_percent_bonus": stats["runtime_atk_percent_bonus"],
-        "runtime_flat_atk_bonus": stats["runtime_flat_atk_bonus"],
-        "static_attack": stats["static_attack"],
-        "effective_attack": stats["effective_attack"],
-        "final_attack_reference": stats["final_attack_reference"],
-        "attack_reference_delta": stats["attack_reference_delta"],
-        "attack_reference_delta_percent": stats["attack_reference_delta_percent"],
+        "scaling_stat": scaling_stat,
+        "scaling_value": scaling_value,
+        "stat_component_source": character.build_profile_id,
+        **stat_component_log_fields(stats),
         "profile_completeness_status": character.profile_completeness_status,
         "implementation_status": character.implementation_status,
         "applied_havoc_bane_def_reduction": havoc_def_reduction,
@@ -258,31 +261,33 @@ def _calculate_hit_damage_totals(
             hit_details.append(detail)
             if not action_damage_bonus_context and "effective_damage_bonus" in detail:
                 action_damage_bonus_context = {
-                    "damage_category": detail.get("damage_category", "other"),
-                    "damage_bonus_category": detail.get("damage_bonus_category", detail.get("damage_category", "other")),
-                    "damage_element": detail.get("damage_element", "generic"),
-                    "raw_skill_category": detail.get("raw_skill_category"),
-                    "raw_damage_type": detail.get("raw_damage_type"),
-                    "all_dmg_bonus": detail.get("all_dmg_bonus", 0.0),
-                    "category_dmg_bonus": detail.get("category_dmg_bonus", 0.0),
-                    "element_dmg_bonus": detail.get("element_dmg_bonus", 0.0),
-                    "effective_damage_bonus": detail.get("effective_damage_bonus", 0.0),
-                    "build_profile_id": detail.get("build_profile_id"),
-                    "character_base_atk": detail.get("character_base_atk", 0.0),
-                    "weapon_base_atk": detail.get("weapon_base_atk", 0.0),
-                    "base_attack_total": detail.get("base_attack_total", 0.0),
-                    "static_atk_percent": detail.get("static_atk_percent", 0.0),
-                    "static_flat_atk": detail.get("static_flat_atk", 0.0),
-                    "runtime_atk_percent_bonus": detail.get("runtime_atk_percent_bonus", 0.0),
-                    "runtime_flat_atk_bonus": detail.get("runtime_flat_atk_bonus", 0.0),
-                    "static_attack": detail.get("static_attack", 0.0),
-                    "effective_attack": detail.get("effective_attack", 0.0),
-                    "final_attack_reference": detail.get("final_attack_reference"),
-                    "attack_reference_delta": detail.get("attack_reference_delta"),
-                    "attack_reference_delta_percent": detail.get("attack_reference_delta_percent"),
-                    "profile_completeness_status": detail.get("profile_completeness_status"),
-                    "implementation_status": detail.get("implementation_status"),
+                    key: detail.get(key)
+                    for key in (
+                        "damage_category",
+                        "damage_bonus_category",
+                        "damage_element",
+                        "raw_skill_category",
+                        "raw_damage_type",
+                        "all_dmg_bonus",
+                        "category_dmg_bonus",
+                        "element_dmg_bonus",
+                        "effective_damage_bonus",
+                        "build_profile_id",
+                        "scaling_stat",
+                        "scaling_value",
+                        "stat_component_source",
+                        "profile_completeness_status",
+                        "implementation_status",
+                        *stat_component_log_fields(detail).keys(),
+                    )
                 }
+                action_damage_bonus_context["damage_category"] = action_damage_bonus_context.get("damage_category") or "other"
+                action_damage_bonus_context["damage_bonus_category"] = (
+                    action_damage_bonus_context.get("damage_bonus_category")
+                    or action_damage_bonus_context.get("damage_category")
+                    or "other"
+                )
+                action_damage_bonus_context["damage_element"] = action_damage_bonus_context.get("damage_element") or "generic"
         damage_by_category[hit.damage_category] = damage_by_category.get(hit.damage_category, 0.0) + damage
         if hit.damage_category == "normal":
             normal_damage += damage
@@ -477,18 +482,10 @@ def execute_action(
         element_dmg_bonus=float(action_damage_bonus_context.get("element_dmg_bonus", 0.0)),
         effective_damage_bonus=float(action_damage_bonus_context.get("effective_damage_bonus", 0.0)),
         build_profile_id=action_damage_bonus_context.get("build_profile_id"),
-        character_base_atk=float(action_damage_bonus_context.get("character_base_atk", 0.0)),
-        weapon_base_atk=float(action_damage_bonus_context.get("weapon_base_atk", 0.0)),
-        base_attack_total=float(action_damage_bonus_context.get("base_attack_total", 0.0)),
-        static_atk_percent=float(action_damage_bonus_context.get("static_atk_percent", 0.0)),
-        static_flat_atk=float(action_damage_bonus_context.get("static_flat_atk", 0.0)),
-        runtime_atk_percent_bonus=float(action_damage_bonus_context.get("runtime_atk_percent_bonus", 0.0)),
-        runtime_flat_atk_bonus=float(action_damage_bonus_context.get("runtime_flat_atk_bonus", 0.0)),
-        static_attack=float(action_damage_bonus_context.get("static_attack", 0.0)),
-        effective_attack=float(action_damage_bonus_context.get("effective_attack", 0.0)),
-        final_attack_reference=action_damage_bonus_context.get("final_attack_reference"),
-        attack_reference_delta=action_damage_bonus_context.get("attack_reference_delta"),
-        attack_reference_delta_percent=action_damage_bonus_context.get("attack_reference_delta_percent"),
+        scaling_stat=action_damage_bonus_context.get("scaling_stat"),
+        scaling_value=float(action_damage_bonus_context.get("scaling_value") or 0.0),
+        stat_component_source=action_damage_bonus_context.get("stat_component_source"),
+        **stat_component_log_fields(action_damage_bonus_context),
         profile_completeness_status=action_damage_bonus_context.get("profile_completeness_status"),
         active_anomalies_after=active_anomalies_after,
         active_buffs=active_buff_ids,
@@ -573,18 +570,11 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         element_dmg_bonus=result.element_dmg_bonus,
         effective_damage_bonus=result.effective_damage_bonus,
         build_profile_id=result.build_profile_id,
-        character_base_atk=result.character_base_atk,
-        weapon_base_atk=result.weapon_base_atk,
-        base_attack_total=result.base_attack_total,
-        static_atk_percent=result.static_atk_percent,
-        static_flat_atk=result.static_flat_atk,
-        runtime_atk_percent_bonus=result.runtime_atk_percent_bonus,
-        runtime_flat_atk_bonus=result.runtime_flat_atk_bonus,
-        static_attack=result.static_attack,
-        effective_attack=result.effective_attack,
-        final_attack_reference=result.final_attack_reference,
-        attack_reference_delta=result.attack_reference_delta,
-        attack_reference_delta_percent=result.attack_reference_delta_percent,
+        scaling_stat=result.scaling_stat,
+        scaling_value=result.scaling_value,
+        stat_component_source=result.stat_component_source,
+        unresolved_scaling_actions=result.unresolved_scaling_actions,
+        **stat_component_log_fields(result),
         profile_completeness_status=result.profile_completeness_status,
         implementation_status=result.implementation_status,
         active_anomalies_after=result.active_anomalies_after,

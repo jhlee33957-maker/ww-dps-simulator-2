@@ -20,9 +20,11 @@ def test_real_manual_profiles_are_empty_and_required() -> None:
     ):
         profile = data["profiles"][character_id][profile_id]
         assert profile["implementation_status"] == "user_supplied_required"
-        assert profile["stat_components"]["character_base_atk"] is None
-        assert profile["stat_components"]["weapon_base_atk"] is None
-        assert profile["stat_components"]["final_attack_reference"] is None
+        required_stat = "def" if character_id == "mornye" else "atk"
+        assert profile["stat_components"][required_stat]["character_base"] is None
+        assert profile["stat_components"][required_stat]["percent"] is None
+        assert profile["stat_components"][required_stat]["flat"] is None
+        assert profile["stat_components"][required_stat]["final_reference"] is None
         assert profile["combat_stats"]["crit_rate"] is None
         assert profile["combat_stats"]["crit_damage"] is None
         assert profile["combat_stats"]["energy_regen"] is None
@@ -38,7 +40,7 @@ def test_incomplete_real_profile_validation_fails_loudly() -> None:
     assert validation["ok"] is False
     message = "\n".join(validation["errors"])
     assert "aemeath:aemeath_real_manual" in message
-    assert "stat_components.character_base_atk" in message
+    assert "stat_components.atk.character_base" in message
     assert "combat_stats.crit_rate" in message
     assert "damage_bonuses.by_category.resonance_liberation" in message
 
@@ -54,6 +56,7 @@ def test_test_assumption_profiles_are_allowed_with_warning() -> None:
     assert sim.characters["aemeath"].implementation_status == "test_assumption"
     assert sim.characters["mornye"].implementation_status == "test_assumption"
     assert sim.characters["aemeath"].missing_required_fields
+    assert sim.effective_build_stats_summary["mornye"]["actions_requiring_def_stats"]
 
 
 def main() -> None:

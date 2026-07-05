@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from simulator.buff_system import buffed_combat_stats
-from simulator.build_profiles import damage_bonus_breakdown
+from simulator.build_profiles import damage_bonus_breakdown, scaling_value_for_action
 from simulator.models import ActionData, BuffData, CharacterData, CombatState
 
 
@@ -53,13 +53,20 @@ def calculate_normal_damage(
     dmg_taken: float = 0.0,
     final_dmg_bonus: float = 0.0,
     effective_attack: float | None = None,
+    scaling_value: float | None = None,
 ) -> float:
     base_atk = max(1.0, character_base_atk + weapon_base_atk)
-    attack = float(effective_attack) if effective_attack is not None else base_atk * (1.0 + atk_percent) + flat_atk
+    base_value = (
+        float(scaling_value)
+        if scaling_value is not None
+        else float(effective_attack)
+        if effective_attack is not None
+        else base_atk * (1.0 + atk_percent) + flat_atk
+    )
     expected_crit = 1.0 + _clamp(crit_rate, 0.0, 1.0) * (max(1.0, crit_damage) - 1.0)
     return (
         skill_multiplier
-        * attack
+        * base_value
         * (1.0 + dmg_bonus)
         * expected_crit
         * (1.0 + boost)
@@ -147,6 +154,7 @@ def expected_damage(
         action,
         additive_buff_bonus=float(stats.get("damage_bonus_buff", 0.0)),
     )
+    _scaling_stat, scaling_value = scaling_value_for_action(stats, action, character)
     return calculate_normal_damage(
         skill_multiplier=action.damage_multiplier,
         character_base_atk=stats["character_base_atk"],
@@ -154,6 +162,7 @@ def expected_damage(
         atk_percent=stats["atk_percent"],
         flat_atk=stats["flat_atk"],
         effective_attack=stats["effective_attack"],
+        scaling_value=scaling_value,
         dmg_bonus=float(damage_bonus_context["effective_damage_bonus"]),
         crit_rate=stats["crit_rate"],
         crit_damage=stats["crit_damage"],

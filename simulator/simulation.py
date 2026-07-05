@@ -8,6 +8,7 @@ from characters.base import CharacterMechanic
 from characters.registry import get_mechanic, get_mechanics_for_characters
 from simulator.action_executor import execute_action, is_action_valid, timeline_entry
 from simulator.build_profiles import (
+    build_action_scaling_summary,
     effective_build_stats_summary,
     load_build_profiles,
     resolve_character_build_stats,
@@ -69,12 +70,13 @@ class Simulation:
             character_id: characters[character_id]
             for character_id in self.selected_character_ids
         }
-        self.effective_build_stats_summary = effective_build_stats_summary(self.characters)
-        self.build_profile_validation = validate_effective_build_profiles(self.effective_build_stats_summary)
         self.actions = dict(actions)
         self._ensure_party_swap_actions()
         self.actions_by_id = self.actions
         self.policy_actions = self._build_policy_actions()
+        self.action_scaling_summary = build_action_scaling_summary(self.actions.values(), self.selected_character_ids)
+        self.effective_build_stats_summary = effective_build_stats_summary(self.characters, self.action_scaling_summary)
+        self.build_profile_validation = validate_effective_build_profiles(self.effective_build_stats_summary)
         self.buffs = buffs
         self.combat_duration = combat_duration
         self.enemy = enemy or EnemyData()
@@ -191,6 +193,8 @@ class Simulation:
         )
 
     def validate_build_profiles(self) -> dict[str, object]:
+        self.action_scaling_summary = build_action_scaling_summary(self.actions.values(), self.selected_character_ids)
+        self.effective_build_stats_summary = effective_build_stats_summary(self.characters, self.action_scaling_summary)
         self.build_profile_validation = validate_effective_build_profiles(self.effective_build_stats_summary)
         return dict(self.build_profile_validation)
 
