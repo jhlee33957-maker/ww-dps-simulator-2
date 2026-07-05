@@ -5,6 +5,30 @@ from typing import Any
 from simulator.models import ActiveBuff, BuffData, CharacterData, CombatState
 
 
+def _recalculate_attack_stats(stats: dict[str, Any]) -> None:
+    base_attack_total = float(stats.get("character_base_atk", 0.0)) + float(stats.get("weapon_base_atk", 0.0))
+    static_attack = (
+        base_attack_total * (1.0 + float(stats.get("static_atk_percent", 0.0)))
+        + float(stats.get("static_flat_atk", 0.0))
+    )
+    effective_attack = (
+        static_attack
+        + base_attack_total * float(stats.get("runtime_atk_percent_bonus", 0.0))
+        + float(stats.get("runtime_flat_atk_bonus", 0.0))
+    )
+    stats["base_attack_total"] = base_attack_total
+    stats["static_attack"] = static_attack
+    stats["effective_attack"] = effective_attack
+    stats["atk_percent"] = float(stats.get("static_atk_percent", 0.0)) + float(stats.get("runtime_atk_percent_bonus", 0.0))
+    stats["flat_atk"] = float(stats.get("static_flat_atk", 0.0)) + float(stats.get("runtime_flat_atk_bonus", 0.0))
+    reference = stats.get("final_attack_reference")
+    stats["attack_reference_delta"] = None
+    stats["attack_reference_delta_percent"] = None
+    if reference not in (None, 0):
+        stats["attack_reference_delta"] = static_attack - float(reference)
+        stats["attack_reference_delta_percent"] = stats["attack_reference_delta"] / float(reference)
+
+
 def tick_buffs(state: CombatState, elapsed: float) -> None:
     remaining: list[ActiveBuff] = []
     for buff in state.active_buffs:
@@ -118,6 +142,24 @@ def apply_buff_modifiers_to_damage_context(damage: float, damage_amp: float) -> 
     return damage * (1.0 + damage_amp)
 
 
+def collect_runtime_atk_percent_bonus(
+    character: CharacterData,
+    state: CombatState,
+    buffs: dict[str, BuffData],
+    time_offset: float = 0.0,
+) -> float:
+    return float(buffed_combat_stats(character, state, buffs, time_offset=time_offset)["runtime_atk_percent_bonus"])
+
+
+def collect_runtime_flat_atk_bonus(
+    character: CharacterData,
+    state: CombatState,
+    buffs: dict[str, BuffData],
+    time_offset: float = 0.0,
+) -> float:
+    return float(buffed_combat_stats(character, state, buffs, time_offset=time_offset)["runtime_flat_atk_bonus"])
+
+
 def buffed_combat_stats(
     character: CharacterData,
     state: CombatState,
@@ -127,8 +169,18 @@ def buffed_combat_stats(
     stats = {
         "character_base_atk": character.character_base_atk,
         "weapon_base_atk": character.weapon_base_atk,
-        "atk_percent": character.atk_percent,
-        "flat_atk": character.flat_atk,
+        "base_attack_total": character.base_attack_total,
+        "static_atk_percent": character.static_atk_percent,
+        "static_flat_atk": character.static_flat_atk,
+        "runtime_atk_percent_bonus": character.runtime_atk_percent_bonus,
+        "runtime_flat_atk_bonus": character.runtime_flat_atk_bonus,
+        "static_attack": character.static_attack,
+        "effective_attack": character.effective_attack,
+        "final_attack_reference": character.final_attack_reference,
+        "attack_reference_delta": character.attack_reference_delta,
+        "attack_reference_delta_percent": character.attack_reference_delta_percent,
+        "atk_percent": character.static_atk_percent + character.runtime_atk_percent_bonus,
+        "flat_atk": character.static_flat_atk + character.runtime_flat_atk_bonus,
         "dmg_bonus": character.dmg_bonus,
         "crit_rate": character.crit_rate,
         "crit_damage": character.crit_damage,
@@ -150,7 +202,7 @@ def buffed_combat_stats(
         buff_value = float(active.metadata.get("dynamic_value", buff.value))
         active_buff_names.append(buff.id)
         if buff.modifier_type == "attack":
-            stats["atk_percent"] += buff_value
+            stats["runtime_atk_percent_bonus"] += buff_value
         elif buff.modifier_type == "damage_bonus":
             stats["dmg_bonus"] += buff_value
             stats["damage_bonus_buff"] += buff_value
@@ -159,9 +211,14 @@ def buffed_combat_stats(
         elif buff.modifier_type == "dmg_taken":
             stats["dmg_taken"] += buff_value
         for stat_name, stat_value in buff.stat_modifiers.items():
-            if stat_name in stats:
+            if stat_name == "atk_percent":
+                stats["runtime_atk_percent_bonus"] += stat_value
+            elif stat_name == "flat_atk":
+                stats["runtime_flat_atk_bonus"] += stat_value
+            elif stat_name in stats:
                 stats[stat_name] += stat_value
 
+    _recalculate_attack_stats(stats)
     stats["active_buff_count"] = float(len(active_buff_names))
     stats["active_buff_summary"] = active_buff_names
     return stats
@@ -173,5 +230,4 @@ def buffed_stats(
     buffs: dict[str, BuffData],
 ) -> tuple[float, float]:
     stats = buffed_combat_stats(character, state, buffs)
-    attack = (stats["character_base_atk"] + stats["weapon_base_atk"]) * (1.0 + stats["atk_percent"]) + stats["flat_atk"]
-    return attack, stats["dmg_bonus"]
+    return stats["effective_attack"], stats["dmg_bonus"]

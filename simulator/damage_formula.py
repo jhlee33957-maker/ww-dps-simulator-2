@@ -52,14 +52,14 @@ def calculate_normal_damage(
     def_reduction: float = 0.0,
     dmg_taken: float = 0.0,
     final_dmg_bonus: float = 0.0,
+    effective_attack: float | None = None,
 ) -> float:
     base_atk = max(1.0, character_base_atk + weapon_base_atk)
-    atk_multiplier = 1.0 + atk_percent + flat_atk / base_atk
+    attack = float(effective_attack) if effective_attack is not None else base_atk * (1.0 + atk_percent) + flat_atk
     expected_crit = 1.0 + _clamp(crit_rate, 0.0, 1.0) * (max(1.0, crit_damage) - 1.0)
     return (
         skill_multiplier
-        * base_atk
-        * atk_multiplier
+        * attack
         * (1.0 + dmg_bonus)
         * expected_crit
         * (1.0 + boost)
@@ -153,6 +153,7 @@ def expected_damage(
         weapon_base_atk=stats["weapon_base_atk"],
         atk_percent=stats["atk_percent"],
         flat_atk=stats["flat_atk"],
+        effective_attack=stats["effective_attack"],
         dmg_bonus=float(damage_bonus_context["effective_damage_bonus"]),
         crit_rate=stats["crit_rate"],
         crit_damage=stats["crit_damage"],

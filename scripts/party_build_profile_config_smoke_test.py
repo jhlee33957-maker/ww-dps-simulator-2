@@ -16,9 +16,10 @@ from simulator.simulation import Simulation
 
 def test_party_preset_build_profiles() -> None:
     sim = Simulation.from_json(DATA_DIR, party="aemeath_mornye_enabled_test_party")
-    assert sim.active_build_profiles["aemeath"] == "liberation_focus_test"
-    assert sim.active_build_profiles["mornye"] == "support_er_cap"
+    assert sim.active_build_profiles["aemeath"] == "component_test"
+    assert sim.active_build_profiles["mornye"] == "support_er_component_test"
     assert sim.characters["mornye"].energy_regen == 2.6
+    assert sim.characters["aemeath"].effective_attack > 0.0
 
 
 def test_cli_style_override_precedence() -> None:
@@ -31,7 +32,7 @@ def test_cli_style_override_precedence() -> None:
         build_profiles=profiles,
     )
     assert resolved["aemeath"] == "default"
-    assert resolved["mornye"] == "support_er_cap"
+    assert resolved["mornye"] == "support_er_component_test"
 
 
 def test_generic_cli_format_and_metadata() -> None:
@@ -48,6 +49,7 @@ def test_generic_cli_format_and_metadata() -> None:
     )
     assert sim.active_build_profiles["aemeath"] == "default"
     assert "aemeath" in sim.effective_build_stats_summary
+    assert sim.effective_build_stats_summary["aemeath"]["effective_attack"] > 0.0
 
 
 if __name__ == "__main__":

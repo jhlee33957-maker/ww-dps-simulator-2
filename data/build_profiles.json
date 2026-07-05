@@ -1,14 +1,34 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "attack_reference_tolerance": 0.01,
   "profiles": {
     "aemeath": {
       "default": {
-        "display_name": "Aemeath Default Test Build",
-        "description": "Backward-compatible default build derived from existing characters.json values.",
-        "inherits_from_character_stats": true,
-        "stat_overrides": {},
+        "display_name": "Aemeath Default Component Test Build",
+        "description": "Backward-compatible default test build using explicit stat components from existing sample data.",
+        "inherits_from": "component_test",
+        "implementation_status": "test_assumption"
+      },
+      "component_test": {
+        "display_name": "Aemeath Component Test Build",
+        "description": "Component-based test build. Replace with user-supplied real stat values when available.",
+        "implementation_status": "test_assumption",
+        "stat_components": {
+          "character_base_atk": 820,
+          "weapon_base_atk": 560,
+          "static_atk_percent": 0.45,
+          "static_flat_atk": 300,
+          "runtime_atk_percent_bonus": 0.0,
+          "runtime_flat_atk_bonus": 0.0,
+          "final_attack_reference": null
+        },
+        "combat_stats": {
+          "crit_rate": 0.65,
+          "crit_damage": 2.35,
+          "energy_regen": 1.0
+        },
         "damage_bonuses": {
-          "all": 0.0,
+          "all": 0.36,
           "by_category": {},
           "by_element": {}
         }
@@ -16,28 +36,77 @@
       "liberation_focus_test": {
         "display_name": "Aemeath Liberation Focus Test Build",
         "description": "Editable test build assumption for Aemeath. Uses Resonance Liberation DMG bonus to better represent Liberation-heavy damage distribution. Not verified as a final real-game build.",
-        "inherits_from": "default",
-        "stat_overrides": {
-          "energy_regen": 1.0
-        },
+        "inherits_from": "component_test",
+        "implementation_status": "test_assumption",
         "damage_bonuses": {
           "all": 0.0,
           "by_category": {
             "resonance_liberation": 0.6
           },
           "by_element": {}
+        }
+      },
+      "aemeath_real_manual": {
+        "display_name": "Aemeath Real Manual Build",
+        "description": "User-supplied real stat profile. Fill all required fields manually before training/evaluation.",
+        "implementation_status": "user_supplied_required",
+        "stat_components": {
+          "character_base_atk": null,
+          "weapon_base_atk": null,
+          "static_atk_percent": null,
+          "static_flat_atk": null,
+          "runtime_atk_percent_bonus": 0.0,
+          "runtime_flat_atk_bonus": 0.0,
+          "final_attack_reference": null
         },
-        "implementation_status": "configurable_test_assumption"
+        "combat_stats": {
+          "crit_rate": null,
+          "crit_damage": null,
+          "energy_regen": null
+        },
+        "damage_bonuses": {
+          "all": null,
+          "by_category": {
+            "basic_attack": null,
+            "heavy_attack": null,
+            "resonance_skill": null,
+            "resonance_liberation": null,
+            "intro": null,
+            "outro": null,
+            "coordinated_attack": null,
+            "other": null
+          },
+          "by_element": {}
+        }
       }
     },
     "mornye": {
       "default": {
-        "display_name": "Mornye Default Test Build",
-        "description": "Backward-compatible default build derived from existing characters.json values.",
-        "inherits_from_character_stats": true,
-        "stat_overrides": {},
+        "display_name": "Mornye Default Component Test Build",
+        "description": "Backward-compatible default test build using explicit stat components from existing sample data.",
+        "inherits_from": "support_er_component_test",
+        "implementation_status": "test_assumption"
+      },
+      "support_er_component_test": {
+        "display_name": "Mornye Support ER Component Test Build",
+        "description": "Component-based support test build using 260% Energy Regen.",
+        "implementation_status": "test_assumption",
+        "stat_components": {
+          "character_base_atk": 780,
+          "weapon_base_atk": 520,
+          "static_atk_percent": 0.42,
+          "static_flat_atk": 260,
+          "runtime_atk_percent_bonus": 0.0,
+          "runtime_flat_atk_bonus": 0.0,
+          "final_attack_reference": null
+        },
+        "combat_stats": {
+          "crit_rate": 0.55,
+          "crit_damage": 2.1,
+          "energy_regen": 2.6
+        },
         "damage_bonuses": {
-          "all": 0.0,
+          "all": 0.3,
           "by_category": {},
           "by_element": {}
         }
@@ -45,16 +114,46 @@
       "support_er_cap": {
         "display_name": "Mornye Support ER Cap Test Build",
         "description": "Support-test build assumption using 260% Energy Regen to reach Mornye Energy Regen scaling cap.",
-        "inherits_from": "default",
-        "stat_overrides": {
-          "energy_regen": 2.6
-        },
+        "inherits_from": "support_er_component_test",
+        "implementation_status": "test_assumption",
         "damage_bonuses": {
           "all": 0.0,
           "by_category": {},
           "by_element": {}
+        }
+      },
+      "mornye_real_manual": {
+        "display_name": "Mornye Real Manual Build",
+        "description": "User-supplied real stat profile. Fill all required fields manually before training/evaluation.",
+        "implementation_status": "user_supplied_required",
+        "stat_components": {
+          "character_base_atk": null,
+          "weapon_base_atk": null,
+          "static_atk_percent": null,
+          "static_flat_atk": null,
+          "runtime_atk_percent_bonus": 0.0,
+          "runtime_flat_atk_bonus": 0.0,
+          "final_attack_reference": null
         },
-        "implementation_status": "configurable_test_assumption"
+        "combat_stats": {
+          "crit_rate": null,
+          "crit_damage": null,
+          "energy_regen": null
+        },
+        "damage_bonuses": {
+          "all": null,
+          "by_category": {
+            "basic_attack": null,
+            "heavy_attack": null,
+            "resonance_skill": null,
+            "resonance_liberation": null,
+            "intro": null,
+            "outro": null,
+            "coordinated_attack": null,
+            "other": null
+          },
+          "by_element": {}
+        }
       }
     }
   }

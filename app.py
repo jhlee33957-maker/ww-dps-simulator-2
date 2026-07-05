@@ -16,6 +16,7 @@ from simulator.build_profiles import (
     load_build_profiles,
     resolve_character_build_stats,
     resolve_party_build_profiles,
+    validate_effective_build_profiles,
 )
 from simulator.roster import is_dummy_character, parse_character_ids, read_party_presets
 from simulator.simulation import Simulation
@@ -106,7 +107,58 @@ def build_profile_controls(
         }
         st.write("Effective profiles")
         st.write(effective_profiles)
-        st.write(effective_build_stats_summary(effective_characters))
+        stats_summary = effective_build_stats_summary(effective_characters)
+        validation = validate_effective_build_profiles(stats_summary)
+        for error in validation.get("errors", []):
+            st.error(f"This real/manual profile is incomplete. Fill required stats before training/evaluation. {error}")
+        for warning in validation.get("warnings", []):
+            st.warning(str(warning))
+        for character_id, summary in stats_summary.items():
+            with st.expander(f"{character_id} Effective Stat Components"):
+                st.write(
+                    {
+                        "Build Profile ID": summary.get("build_profile_id"),
+                        "implementation_status": summary.get("implementation_status"),
+                        "profile_completeness_status": summary.get("profile_completeness_status"),
+                        "missing_required_fields": summary.get("missing_required_fields"),
+                        "character_base_atk": summary.get("character_base_atk"),
+                        "weapon_base_atk": summary.get("weapon_base_atk"),
+                        "base_attack_total": summary.get("base_attack_total"),
+                        "static_atk_percent": summary.get("static_atk_percent"),
+                        "static_flat_atk": summary.get("static_flat_atk"),
+                        "runtime_atk_percent_bonus": summary.get("runtime_atk_percent_bonus"),
+                        "runtime_flat_atk_bonus": summary.get("runtime_flat_atk_bonus"),
+                        "static_attack": summary.get("static_attack"),
+                        "effective_attack": summary.get("effective_attack"),
+                        "final_attack_reference": summary.get("final_attack_reference"),
+                        "attack_reference_delta": summary.get("attack_reference_delta"),
+                        "attack_reference_delta_percent": summary.get("attack_reference_delta_percent"),
+                        "crit_rate": summary.get("crit_rate"),
+                        "crit_damage": summary.get("crit_damage"),
+                        "energy_regen": summary.get("energy_regen"),
+                        "damage_bonuses": summary.get("damage_bonuses"),
+                    }
+                )
+                if character_id == "aemeath":
+                    st.write(
+                        {
+                            "Resonance Liberation DMG Bonus": (
+                                (summary.get("damage_bonuses") or {}).get("by_category") or {}
+                            ).get("resonance_liberation", 0.0)
+                        }
+                    )
+                if character_id == "mornye":
+                    er = float(summary.get("energy_regen") or 1.0)
+                    excess = max(0.0, (er - 1.0) * 100.0)
+                    st.write(
+                        {
+                            "Energy Regen": er,
+                            "ER Excess Percent": excess,
+                            "Interfered Amp Potential": min(excess * 0.0025, 0.40),
+                            "Liberation Crit Rate Bonus": min(excess * 0.005, 0.80),
+                            "Liberation Crit Damage Bonus": min(excess * 0.01, 1.60),
+                        }
+                    )
         if effective_profiles.get("aemeath") == "liberation_focus_test":
             st.warning(
                 "Aemeath liberation_focus_test is a configurable test assumption, "
@@ -260,6 +312,11 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         with st.expander("Effective Build Profiles"):
             st.write(simulation.active_build_profiles)
             st.write(simulation.effective_build_stats_summary)
+            validation = simulation.validate_build_profiles()
+            if validation.get("errors"):
+                st.error(validation["errors"])
+            if validation.get("warnings"):
+                st.warning(validation["warnings"])
         with st.expander("Active Team Buffs"):
             st.write([buff.model_dump() for buff in simulation.state.active_buffs])
         if "mornye" in simulation.selected_party_character_ids:
@@ -338,6 +395,20 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "category_dmg_bonus",
         "element_dmg_bonus",
         "effective_damage_bonus",
+        "character_base_atk",
+        "weapon_base_atk",
+        "base_attack_total",
+        "static_atk_percent",
+        "static_flat_atk",
+        "runtime_atk_percent_bonus",
+        "runtime_flat_atk_bonus",
+        "static_attack",
+        "effective_attack",
+        "final_attack_reference",
+        "attack_reference_delta",
+        "attack_reference_delta_percent",
+        "profile_completeness_status",
+        "implementation_status",
         "raw_skill_category",
         "raw_damage_type",
         "actor_character_id",
@@ -436,7 +507,10 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "mornye_syntony_field_remaining_after",
         "mechanic_debug_after",
     ]
-    visible_columns = [column for column in preferred_columns if column in timeline_df.columns]
+    visible_columns = []
+    for column in preferred_columns:
+        if column in timeline_df.columns and column not in visible_columns:
+            visible_columns.append(column)
 
     st.subheader("Timeline")
     st.dataframe(timeline_df[visible_columns] if visible_columns else timeline_df, use_container_width=True, hide_index=True)
@@ -671,13 +745,23 @@ elif mode == "PPO Model":
                 transition_config=effective_transition_config,
                 build_profile_overrides=build_profile_overrides,
             )
-            if metadata.get("active_build_profiles") != current_sim.active_build_profiles:
+            if (
+                metadata.get("active_build_profiles") != current_sim.active_build_profiles
+                or metadata.get("effective_build_stats_summary") != current_sim.effective_build_stats_summary
+            ):
                 st.warning(
-                    "Selected build profiles differ from training metadata. "
+                    "Selected build profiles or effective stat components differ from training metadata. "
                     "Retrain before comparing PPO results across build assumptions."
                 )
                 with st.expander("Build profile metadata mismatch"):
-                    st.write({"model": metadata.get("active_build_profiles"), "current": current_sim.active_build_profiles})
+                    st.write(
+                        {
+                            "model_profiles": metadata.get("active_build_profiles"),
+                            "current_profiles": current_sim.active_build_profiles,
+                            "model_effective_stats": metadata.get("effective_build_stats_summary"),
+                            "current_effective_stats": current_sim.effective_build_stats_summary,
+                        }
+                    )
         try:
             ppo_summary, ppo_actions, ppo_simulation = evaluate_ppo_model(
                 model_path,

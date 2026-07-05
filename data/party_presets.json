@@ -39,8 +39,8 @@
     "initial_active": "mornye",
     "note": "Explicit test preset for enabled Aemeath QTE, Mornye Intro, and Mornye Outro transition behavior.",
     "build_profiles": {
-      "aemeath": "liberation_focus_test",
-      "mornye": "support_er_cap"
+      "aemeath": "component_test",
+      "mornye": "support_er_component_test"
     },
     "transition_overrides": {
       "characters": {

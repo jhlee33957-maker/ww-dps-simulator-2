@@ -13,7 +13,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from simulator.roster import read_party_presets
-from simulator.build_profiles import parse_build_profile_overrides
+from simulator.build_profiles import parse_build_profile_overrides, parse_stat_overrides
 from simulator.transition_config import (
     build_effective_transition_config,
     build_mornye_expectation_error_mode_override,
@@ -36,6 +36,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
         action="append",
         default=[],
         help="Build profile override in character_id:profile_id form. May be repeated.",
+    )
+    parser.add_argument(
+        "--stat",
+        action="append",
+        default=[],
+        help="Quick stat override in character_id:field:value form. May be repeated.",
     )
     parser.add_argument("--initial-active-character", type=str, default=None)
     parser.add_argument("--transition-mode", choices=["disabled", "dry_run", "enabled"], default=None)
@@ -93,8 +99,9 @@ def main() -> None:
     transition_config, party_preset = build_effective_config_from_args(args)
     try:
         build_profile_overrides = parse_build_profile_overrides(args.build_profile)
+        stat_overrides = parse_stat_overrides(args.stat)
     except ValueError as exc:
-        print(f"Invalid build profile override: {exc}")
+        print(f"Invalid build/stat override: {exc}")
         raise SystemExit(2) from None
     model = MaskablePPO.load(args.model_path)
     env, action_sequence, resolved_action_sequence = run_masked_episode(
@@ -106,7 +113,16 @@ def main() -> None:
         initial_active_character=args.initial_active_character,
         transition_config=transition_config,
         build_profile_overrides=build_profile_overrides,
+        stat_overrides=stat_overrides,
     )
+    validation = env.simulation.validate_build_profiles()
+    if not validation.get("ok", False):
+        print("Build profile validation failed.")
+        for error in validation.get("errors", []):
+            print(f"- {error}")
+        raise SystemExit(2)
+    for warning in validation.get("warnings", []):
+        print(f"Build profile warning: {warning}")
     metadata_path = PROJECT_ROOT / "results" / "training_metadata.json"
     if metadata_path.exists():
         metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
@@ -115,6 +131,7 @@ def main() -> None:
             "policy_action_ids": env.get_policy_action_ids(),
             "observation_shape": list(env.observation_space.shape),
             "active_build_profiles": env.get_active_build_profiles(),
+            "effective_build_stats_summary": env.get_effective_build_stats_summary(),
         }
         mismatches = {
             key: {"model": metadata.get(key), "evaluation": value}
@@ -185,6 +202,8 @@ def main() -> None:
         "mechanics_modes": mechanics_mode_summary(transition_config),
         "active_build_profiles": env.get_active_build_profiles(),
         "effective_build_stats_summary": env.get_effective_build_stats_summary(),
+        "build_profile_validation": validation,
+        "stat_overrides": stat_overrides,
         "transition_config_source": transition_config.get("_transition_config_source", ["default"]),
         "party_preset": party_preset.get("party_id") if party_preset else None,
         **transition_event_counts(summary.timeline),

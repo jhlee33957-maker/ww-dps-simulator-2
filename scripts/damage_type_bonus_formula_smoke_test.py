@@ -95,8 +95,8 @@ def test_damage_bonus_buckets() -> None:
 
 def test_amp_mechanics_are_not_additive_damage_bonus() -> None:
     sim = Simulation.from_json(PROJECT_ROOT / "data", party="aemeath_mornye_enabled_test_party")
-    assert sim.characters["mornye"].build_profile_id == "support_er_cap"
-    assert sim.characters["aemeath"].build_profile_id == "liberation_focus_test"
+    assert sim.characters["mornye"].build_profile_id == "support_er_component_test"
+    assert sim.characters["aemeath"].build_profile_id == "component_test"
     mornye_state = sim.state.character_states["mornye"]
     mornye_state["mode"] = "wide_field_observation"
     mornye_state["wide_field_observation_remaining"] = 10.0

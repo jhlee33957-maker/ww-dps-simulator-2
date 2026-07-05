@@ -430,11 +430,13 @@ python rl/evaluate_maskable_ppo.py --model-path models/maskable_ppo_wuwa.zip --c
 The formula layer lives in simulator/damage_formula.py and currently supports normal damage, Tune Break damage, and simplified attribute anomaly tick damage.
 
 Normal Damage =
-Skill Multiplier x Base ATK x ATK Multiplier x DMG Bonus Multiplier x Expected Crit Multiplier x Boost Multiplier x RES Multiplier x DEF Multiplier x DMG Taken Multiplier x Final DMG Multiplier
+Skill Multiplier x Effective ATK x DMG Bonus Multiplier x Expected Crit Multiplier x Boost Multiplier x RES Multiplier x DEF Multiplier x DMG Taken Multiplier x Final DMG Multiplier
 
 Base ATK = Character Base ATK + Weapon Base ATK
 
-ATK Multiplier = 1 + ATK% + Flat ATK / Base ATK
+Static ATK = Base ATK x (1 + Static ATK%) + Static Flat ATK
+
+Effective ATK = Static ATK + Base ATK x Runtime ATK% + Runtime Flat ATK
 
 Expected Crit Multiplier = 1 + Crit Rate x (Crit DMG - 1)
 
@@ -461,6 +463,45 @@ python rl/evaluate_maskable_ppo.py --model-path models/maskable_ppo_wuwa.zip --b
 ```
 
 Training and evaluation metadata include `active_build_profiles` and `effective_build_stats_summary`. Build profile changes affect damage and therefore PPO reward; models trained under different build profiles should not be compared blindly and should normally be retrained.
+
+## Actual Stat Component Build Profiles
+
+Build profile schema v2 separates ATK into explicit components:
+
+- `character_base_atk`
+- `weapon_base_atk`
+- `static_atk_percent`
+- `static_flat_atk`
+- `runtime_atk_percent_bonus`
+- `runtime_flat_atk_bonus`
+
+`final_attack_reference` is validation-only. It is compared against calculated `static_attack`, but it is never multiplied, buffed, or used as the primary damage source. Runtime ATK buffs are applied to `base_attack_total`, not to `final_attack_reference`, and runtime ATK% is kept separate from static ATK%.
+
+Current component profiles such as `aemeath:component_test`, `aemeath:liberation_focus_test`, `mornye:support_er_component_test`, and `mornye:support_er_cap` are `test_assumption` profiles. They are useful for simulator and RL plumbing, but they are not verified real-game stat builds. Models trained with test profiles should not be treated as final balance results.
+
+Manual real-stat profiles exist as `aemeath:aemeath_real_manual` and `mornye:mornye_real_manual`. They are marked `user_supplied_required` and intentionally contain null required fields. Training and evaluation fail loudly if one of these incomplete profiles is selected.
+
+Required manual stats:
+
+- character_base_atk
+- weapon_base_atk
+- static_atk_percent
+- static_flat_atk
+- final_attack_reference
+- crit_rate
+- crit_damage
+- energy_regen
+- all damage bonus
+- elemental damage bonus if applicable
+- basic/heavy/skill/liberation damage bonuses
+
+Do not let the assistant/Codex invent real stat values. Use in-game character screens or user-supplied build data to fill real profiles manually. Changing build profiles changes damage and PPO reward, so valid PPO comparisons require retraining under the selected profile set.
+
+Quick stat testing can use repeated CLI overrides:
+
+```bash
+python rl/evaluate_maskable_ppo.py --model-path models/maskable_ppo_wuwa.zip --build-profile aemeath:component_test --stat aemeath:static_atk_percent:0.72 --stat aemeath:static_flat_atk:430 --stat aemeath:final_attack_reference:2711
+```
 
 ## Damage Type Bonuses
 
@@ -605,6 +646,10 @@ This reference page does not affect simulation results or PPO training. Update t
 
 ```bash
 python -m compileall .
+python scripts/actual_stat_component_build_profile_smoke_test.py
+python scripts/manual_real_profile_guard_smoke_test.py
+python scripts/attack_runtime_buff_formula_smoke_test.py
+python scripts/damage_formula_effective_attack_smoke_test.py
 python scripts/aemeath_damage_bonus_category_source_smoke_test.py
 python scripts/mornye_action_data_source_guard_smoke_test.py
 python scripts/mornye_action_data_time_resource_smoke_test.py

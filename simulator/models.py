@@ -38,6 +38,20 @@ class CharacterData(BaseModel):
     build_profile_id: str | None = None
     build_profile_display_name: str | None = None
     build_profile_description: str | None = None
+    implementation_status: str | None = None
+    profile_completeness_status: str = "fallback_character_stats"
+    missing_required_fields: list[str] = Field(default_factory=list)
+    profile_warnings: list[str] = Field(default_factory=list)
+    base_attack_total: float = 0.0
+    static_atk_percent: float = 0.0
+    static_flat_atk: float = 0.0
+    runtime_atk_percent_bonus: float = 0.0
+    runtime_flat_atk_bonus: float = 0.0
+    static_attack: float = 0.0
+    effective_attack: float = 0.0
+    final_attack_reference: float | None = None
+    attack_reference_delta: float | None = None
+    attack_reference_delta_percent: float | None = None
     boost: float = 0.0
     attacker_level: int = Field(default=90, ge=1)
     def_ignore: float = 0.0
@@ -57,6 +71,20 @@ class CharacterData(BaseModel):
             self.character_base_atk = self.attack
         if self.attack <= 0.0:
             self.attack = self.character_base_atk + self.weapon_base_atk + self.flat_atk
+        if self.static_atk_percent == 0.0 and self.atk_percent != 0.0:
+            self.static_atk_percent = self.atk_percent
+        if self.static_flat_atk == 0.0 and self.flat_atk != 0.0:
+            self.static_flat_atk = self.flat_atk
+        if self.base_attack_total <= 0.0:
+            self.base_attack_total = self.character_base_atk + self.weapon_base_atk
+        if self.static_attack <= 0.0:
+            self.static_attack = self.base_attack_total * (1.0 + self.static_atk_percent) + self.static_flat_atk
+        if self.effective_attack <= 0.0:
+            self.effective_attack = (
+                self.static_attack
+                + self.base_attack_total * self.runtime_atk_percent_bonus
+                + self.runtime_flat_atk_bonus
+            )
         if self.dmg_bonus == 0.0 and self.damage_bonus != 0.0:
             self.dmg_bonus = self.damage_bonus
         if self.damage_bonus == 0.0 and self.dmg_bonus != 0.0:
@@ -289,6 +317,20 @@ class ActionResult(BaseModel):
     element_dmg_bonus: float = 0.0
     effective_damage_bonus: float = 0.0
     build_profile_id: str | None = None
+    character_base_atk: float = 0.0
+    weapon_base_atk: float = 0.0
+    base_attack_total: float = 0.0
+    static_atk_percent: float = 0.0
+    static_flat_atk: float = 0.0
+    runtime_atk_percent_bonus: float = 0.0
+    runtime_flat_atk_bonus: float = 0.0
+    static_attack: float = 0.0
+    effective_attack: float = 0.0
+    final_attack_reference: float | None = None
+    attack_reference_delta: float | None = None
+    attack_reference_delta_percent: float | None = None
+    profile_completeness_status: str | None = None
+    implementation_status: str | None = None
     active_anomalies_after: dict[str, int] = Field(default_factory=dict)
     active_buffs: list[str] = Field(default_factory=list)
     applied_buffs: list[str] = Field(default_factory=list)
@@ -364,7 +406,6 @@ class ActionResult(BaseModel):
     optimal_solution_trigger_reason: str | None = None
     optimal_solution_candidate_id: str | None = None
     gp_success_modeled: bool = False
-    implementation_status: str | None = None
     reason: str | None = None
 
 
@@ -417,6 +458,20 @@ class TimelineEntry(BaseModel):
     element_dmg_bonus: float = 0.0
     effective_damage_bonus: float = 0.0
     build_profile_id: str | None = None
+    character_base_atk: float = 0.0
+    weapon_base_atk: float = 0.0
+    base_attack_total: float = 0.0
+    static_atk_percent: float = 0.0
+    static_flat_atk: float = 0.0
+    runtime_atk_percent_bonus: float = 0.0
+    runtime_flat_atk_bonus: float = 0.0
+    static_attack: float = 0.0
+    effective_attack: float = 0.0
+    final_attack_reference: float | None = None
+    attack_reference_delta: float | None = None
+    attack_reference_delta_percent: float | None = None
+    profile_completeness_status: str | None = None
+    implementation_status: str | None = None
     active_anomalies_after: dict[str, int] = Field(default_factory=dict)
     active_buffs: list[str] = Field(default_factory=list)
     applied_buffs: list[str] = Field(default_factory=list)
@@ -492,7 +547,6 @@ class TimelineEntry(BaseModel):
     optimal_solution_trigger_reason: str | None = None
     optimal_solution_candidate_id: str | None = None
     gp_success_modeled: bool = False
-    implementation_status: str | None = None
 
 
 class PartyState(BaseModel):

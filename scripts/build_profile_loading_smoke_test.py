@@ -17,9 +17,13 @@ def test_build_profiles_load() -> None:
     data = load_build_profiles(DATA_DIR)
     profiles = data["profiles"]
     assert "default" in profiles["aemeath"]
+    assert "component_test" in profiles["aemeath"]
     assert "liberation_focus_test" in profiles["aemeath"]
+    assert "aemeath_real_manual" in profiles["aemeath"]
     assert "default" in profiles["mornye"]
+    assert "support_er_component_test" in profiles["mornye"]
     assert "support_er_cap" in profiles["mornye"]
+    assert "mornye_real_manual" in profiles["mornye"]
 
 
 def test_missing_profile_fails_clearly() -> None:
@@ -49,6 +53,8 @@ def test_profile_resolution_does_not_mutate_base_character() -> None:
     effective = resolve_character_build_stats(base, "liberation_focus_test", load_build_profiles(DATA_DIR))
     assert effective is not base
     assert effective.build_profile_id == "liberation_focus_test"
+    assert effective.static_attack > 0.0
+    assert effective.effective_attack == effective.static_attack
     assert effective.damage_bonuses["by_category"]["resonance_liberation"] == 0.6
     assert base.energy_regen == original_er
     assert "resonance_liberation" not in (base.damage_bonuses.get("by_category") or {})

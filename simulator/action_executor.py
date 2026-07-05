@@ -6,6 +6,7 @@ from simulator.anomaly_system import advance_anomalies, apply_anomaly, get_havoc
 from simulator.buff_system import (
     apply_buff,
     apply_buff_modifiers_to_damage_context,
+    _recalculate_attack_stats,
     buffed_combat_stats,
     damage_amp_for_action,
     has_required_buffs,
@@ -121,8 +122,13 @@ def _calculate_hit_damage(
     character = characters[action.character_id]
     stats = buffed_combat_stats(character, state, buffs, time_offset=hit.time)
     for stat_name, stat_value in (temporary_stat_modifiers or {}).items():
-        if stat_name in stats:
+        if stat_name == "atk_percent":
+            stats["runtime_atk_percent_bonus"] += float(stat_value)
+        elif stat_name == "flat_atk":
+            stats["runtime_flat_atk_bonus"] += float(stat_value)
+        elif stat_name in stats:
             stats[stat_name] += float(stat_value)
+    _recalculate_attack_stats(stats)
     damage_amp = damage_amp_for_action(action.character_id, action, state, buffs, time_offset=hit.time)
     damage_bonus_context = damage_bonus_breakdown(
         character,
@@ -140,6 +146,7 @@ def _calculate_hit_damage(
             weapon_base_atk=stats["weapon_base_atk"],
             atk_percent=stats["atk_percent"],
             flat_atk=stats["flat_atk"],
+            effective_attack=stats["effective_attack"],
             dmg_bonus=float(damage_bonus_context["effective_damage_bonus"]),
             crit_rate=stats["crit_rate"],
             crit_damage=stats["crit_damage"],
@@ -176,6 +183,20 @@ def _calculate_hit_damage(
         "damage_multiplier": hit.damage_multiplier,
         "tune_break_multiplier": hit.tune_break_multiplier,
         **damage_bonus_context,
+        "character_base_atk": stats["character_base_atk"],
+        "weapon_base_atk": stats["weapon_base_atk"],
+        "base_attack_total": stats["base_attack_total"],
+        "static_atk_percent": stats["static_atk_percent"],
+        "static_flat_atk": stats["static_flat_atk"],
+        "runtime_atk_percent_bonus": stats["runtime_atk_percent_bonus"],
+        "runtime_flat_atk_bonus": stats["runtime_flat_atk_bonus"],
+        "static_attack": stats["static_attack"],
+        "effective_attack": stats["effective_attack"],
+        "final_attack_reference": stats["final_attack_reference"],
+        "attack_reference_delta": stats["attack_reference_delta"],
+        "attack_reference_delta_percent": stats["attack_reference_delta_percent"],
+        "profile_completeness_status": character.profile_completeness_status,
+        "implementation_status": character.implementation_status,
         "applied_havoc_bane_def_reduction": havoc_def_reduction,
         "applied_buff_summary": stats.get("active_buff_summary", []),
         "applied_damage_amp": damage_amp,
@@ -247,6 +268,20 @@ def _calculate_hit_damage_totals(
                     "element_dmg_bonus": detail.get("element_dmg_bonus", 0.0),
                     "effective_damage_bonus": detail.get("effective_damage_bonus", 0.0),
                     "build_profile_id": detail.get("build_profile_id"),
+                    "character_base_atk": detail.get("character_base_atk", 0.0),
+                    "weapon_base_atk": detail.get("weapon_base_atk", 0.0),
+                    "base_attack_total": detail.get("base_attack_total", 0.0),
+                    "static_atk_percent": detail.get("static_atk_percent", 0.0),
+                    "static_flat_atk": detail.get("static_flat_atk", 0.0),
+                    "runtime_atk_percent_bonus": detail.get("runtime_atk_percent_bonus", 0.0),
+                    "runtime_flat_atk_bonus": detail.get("runtime_flat_atk_bonus", 0.0),
+                    "static_attack": detail.get("static_attack", 0.0),
+                    "effective_attack": detail.get("effective_attack", 0.0),
+                    "final_attack_reference": detail.get("final_attack_reference"),
+                    "attack_reference_delta": detail.get("attack_reference_delta"),
+                    "attack_reference_delta_percent": detail.get("attack_reference_delta_percent"),
+                    "profile_completeness_status": detail.get("profile_completeness_status"),
+                    "implementation_status": detail.get("implementation_status"),
                 }
         damage_by_category[hit.damage_category] = damage_by_category.get(hit.damage_category, 0.0) + damage
         if hit.damage_category == "normal":
@@ -336,6 +371,7 @@ def execute_action(
         if mechanic is not None and hasattr(mechanic, "get_action_log_fields")
         else {}
     )
+    mechanic_log_fields = dict(mechanic_log_fields)
 
     # Damage events use an action-start state snapshot. Buffs/anomalies applied by
     # this action are added after action_time and do not affect same-action hits.
@@ -397,6 +433,10 @@ def execute_action(
     active_buff_ids = [buff.buff_id for buff in state.active_buffs if buff.remaining_duration > 0.0]
     applied_buff_ids = list(action.applies_buffs) if not truncated_by_combat_limit else []
 
+    profile_implementation_status = action_damage_bonus_context.get("implementation_status")
+    if "implementation_status" not in mechanic_log_fields:
+        mechanic_log_fields["implementation_status"] = profile_implementation_status
+
     result = ActionResult(
         action_id=action.id,
         action_name=action.name,
@@ -437,6 +477,19 @@ def execute_action(
         element_dmg_bonus=float(action_damage_bonus_context.get("element_dmg_bonus", 0.0)),
         effective_damage_bonus=float(action_damage_bonus_context.get("effective_damage_bonus", 0.0)),
         build_profile_id=action_damage_bonus_context.get("build_profile_id"),
+        character_base_atk=float(action_damage_bonus_context.get("character_base_atk", 0.0)),
+        weapon_base_atk=float(action_damage_bonus_context.get("weapon_base_atk", 0.0)),
+        base_attack_total=float(action_damage_bonus_context.get("base_attack_total", 0.0)),
+        static_atk_percent=float(action_damage_bonus_context.get("static_atk_percent", 0.0)),
+        static_flat_atk=float(action_damage_bonus_context.get("static_flat_atk", 0.0)),
+        runtime_atk_percent_bonus=float(action_damage_bonus_context.get("runtime_atk_percent_bonus", 0.0)),
+        runtime_flat_atk_bonus=float(action_damage_bonus_context.get("runtime_flat_atk_bonus", 0.0)),
+        static_attack=float(action_damage_bonus_context.get("static_attack", 0.0)),
+        effective_attack=float(action_damage_bonus_context.get("effective_attack", 0.0)),
+        final_attack_reference=action_damage_bonus_context.get("final_attack_reference"),
+        attack_reference_delta=action_damage_bonus_context.get("attack_reference_delta"),
+        attack_reference_delta_percent=action_damage_bonus_context.get("attack_reference_delta_percent"),
+        profile_completeness_status=action_damage_bonus_context.get("profile_completeness_status"),
         active_anomalies_after=active_anomalies_after,
         active_buffs=active_buff_ids,
         applied_buffs=applied_buff_ids,
@@ -520,6 +573,20 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         element_dmg_bonus=result.element_dmg_bonus,
         effective_damage_bonus=result.effective_damage_bonus,
         build_profile_id=result.build_profile_id,
+        character_base_atk=result.character_base_atk,
+        weapon_base_atk=result.weapon_base_atk,
+        base_attack_total=result.base_attack_total,
+        static_atk_percent=result.static_atk_percent,
+        static_flat_atk=result.static_flat_atk,
+        runtime_atk_percent_bonus=result.runtime_atk_percent_bonus,
+        runtime_flat_atk_bonus=result.runtime_flat_atk_bonus,
+        static_attack=result.static_attack,
+        effective_attack=result.effective_attack,
+        final_attack_reference=result.final_attack_reference,
+        attack_reference_delta=result.attack_reference_delta,
+        attack_reference_delta_percent=result.attack_reference_delta_percent,
+        profile_completeness_status=result.profile_completeness_status,
+        implementation_status=result.implementation_status,
         active_anomalies_after=result.active_anomalies_after,
         active_buffs=result.active_buffs,
         applied_buffs=result.applied_buffs,
@@ -595,5 +662,4 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         optimal_solution_trigger_reason=result.optimal_solution_trigger_reason,
         optimal_solution_candidate_id=result.optimal_solution_candidate_id,
         gp_success_modeled=result.gp_success_modeled,
-        implementation_status=result.implementation_status,
     )

@@ -12,6 +12,7 @@ from simulator.build_profiles import (
     load_build_profiles,
     resolve_character_build_stats,
     resolve_party_build_profiles,
+    validate_effective_build_profiles,
 )
 from simulator.buff_system import add_team_buff
 from simulator.models import ActionData, BuffData, CharacterData, CombatState, EnemyData, PartyState, SimulationSummary, TimelineEntry
@@ -47,6 +48,7 @@ class Simulation:
         transition_config: dict | None = None,
         party_preset_config: dict | None = None,
         active_build_profiles: dict[str, str] | None = None,
+        stat_overrides: dict[str, dict[str, float]] | None = None,
     ) -> None:
         self.all_characters = characters
         self.selected_character_ids = parse_party_character_ids(selected_character_ids, characters)
@@ -61,12 +63,14 @@ class Simulation:
             for character_id, character in characters.items()
             if character.build_profile_id is not None
         }
+        self.stat_overrides = stat_overrides or {}
         self.preset_generic_swap = self.party_preset_config.get("generic_swap", {})
         self.characters = {
             character_id: characters[character_id]
             for character_id in self.selected_character_ids
         }
         self.effective_build_stats_summary = effective_build_stats_summary(self.characters)
+        self.build_profile_validation = validate_effective_build_profiles(self.effective_build_stats_summary)
         self.actions = dict(actions)
         self._ensure_party_swap_actions()
         self.actions_by_id = self.actions
@@ -105,6 +109,7 @@ class Simulation:
         initial_active_character: str | None = None,
         transition_config: dict | None = None,
         build_profile_overrides: dict[str, str] | None = None,
+        stat_overrides: dict[str, dict[str, float]] | None = None,
     ) -> "Simulation":
         data_path = Path(data_dir)
         characters = {
@@ -147,7 +152,12 @@ class Simulation:
         )
         characters = {
             character_id: (
-                resolve_character_build_stats(character, active_build_profiles.get(character_id), build_profiles)
+                resolve_character_build_stats(
+                    character,
+                    active_build_profiles.get(character_id),
+                    build_profiles,
+                    stat_overrides=(stat_overrides or {}).get(character_id),
+                )
                 if character_id in selected_ids
                 else character
             )
@@ -173,7 +183,16 @@ class Simulation:
                 for character_id, profile_id in active_build_profiles.items()
                 if character_id in selected_ids
             },
+            stat_overrides={
+                character_id: overrides
+                for character_id, overrides in (stat_overrides or {}).items()
+                if character_id in selected_ids
+            },
         )
+
+    def validate_build_profiles(self) -> dict[str, object]:
+        self.build_profile_validation = validate_effective_build_profiles(self.effective_build_stats_summary)
+        return dict(self.build_profile_validation)
 
     def set_enemy_context(
         self,
