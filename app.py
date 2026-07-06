@@ -442,6 +442,35 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
                         "Mornye DEF-scaling damage increased by Halo ATK%": False,
                     }
                 )
+            with st.expander("Excel Tune Break System"):
+                tune_cols = st.columns(4)
+                tune_cols[0].metric(
+                    "Enemy Off-Tune",
+                    f"{summary.enemy_off_tune_current:.1f}/{summary.enemy_off_tune_max:.0f}",
+                )
+                tune_cols[1].metric("Mistune", "Active" if summary.enemy_mistune_active else "Inactive")
+                tune_cols[2].metric(
+                    "Tune Break",
+                    "Available" if summary.enemy_tune_break_available else "Unavailable",
+                )
+                tune_cols[3].metric("Cooldown", f"{summary.enemy_tune_break_cooldown_remaining:.1f}s")
+                marker_cols = st.columns(4)
+                marker_cols[0].metric("Tune Break damage", f"{summary.tune_break_damage_total:.0f}")
+                marker_cols[1].metric("Tune Break uses", summary.tune_break_action_used_count)
+                marker_cols[2].metric("Interfered amp", f"+{summary.interfered_marker_damage_taken_amp * 100:.0f}%")
+                marker_cols[3].metric("Marker remaining", f"{summary.interfered_marker_remaining:.1f}s")
+                st.write(
+                    {
+                        "Available Tune Break actions": summary.tune_break_action_available_ids,
+                        "Target shifting state": summary.target_tune_shift_state,
+                        "Target interfered state": summary.target_interfered_state,
+                        "Observation Marker remaining": summary.observation_marker_remaining,
+                        "Aemeath Starburst response triggers": summary.aemeath_starburst_trigger_count,
+                        "Mornye Particle Jet response triggers": summary.mornye_particle_jet_trigger_count,
+                        "Unresolved response damages": summary.unresolved_response_damage_events,
+                        "Assumptions": summary.simplified_assumptions,
+                    }
+                )
             with st.expander("Mornye High Syntony Field"):
                 high_cols = st.columns(4)
                 high_cols[0].metric("Status", "Active" if summary.high_syntony_field_active else "Inactive")
@@ -592,6 +621,23 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "syntony_field_off_tune_bonus_active",
         "syntony_field_off_tune_bonus_value",
         "c2_off_tune_bonus_active",
+        "off_tune_value",
+        "off_tune_added",
+        "enemy_off_tune_current_after",
+        "enemy_off_tune_max",
+        "enemy_mistune_active",
+        "enemy_tune_break_available",
+        "enemy_tune_break_cooldown_remaining",
+        "tune_break_action_available_ids",
+        "target_tune_shift_state",
+        "target_interfered_state",
+        "observation_marker_remaining",
+        "interfered_marker_remaining",
+        "interfered_marker_damage_taken_amp",
+        "party_response_scan_triggered",
+        "aemeath_starburst_triggered",
+        "mornye_particle_jet_triggered",
+        "unresolved_response_damage_events",
         "mornye_constellation",
         "mornye_heal_event_mode",
         "mornye_heal_event_mode_source",

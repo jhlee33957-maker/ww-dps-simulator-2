@@ -16,7 +16,7 @@ from simulator.build_profiles import (
     resolve_party_build_profiles,
     validate_effective_build_profiles,
 )
-from simulator.buff_system import add_team_buff
+from simulator.buff_system import add_team_buff, apply_buff, support_stat_context
 from simulator.echo_sets import (
     AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID,
     HIGH_SYNTONY_SAME_ACTION_TIMING_MODE,
@@ -105,6 +105,11 @@ class Simulation:
         self.state: CombatState = create_initial_state(self.characters, self.enemy, self.initial_active_character)
         self.state.combat_duration = self.combat_duration
         self.state.mechanics_config = dict(self.transition_config.get("mechanics") or {})
+        tune_break_config = self._tune_break_system_config()
+        self.state.enemy_off_tune_max = float(tune_break_config.get("enemy_off_tune_max", 3920.0) or 3920.0)
+        self.state.simplified_assumptions.append(
+            "single_target_enemy_off_tune_state"
+        )
         self.character_mechanics = get_mechanics_for_characters(self.selected_character_ids)
         for mechanic in self.character_mechanics.values():
             mechanic.initialize_state(self.state)
@@ -312,6 +317,12 @@ class Simulation:
         if transition_resolution is not None:
             self._apply_transition_resolution(result, transition_resolution)
 
+        self._advance_tune_break_runtime(result.action_time)
+        self._apply_off_tune_accumulation(action, result)
+        if action.action_type == "tune_break":
+            self._apply_tune_break_after_effects(action, result)
+        self._sync_tune_break_result_fields(result)
+
         for mechanic in self.character_mechanics.values():
             mechanic.advance_time(self.state, result.action_time)
         if not result.truncated_by_combat_limit and not (action.mechanic_effects or {}).get("skip_character_after_action"):
@@ -356,9 +367,261 @@ class Simulation:
         valid, _reason = is_action_valid(action, self.state)
         if not valid:
             return False
+        if action.action_type == "tune_break":
+            if not self.state.enemy_tune_break_available:
+                return False
+            if self.state.enemy_tune_break_cooldown_remaining > 0.0:
+                return False
         if action.action_type in {"swap", "wait"} or action.character_id is None:
             return True
         return self._mechanic_for_character(action.character_id).is_action_available(self.state, action)
+
+    def _tune_break_system_config(self) -> dict[str, Any]:
+        return dict((self.state.mechanics_config.get("tune_break_system") if hasattr(self, "state") else None) or {})
+
+    def _current_off_tune_buildup_rate(self) -> float:
+        mornye = self.characters.get("mornye")
+        if mornye is None:
+            return 1.0
+        return float(support_stat_context(mornye, self.state, self.buffs)["current_off_tune_buildup_rate"])
+
+    def _advance_tune_break_runtime(self, elapsed: float) -> None:
+        elapsed = max(0.0, float(elapsed or 0.0))
+        if elapsed <= 0.0:
+            return
+        self.state.enemy_tune_break_cooldown_remaining = max(
+            0.0,
+            self.state.enemy_tune_break_cooldown_remaining - elapsed,
+        )
+        self.state.target_tune_shift_remaining = max(0.0, self.state.target_tune_shift_remaining - elapsed)
+        if self.state.target_tune_shift_remaining <= 0.0:
+            self.state.target_tune_shift_state = None
+        self.state.target_interfered_remaining = max(0.0, self.state.target_interfered_remaining - elapsed)
+        if self.state.target_interfered_remaining <= 0.0:
+            self.state.target_interfered_state = None
+        self.state.interfered_marker_remaining = max(0.0, self.state.interfered_marker_remaining - elapsed)
+        if self.state.interfered_marker_remaining <= 0.0:
+            self.state.interfered_marker_damage_taken_amp = 0.0
+        self.state.aemeath_starburst_response_cooldown_remaining = max(
+            0.0,
+            self.state.aemeath_starburst_response_cooldown_remaining - elapsed,
+        )
+        self.state.mornye_particle_jet_response_cooldown_remaining = max(
+            0.0,
+            self.state.mornye_particle_jet_response_cooldown_remaining - elapsed,
+        )
+
+    def _apply_off_tune_accumulation(self, action: ActionData, result: Any) -> None:
+        result.enemy_off_tune_current_before = self.state.enemy_off_tune_current
+        result.enemy_off_tune_max = self.state.enemy_off_tune_max
+        result.off_tune_value = float(action.off_tune_value or 0.0)
+        if action.action_type == "tune_break" or result.normal_damage <= 0.0:
+            return
+        rate = self._current_off_tune_buildup_rate()
+        added = max(0.0, result.off_tune_value) * rate
+        before = self.state.enemy_off_tune_current
+        after = before + added
+        entered = False
+        behavior = "accumulated"
+        if self.state.enemy_tune_break_cooldown_remaining > 0.0 and after >= self.state.enemy_off_tune_max:
+            after = max(0.0, self.state.enemy_off_tune_max - 0.001)
+            behavior = "cooldown_blocks_mistune_reentry"
+        elif after >= self.state.enemy_off_tune_max:
+            self.state.off_tune_overflow += max(0.0, after - self.state.enemy_off_tune_max)
+            after = self.state.enemy_off_tune_max
+            if not self.state.enemy_mistune_active:
+                self.state.enemy_mistune_entered_count += 1
+                entered = True
+            self.state.enemy_mistune_active = True
+            self.state.enemy_tune_break_available = True
+            behavior = "mistune_entered"
+        self.state.enemy_off_tune_current = after
+        self.state.off_tune_accumulated_total += added
+        self.state.off_tune_buildup_rate_used = rate
+        log = {
+            "action_id": action.id,
+            "off_tune_value": result.off_tune_value,
+            "off_tune_value_source_status": action.off_tune_value_source_status or "not_found_or_non_damaging",
+            "off_tune_value_source_ref": action.off_tune_value_source_ref,
+            "off_tune_buildup_rate_used": rate,
+            "off_tune_added": added,
+            "enemy_off_tune_current_before": before,
+            "enemy_off_tune_current_after": after,
+            "enemy_off_tune_max": self.state.enemy_off_tune_max,
+            "enemy_mistune_active": self.state.enemy_mistune_active,
+            "enemy_tune_break_available": self.state.enemy_tune_break_available,
+            "enemy_mistune_entered_this_action": entered,
+            "behavior": behavior,
+        }
+        self.state.off_tune_accumulation_logs.append(log)
+        result.off_tune_buildup_rate_used = rate
+        result.off_tune_added = added
+        result.enemy_off_tune_current_before = before
+        result.enemy_off_tune_current_after = after
+        result.enemy_mistune_entered_this_action = entered
+        result.off_tune_accumulation_log = log
+
+    def _apply_tune_break_after_effects(self, action: ActionData, result: Any) -> None:
+        if result.tune_break_damage <= 0.0:
+            return
+        self.state.tune_break_action_used_count += 1
+        self.state.tune_break_damage_total += result.tune_break_damage
+        prior_shift_state = self.state.target_tune_shift_state
+        interfered_state = None
+        if prior_shift_state == "tune_rupture_shifting":
+            interfered_state = "tune_rupture_interfered"
+            self.state.target_interfered_state = interfered_state
+            self.state.target_interfered_remaining = 8.0
+        elif prior_shift_state == "tune_strain_shifting":
+            interfered_state = "tune_strain_interfered"
+            self.state.target_interfered_state = interfered_state
+            self.state.target_interfered_remaining = 30.0
+        else:
+            result.interfered_unavailable_reason = "missing_target_shift_state"
+
+        self.state.enemy_mistune_active = False
+        self.state.enemy_tune_break_available = False
+        self.state.enemy_off_tune_current = 0.0
+        cooldown = float(self._tune_break_system_config().get("enemy_tune_break_cooldown_seconds", 8.0) or 8.0)
+        self.state.enemy_tune_break_cooldown_remaining = cooldown
+        if "tune_break_reset_to_zero_until_exact_source_found" not in self.state.simplified_assumptions:
+            self.state.simplified_assumptions.append("tune_break_reset_to_zero_until_exact_source_found")
+        if "tune_break_cooldown_default_8s_until_exact_source_found" not in self.state.simplified_assumptions:
+            self.state.simplified_assumptions.append("tune_break_cooldown_default_8s_until_exact_source_found")
+
+        if interfered_state is not None:
+            self._apply_observation_marker_interfered_marker(result, interfered_state)
+            self._scan_party_responses(result, interfered_state)
+
+    def _mornye_observation_marker_remaining(self) -> float:
+        return float(
+            self.state.character_mechanics_state.get("mornye", {}).get("observation_marker_remaining", 0.0)
+            or 0.0
+        )
+
+    def _apply_observation_marker_interfered_marker(self, result: Any, interfered_state: str) -> None:
+        remaining = self._mornye_observation_marker_remaining()
+        result.observation_marker_active = remaining > 0.0
+        result.observation_marker_remaining = remaining
+        if remaining <= 0.0 or "mornye" not in self.characters:
+            return
+        mornye = self.characters["mornye"]
+        energy_regen = float(self.state.character_states.get("mornye", {}).get("energy_regen", mornye.energy_regen))
+        excess = max(energy_regen - 1.0, 0.0)
+        uncapped_amp = excess * 0.25
+        amp = min(uncapped_amp, 0.40)
+        duration = 8.0 if interfered_state == "tune_rupture_interfered" else 20.0
+        buff = BuffData(
+            id="mornye_interfered_marker_damage_amp",
+            name="Mornye Interfered Marker Damage Taken Amp",
+            duration=duration,
+            modifier_type="damage_amp",
+            value=amp,
+            target="enemy",
+            target_scope="enemy",
+            metadata={
+                "source_character_id": "mornye",
+                "source": "observation_marker_tune_break",
+                "dynamic_value": amp,
+                "source_ref": "角色-女!D4164",
+                "implementation_status": "excel_tune_break_triggered_single_target",
+            },
+        )
+        self.buffs[buff.id] = buff
+        apply_buff(self.state, buff, "mornye")
+        self.state.interfered_marker_remaining = duration
+        self.state.interfered_marker_applied_count += 1
+        self.state.interfered_marker_damage_taken_amp = amp
+        result.mornye_interfered_marker_applied = True
+        result.interfered_marker_active = True
+        result.interfered_marker_remaining = duration
+        result.interfered_marker_applied_count = self.state.interfered_marker_applied_count
+        result.interfered_marker_damage_taken_amp = amp
+        result.interfered_marker_damage_taken_multiplier = 1.0 + amp
+        result.mornye_energy_regen_for_interfered_marker = energy_regen
+        result.energy_regen_excess_for_interfered_marker = excess
+        result.interfered_marker_cap_applied = uncapped_amp > amp
+        result.interfered_marker_source = "observation_marker_tune_break"
+        result.mornye_interfered_marker_mode = "tune_break_triggered"
+        result.interfered_marker_mode = "tune_break_triggered"
+        result.mornye_interfered_amp = amp
+        if buff.id not in result.applied_buffs:
+            result.applied_buffs.append(buff.id)
+
+    def _scan_party_responses(self, result: Any, interfered_state: str) -> None:
+        if interfered_state not in {"tune_rupture_interfered", "tune_strain_interfered"}:
+            return
+        log = {
+            "target_interfered_state": interfered_state,
+            "response_source_status": "user_supplied_skill_screenshot_not_embedded",
+            "aemeath_starburst_triggered": False,
+            "aemeath_starburst_cooldown_blocked": False,
+            "mornye_particle_jet_triggered": False,
+            "mornye_particle_jet_cooldown_blocked": False,
+            "unresolved_response_damage_events": [],
+        }
+        result.party_response_scan_triggered = True
+        result.response_source_status = log["response_source_status"]
+        result.tune_break_response_event_tags = []
+        if interfered_state == "tune_rupture_interfered" and "aemeath" in self.characters:
+            if self.state.aemeath_starburst_response_cooldown_remaining > 0.0:
+                result.aemeath_starburst_cooldown_blocked = True
+                log["aemeath_starburst_cooldown_blocked"] = True
+            else:
+                self.state.aemeath_starburst_trigger_count += 1
+                self.state.aemeath_starburst_response_cooldown_remaining = 8.0
+                result.aemeath_starburst_triggered = True
+                result.aemeath_starburst_damage_unresolved = True
+                result.tune_break_response_event_tags.append("aemeath_tune_rupture_response_starburst")
+                log["aemeath_starburst_triggered"] = True
+                log["unresolved_response_damage_events"].append("aemeath_starburst")
+        if interfered_state == "tune_rupture_interfered" and "mornye" in self.characters:
+            if self.state.mornye_particle_jet_response_cooldown_remaining > 0.0:
+                result.mornye_particle_jet_cooldown_blocked = True
+                log["mornye_particle_jet_cooldown_blocked"] = True
+            else:
+                self.state.mornye_particle_jet_trigger_count += 1
+                self.state.mornye_particle_jet_response_cooldown_remaining = 8.0
+                result.mornye_particle_jet_triggered = True
+                result.mornye_particle_jet_damage_unresolved = True
+                result.tune_break_response_event_tags.append("mornye_tune_rupture_response_particle_jet")
+                log["mornye_particle_jet_triggered"] = True
+                log["unresolved_response_damage_events"].append("mornye_particle_jet")
+        for event_id in log["unresolved_response_damage_events"]:
+            if event_id not in self.state.unresolved_response_damage_events:
+                self.state.unresolved_response_damage_events.append(event_id)
+        result.unresolved_response_damage_events = list(self.state.unresolved_response_damage_events)
+        self.state.party_response_scan_logs.append(log)
+
+    def _available_tune_break_action_ids(self) -> list[str]:
+        return [
+            action_id
+            for action_id, action in self.policy_actions.items()
+            if action.action_type == "tune_break" and self.is_resolved_action_available(action)
+        ]
+
+    def _sync_tune_break_result_fields(self, result: Any) -> None:
+        result.enemy_off_tune_current_after = self.state.enemy_off_tune_current
+        result.enemy_off_tune_max = self.state.enemy_off_tune_max
+        result.enemy_mistune_active = self.state.enemy_mistune_active
+        result.enemy_tune_break_available = self.state.enemy_tune_break_available
+        result.enemy_tune_break_cooldown_remaining = self.state.enemy_tune_break_cooldown_remaining
+        result.tune_break_action_available_ids = self._available_tune_break_action_ids()
+        result.tune_break_action_used_count = self.state.tune_break_action_used_count
+        result.tune_break_damage_total = self.state.tune_break_damage_total
+        result.target_tune_shift_state = self.state.target_tune_shift_state
+        result.target_tune_shift_remaining = self.state.target_tune_shift_remaining
+        result.target_interfered_state = self.state.target_interfered_state
+        result.target_interfered_remaining = self.state.target_interfered_remaining
+        result.observation_marker_remaining = self._mornye_observation_marker_remaining()
+        result.observation_marker_active = result.observation_marker_remaining > 0.0
+        result.interfered_marker_remaining = self.state.interfered_marker_remaining
+        result.interfered_marker_active = self.state.interfered_marker_remaining > 0.0
+        result.interfered_marker_applied_count = self.state.interfered_marker_applied_count
+        result.interfered_marker_damage_taken_amp = self.state.interfered_marker_damage_taken_amp
+        result.interfered_marker_damage_taken_multiplier = 1.0 + self.state.interfered_marker_damage_taken_amp
+        result.party_response_scan_triggered = bool(result.party_response_scan_triggered)
+        result.unresolved_response_damage_events = list(self.state.unresolved_response_damage_events)
 
     def resolve_action(self, selected_action: ActionData) -> ActionData:
         mechanic = self._mechanic_for_character(self.state.active_character_id)
@@ -875,6 +1138,27 @@ class Simulation:
             damage_by_resolved_action=dict(damage_by_resolved_action),
             damage_by_action_type=dict(damage_by_action_type),
             damage_by_damage_bonus_category=dict(damage_by_damage_bonus_category),
+            enemy_off_tune_current=self.state.enemy_off_tune_current,
+            enemy_off_tune_max=self.state.enemy_off_tune_max,
+            enemy_mistune_active=self.state.enemy_mistune_active,
+            enemy_tune_break_available=self.state.enemy_tune_break_available,
+            enemy_tune_break_cooldown_remaining=self.state.enemy_tune_break_cooldown_remaining,
+            off_tune_accumulated_total=self.state.off_tune_accumulated_total,
+            off_tune_overflow=self.state.off_tune_overflow,
+            off_tune_accumulation_logs=list(self.state.off_tune_accumulation_logs),
+            tune_break_action_available_ids=self._available_tune_break_action_ids(),
+            tune_break_action_used_count=self.state.tune_break_action_used_count,
+            tune_break_damage_total=self.state.tune_break_damage_total,
+            target_tune_shift_state=self.state.target_tune_shift_state,
+            target_interfered_state=self.state.target_interfered_state,
+            observation_marker_remaining=self._mornye_observation_marker_remaining(),
+            interfered_marker_remaining=self.state.interfered_marker_remaining,
+            interfered_marker_damage_taken_amp=self.state.interfered_marker_damage_taken_amp,
+            party_response_scan_triggered=bool(self.state.party_response_scan_logs),
+            aemeath_starburst_trigger_count=self.state.aemeath_starburst_trigger_count,
+            mornye_particle_jet_trigger_count=self.state.mornye_particle_jet_trigger_count,
+            unresolved_response_damage_events=list(self.state.unresolved_response_damage_events),
+            simplified_assumptions=list(self.state.simplified_assumptions),
             aemeath_resonance_mode=mechanic_event_metadata["aemeath_resonance_mode"],
             aemeath_resonance_mode_source=mechanic_event_metadata["aemeath_resonance_mode_source"],
             mechanic_event_trigger_action_ids=mechanic_event_metadata["mechanic_event_trigger_action_ids"],
@@ -971,6 +1255,11 @@ class Simulation:
             "def_reduction": self.state.def_reduction,
             "dmg_taken": self.state.dmg_taken,
             "tune_dmg_bonus": self.state.tune_dmg_bonus,
+            "enemy_off_tune_current": self.state.enemy_off_tune_current,
+            "enemy_off_tune_max": self.state.enemy_off_tune_max,
+            "enemy_mistune_active": float(self.state.enemy_mistune_active),
+            "enemy_tune_break_available": float(self.state.enemy_tune_break_available),
+            "enemy_tune_break_cooldown_remaining": self.state.enemy_tune_break_cooldown_remaining,
         }
         return PartyState(
             party_members=list(self.selected_character_ids),

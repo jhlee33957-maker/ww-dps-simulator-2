@@ -94,7 +94,8 @@ def test_inversion_combat_time() -> None:
     assert row.source_status == "not_source_confirmed_direct_interfered"
     assert state["relative_momentum"] == 0.0
     assert state["observation_marker_active"] is True
-    assert row.implementation_status == "simplified_on_inversion"
+    assert row.mornye_interfered_marker_mode == "tune_break_triggered"
+    assert row.mornye_interfered_marker_applied is False
 
 
 def test_qte_intro_resources() -> None:

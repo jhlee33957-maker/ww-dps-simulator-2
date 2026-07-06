@@ -20,6 +20,8 @@ from simulator.transition_config import mechanics_mode_summary
 PARTY_ID = "aemeath_mornye_test_party"
 EXPECTED_AEMEATH_MODE = "tune_rupture"
 EXPECTED_MORNYE_HEAL_MODE = "simplified_syntony_field_uptime"
+EXPECTED_MARKER_MODE = "tune_break_triggered"
+EXPECTED_TUNE_BREAK_MODE = "excel_off_tune_mistune_action"
 
 
 def test_party_preset_defaults() -> None:
@@ -31,6 +33,9 @@ def test_party_preset_defaults() -> None:
     assert overrides["aemeath"]["aemeath_resonance_mode_source"] == "party_preset"
     assert overrides["mornye"]["mornye_heal_event_mode"] == EXPECTED_MORNYE_HEAL_MODE
     assert overrides["mornye"]["mornye_heal_event_mode_source"] == "party_preset"
+    assert overrides["mornye"]["interfered_marker"]["mode"] == EXPECTED_MARKER_MODE
+    assert overrides["tune_break_system"]["mode"] == EXPECTED_TUNE_BREAK_MODE
+    assert overrides["tune_break_system"]["enemy_off_tune_max"] == 3920
 
     sim = Simulation.from_json(DATA_DIR, party=PARTY_ID)
     summary = sim.summary()
@@ -39,6 +44,7 @@ def test_party_preset_defaults() -> None:
     assert summary.aemeath_resonance_mode_source == "party_preset"
     assert summary.mornye_heal_event_mode == EXPECTED_MORNYE_HEAL_MODE
     assert summary.mornye_heal_event_mode_source == "party_preset"
+    assert summary.enemy_off_tune_max == 3920
     assert summary.active_party_build_profiles == {"mornye": "default", "aemeath": "default"}
 
 

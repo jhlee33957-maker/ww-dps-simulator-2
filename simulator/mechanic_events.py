@@ -151,6 +151,11 @@ def process_mechanic_event_triggers(
             "cooldown_seconds": cooldown_seconds,
             "damage_added": 0.0,
         }
+        if event_tag == "tune_rupture_shifting":
+            state.target_tune_shift_state = "tune_rupture_shifting"
+            state.target_tune_shift_remaining = 8.0
+            event_record["target_tune_shift_state"] = state.target_tune_shift_state
+            event_record["target_tune_shift_duration_source_status"] = "user_supplied_skill_screenshot_not_embedded"
         state.mechanic_event_log.append(event_record)
         log["emitted_mechanic_event_tags"] = [event_tag]
         log["mechanic_event_triggered"] = True

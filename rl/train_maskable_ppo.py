@@ -207,6 +207,18 @@ def main() -> None:
         "high_syntony_field_application_timing": training_summary.high_syntony_field_application_timing,
         "runtime_def_percent_bonus": training_summary.runtime_def_percent_bonus,
         "current_off_tune_buildup_rate": training_summary.current_off_tune_buildup_rate,
+        "enemy_off_tune_current": training_summary.enemy_off_tune_current,
+        "enemy_off_tune_max": training_summary.enemy_off_tune_max,
+        "enemy_mistune_active": training_summary.enemy_mistune_active,
+        "enemy_tune_break_available": training_summary.enemy_tune_break_available,
+        "enemy_tune_break_cooldown_remaining": training_summary.enemy_tune_break_cooldown_remaining,
+        "tune_break_action_available_ids": training_summary.tune_break_action_available_ids,
+        "tune_break_action_used_count": training_summary.tune_break_action_used_count,
+        "tune_break_damage_total": training_summary.tune_break_damage_total,
+        "target_tune_shift_state": training_summary.target_tune_shift_state,
+        "target_interfered_state": training_summary.target_interfered_state,
+        "interfered_marker_damage_taken_amp": training_summary.interfered_marker_damage_taken_amp,
+        "unresolved_response_damage_events": training_summary.unresolved_response_damage_events,
         "halo_of_starry_radiance_5set_active": training_summary.halo_of_starry_radiance_5set_active,
         "halo_of_starry_radiance_5set_atk_percent_bonus": (
             training_summary.halo_of_starry_radiance_5set_atk_percent_bonus

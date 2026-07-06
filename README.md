@@ -55,6 +55,16 @@ The generic team buff foundation supports target scopes, optional tag filters, s
 
 No PPO retraining was performed for this foundation patch. Saved PPO models are party/action-space specific and should be retrained before use with new party presets.
 
+## Excel-based Tune Break System
+
+The Aemeath + Mornye party preset can use a single-target Excel-based Off-Tune / Mistune / Tune Break system. Normal sourced actions add `off_tune_value * current_off_tune_buildup_rate` to the enemy gauge, using `3920` as the current boss-style default cap. When the gauge reaches cap, Mistune makes character-specific Tune Break actions available; Tune Break is not automatic damage and is not forced into a rotation.
+
+Aemeath Tune Break uses coefficients `1.0` and `12.0`; Mornye Tune Break uses `1.7334`, `2.2666`, and `12.0`. Tune Break damage uses fixed base `10000 * multiplier * boost * RES * DEF * Tune DMG Bonus` and does not use ATK/DEF/HP scaling or normal damage bonus categories.
+
+After the final Tune Break hit, sourced Shifting/Offset state can become Interfered. Mornye Observation Marker plus Tune Break applies Interfered Marker as target damage taken amplification. For the real-test Mornye profile with Energy Regen `2.7944`, the amp reaches the `40%` cap. Aemeath Starburst and Mornye Particle Jet response scans are logged with 8s same-target cooldowns; unresolved response damage is intentionally not invented.
+
+The legacy `simplified_on_inversion` Interfered approximation is still available only when explicitly configured. PPO models should be retrained after this patch because action availability, simulator state, and damage/debuff behavior changed. No PPO training was performed for this patch.
+
 ## Concerto-Gated Transition v1
 
 Each party member now has per-character `concerto_energy`, `concerto_energy_cap`, and `concerto_ready` fields exposed through `party_state.character_states`. Normal character actions add their configured `concerto_energy_gain` and clamp to the cap. Swap requests do not invent concerto gain.

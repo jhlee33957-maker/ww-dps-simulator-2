@@ -44,10 +44,17 @@
       ],
       "interfered_marker": {
         "mode": "disabled",
-        "modes": ["disabled", "dry_run", "simplified_on_inversion"],
+        "modes": ["disabled", "dry_run", "simplified_on_inversion", "tune_break_triggered"],
         "duration": 30.0,
         "implementation_status": "simplified_optional"
       }
+    },
+    "tune_break_system": {
+      "mode": "disabled",
+      "modes": ["disabled", "excel_off_tune_mistune_action"],
+      "enemy_off_tune_max": 3920,
+      "enemy_tune_break_cooldown_seconds": 8.0,
+      "implementation_status": "single_target_optional"
     }
   },
   "characters": {

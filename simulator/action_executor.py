@@ -13,7 +13,7 @@ from simulator.buff_system import (
     tick_buffs,
 )
 from simulator.build_profiles import damage_bonus_breakdown, scaling_value_for_action, stat_component_log_fields, support_stat_log_fields
-from simulator.damage_formula import calculate_normal_damage, calculate_tune_break_damage
+from simulator.damage_formula import calculate_normal_damage
 from simulator.echo_sets import (
     AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID,
     MORNYE_HIGH_SYNTONY_FIELD_DEF_BUFF_ID,
@@ -26,6 +26,7 @@ from simulator.echo_sets import (
 from simulator.mechanic_events import preview_mechanic_event_trigger, process_mechanic_event_triggers
 from simulator.models import ActionData, ActionResult, BuffData, CharacterData, CombatState, HitData, TimelineEntry
 from simulator.resource_system import apply_resource_changes, can_pay_resources
+from simulator.tune_break import calculate_tune_break_damage_detail
 
 
 def is_action_valid(action: ActionData, state: CombatState) -> tuple[bool, str | None]:
@@ -175,6 +176,7 @@ def _calculate_hit_damage(
     scaling_stat, scaling_value = scaling_value_for_action(stats, action, character)
 
     damage = 0.0
+    tune_break_detail: dict[str, Any] = {}
     if hit.damage_category == "normal" and hit.damage_multiplier > 0.0:
         damage = calculate_normal_damage(
             skill_multiplier=hit.damage_multiplier,
@@ -198,9 +200,9 @@ def _calculate_hit_damage(
             final_dmg_bonus=stats["final_dmg_bonus"],
         )
     elif hit.damage_category == "tune_break" and hit.tune_break_multiplier > 0.0:
-        damage = calculate_tune_break_damage(
+        tune_break_detail = calculate_tune_break_damage_detail(
             tune_break_multiplier=hit.tune_break_multiplier,
-            tune_break_boost_points=action.tune_break_boost_points,
+            additional_tune_break_boost=action.tune_break_boost_points / 100.0,
             tune_dmg_bonus=state.tune_dmg_bonus,
             enemy_res=state.enemy_res,
             res_pen=state.res_pen,
@@ -208,9 +210,31 @@ def _calculate_hit_damage(
             enemy_level=state.enemy_level,
             def_ignore=stats["def_ignore"],
             def_reduction=final_def_reduction,
+            tune_break_damage_type="tune_break",
+            tune_break_element=action.damage_element or "unresolved",
+            hit_id=hit.name,
         )
+        damage = float(tune_break_detail["tune_break_damage"])
+        damage_bonus_context = {
+            "damage_category": "tune_break",
+            "damage_bonus_category": "tune_break",
+            "damage_element": action.damage_element or "unresolved",
+            "raw_skill_category": action.raw_skill_category,
+            "raw_damage_type": action.raw_damage_type,
+            "all_dmg_bonus": 0.0,
+            "category_dmg_bonus": 0.0,
+            "element_dmg_bonus": 0.0,
+            "runtime_element_damage_bonus": 0.0,
+            "echo_set_damage_bonus": 0.0,
+            "effective_damage_bonus": 0.0,
+        }
+        scaling_stat = "none"
+        scaling_value = 0.0
     if damage > 0.0 and damage_amp != 0.0:
         damage = apply_buff_modifiers_to_damage_context(damage, damage_amp)
+        if hit.damage_category == "tune_break" and tune_break_detail:
+            tune_break_detail["tune_break_damage_before_damage_taken_amp"] = tune_break_detail["tune_break_damage"]
+            tune_break_detail["tune_break_damage"] = damage
 
     detail = {
         "hit_time": hit.time,
@@ -263,6 +287,7 @@ def _calculate_hit_damage(
         "crit_rate_after_buffs": float(stats.get("crit_rate_after_buffs", stats.get("crit_rate", 0.0))),
         "applied_damage_amp": damage_amp,
         "name": hit.name,
+        **tune_break_detail,
     }
     return damage, detail
 
@@ -1036,6 +1061,46 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         high_syntony_field_same_action_application=result.high_syntony_field_same_action_application,
         high_syntony_field_application_timing=result.high_syntony_field_application_timing,
         high_syntony_field_unavailable_reason=result.high_syntony_field_unavailable_reason,
+        off_tune_value=result.off_tune_value,
+        off_tune_buildup_rate_used=result.off_tune_buildup_rate_used,
+        off_tune_added=result.off_tune_added,
+        enemy_off_tune_current_before=result.enemy_off_tune_current_before,
+        enemy_off_tune_current_after=result.enemy_off_tune_current_after,
+        enemy_off_tune_max=result.enemy_off_tune_max,
+        enemy_mistune_active=result.enemy_mistune_active,
+        enemy_tune_break_available=result.enemy_tune_break_available,
+        enemy_tune_break_cooldown_remaining=result.enemy_tune_break_cooldown_remaining,
+        enemy_mistune_entered_this_action=result.enemy_mistune_entered_this_action,
+        off_tune_accumulation_log=result.off_tune_accumulation_log,
+        tune_break_action_available_ids=result.tune_break_action_available_ids,
+        tune_break_action_used_count=result.tune_break_action_used_count,
+        tune_break_damage_total=result.tune_break_damage_total,
+        target_tune_shift_state=result.target_tune_shift_state,
+        target_tune_shift_remaining=result.target_tune_shift_remaining,
+        target_interfered_state=result.target_interfered_state,
+        target_interfered_remaining=result.target_interfered_remaining,
+        interfered_unavailable_reason=result.interfered_unavailable_reason,
+        observation_marker_active=result.observation_marker_active,
+        observation_marker_remaining=result.observation_marker_remaining,
+        interfered_marker_active=result.interfered_marker_active,
+        interfered_marker_remaining=result.interfered_marker_remaining,
+        interfered_marker_applied_count=result.interfered_marker_applied_count,
+        interfered_marker_damage_taken_amp=result.interfered_marker_damage_taken_amp,
+        interfered_marker_damage_taken_multiplier=result.interfered_marker_damage_taken_multiplier,
+        mornye_energy_regen_for_interfered_marker=result.mornye_energy_regen_for_interfered_marker,
+        energy_regen_excess_for_interfered_marker=result.energy_regen_excess_for_interfered_marker,
+        interfered_marker_cap_applied=result.interfered_marker_cap_applied,
+        interfered_marker_source=result.interfered_marker_source,
+        party_response_scan_triggered=result.party_response_scan_triggered,
+        tune_break_response_event_tags=result.tune_break_response_event_tags,
+        aemeath_starburst_triggered=result.aemeath_starburst_triggered,
+        aemeath_starburst_cooldown_blocked=result.aemeath_starburst_cooldown_blocked,
+        aemeath_starburst_damage_unresolved=result.aemeath_starburst_damage_unresolved,
+        mornye_particle_jet_triggered=result.mornye_particle_jet_triggered,
+        mornye_particle_jet_cooldown_blocked=result.mornye_particle_jet_cooldown_blocked,
+        mornye_particle_jet_damage_unresolved=result.mornye_particle_jet_damage_unresolved,
+        response_source_status=result.response_source_status,
+        unresolved_response_damage_events=result.unresolved_response_damage_events,
         halo_atk_buff_does_not_affect_mornye_def_damage=result.halo_atk_buff_does_not_affect_mornye_def_damage,
         mornye_er_excess_percent=result.mornye_er_excess_percent,
         mornye_liberation_crit_rate_bonus=result.mornye_liberation_crit_rate_bonus,

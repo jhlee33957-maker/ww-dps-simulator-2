@@ -146,6 +146,9 @@
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame rows 4102-4104 and skill rows 2640-2642. Timing uses action end frame 61/60.",
+    "off_tune_value": 28.0,
+    "off_tune_value_source_status": "excel_row_sum",
+    "off_tune_value_source_ref": "角色-女!S4102:S4104",
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
@@ -233,6 +236,9 @@
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame rows 4105-4107 and skill rows 2643-2645. Timing uses action end frame 68/60.",
+    "off_tune_value": 33.0,
+    "off_tune_value_source_status": "excel_row_sum",
+    "off_tune_value_source_ref": "角色-女!S4105:S4107",
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
@@ -329,6 +335,9 @@
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame rows 4108-4109 and skill rows 2646-2647. Timing uses action end frame 91/60.",
+    "off_tune_value": 26.0,
+    "off_tune_value_source_status": "excel_row_sum",
+    "off_tune_value_source_ref": "角色-女!S4108:S4109",
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
@@ -371,6 +380,9 @@
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame row 4110 and skill row 2648. Timing uses action end frame 170/60.",
+    "off_tune_value": 68.0,
+    "off_tune_value_source_status": "excel_cell",
+    "off_tune_value_source_ref": "角色-女!S4110",
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
@@ -781,6 +793,9 @@
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame rows 4135-4136 and skill row 2664. Applies Observation Marker metadata only.",
+    "off_tune_value": 29.6,
+    "off_tune_value_source_status": "excel_cell",
+    "off_tune_value_source_ref": "角色-女!S4117",
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
@@ -849,6 +864,9 @@
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame rows 4141-4142 and skill row 2665. Optimal Solution is treated as a GP/counter success follow-up and is applied only by explicit always_success diagnostics or a future modeled GP success trigger.",
+    "off_tune_value": 90.4,
+    "off_tune_value_source_status": "excel_cell",
+    "off_tune_value_source_ref": "角色-女!S4142",
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
@@ -941,6 +959,9 @@
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame rows 4143-4147 and skill rows 2666-2669. Concerto regen 10.",
+    "off_tune_value": 80.0,
+    "off_tune_value_source_status": "excel_row_sum",
+    "off_tune_value_source_ref": "角色-女!S4144:S4147",
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
@@ -1007,6 +1028,9 @@
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame rows 4150-4154 and skill row 2671. Energy Regen crit scaling is metadata-only in v1.",
+    "off_tune_value": 720.0,
+    "off_tune_value_source_status": "excel_cell_mode_representative",
+    "off_tune_value_source_ref": "角色-女!S4153/S4154",
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
@@ -1112,6 +1136,73 @@
     "policy_selectable": false,
     "data_status": "metadata_only_v1",
     "notes": "High Syntony Field DEF/healing metadata only; no DPS impact.",
+    "scaling_stat": "none"
+  },
+  {
+    "id": "mornye_tune_break",
+    "name": "Mornye Tune Break",
+    "character_id": "mornye",
+    "action_type": "tune_break",
+    "duration": 1.5667,
+    "action_time": 1.5667,
+    "combat_time_cost": 0.0,
+    "cooldown": 0,
+    "damage_category": "tune_break",
+    "damage_bonus_category": "tune_break",
+    "damage_element": "unresolved",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "excel_tune_break_rows_zero",
+    "off_tune_value_source_ref": "角色-女!S4157:S4159",
+    "tune_break_action_time_source_status": "excel_frames_94",
+    "tune_break_element_source_status": "unresolved",
+    "hits": [
+      {
+        "time": 0.0667,
+        "damage_category": "tune_break",
+        "damage_multiplier": 0,
+        "tune_break_multiplier": 1.7334,
+        "tags": [
+          "tune_break"
+        ],
+        "name": "mornye_tune_break_1"
+      },
+      {
+        "time": 0.4333,
+        "damage_category": "tune_break",
+        "damage_multiplier": 0,
+        "tune_break_multiplier": 2.2666,
+        "tags": [
+          "tune_break"
+        ],
+        "name": "mornye_tune_break_2"
+      },
+      {
+        "time": 1.1,
+        "damage_category": "tune_break",
+        "damage_multiplier": 0,
+        "tune_break_multiplier": 12.0,
+        "tags": [
+          "tune_break"
+        ],
+        "name": "mornye_tune_break_3"
+      }
+    ],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 0,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "tune_break",
+      "mornye",
+      "source:excel"
+    ],
+    "policy_selectable": true,
+    "data_status": "excel_tune_break_single_target_v1",
+    "notes": "Workbook rows 4155 and 4157-4159 define Mornye Tune Break timing/Interfered application rows. Coefficients use the workbook-identified Tune Break coefficient source from the audit.",
     "scaling_stat": "none"
   },
   {
@@ -2049,6 +2140,63 @@
     "scaling_stat": "none"
   },
   {
+    "id": "aemeath_tune_break",
+    "name": "Aemeath Tune Break",
+    "character_id": "aemeath",
+    "action_type": "tune_break",
+    "duration": 1.5,
+    "action_time": 1.5,
+    "combat_time_cost": 0.0,
+    "cooldown": 0,
+    "damage_category": "tune_break",
+    "damage_bonus_category": "tune_break",
+    "damage_element": "unresolved",
+    "damage_multiplier": 0,
+    "tune_break_multiplier": 0,
+    "tune_break_boost_points": 0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "excel_tune_break_rows_zero",
+    "off_tune_value_source_ref": "角色-女!S2804:S2805",
+    "tune_break_action_time_source_status": "excel_frames_90",
+    "tune_break_element_source_status": "unresolved",
+    "hits": [
+      {
+        "time": 0.5,
+        "damage_category": "tune_break",
+        "damage_multiplier": 0,
+        "tune_break_multiplier": 1.0,
+        "tags": [
+          "tune_break"
+        ],
+        "name": "aemeath_tune_break_1"
+      },
+      {
+        "time": 1.2,
+        "damage_category": "tune_break",
+        "damage_multiplier": 0,
+        "tune_break_multiplier": 12.0,
+        "tags": [
+          "tune_break"
+        ],
+        "name": "aemeath_tune_break_2"
+      }
+    ],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 0,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "tune_break",
+      "aemeath",
+      "source:excel"
+    ],
+    "policy_selectable": true,
+    "data_status": "excel_tune_break_single_target_v1",
+    "notes": "Workbook rows 2802 and 2804-2805 define Aemeath Tune Break timing/Interfered application rows. Coefficients use the workbook-identified Tune Break coefficient source from the audit.",
+    "scaling_stat": "none"
+  },
+  {
     "id": "aemeath_basic_form_stage_1",
     "name": "Aemeath Form Basic Stage 1",
     "character_id": "aemeath",
@@ -2088,7 +2236,10 @@
     "raw_skill_category": "普攻",
     "raw_damage_type": "普攻伤害",
     "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
-    "scaling_stat": "atk"
+    "scaling_stat": "atk",
+    "off_tune_value": 26.64,
+    "off_tune_value_source_status": "excel_cell",
+    "off_tune_value_source_ref": "角色-女!S2739"
   },
   {
     "id": "aemeath_basic_form_stage_2",
@@ -2146,7 +2297,10 @@
     "raw_skill_category": "普攻",
     "raw_damage_type": "普攻伤害",
     "damage_bonus_category_source": "data/extracted/aemeath_excel_actions.json",
-    "scaling_stat": "atk"
+    "scaling_stat": "atk",
+    "off_tune_value": 39.93,
+    "off_tune_value_source_status": "excel_row_sum",
+    "off_tune_value_source_ref": "角色-女!S2740:S2742"
   },
   {
     "id": "aemeath_basic_form_stage_3",
@@ -2234,7 +2388,10 @@
         "source_note": "Aemeath skill screenshot states that this skill inflicts Fusion Burst or Tune Rupture - Shifting depending on Aemeath's Resonance Mode when it deals damage. Same skill can trigger once every 3s."
       }
     ],
-    "scaling_stat": "atk"
+    "scaling_stat": "atk",
+    "off_tune_value": 53.55,
+    "off_tune_value_source_status": "excel_row_sum",
+    "off_tune_value_source_ref": "角色-女!S2743:S2747"
   },
   {
     "id": "aemeath_basic_form_stage_4",
@@ -2331,7 +2488,10 @@
         "source_note": "Aemeath skill screenshot states that this skill inflicts Fusion Burst or Tune Rupture - Shifting depending on Aemeath's Resonance Mode when it deals damage. Same skill can trigger once every 3s."
       }
     ],
-    "scaling_stat": "atk"
+    "scaling_stat": "atk",
+    "off_tune_value": 65.76,
+    "off_tune_value_source_status": "excel_row_sum",
+    "off_tune_value_source_ref": "角色-女!S2753:S2755"
   },
   {
     "id": "aemeath_mech_basic_stage_1",

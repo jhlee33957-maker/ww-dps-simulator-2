@@ -1,0 +1,85 @@
+{
+  "enemy_off_tune_max_default": 3920,
+  "enemy_off_tune_max_source_status": "project_boss_default_for_single_target_endgame_matrix_style_simulation",
+  "workbook": "data/source/鸣潮动作数据汇总.xlsx",
+  "sheets_inspected": [
+    "角色-女",
+    "角色-男",
+    "角色技能类型",
+    "敌对属性列表",
+    "伤害配置",
+    "伤害计算",
+    "base",
+    "prop",
+    "weapon",
+    "dmg"
+  ],
+  "off_tune_value_column": {
+    "sheet": "角色-女",
+    "column": "S",
+    "source_status": "excel_column_identified_from_action_rows",
+    "examples": [
+      {"action": "Aemeath A1", "ref": "角色-女!S2739", "value": 26.64},
+      {"action": "Mornye A1 rows", "ref": "角色-女!S4102:S4104", "value_sum": 28.0},
+      {"action": "Mornye Heavy Inversion", "ref": "角色-女!S4117", "value": 29.6}
+    ]
+  },
+  "aemeath_tune_break": {
+    "action_rows": [
+      {"ref": "角色-女!C2802", "label": "谐度破坏-时停", "duration_frames": 90},
+      {"ref": "角色-女!C2804", "label": "谐度破坏-1", "hit_frame": 30, "off_tune_value_ref": "角色-女!S2804", "off_tune_value": 0},
+      {"ref": "角色-女!C2805", "label": "谐度破坏-2", "hit_frame": 72, "interfered_text_ref": "角色-女!D2805", "off_tune_value_ref": "角色-女!S2805", "off_tune_value": 0}
+    ],
+    "coefficients": [
+      {"hit_id": "aemeath_tune_break_1", "coefficient": 1.0, "source_status": "workbook_skill_type_reference_identified_by_user"},
+      {"hit_id": "aemeath_tune_break_2", "coefficient": 12.0, "source_status": "workbook_skill_type_reference_identified_by_user"}
+    ]
+  },
+  "mornye_tune_break": {
+    "action_rows": [
+      {"ref": "角色-女!C4155", "label": "谐度破坏-时停", "duration_frames": 94, "interfered_text_ref": "角色-女!D4155"},
+      {"ref": "角色-女!C4157", "label": "谐度破坏-1", "hit_frame": 4, "off_tune_value_ref": "角色-女!S4157", "off_tune_value": 0},
+      {"ref": "角色-女!C4158", "label": "谐度破坏-2", "hit_frame": 26, "off_tune_value_ref": "角色-女!S4158", "off_tune_value": 0},
+      {"ref": "角色-女!C4159", "label": "谐度破坏-3", "hit_frame": 66, "off_tune_value_ref": "角色-女!S4159", "off_tune_value": 0}
+    ],
+    "coefficients": [
+      {"hit_id": "mornye_tune_break_1", "coefficient": 1.7334, "source_status": "workbook_skill_type_reference_identified_by_user"},
+      {"hit_id": "mornye_tune_break_2", "coefficient": 2.2666, "source_status": "workbook_skill_type_reference_identified_by_user"},
+      {"hit_id": "mornye_tune_break_3", "coefficient": 12.0, "source_status": "workbook_skill_type_reference_identified_by_user"}
+    ]
+  },
+  "mornye_observation_marker_interfered_marker": {
+    "ref": "角色-女!D4164",
+    "source_status": "excel_text_confirmed",
+    "observation_marker_duration_seconds": 30,
+    "interfered_marker_condition": "observed marked offset target receives Tune Break damage",
+    "damage_taken_amp_formula": "min(max(energy_regen - 1.0, 0.0) * 0.25, 0.40)"
+  },
+  "aemeath_starburst_response": {
+    "refs": ["角色-女!D2728", "角色-女!D2880"],
+    "source_status": "excel_text_plus_user_supplied_skill_screenshot_not_embedded",
+    "cooldown_seconds": 8,
+    "damage_source_status": "unresolved"
+  },
+  "mornye_particle_jet_response": {
+    "refs": ["角色-女!D4181", "角色-女!D4185"],
+    "source_status": "excel_text_plus_user_supplied_skill_screenshot_not_embedded",
+    "cooldown_seconds": 8,
+    "damage_source_status": "unresolved"
+  },
+  "unresolved": {
+    "tune_break_cooldown": "not_found_uses_explicit_default_8s",
+    "exact_off_tune_reset_behavior": "not_found_implementation_assumption_reset_to_zero",
+    "exact_non_boss_enemy_off_tune_table_selection": "not_implemented",
+    "exact_tune_strain_stack_system": "unresolved",
+    "exact_particle_jet_damage": "unresolved_no_damage_invented",
+    "exact_starburst_damage": "unresolved_no_damage_invented"
+  },
+  "unsupported_full_mechanics": [
+    "multi-target marker tracking",
+    "exact non-boss enemy Off-Tune table selection",
+    "exact Tune Strain stack system if not fully sourced",
+    "exact Particle Jet damage if coefficients/timings are missing",
+    "exact Starburst damage if coefficients/timings are missing"
+  ]
+}

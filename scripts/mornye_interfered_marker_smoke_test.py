@@ -40,7 +40,7 @@ def make_config_with_marker_mode(mode: str) -> dict:
 
 
 def test_marker_disabled_by_default() -> None:
-    sim = Simulation.from_json(DATA_DIR, party="aemeath_mornye_test_party")
+    sim = Simulation.from_json(DATA_DIR, selected_character_ids=["mornye", "aemeath"])
     prep_inversion(sim)
     assert sim.execute_action("mornye_heavy_attack"), "Heavy Inversion should execute"
     row = sim.timeline[-1]
@@ -62,10 +62,14 @@ def test_marker_dry_run_logs_without_applying() -> None:
 
 
 def test_simplified_marker_applies_refreshes_and_amps_party_damage() -> None:
-    sim = Simulation.from_json(DATA_DIR, party="aemeath_mornye_enabled_test_party")
+    sim = Simulation.from_json(
+        DATA_DIR,
+        party="aemeath_mornye_test_party",
+        transition_config=make_config_with_marker_mode("simplified_on_inversion"),
+    )
     assert (
         sim.transition_config["mechanics"]["mornye"]["interfered_marker"]["mode"] == "simplified_on_inversion"
-    ), "Enabled test party should opt into simplified marker mode"
+    ), "Legacy simplified marker mode should be explicit"
     assert (
         sim.transition_config["mechanics"]["mornye"]["mornye_expectation_error_mode"] == "expectation_error_only"
     ), "Enabled test party should not silently force Mornye Optimal Solution"
@@ -84,7 +88,11 @@ def test_simplified_marker_applies_refreshes_and_amps_party_damage() -> None:
     assert sim.execute_action("aemeath_basic_attack"), "Aemeath basic should execute under marker"
     marker_damage = sim.timeline[-1].normal_damage
 
-    baseline = Simulation.from_json(DATA_DIR, party="aemeath_mornye_enabled_test_party")
+    baseline = Simulation.from_json(
+        DATA_DIR,
+        party="aemeath_mornye_test_party",
+        transition_config=make_config_with_marker_mode("simplified_on_inversion"),
+    )
     baseline.state.active_character_id = "aemeath"
     assert baseline.execute_action("aemeath_basic_attack"), "Baseline Aemeath basic should execute"
     baseline_damage = baseline.timeline[-1].normal_damage

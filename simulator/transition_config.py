@@ -172,6 +172,7 @@ def mechanics_mode_summary(config: dict[str, Any]) -> dict[str, Any]:
     if expectation_error_mode not in VALID_MORNYE_EXPECTATION_ERROR_MODES:
         expectation_error_mode = "expectation_error_only"
     marker_config = mornye_config.get("interfered_marker") or {}
+    tune_break_config = (config.get("mechanics") or {}).get("tune_break_system", {})
     heal_event_mode = str(mornye_config.get("mornye_heal_event_mode", "simplified_syntony_field_uptime"))
     if heal_event_mode not in VALID_MORNYE_HEAL_EVENT_MODES:
         heal_event_mode = "disabled"
@@ -186,7 +187,14 @@ def mechanics_mode_summary(config: dict[str, Any]) -> dict[str, Any]:
             "heal_event_mode": heal_event_mode,
             "heal_event_mode_source": mornye_config.get("mornye_heal_event_mode_source", "default"),
             "mornye_constellation": int(mornye_config.get("mornye_constellation", 0) or 0),
-        }
+        },
+        "tune_break_system": {
+            "mode": str(tune_break_config.get("mode", "disabled")),
+            "enemy_off_tune_max": float(tune_break_config.get("enemy_off_tune_max", 3920.0) or 3920.0),
+            "enemy_tune_break_cooldown_seconds": float(
+                tune_break_config.get("enemy_tune_break_cooldown_seconds", 8.0) or 8.0
+            ),
+        },
     }
 
 

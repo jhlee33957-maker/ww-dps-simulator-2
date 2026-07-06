@@ -11,6 +11,7 @@ ActionType = Literal[
     "resonance_skill",
     "resonance_liberation",
     "echo_skill",
+    "tune_break",
     "swap",
     "wait",
 ]
@@ -192,6 +193,11 @@ class ActionData(BaseModel):
     damage_multiplier: float = Field(default=0.0, ge=0)
     tune_break_multiplier: float = Field(default=0.0, ge=0)
     tune_break_boost_points: float = 0.0
+    off_tune_value: float = 0.0
+    off_tune_value_source_status: str | None = None
+    off_tune_value_source_ref: str | None = None
+    tune_break_action_time_source_status: str | None = None
+    tune_break_element_source_status: str | None = None
     hits: list[HitData] = Field(default_factory=list)
     mechanic_event_tags: list[str] = Field(default_factory=list)
     mechanic_event_triggers: list[dict[str, Any]] = Field(default_factory=list)
@@ -333,6 +339,32 @@ class CombatState(BaseModel):
     concerto_energy: dict[str, float] = Field(default_factory=dict)
     wasted_resonance_energy: dict[str, float] = Field(default_factory=dict)
     wasted_concerto_energy: dict[str, float] = Field(default_factory=dict)
+    enemy_off_tune_max: float = 3920.0
+    enemy_off_tune_current: float = 0.0
+    enemy_mistune_active: bool = False
+    enemy_mistune_entered_count: int = 0
+    enemy_tune_break_available: bool = False
+    enemy_tune_break_cooldown_remaining: float = 0.0
+    off_tune_accumulated_total: float = 0.0
+    off_tune_overflow: float = 0.0
+    off_tune_buildup_rate_used: float = 1.0
+    off_tune_accumulation_logs: list[dict[str, Any]] = Field(default_factory=list)
+    target_tune_shift_state: str | None = None
+    target_tune_shift_remaining: float = 0.0
+    target_interfered_state: str | None = None
+    target_interfered_remaining: float = 0.0
+    interfered_marker_remaining: float = 0.0
+    interfered_marker_applied_count: int = 0
+    interfered_marker_damage_taken_amp: float = 0.0
+    party_response_scan_logs: list[dict[str, Any]] = Field(default_factory=list)
+    aemeath_starburst_response_cooldown_remaining: float = 0.0
+    mornye_particle_jet_response_cooldown_remaining: float = 0.0
+    aemeath_starburst_trigger_count: int = 0
+    mornye_particle_jet_trigger_count: int = 0
+    tune_break_action_used_count: int = 0
+    tune_break_damage_total: float = 0.0
+    unresolved_response_damage_events: list[str] = Field(default_factory=list)
+    simplified_assumptions: list[str] = Field(default_factory=list)
 
 
 class ActionResult(BaseModel):
@@ -459,6 +491,46 @@ class ActionResult(BaseModel):
     high_syntony_field_same_action_application: bool = False
     high_syntony_field_application_timing: str | None = None
     high_syntony_field_unavailable_reason: str | None = None
+    off_tune_value: float = 0.0
+    off_tune_buildup_rate_used: float = 1.0
+    off_tune_added: float = 0.0
+    enemy_off_tune_current_before: float = 0.0
+    enemy_off_tune_current_after: float = 0.0
+    enemy_off_tune_max: float = 3920.0
+    enemy_mistune_active: bool = False
+    enemy_tune_break_available: bool = False
+    enemy_tune_break_cooldown_remaining: float = 0.0
+    enemy_mistune_entered_this_action: bool = False
+    off_tune_accumulation_log: dict[str, Any] = Field(default_factory=dict)
+    tune_break_action_available_ids: list[str] = Field(default_factory=list)
+    tune_break_action_used_count: int = 0
+    tune_break_damage_total: float = 0.0
+    target_tune_shift_state: str | None = None
+    target_tune_shift_remaining: float = 0.0
+    target_interfered_state: str | None = None
+    target_interfered_remaining: float = 0.0
+    interfered_unavailable_reason: str | None = None
+    observation_marker_active: bool = False
+    observation_marker_remaining: float = 0.0
+    interfered_marker_active: bool = False
+    interfered_marker_remaining: float = 0.0
+    interfered_marker_applied_count: int = 0
+    interfered_marker_damage_taken_amp: float = 0.0
+    interfered_marker_damage_taken_multiplier: float = 1.0
+    mornye_energy_regen_for_interfered_marker: float = 1.0
+    energy_regen_excess_for_interfered_marker: float = 0.0
+    interfered_marker_cap_applied: bool = False
+    interfered_marker_source: str | None = None
+    party_response_scan_triggered: bool = False
+    tune_break_response_event_tags: list[str] = Field(default_factory=list)
+    aemeath_starburst_triggered: bool = False
+    aemeath_starburst_cooldown_blocked: bool = False
+    aemeath_starburst_damage_unresolved: bool = False
+    mornye_particle_jet_triggered: bool = False
+    mornye_particle_jet_cooldown_blocked: bool = False
+    mornye_particle_jet_damage_unresolved: bool = False
+    response_source_status: str | None = None
+    unresolved_response_damage_events: list[str] = Field(default_factory=list)
     halo_atk_buff_does_not_affect_mornye_def_damage: bool = False
     halo_of_starry_radiance_5set_active: bool = False
     halo_of_starry_radiance_5set_atk_percent_bonus: float = 0.0
@@ -685,6 +757,46 @@ class TimelineEntry(BaseModel):
     high_syntony_field_same_action_application: bool = False
     high_syntony_field_application_timing: str | None = None
     high_syntony_field_unavailable_reason: str | None = None
+    off_tune_value: float = 0.0
+    off_tune_buildup_rate_used: float = 1.0
+    off_tune_added: float = 0.0
+    enemy_off_tune_current_before: float = 0.0
+    enemy_off_tune_current_after: float = 0.0
+    enemy_off_tune_max: float = 3920.0
+    enemy_mistune_active: bool = False
+    enemy_tune_break_available: bool = False
+    enemy_tune_break_cooldown_remaining: float = 0.0
+    enemy_mistune_entered_this_action: bool = False
+    off_tune_accumulation_log: dict[str, Any] = Field(default_factory=dict)
+    tune_break_action_available_ids: list[str] = Field(default_factory=list)
+    tune_break_action_used_count: int = 0
+    tune_break_damage_total: float = 0.0
+    target_tune_shift_state: str | None = None
+    target_tune_shift_remaining: float = 0.0
+    target_interfered_state: str | None = None
+    target_interfered_remaining: float = 0.0
+    interfered_unavailable_reason: str | None = None
+    observation_marker_active: bool = False
+    observation_marker_remaining: float = 0.0
+    interfered_marker_active: bool = False
+    interfered_marker_remaining: float = 0.0
+    interfered_marker_applied_count: int = 0
+    interfered_marker_damage_taken_amp: float = 0.0
+    interfered_marker_damage_taken_multiplier: float = 1.0
+    mornye_energy_regen_for_interfered_marker: float = 1.0
+    energy_regen_excess_for_interfered_marker: float = 0.0
+    interfered_marker_cap_applied: bool = False
+    interfered_marker_source: str | None = None
+    party_response_scan_triggered: bool = False
+    tune_break_response_event_tags: list[str] = Field(default_factory=list)
+    aemeath_starburst_triggered: bool = False
+    aemeath_starburst_cooldown_blocked: bool = False
+    aemeath_starburst_damage_unresolved: bool = False
+    mornye_particle_jet_triggered: bool = False
+    mornye_particle_jet_cooldown_blocked: bool = False
+    mornye_particle_jet_damage_unresolved: bool = False
+    response_source_status: str | None = None
+    unresolved_response_damage_events: list[str] = Field(default_factory=list)
     halo_atk_buff_does_not_affect_mornye_def_damage: bool = False
     halo_of_starry_radiance_5set_active: bool = False
     halo_of_starry_radiance_5set_atk_percent_bonus: float = 0.0
@@ -815,6 +927,27 @@ class SimulationSummary(BaseModel):
     damage_by_resolved_action: dict[str, float] = Field(default_factory=dict)
     damage_by_action_type: dict[str, float] = Field(default_factory=dict)
     damage_by_damage_bonus_category: dict[str, float] = Field(default_factory=dict)
+    enemy_off_tune_current: float = 0.0
+    enemy_off_tune_max: float = 3920.0
+    enemy_mistune_active: bool = False
+    enemy_tune_break_available: bool = False
+    enemy_tune_break_cooldown_remaining: float = 0.0
+    off_tune_accumulated_total: float = 0.0
+    off_tune_overflow: float = 0.0
+    off_tune_accumulation_logs: list[dict[str, Any]] = Field(default_factory=list)
+    tune_break_action_available_ids: list[str] = Field(default_factory=list)
+    tune_break_action_used_count: int = 0
+    tune_break_damage_total: float = 0.0
+    target_tune_shift_state: str | None = None
+    target_interfered_state: str | None = None
+    observation_marker_remaining: float = 0.0
+    interfered_marker_remaining: float = 0.0
+    interfered_marker_damage_taken_amp: float = 0.0
+    party_response_scan_triggered: bool = False
+    aemeath_starburst_trigger_count: int = 0
+    mornye_particle_jet_trigger_count: int = 0
+    unresolved_response_damage_events: list[str] = Field(default_factory=list)
+    simplified_assumptions: list[str] = Field(default_factory=list)
     aemeath_resonance_mode: str = "unresolved"
     aemeath_resonance_mode_source: str | None = None
     mechanic_event_trigger_action_ids: list[str] = Field(default_factory=list)

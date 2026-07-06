@@ -31,7 +31,15 @@
       },
       "mornye": {
         "mornye_heal_event_mode": "simplified_syntony_field_uptime",
-        "mornye_heal_event_mode_source": "party_preset"
+        "mornye_heal_event_mode_source": "party_preset",
+        "interfered_marker": {
+          "mode": "tune_break_triggered"
+        }
+      },
+      "tune_break_system": {
+        "mode": "excel_off_tune_mistune_action",
+        "enemy_off_tune_max": 3920,
+        "enemy_tune_break_cooldown_seconds": 8.0
       }
     },
     "generic_swap": {
@@ -81,8 +89,13 @@
         "mornye_heal_event_mode": "simplified_syntony_field_uptime",
         "mornye_heal_event_mode_source": "party_preset",
         "interfered_marker": {
-          "mode": "simplified_on_inversion"
+          "mode": "tune_break_triggered"
         }
+      },
+      "tune_break_system": {
+        "mode": "excel_off_tune_mistune_action",
+        "enemy_off_tune_max": 3920,
+        "enemy_tune_break_cooldown_seconds": 8.0
       }
     },
     "generic_swap": {
@@ -128,9 +141,14 @@
         "mornye_heal_event_mode": "simplified_syntony_field_uptime",
         "mornye_heal_event_mode_source": "party_preset",
         "interfered_marker": {
-          "mode": "simplified_on_inversion"
+          "mode": "tune_break_triggered"
         },
         "mornye_expectation_error_mode": "always_success"
+      },
+      "tune_break_system": {
+        "mode": "excel_off_tune_mistune_action",
+        "enemy_off_tune_max": 3920,
+        "enemy_tune_break_cooldown_seconds": 8.0
       }
     },
     "generic_swap": {

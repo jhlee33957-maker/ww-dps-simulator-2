@@ -1,0 +1,20 @@
+{
+  "enemy_off_tune_max": 3920,
+  "enemy_off_tune_max_status": "single_target_boss_default",
+  "off_tune_values_source": "Excel 角色-女 column S",
+  "tune_break_action_model": "conditional_character_specific_policy_action_not_automatic_damage",
+  "aemeath_tune_break_coefficients": [1.0, 12.0],
+  "mornye_tune_break_coefficients": [1.7334, 2.2666, 12.0],
+  "tune_break_formula": "10000 * tune_break_multiplier * tune_break_boost * RES * DEF * tune_dmg_bonus",
+  "interfered_application_timing": "after_final_excel_defined_tune_break_hit",
+  "interfered_marker_source": "Observation Marker + Tune Break",
+  "interfered_marker_amp_type": "target_damage_taken_amp",
+  "user_profile_energy_regen": 2.7944,
+  "user_profile_interfered_marker_amp": 0.4,
+  "party_response_scan": [
+    "aemeath_starburst",
+    "mornye_particle_jet"
+  ],
+  "response_damage_status": "unresolved_no_damage_invented",
+  "legacy_simplified_on_inversion": "still_available_only_when_explicitly_configured"
+}
