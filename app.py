@@ -423,6 +423,7 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
                         "weapon_type": weapon.get("weapon_type"),
                         "rank": weapon.get("rank", 1),
                         "static_stats_already_in_profile": weapon.get("static_stats_already_in_profile"),
+                        "base_atk_and_crit_already_in_profile": weapon.get("base_atk_and_crit_already_in_profile"),
                         "def_percent_passive_already_in_profile": weapon.get("def_percent_passive_already_in_profile"),
                     }
                 )
@@ -451,6 +452,20 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
                         summary.starfield_calibrator_party_crit_damage_trigger_count
                     ),
                     "Starfield active Crit DMG bonus": summary.starfield_calibrator_party_crit_damage_bonus,
+                    "Everbright Polestar equipped": summary.everbright_polestar_equipped,
+                    "Everbright Polestar rank": summary.everbright_polestar_rank,
+                    "Everbright all attribute DMG bonus": summary.everbright_polestar_all_attribute_damage_bonus,
+                    "Everbright penetration trigger count": (
+                        summary.everbright_polestar_liberation_penetration_trigger_count
+                    ),
+                    "Everbright penetration uptime": (
+                        f"{summary.everbright_polestar_liberation_penetration_uptime_seconds:.2f}s"
+                    ),
+                    "Everbright active DEF Ignore": summary.everbright_polestar_def_ignore_bonus,
+                    "Everbright active Fusion RES Ignore": summary.everbright_polestar_fusion_res_ignore_bonus,
+                    "Everbright buff windows": summary.everbright_polestar_buff_windows,
+                    "Everbright trigger event tags": ["tune_rupture_shifting", "fusion_burst"],
+                    "Everbright base/crit stats applied at runtime": False,
                     "Discord support": summary.discord_concerto_restore_support_status,
                     "Static weapon stats applied at runtime": False,
                     "Starfield DEF% passive applied at runtime": False,
@@ -760,6 +775,23 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "runtime_crit_damage_bonus",
         "starfield_calibrator_party_crit_damage_active",
         "starfield_calibrator_party_crit_damage_bonus",
+        "everbright_polestar_all_attribute_bonus_active",
+        "everbright_polestar_all_attribute_damage_bonus",
+        "runtime_all_attribute_damage_bonus",
+        "element_damage_bonus_before_weapon",
+        "element_damage_bonus_after_weapon",
+        "everbright_polestar_liberation_penetration_active",
+        "everbright_polestar_liberation_penetration_remaining",
+        "def_ignore_before_weapon",
+        "everbright_polestar_def_ignore_bonus",
+        "total_def_ignore",
+        "def_multiplier_before_weapon",
+        "def_multiplier_after_weapon",
+        "enemy_res_before_weapon",
+        "everbright_polestar_fusion_res_ignore_bonus",
+        "enemy_res_after_weapon",
+        "res_multiplier_before_weapon",
+        "res_multiplier_after_weapon",
         "weapon_effects_enabled",
         "weapon_effect_triggered",
         "weapon_id",

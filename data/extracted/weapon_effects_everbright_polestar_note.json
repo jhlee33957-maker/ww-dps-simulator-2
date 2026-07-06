@@ -1,0 +1,67 @@
+{
+  "weapon_id": "everbright_polestar",
+  "display_name": "Everbright Polestar",
+  "source_status": "user_supplied_weapon_tooltip",
+  "affected_profile_ids": [
+    "aemeath_user_real_01"
+  ],
+  "static_stats_already_in_profile": true,
+  "base_atk_and_crit_already_in_profile": true,
+  "trigger_events": [
+    "tune_rupture_shifting",
+    "fusion_burst"
+  ],
+  "duration_seconds": 8.0,
+  "rank_table": {
+    "1": {
+      "all_attribute_damage_bonus": 0.12,
+      "resonance_liberation_def_ignore": 0.32,
+      "resonance_liberation_fusion_res_ignore": 0.10
+    },
+    "2": {
+      "all_attribute_damage_bonus": 0.15,
+      "resonance_liberation_def_ignore": 0.40,
+      "resonance_liberation_fusion_res_ignore": 0.15
+    },
+    "3": {
+      "all_attribute_damage_bonus": 0.18,
+      "resonance_liberation_def_ignore": 0.48,
+      "resonance_liberation_fusion_res_ignore": 0.20
+    },
+    "4": {
+      "all_attribute_damage_bonus": 0.21,
+      "resonance_liberation_def_ignore": 0.56,
+      "resonance_liberation_fusion_res_ignore": 0.25
+    },
+    "5": {
+      "all_attribute_damage_bonus": 0.24,
+      "resonance_liberation_def_ignore": 0.64,
+      "resonance_liberation_fusion_res_ignore": 0.30
+    }
+  },
+  "effect_values": {
+    "all_attribute_damage_bonus": {
+      "effect_type": "damage_bonus_buff",
+      "trigger": "always_active",
+      "damage_bonus_scope": "all_attribute",
+      "applies_to_tune_damage": false
+    },
+    "liberation_def_res_ignore_after_tune_event": {
+      "effect_type": "conditional_penetration_buff",
+      "trigger": "mechanic_event_emitted",
+      "damage_bonus_category_filter": "resonance_liberation",
+      "element_filter_for_res_ignore": "fusion",
+      "max_stacks": 1,
+      "stacking_rule": "refresh_duration"
+    }
+  },
+  "not_applied_to": [
+    "tune_break_formula_damage",
+    "tune_response_formula_damage"
+  ],
+  "formula_integration": {
+    "def_ignore": "Adds to total_def_ignore before DEF Multiplier denominator calculation.",
+    "fusion_res_ignore": "Subtracts from effective Fusion RES before applying the existing piecewise RES Multiplier.",
+    "all_attribute_damage_bonus": "Adds to the runtime element/all-attribute damage bonus bucket for normal elemental damage."
+  }
+}

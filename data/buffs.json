@@ -221,6 +221,42 @@
     }
   },
   {
+    "id": "everbright_polestar_liberation_penetration",
+    "name": "Everbright Polestar Liberation Penetration",
+    "duration": 8.0,
+    "modifier_type": "boost",
+    "value": 0.0,
+    "target": "self",
+    "target_scope": "self",
+    "source_character_id": "aemeath",
+    "stacking_rule": "refresh_duration",
+    "max_stacks": 1,
+    "metadata": {
+      "source_type": "weapon",
+      "weapon_id": "everbright_polestar",
+      "trigger_event_tags": [
+        "tune_rupture_shifting",
+        "fusion_burst"
+      ],
+      "applies_to_damage_bonus_category": "resonance_liberation",
+      "def_ignore_by_rank": {
+        "1": 0.32,
+        "2": 0.40,
+        "3": 0.48,
+        "4": 0.56,
+        "5": 0.64
+      },
+      "fusion_res_ignore_by_rank": {
+        "1": 0.10,
+        "2": 0.15,
+        "3": 0.20,
+        "4": 0.25,
+        "5": 0.30
+      },
+      "source_status": "user_supplied_weapon_tooltip"
+    }
+  },
+  {
     "id": "aemeath_trailblazing_star_5set",
     "name": "Aemeath Trailblazing Star 5-set Runtime Buff",
     "duration": 8.0,

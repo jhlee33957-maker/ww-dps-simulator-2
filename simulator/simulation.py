@@ -61,6 +61,7 @@ from simulator.weapon_effects import (
     STARFIELD_CALIBRATOR_BUFF_ID,
     active_weapons_for_characters,
     advance_weapon_effect_cooldowns,
+    apply_weapon_mechanic_event_effects,
     apply_weapon_buff_effects,
     load_weapon_definition,
     process_weapon_effects_before_or_after_action,
@@ -346,6 +347,7 @@ class Simulation:
             mechanic=actor_mechanic,
             combat_duration=self.combat_duration,
             pre_action_echo_set_log_fields=pre_action_echo_set_log_fields,
+            weapon_definitions=self.weapon_definitions,
         )
         if not result.valid:
             return False
@@ -358,6 +360,17 @@ class Simulation:
 
         weapon_action_log = {}
         if not result.truncated_by_combat_limit:
+            mechanic_weapon_log = apply_weapon_mechanic_event_effects(
+                emitted_event_tags=list(result.emitted_mechanic_event_tags),
+                source_character_id=actor_character_id,
+                state=self.state,
+                characters=self.characters,
+                buffs=self.buffs,
+                weapon_definitions=self.weapon_definitions,
+                application_time=result.end_time,
+                event_source=f"mechanic_event:{action.id}",
+            )
+            self._sync_weapon_result_fields(result, mechanic_weapon_log)
             weapon_action_log = process_weapon_effects_before_or_after_action(
                 action=action,
                 state=self.state,
@@ -1497,6 +1510,7 @@ class Simulation:
             for key, count in self.state.weapon_effect_trigger_counts.items()
             if ":starfield_calibrator:heal_party_crit_damage_buff" in key
         )
+        result.active_buffs = [buff.buff_id for buff in self.state.active_buffs if buff.remaining_duration > 0.0]
 
     def _mechanic_for_character(self, character_id: str) -> CharacterMechanic:
         mechanic = self.character_mechanics.get(character_id)
@@ -1594,6 +1608,29 @@ class Simulation:
             ),
             None,
         )
+        everbright_weapon = (active_weapons.get("aemeath") or {})
+        everbright_equipped = everbright_weapon.get("weapon_id") == "everbright_polestar"
+        everbright_rank = min(5, max(1, int(everbright_weapon.get("rank", 1) or 1))) if everbright_equipped else 0
+        everbright_values = (
+            ((self.weapon_definitions.get("weapons") or {}).get("everbright_polestar") or {})
+            .get("rank_values", {})
+            .get(str(everbright_rank), {})
+            if everbright_equipped
+            else {}
+        )
+        everbright_penetration_buff = next(
+            (
+                buff
+                for buff in self.state.active_buffs
+                if buff.buff_id == "everbright_polestar_liberation_penetration" and buff.remaining_duration > 0.0
+            ),
+            None,
+        )
+        everbright_windows = [
+            dict(window)
+            for window in self.state.weapon_effect_buff_windows
+            if window.get("buff_id") == "everbright_polestar_liberation_penetration"
+        ]
 
         return SimulationSummary(
             total_damage=self.state.total_damage,
@@ -1714,6 +1751,32 @@ class Simulation:
                 if starfield_crit_buff is not None
                 else 0.0
             ),
+            everbright_polestar_equipped=everbright_equipped,
+            everbright_polestar_rank=everbright_rank,
+            everbright_polestar_all_attribute_damage_bonus=float(
+                everbright_values.get("all_attribute_damage_bonus", 0.0) or 0.0
+            ),
+            everbright_polestar_liberation_penetration_trigger_count=sum(
+                count
+                for key, count in self.state.weapon_effect_trigger_counts.items()
+                if ":everbright_polestar:liberation_def_res_ignore_after_tune_event" in key
+            ),
+            everbright_polestar_liberation_penetration_uptime_seconds=weapon_effect_uptime_seconds(
+                self.state,
+                "everbright_polestar_liberation_penetration",
+                self.state.current_time,
+            ),
+            everbright_polestar_def_ignore_bonus=float(
+                (everbright_penetration_buff.metadata or {}).get("dynamic_def_ignore", 0.0)
+                if everbright_penetration_buff is not None
+                else 0.0
+            ),
+            everbright_polestar_fusion_res_ignore_bonus=float(
+                (everbright_penetration_buff.metadata or {}).get("dynamic_fusion_res_ignore", 0.0)
+                if everbright_penetration_buff is not None
+                else 0.0
+            ),
+            everbright_polestar_buff_windows=everbright_windows,
             discord_concerto_restore_support_status=(
                 "implemented_data_driven"
                 if "discord" in ((self.weapon_definitions.get("weapons") or {}).keys())

@@ -12,8 +12,14 @@ from simulator.buff_system import (
     has_required_buffs,
     tick_buffs,
 )
-from simulator.build_profiles import damage_bonus_breakdown, scaling_value_for_action, stat_component_log_fields, support_stat_log_fields
-from simulator.damage_formula import calculate_normal_damage
+from simulator.build_profiles import (
+    action_damage_element,
+    damage_bonus_breakdown,
+    scaling_value_for_action,
+    stat_component_log_fields,
+    support_stat_log_fields,
+)
+from simulator.damage_formula import calc_def_multiplier, calc_res_multiplier, calculate_normal_damage
 from simulator.echo_sets import (
     AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID,
     MORNYE_HIGH_SYNTONY_FIELD_DEF_BUFF_ID,
@@ -27,6 +33,7 @@ from simulator.mechanic_events import preview_mechanic_event_trigger, process_me
 from simulator.models import ActionData, ActionResult, BuffData, CharacterData, CombatState, HitData, TimelineEntry
 from simulator.resource_system import apply_resource_changes, can_pay_resources
 from simulator.tune_break import calculate_tune_break_damage_detail
+from simulator.weapon_effects import weapon_runtime_damage_effects
 
 
 def is_action_valid(action: ActionData, state: CombatState) -> tuple[bool, str | None]:
@@ -126,6 +133,7 @@ def _calculate_hit_damage(
     buffs: dict[str, BuffData],
     temporary_stat_modifiers: dict[str, float] | None = None,
     force_active_buff_ids: set[str] | None = None,
+    weapon_definitions: dict[str, Any] | None = None,
 ) -> tuple[float, dict]:
     transition_damage_action = bool((action.mechanic_effects or {}).get("transition_action"))
     if action.character_id is None or (action.action_type == "swap" and not transition_damage_action):
@@ -164,16 +172,68 @@ def _calculate_hit_damage(
         time_offset=hit.time,
         force_active_buff_ids=force_active_buff_ids,
     )
+    damage_element = action_damage_element(action, character)
+    runtime_weapon_effects = weapon_runtime_damage_effects(
+        character=character,
+        action=action,
+        state=state,
+        buffs=buffs,
+        weapon_definitions=weapon_definitions or {},
+        damage_element=damage_element,
+        damage_bonus_category=action.damage_bonus_category or action.action_type or "other",
+        hit_damage_category=hit.damage_category,
+        time_offset=hit.time,
+    )
+    runtime_element_bonuses = dict(stats.get("damage_bonus_by_element_buff") or {})
+    for element, value in (runtime_weapon_effects.get("runtime_element_bonus_by_element") or {}).items():
+        runtime_element_bonuses[element] = runtime_element_bonuses.get(element, 0.0) + float(value)
+
     damage_bonus_context = damage_bonus_breakdown(
         character,
         action,
         additive_buff_bonus=float(stats.get("damage_bonus_buff", 0.0)),
-        additive_element_bonuses=stats.get("damage_bonus_by_element_buff") or {},
+        additive_element_bonuses=runtime_element_bonuses,
         echo_set_element_bonuses=stats.get("echo_set_damage_bonus_by_element") or {},
     )
+    runtime_weapon_effects = weapon_runtime_damage_effects(
+        character=character,
+        action=action,
+        state=state,
+        buffs=buffs,
+        weapon_definitions=weapon_definitions or {},
+        damage_element=str(damage_bonus_context.get("damage_element") or damage_element),
+        damage_bonus_category=str(damage_bonus_context.get("damage_bonus_category") or "other"),
+        hit_damage_category=hit.damage_category,
+        time_offset=hit.time,
+    )
+    all_attribute_bonus = float(runtime_weapon_effects.get("runtime_all_attribute_damage_bonus", 0.0) or 0.0)
+    element_damage_bonus_after_weapon = float(damage_bonus_context.get("element_dmg_bonus", 0.0) or 0.0)
+    element_damage_bonus_before_weapon = element_damage_bonus_after_weapon - all_attribute_bonus
     havoc_def_reduction = get_havoc_bane_def_reduction_at_time(state, hit.time)
     final_def_reduction = state.def_reduction + havoc_def_reduction
     scaling_stat, scaling_value = scaling_value_for_action(stats, action, character)
+    def_ignore_before_weapon = float(stats["def_ignore"])
+    def_ignore_bonus = float(runtime_weapon_effects.get("everbright_polestar_def_ignore_bonus", 0.0) or 0.0)
+    total_def_ignore = def_ignore_before_weapon + def_ignore_bonus
+    fusion_res_ignore_bonus = float(
+        runtime_weapon_effects.get("everbright_polestar_fusion_res_ignore_bonus", 0.0) or 0.0
+    )
+    effective_res_before_weapon = state.enemy_res - state.res_pen
+    effective_res_after_weapon = effective_res_before_weapon - fusion_res_ignore_bonus
+    def_multiplier_before_weapon = calc_def_multiplier(
+        int(stats["attacker_level"]),
+        state.enemy_level,
+        def_ignore_before_weapon,
+        final_def_reduction,
+    )
+    def_multiplier_after_weapon = calc_def_multiplier(
+        int(stats["attacker_level"]),
+        state.enemy_level,
+        total_def_ignore,
+        final_def_reduction,
+    )
+    res_multiplier_before_weapon = calc_res_multiplier(effective_res_before_weapon)
+    res_multiplier_after_weapon = calc_res_multiplier(effective_res_after_weapon)
 
     damage = 0.0
     tune_break_detail: dict[str, Any] = {}
@@ -205,10 +265,10 @@ def _calculate_hit_damage(
             additional_tune_break_boost=action.tune_break_boost_points / 100.0,
             tune_dmg_bonus=state.tune_dmg_bonus,
             enemy_res=state.enemy_res,
-            res_pen=state.res_pen,
+            res_pen=state.res_pen + fusion_res_ignore_bonus,
             attacker_level=int(stats["attacker_level"]),
             enemy_level=state.enemy_level,
-            def_ignore=stats["def_ignore"],
+            def_ignore=total_def_ignore,
             def_reduction=final_def_reduction,
             tune_break_damage_type="tune_break",
             tune_break_element=action.damage_element or "unresolved",
@@ -226,7 +286,7 @@ def _calculate_hit_damage(
             "element_dmg_bonus": 0.0,
             "runtime_element_damage_bonus": 0.0,
             "echo_set_damage_bonus": 0.0,
-            "effective_damage_bonus": 0.0,
+        "effective_damage_bonus": 0.0,
         }
         scaling_stat = "none"
         scaling_value = 0.0
@@ -288,6 +348,35 @@ def _calculate_hit_damage(
         "crit_damage_before_buffs": float(stats.get("crit_damage_before_buffs", character.crit_damage)),
         "crit_damage_after_buffs": float(stats.get("crit_damage_after_buffs", stats.get("crit_damage", 0.0))),
         "runtime_crit_damage_bonus": float(stats.get("runtime_crit_damage_bonus", 0.0) or 0.0),
+        "everbright_polestar_all_attribute_bonus_active": bool(
+            runtime_weapon_effects.get("everbright_polestar_all_attribute_bonus_active", False)
+        ),
+        "everbright_polestar_all_attribute_damage_bonus": all_attribute_bonus,
+        "runtime_all_attribute_damage_bonus": all_attribute_bonus,
+        "element_damage_bonus_before_weapon": element_damage_bonus_before_weapon,
+        "element_damage_bonus_after_weapon": element_damage_bonus_after_weapon,
+        "everbright_polestar_liberation_penetration_active": bool(
+            runtime_weapon_effects.get("everbright_polestar_liberation_penetration_active", False)
+        ),
+        "everbright_polestar_liberation_penetration_remaining": float(
+            runtime_weapon_effects.get("everbright_polestar_liberation_penetration_remaining", 0.0) or 0.0
+        ),
+        "def_ignore_before_weapon": def_ignore_before_weapon,
+        "everbright_polestar_def_ignore_bonus": def_ignore_bonus,
+        "total_def_ignore": total_def_ignore,
+        "def_multiplier_before_weapon": def_multiplier_before_weapon,
+        "def_multiplier_after_weapon": def_multiplier_after_weapon,
+        "enemy_res_before_weapon": effective_res_before_weapon,
+        "everbright_polestar_fusion_res_ignore_bonus": fusion_res_ignore_bonus,
+        "enemy_res_after_weapon": effective_res_after_weapon,
+        "res_multiplier_before_weapon": res_multiplier_before_weapon,
+        "res_multiplier_after_weapon": res_multiplier_after_weapon,
+        "damage_element_fallback_used_for_weapon_res_ignore": (
+            action.damage_element in (None, "", "generic", "unresolved")
+            and character.element
+            and str(damage_bonus_context.get("damage_element") or "") == str(character.element).lower()
+        ),
+        "weapon_effect_source_status": runtime_weapon_effects.get("weapon_effect_source_status"),
         "starfield_calibrator_party_crit_damage_active": bool(
             stats.get("starfield_calibrator_party_crit_damage_active", False)
         ),
@@ -315,6 +404,7 @@ def _calculate_hit_damage_totals(
     action_damage_multiplier: float = 1.0,
     temporary_stat_modifiers: dict[str, float] | None = None,
     force_active_buff_ids: set[str] | None = None,
+    weapon_definitions: dict[str, Any] | None = None,
 ) -> tuple[float, float, list[dict], dict[str, float], float, dict[str, Any]]:
     normal_damage = 0.0
     tune_break_damage = 0.0
@@ -335,6 +425,7 @@ def _calculate_hit_damage_totals(
             buffs,
             temporary_stat_modifiers,
             force_active_buff_ids=force_active_buff_ids,
+            weapon_definitions=weapon_definitions,
         )
         if damage > 0.0 and action_damage_multiplier != 1.0:
             damage *= action_damage_multiplier
@@ -383,6 +474,24 @@ def _calculate_hit_damage_totals(
                         "runtime_crit_damage_bonus",
                         "starfield_calibrator_party_crit_damage_active",
                         "starfield_calibrator_party_crit_damage_bonus",
+                        "everbright_polestar_all_attribute_bonus_active",
+                        "everbright_polestar_all_attribute_damage_bonus",
+                        "runtime_all_attribute_damage_bonus",
+                        "element_damage_bonus_before_weapon",
+                        "element_damage_bonus_after_weapon",
+                        "everbright_polestar_liberation_penetration_active",
+                        "everbright_polestar_liberation_penetration_remaining",
+                        "def_ignore_before_weapon",
+                        "everbright_polestar_def_ignore_bonus",
+                        "total_def_ignore",
+                        "def_multiplier_before_weapon",
+                        "def_multiplier_after_weapon",
+                        "enemy_res_before_weapon",
+                        "everbright_polestar_fusion_res_ignore_bonus",
+                        "enemy_res_after_weapon",
+                        "res_multiplier_before_weapon",
+                        "res_multiplier_after_weapon",
+                        "damage_element_fallback_used_for_weapon_res_ignore",
                         "build_profile_id",
                         "scaling_stat",
                         "scaling_value",
@@ -556,6 +665,7 @@ def execute_action(
     mechanic: Any | None = None,
     combat_duration: float | None = None,
     pre_action_echo_set_log_fields: dict[str, Any] | None = None,
+    weapon_definitions: dict[str, Any] | None = None,
 ) -> ActionResult:
     valid, reason = is_action_valid(action, state)
     start_time = state.current_time
@@ -677,6 +787,7 @@ def execute_action(
         action_damage_multiplier=action_damage_multiplier,
         temporary_stat_modifiers=temporary_stat_modifiers,
         force_active_buff_ids=force_active_buff_ids,
+        weapon_definitions=weapon_definitions,
     )
     direct_damage = normal_damage + tune_break_damage
     mechanic_event_log_fields = process_mechanic_event_triggers(
@@ -772,6 +883,24 @@ def execute_action(
         "weapon_effect_duration_seconds",
         "starfield_calibrator_party_crit_damage_active",
         "starfield_calibrator_party_crit_damage_bonus",
+        "everbright_polestar_all_attribute_bonus_active",
+        "everbright_polestar_all_attribute_damage_bonus",
+        "runtime_all_attribute_damage_bonus",
+        "element_damage_bonus_before_weapon",
+        "element_damage_bonus_after_weapon",
+        "everbright_polestar_liberation_penetration_active",
+        "everbright_polestar_liberation_penetration_remaining",
+        "def_ignore_before_weapon",
+        "everbright_polestar_def_ignore_bonus",
+        "total_def_ignore",
+        "def_multiplier_before_weapon",
+        "def_multiplier_after_weapon",
+        "enemy_res_before_weapon",
+        "everbright_polestar_fusion_res_ignore_bonus",
+        "enemy_res_after_weapon",
+        "res_multiplier_before_weapon",
+        "res_multiplier_after_weapon",
+        "damage_element_fallback_used_for_weapon_res_ignore",
     }
     echo_set_result_log_fields = {
         key: value
@@ -837,6 +966,44 @@ def execute_action(
                 echo_set_log_fields.get("starfield_calibrator_party_crit_damage_bonus", 0.0),
             )
             or 0.0
+        ),
+        everbright_polestar_all_attribute_bonus_active=bool(
+            action_damage_bonus_context.get("everbright_polestar_all_attribute_bonus_active", False)
+        ),
+        everbright_polestar_all_attribute_damage_bonus=float(
+            action_damage_bonus_context.get("everbright_polestar_all_attribute_damage_bonus", 0.0) or 0.0
+        ),
+        runtime_all_attribute_damage_bonus=float(
+            action_damage_bonus_context.get("runtime_all_attribute_damage_bonus", 0.0) or 0.0
+        ),
+        element_damage_bonus_before_weapon=float(
+            action_damage_bonus_context.get("element_damage_bonus_before_weapon", 0.0) or 0.0
+        ),
+        element_damage_bonus_after_weapon=float(
+            action_damage_bonus_context.get("element_damage_bonus_after_weapon", 0.0) or 0.0
+        ),
+        everbright_polestar_liberation_penetration_active=bool(
+            action_damage_bonus_context.get("everbright_polestar_liberation_penetration_active", False)
+        ),
+        everbright_polestar_liberation_penetration_remaining=float(
+            action_damage_bonus_context.get("everbright_polestar_liberation_penetration_remaining", 0.0) or 0.0
+        ),
+        def_ignore_before_weapon=float(action_damage_bonus_context.get("def_ignore_before_weapon", 0.0) or 0.0),
+        everbright_polestar_def_ignore_bonus=float(
+            action_damage_bonus_context.get("everbright_polestar_def_ignore_bonus", 0.0) or 0.0
+        ),
+        total_def_ignore=float(action_damage_bonus_context.get("total_def_ignore", 0.0) or 0.0),
+        def_multiplier_before_weapon=float(action_damage_bonus_context.get("def_multiplier_before_weapon", 0.0) or 0.0),
+        def_multiplier_after_weapon=float(action_damage_bonus_context.get("def_multiplier_after_weapon", 0.0) or 0.0),
+        enemy_res_before_weapon=float(action_damage_bonus_context.get("enemy_res_before_weapon", 0.0) or 0.0),
+        everbright_polestar_fusion_res_ignore_bonus=float(
+            action_damage_bonus_context.get("everbright_polestar_fusion_res_ignore_bonus", 0.0) or 0.0
+        ),
+        enemy_res_after_weapon=float(action_damage_bonus_context.get("enemy_res_after_weapon", 0.0) or 0.0),
+        res_multiplier_before_weapon=float(action_damage_bonus_context.get("res_multiplier_before_weapon", 0.0) or 0.0),
+        res_multiplier_after_weapon=float(action_damage_bonus_context.get("res_multiplier_after_weapon", 0.0) or 0.0),
+        damage_element_fallback_used_for_weapon_res_ignore=bool(
+            action_damage_bonus_context.get("damage_element_fallback_used_for_weapon_res_ignore", False)
         ),
         build_profile_id=action_damage_bonus_context.get("build_profile_id"),
         scaling_stat=action_damage_bonus_context.get("scaling_stat"),
@@ -1046,6 +1213,24 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         runtime_crit_damage_bonus=result.runtime_crit_damage_bonus,
         starfield_calibrator_party_crit_damage_active=result.starfield_calibrator_party_crit_damage_active,
         starfield_calibrator_party_crit_damage_bonus=result.starfield_calibrator_party_crit_damage_bonus,
+        everbright_polestar_all_attribute_bonus_active=result.everbright_polestar_all_attribute_bonus_active,
+        everbright_polestar_all_attribute_damage_bonus=result.everbright_polestar_all_attribute_damage_bonus,
+        runtime_all_attribute_damage_bonus=result.runtime_all_attribute_damage_bonus,
+        element_damage_bonus_before_weapon=result.element_damage_bonus_before_weapon,
+        element_damage_bonus_after_weapon=result.element_damage_bonus_after_weapon,
+        everbright_polestar_liberation_penetration_active=result.everbright_polestar_liberation_penetration_active,
+        everbright_polestar_liberation_penetration_remaining=result.everbright_polestar_liberation_penetration_remaining,
+        def_ignore_before_weapon=result.def_ignore_before_weapon,
+        everbright_polestar_def_ignore_bonus=result.everbright_polestar_def_ignore_bonus,
+        total_def_ignore=result.total_def_ignore,
+        def_multiplier_before_weapon=result.def_multiplier_before_weapon,
+        def_multiplier_after_weapon=result.def_multiplier_after_weapon,
+        enemy_res_before_weapon=result.enemy_res_before_weapon,
+        everbright_polestar_fusion_res_ignore_bonus=result.everbright_polestar_fusion_res_ignore_bonus,
+        enemy_res_after_weapon=result.enemy_res_after_weapon,
+        res_multiplier_before_weapon=result.res_multiplier_before_weapon,
+        res_multiplier_after_weapon=result.res_multiplier_after_weapon,
+        damage_element_fallback_used_for_weapon_res_ignore=result.damage_element_fallback_used_for_weapon_res_ignore,
         build_profile_id=result.build_profile_id,
         scaling_stat=result.scaling_stat,
         scaling_value=result.scaling_value,

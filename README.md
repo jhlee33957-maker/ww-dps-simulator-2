@@ -25,9 +25,11 @@ Characters now support `energy_regen` as a decimal stat where `1.0 = 100%` and m
 
 Runtime weapon effects are data-driven through `data/weapons.json`. Weapon definitions can provide a weapon id, type, rank values, trigger event, target scope, cooldown, duration, stacking rule, stat modifiers, resource modifiers, and source metadata. Build profiles can assign equipped weapon metadata without applying static weapon stats again.
 
-Current Broadblade support includes Starfield Calibrator and Discord. Starfield Calibrator and Discord restore Concerto Energy, not Resonance Energy, when the holder casts a Resonance Skill; R1 restores 8 Concerto Energy and uses a 20s per-character weapon-effect cooldown, with R1-R5 scaling in data. Starfield Calibrator also listens to existing `team_heal` events and applies a party Crit DMG buff for 4s; R1 adds `crit_damage +0.20`, and same-name effects refresh duration instead of stacking.
+Current Broadblade support includes Starfield Calibrator, Discord, and Everbright Polestar. Starfield Calibrator and Discord restore Concerto Energy, not Resonance Energy, when the holder casts a Resonance Skill; R1 restores 8 Concerto Energy and uses a 20s per-character weapon-effect cooldown, with R1-R5 scaling in data. Starfield Calibrator also listens to existing `team_heal` events and applies a party Crit DMG buff for 4s; R1 adds `crit_damage +0.20`, and same-name effects refresh duration instead of stacking. Everbright Polestar is assigned to `aemeath_user_real_01` as runtime passive effects only: R1 adds +12% All Attribute DMG Bonus to normal elemental damage, and after Aemeath emits `tune_rupture_shifting` or `fusion_burst`, an 8s self buff lets qualifying `damage_bonus_category = resonance_liberation` Fusion damage ignore +32% DEF and +10% Fusion RES. The conditional penetration modifies DEF and RES multipliers, not additive damage bonus, and is excluded from Tune Break and Tune Response formula damage.
 
 For `mornye_user_real_01`, Starfield Calibrator weapon base/static stats and its DEF% passive are marked as already reflected in the user-entered final profile. This patch does not apply weapon base ATK, Energy Regen, DEF, or the Starfield DEF% passive as runtime stats.
+
+For `aemeath_user_real_01`, Everbright Polestar weapon base ATK and crit stat are marked as already reflected in the user-entered final profile. This patch does not apply weapon base ATK, crit, or other static weapon stats again at runtime.
 
 Character mechanic modules can:
 

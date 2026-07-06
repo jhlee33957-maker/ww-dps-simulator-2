@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from simulator.buff_system import apply_buff
+from simulator.buff_system import apply_buff, get_active_buffs_for_action
 from simulator.models import ActionData, BuffData, CharacterData, CombatState
 from simulator.resource_system import add_concerto_energy, sync_concerto_state
 
@@ -18,6 +18,7 @@ SUPPORTED_TRIGGER_EVENT_NAMES = {
     "team_heal",
     "damage_dealt",
     "tune_break_dealt",
+    "mechanic_event_emitted",
     "crit_hit",
     "swap_in",
     "swap_out",
@@ -27,6 +28,7 @@ SUPPORTED_EFFECT_TYPES = {
     "stat_buff",
     "party_stat_buff",
     "damage_bonus_buff",
+    "conditional_penetration_buff",
     "damage_taken_amp",
     "cooldown_gated_effect",
     "stackable_effect",
@@ -263,6 +265,205 @@ def apply_weapon_buff_effects(
         state.weapon_effect_logs.append(base)
         _merge_weapon_log(log, base)
     return log
+
+
+def apply_weapon_mechanic_event_effects(
+    *,
+    emitted_event_tags: list[str],
+    source_character_id: str,
+    state: CombatState,
+    characters: dict[str, CharacterData],
+    buffs: dict[str, BuffData],
+    weapon_definitions: dict[str, Any],
+    application_time: float,
+    event_source: str,
+) -> dict[str, Any]:
+    log = weapon_effect_base_log()
+    if not emitted_event_tags:
+        return log
+    character = characters.get(source_character_id)
+    weapon = get_character_weapon(character)
+    weapon_def = _weapon_definition(weapon_definitions, weapon)
+    if not weapon_def:
+        return log
+
+    emitted = {str(tag) for tag in emitted_event_tags}
+    for effect_id, effect in (weapon_def.get("effects") or {}).items():
+        if effect.get("trigger") != "mechanic_event_emitted":
+            continue
+        if effect.get("effect_type") != "conditional_penetration_buff":
+            continue
+        trigger_tags = {str(tag) for tag in effect.get("trigger_event_tags", [])}
+        matched_tags = sorted(emitted.intersection(trigger_tags))
+        if not matched_tags:
+            continue
+        buff_id = str(effect.get("buff_id") or "")
+        buff = buffs.get(buff_id)
+        if buff is None:
+            continue
+
+        weapon_id = str(weapon_def.get("id") or weapon.get("weapon_id"))
+        rank = _weapon_rank(weapon)
+        rank_values = weapon_def.get("rank_values") or {}
+        values = rank_values.get(str(rank)) or {}
+        def_ignore_bonus = float(values.get("resonance_liberation_def_ignore", 0.0) or 0.0)
+        fusion_res_ignore_bonus = float(values.get("resonance_liberation_fusion_res_ignore", 0.0) or 0.0)
+
+        runtime_buff = buff.model_copy(deep=True)
+        runtime_buff.duration = float(effect.get("duration_seconds", runtime_buff.duration) or runtime_buff.duration)
+        runtime_buff.max_stacks = int(effect.get("max_stacks", runtime_buff.max_stacks) or runtime_buff.max_stacks)
+        runtime_buff.stacking_rule = str(effect.get("stacking_rule") or runtime_buff.stacking_rule)
+        runtime_buff.source_character_id = source_character_id
+        runtime_buff.metadata = {
+            **runtime_buff.metadata,
+            "dynamic_def_ignore": def_ignore_bonus,
+            "dynamic_fusion_res_ignore": fusion_res_ignore_bonus,
+            "dynamic_value": def_ignore_bonus,
+            "weapon_id": weapon_id,
+            "weapon_rank": rank,
+            "weapon_effect_id": effect_id,
+            "weapon_effect_type": effect.get("effect_type"),
+            "trigger": "mechanic_event_emitted",
+            "trigger_event_tags": matched_tags,
+            "event_source": event_source,
+            "damage_bonus_category_filter": effect.get("damage_bonus_category_filter"),
+            "element_filter_for_res_ignore": effect.get("element_filter_for_res_ignore"),
+            "weapon_effect_source_status": weapon_def.get(
+                "source_status",
+                runtime_buff.metadata.get("weapon_effect_source_status", runtime_buff.metadata.get("source_status")),
+            ),
+        }
+        runtime_buff.metadata.pop("source_status", None)
+        was_active = _active_buff_exists(state, runtime_buff.id)
+        apply_buff(state, runtime_buff, source_character_id)
+        key = weapon_effect_cooldown_key(source_character_id, weapon_id, effect_id)
+        state.weapon_effect_trigger_counts[key] = state.weapon_effect_trigger_counts.get(key, 0) + 1
+        _record_weapon_buff_window(state, runtime_buff.id, source_character_id, application_time, runtime_buff.duration)
+        base = _effect_log_base(
+            effect_id=effect_id,
+            effect=effect,
+            weapon=weapon,
+            weapon_def=weapon_def,
+            source_character_id=source_character_id,
+            application_time=application_time,
+            event_source=event_source,
+        )
+        base.update(
+            {
+                "weapon_effect_triggered": True,
+                "weapon_effect_buff_refreshed": was_active,
+                "weapon_effect_duration_seconds": runtime_buff.duration,
+                "everbright_polestar_liberation_penetration_active": True,
+                "everbright_polestar_liberation_penetration_remaining": runtime_buff.duration,
+                "everbright_polestar_def_ignore_bonus": def_ignore_bonus,
+                "everbright_polestar_fusion_res_ignore_bonus": fusion_res_ignore_bonus,
+                "everbright_polestar_trigger_event_tags": matched_tags,
+                "everbright_polestar_triggered_this_action": True,
+                "everbright_polestar_buff_refreshed": was_active,
+                "active_buff_ids": [active.buff_id for active in state.active_buffs if active.remaining_duration > 0.0],
+            }
+        )
+        state.weapon_effect_logs.append(base)
+        _merge_weapon_log(log, base)
+    return log
+
+
+def weapon_runtime_damage_effects(
+    *,
+    character: CharacterData,
+    action: ActionData,
+    state: CombatState,
+    buffs: dict[str, BuffData],
+    weapon_definitions: dict[str, Any],
+    damage_element: str,
+    damage_bonus_category: str,
+    hit_damage_category: str,
+    time_offset: float = 0.0,
+) -> dict[str, Any]:
+    weapon = get_character_weapon(character)
+    weapon_def = _weapon_definition(weapon_definitions, weapon)
+    base = {
+        "runtime_element_bonus_by_element": {},
+        "runtime_all_attribute_damage_bonus": 0.0,
+        "everbright_polestar_all_attribute_bonus_active": False,
+        "everbright_polestar_all_attribute_damage_bonus": 0.0,
+        "everbright_polestar_liberation_penetration_active": False,
+        "everbright_polestar_liberation_penetration_remaining": 0.0,
+        "everbright_polestar_def_ignore_bonus": 0.0,
+        "everbright_polestar_fusion_res_ignore_bonus": 0.0,
+        "weapon_effect_id": None,
+        "weapon_effect_source_status": None,
+        "weapon_effects_enabled": bool(weapon_def),
+    }
+    if not weapon_def:
+        return base
+
+    weapon_id = str(weapon_def.get("id") or weapon.get("weapon_id"))
+    rank = _weapon_rank(weapon)
+    element_key = str(damage_element or "generic").strip().lower() or "generic"
+    for effect_id, effect in (weapon_def.get("effects") or {}).items():
+        if effect.get("trigger") != "always_active":
+            continue
+        if effect.get("effect_type") != "damage_bonus_buff":
+            continue
+        if effect.get("damage_bonus_scope") != "all_attribute":
+            continue
+        if hit_damage_category != "normal" and not bool(effect.get("applies_to_tune_damage", False)):
+            continue
+        value = _rank_value(weapon_def, rank, str(effect.get("rank_value_key") or ""))
+        if value <= 0.0:
+            continue
+        base["runtime_element_bonus_by_element"][element_key] = (
+            base["runtime_element_bonus_by_element"].get(element_key, 0.0) + value
+        )
+        base["runtime_all_attribute_damage_bonus"] += value
+        base["weapon_effect_id"] = effect_id
+        base["weapon_effect_source_status"] = weapon_def.get("source_status")
+        if weapon_id == "everbright_polestar":
+            base["everbright_polestar_all_attribute_bonus_active"] = True
+            base["everbright_polestar_all_attribute_damage_bonus"] += value
+
+    if hit_damage_category != "normal":
+        return base
+
+    for active, buff in get_active_buffs_for_action(
+        character.id,
+        action,
+        state,
+        buffs,
+        time_offset=time_offset,
+    ):
+        if buff.metadata.get("source_type") != "weapon":
+            continue
+        if buff.metadata.get("weapon_id") != weapon_id:
+            continue
+        category_filter = str(
+            active.metadata.get("damage_bonus_category_filter")
+            or buff.metadata.get("applies_to_damage_bonus_category")
+            or ""
+        )
+        if category_filter and damage_bonus_category != category_filter:
+            continue
+        def_ignore_bonus = float(active.metadata.get("dynamic_def_ignore", 0.0) or 0.0)
+        res_ignore_bonus = 0.0
+        element_filter = str(active.metadata.get("element_filter_for_res_ignore") or "").strip().lower()
+        if element_filter and element_key == element_filter:
+            res_ignore_bonus = float(active.metadata.get("dynamic_fusion_res_ignore", 0.0) or 0.0)
+        base["everbright_polestar_liberation_penetration_active"] = True
+        base["everbright_polestar_liberation_penetration_remaining"] = max(
+            float(base["everbright_polestar_liberation_penetration_remaining"]),
+            max(0.0, float(active.remaining_duration) - time_offset),
+        )
+        if weapon_id == "everbright_polestar":
+            base["everbright_polestar_def_ignore_bonus"] = max(
+                float(base["everbright_polestar_def_ignore_bonus"]),
+                def_ignore_bonus,
+            )
+            base["everbright_polestar_fusion_res_ignore_bonus"] = max(
+                float(base["everbright_polestar_fusion_res_ignore_bonus"]),
+                res_ignore_bonus,
+            )
+    return base
 
 
 def advance_weapon_effect_cooldowns(state: CombatState, elapsed: float) -> None:

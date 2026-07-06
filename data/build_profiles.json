@@ -224,6 +224,15 @@
             "buff_id": "aemeath_trailblazing_star_5set",
             "notes": "2-set Fusion DMG is already manually reflected in this build profile. 5-set is implemented as a runtime buff triggered by emitted fusion_burst or tune_rupture_shifting mechanic events."
           }
+        },
+        "weapon": {
+          "weapon_id": "everbright_polestar",
+          "weapon_type": "broadblade",
+          "rank": 1,
+          "static_stats_already_in_profile": true,
+          "base_atk_and_crit_already_in_profile": true,
+          "source_status": "user_supplied_weapon_tooltip",
+          "notes": "Weapon base ATK and crit stat are assumed already reflected in user-entered real stat profile. Runtime weapon passive effects are applied separately."
         }
       }
     },

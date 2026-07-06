@@ -45,8 +45,9 @@ def assert_trigger_damage_receives_buff(row, expected_event_tag: str) -> None:
     assert math.isclose(row.crit_rate_after_buffs, BUFFED_CRIT_RATE, rel_tol=1e-9)
     assert row.damage_element == "fusion"
     assert math.isclose(row.echo_set_damage_bonus, 0.2, rel_tol=1e-9)
-    assert math.isclose(row.runtime_element_damage_bonus, 0.2, rel_tol=1e-9)
-    assert math.isclose(row.element_dmg_bonus, 0.6, rel_tol=1e-9)
+    assert math.isclose(row.everbright_polestar_all_attribute_damage_bonus, 0.12, rel_tol=1e-9)
+    assert math.isclose(row.runtime_element_damage_bonus, 0.32, rel_tol=1e-9)
+    assert math.isclose(row.element_dmg_bonus, 0.72, rel_tol=1e-9)
     assert row.hit_details
     assert all(detail["aemeath_trailblazing_star_5set_active"] for detail in row.hit_details)
     assert all(math.isclose(detail["crit_rate_after_buffs"], BUFFED_CRIT_RATE, rel_tol=1e-9) for detail in row.hit_details)
@@ -64,7 +65,8 @@ def assert_trigger_damage_receives_buff(row, expected_event_tag: str) -> None:
         assert detail["mechanic_event_cooldown_blocked"] is False
         assert detail["aemeath_resonance_mode"] in {"fusion_burst", "tune_rupture"}
         assert math.isclose(detail["echo_set_damage_bonus"], 0.2, rel_tol=1e-9)
-        assert math.isclose(detail["runtime_element_damage_bonus"], 0.2, rel_tol=1e-9)
+        assert math.isclose(detail["everbright_polestar_all_attribute_damage_bonus"], 0.12, rel_tol=1e-9)
+        assert math.isclose(detail["runtime_element_damage_bonus"], 0.32, rel_tol=1e-9)
 
 
 def test_fusion_burst_triggering_action_receives_buff() -> None:

@@ -8,6 +8,7 @@
     "team_heal",
     "damage_dealt",
     "tune_break_dealt",
+    "mechanic_event_emitted",
     "crit_hit",
     "swap_in",
     "swap_out"
@@ -17,6 +18,7 @@
     "stat_buff",
     "party_stat_buff",
     "damage_bonus_buff",
+    "conditional_penetration_buff",
     "damage_taken_amp",
     "cooldown_gated_effect",
     "stackable_effect"
@@ -106,6 +108,65 @@
           "resource": "concerto_energy",
           "rank_value_key": "concerto_restore_on_resonance_skill",
           "cooldown_seconds": 20.0
+        }
+      },
+      "source_status": "user_supplied_weapon_tooltip"
+    },
+    "everbright_polestar": {
+      "id": "everbright_polestar",
+      "display_name": "Everbright Polestar",
+      "weapon_type": "broadblade",
+      "static_stats_already_in_profile_supported": true,
+      "rank_values": {
+        "1": {
+          "all_attribute_damage_bonus": 0.12,
+          "resonance_liberation_def_ignore": 0.32,
+          "resonance_liberation_fusion_res_ignore": 0.10
+        },
+        "2": {
+          "all_attribute_damage_bonus": 0.15,
+          "resonance_liberation_def_ignore": 0.40,
+          "resonance_liberation_fusion_res_ignore": 0.15
+        },
+        "3": {
+          "all_attribute_damage_bonus": 0.18,
+          "resonance_liberation_def_ignore": 0.48,
+          "resonance_liberation_fusion_res_ignore": 0.20
+        },
+        "4": {
+          "all_attribute_damage_bonus": 0.21,
+          "resonance_liberation_def_ignore": 0.56,
+          "resonance_liberation_fusion_res_ignore": 0.25
+        },
+        "5": {
+          "all_attribute_damage_bonus": 0.24,
+          "resonance_liberation_def_ignore": 0.64,
+          "resonance_liberation_fusion_res_ignore": 0.30
+        }
+      },
+      "effects": {
+        "all_attribute_damage_bonus": {
+          "effect_type": "damage_bonus_buff",
+          "trigger": "always_active",
+          "target": "self",
+          "damage_bonus_scope": "all_attribute",
+          "rank_value_key": "all_attribute_damage_bonus",
+          "applies_to_tune_damage": false
+        },
+        "liberation_def_res_ignore_after_tune_event": {
+          "effect_type": "conditional_penetration_buff",
+          "trigger": "mechanic_event_emitted",
+          "trigger_event_tags": [
+            "tune_rupture_shifting",
+            "fusion_burst"
+          ],
+          "target": "self",
+          "duration_seconds": 8.0,
+          "damage_bonus_category_filter": "resonance_liberation",
+          "element_filter_for_res_ignore": "fusion",
+          "buff_id": "everbright_polestar_liberation_penetration",
+          "max_stacks": 1,
+          "stacking_rule": "refresh_duration"
         }
       },
       "source_status": "user_supplied_weapon_tooltip"
