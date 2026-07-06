@@ -285,6 +285,15 @@ def _calculate_hit_damage(
         "trailblazing_star_5set_application_timing": None,
         "crit_rate_before_buffs": float(stats.get("crit_rate_before_buffs", character.crit_rate)),
         "crit_rate_after_buffs": float(stats.get("crit_rate_after_buffs", stats.get("crit_rate", 0.0))),
+        "crit_damage_before_buffs": float(stats.get("crit_damage_before_buffs", character.crit_damage)),
+        "crit_damage_after_buffs": float(stats.get("crit_damage_after_buffs", stats.get("crit_damage", 0.0))),
+        "runtime_crit_damage_bonus": float(stats.get("runtime_crit_damage_bonus", 0.0) or 0.0),
+        "starfield_calibrator_party_crit_damage_active": bool(
+            stats.get("starfield_calibrator_party_crit_damage_active", False)
+        ),
+        "starfield_calibrator_party_crit_damage_bonus": float(
+            stats.get("starfield_calibrator_party_crit_damage_bonus", 0.0) or 0.0
+        ),
         "applied_damage_amp": damage_amp,
         "name": hit.name,
         **tune_break_detail,
@@ -369,6 +378,11 @@ def _calculate_hit_damage_totals(
                         "effective_damage_bonus",
                         "crit_rate_before_buffs",
                         "crit_rate_after_buffs",
+                        "crit_damage_before_buffs",
+                        "crit_damage_after_buffs",
+                        "runtime_crit_damage_bonus",
+                        "starfield_calibrator_party_crit_damage_active",
+                        "starfield_calibrator_party_crit_damage_bonus",
                         "build_profile_id",
                         "scaling_stat",
                         "scaling_value",
@@ -732,12 +746,40 @@ def execute_action(
         "high_syntony_field_application_timing",
         "high_syntony_field_unavailable_reason",
         "halo_atk_buff_does_not_affect_mornye_def_damage",
+        "source_status",
+        "implementation_status",
+        "profile_completeness_status",
+        "build_profile_id",
+        "weapon_effects_enabled",
+        "weapon_effect_triggered",
+        "weapon_effect_logs",
+        "weapon_effect_trigger_counts",
+        "weapon_effect_cooldown_blocked_counts",
+        "weapon_id",
+        "weapon_rank",
+        "weapon_effect_id",
+        "weapon_effect_type",
+        "weapon_effect_resource",
+        "weapon_effect_source_status",
+        "concerto_energy_before_weapon_effect",
+        "concerto_energy_restored_by_weapon",
+        "concerto_energy_after_weapon_effect",
+        "concerto_energy_wasted_by_weapon",
+        "weapon_effect_cooldown_seconds",
+        "weapon_effect_cooldown_remaining",
+        "weapon_effect_cooldown_blocked",
+        "weapon_effect_buff_refreshed",
+        "weapon_effect_duration_seconds",
+        "starfield_calibrator_party_crit_damage_active",
+        "starfield_calibrator_party_crit_damage_bonus",
     }
     echo_set_result_log_fields = {
         key: value
         for key, value in echo_set_log_fields.items()
         if key not in support_log_fields and key not in explicit_result_log_keys
     }
+    weapon_effect_logs = list(echo_set_log_fields.get("weapon_effect_logs", []))
+    primary_weapon_log = weapon_effect_logs[0] if weapon_effect_logs else {}
 
     result = ActionResult(
         action_id=action.id,
@@ -782,6 +824,20 @@ def execute_action(
         effective_damage_bonus=float(action_damage_bonus_context.get("effective_damage_bonus", 0.0)),
         crit_rate_before_buffs=float(action_damage_bonus_context.get("crit_rate_before_buffs", 0.0)),
         crit_rate_after_buffs=float(action_damage_bonus_context.get("crit_rate_after_buffs", 0.0)),
+        crit_damage_before_buffs=float(action_damage_bonus_context.get("crit_damage_before_buffs", 0.0)),
+        crit_damage_after_buffs=float(action_damage_bonus_context.get("crit_damage_after_buffs", 0.0)),
+        runtime_crit_damage_bonus=float(action_damage_bonus_context.get("runtime_crit_damage_bonus", 0.0)),
+        starfield_calibrator_party_crit_damage_active=bool(
+            action_damage_bonus_context.get("starfield_calibrator_party_crit_damage_active", False)
+            or echo_set_log_fields.get("starfield_calibrator_party_crit_damage_active", False)
+        ),
+        starfield_calibrator_party_crit_damage_bonus=float(
+            action_damage_bonus_context.get(
+                "starfield_calibrator_party_crit_damage_bonus",
+                echo_set_log_fields.get("starfield_calibrator_party_crit_damage_bonus", 0.0),
+            )
+            or 0.0
+        ),
         build_profile_id=action_damage_bonus_context.get("build_profile_id"),
         scaling_stat=action_damage_bonus_context.get("scaling_stat"),
         scaling_value=float(action_damage_bonus_context.get("scaling_value") or 0.0),
@@ -791,6 +847,46 @@ def execute_action(
         profile_completeness_status=action_damage_bonus_context.get("profile_completeness_status"),
         **mechanic_event_log_fields,
         **echo_set_result_log_fields,
+        weapon_effects_enabled=bool(echo_set_log_fields.get("weapon_effects_enabled", False)),
+        weapon_effect_triggered=bool(echo_set_log_fields.get("weapon_effect_triggered", False)),
+        weapon_effect_logs=weapon_effect_logs,
+        weapon_id=echo_set_log_fields.get("weapon_id") or primary_weapon_log.get("weapon_id"),
+        weapon_rank=int((echo_set_log_fields.get("weapon_rank") or primary_weapon_log.get("weapon_rank", 0)) or 0),
+        weapon_effect_id=echo_set_log_fields.get("weapon_effect_id") or primary_weapon_log.get("weapon_effect_id"),
+        weapon_effect_type=echo_set_log_fields.get("weapon_effect_type") or primary_weapon_log.get("weapon_effect_type"),
+        weapon_effect_resource=echo_set_log_fields.get(
+            "weapon_effect_resource"
+        )
+        or primary_weapon_log.get("weapon_effect_resource"),
+        weapon_effect_source_status=echo_set_log_fields.get("weapon_effect_source_status")
+        or primary_weapon_log.get("weapon_effect_source_status"),
+        concerto_energy_before_weapon_effect=float(
+            echo_set_log_fields.get("concerto_energy_before_weapon_effect", 0.0) or 0.0
+        ),
+        concerto_energy_restored_by_weapon=float(
+            echo_set_log_fields.get("concerto_energy_restored_by_weapon", 0.0) or 0.0
+        ),
+        concerto_energy_after_weapon_effect=float(
+            echo_set_log_fields.get("concerto_energy_after_weapon_effect", 0.0) or 0.0
+        ),
+        concerto_energy_wasted_by_weapon=float(
+            echo_set_log_fields.get("concerto_energy_wasted_by_weapon", 0.0) or 0.0
+        ),
+        weapon_effect_cooldown_seconds=float(echo_set_log_fields.get("weapon_effect_cooldown_seconds", 0.0) or 0.0),
+        weapon_effect_cooldown_remaining=float(
+            echo_set_log_fields.get("weapon_effect_cooldown_remaining", 0.0) or 0.0
+        ),
+        weapon_effect_cooldown_blocked=bool(echo_set_log_fields.get("weapon_effect_cooldown_blocked", False)),
+        weapon_effect_buff_refreshed=bool(
+            echo_set_log_fields.get("weapon_effect_buff_refreshed", primary_weapon_log.get("weapon_effect_buff_refreshed", False))
+        ),
+        weapon_effect_duration_seconds=float(
+            echo_set_log_fields.get(
+                "weapon_effect_duration_seconds",
+                primary_weapon_log.get("weapon_effect_duration_seconds", 0.0),
+            )
+            or 0.0
+        ),
         aemeath_trailblazing_star_5set_active=AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID in active_buff_ids,
         high_syntony_field_active=bool(
             action_damage_bonus_context.get(
@@ -945,6 +1041,11 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         effective_damage_bonus=result.effective_damage_bonus,
         crit_rate_before_buffs=result.crit_rate_before_buffs,
         crit_rate_after_buffs=result.crit_rate_after_buffs,
+        crit_damage_before_buffs=result.crit_damage_before_buffs,
+        crit_damage_after_buffs=result.crit_damage_after_buffs,
+        runtime_crit_damage_bonus=result.runtime_crit_damage_bonus,
+        starfield_calibrator_party_crit_damage_active=result.starfield_calibrator_party_crit_damage_active,
+        starfield_calibrator_party_crit_damage_bonus=result.starfield_calibrator_party_crit_damage_bonus,
         build_profile_id=result.build_profile_id,
         scaling_stat=result.scaling_stat,
         scaling_value=result.scaling_value,
@@ -962,6 +1063,28 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         mechanic_event_unresolved_reason=result.mechanic_event_unresolved_reason,
         echo_set_triggered_buff_ids=result.echo_set_triggered_buff_ids,
         echo_set_buff_refreshed=result.echo_set_buff_refreshed,
+        weapon_effects_enabled=result.weapon_effects_enabled,
+        weapon_effect_triggered=result.weapon_effect_triggered,
+        weapon_effect_logs=result.weapon_effect_logs,
+        weapon_effect_trigger_counts=result.weapon_effect_trigger_counts,
+        weapon_effect_cooldown_blocked_counts=result.weapon_effect_cooldown_blocked_counts,
+        weapon_id=result.weapon_id,
+        weapon_rank=result.weapon_rank,
+        weapon_effect_id=result.weapon_effect_id,
+        weapon_effect_type=result.weapon_effect_type,
+        weapon_effect_resource=result.weapon_effect_resource,
+        weapon_effect_source_status=result.weapon_effect_source_status,
+        concerto_energy_before_weapon_effect=result.concerto_energy_before_weapon_effect,
+        concerto_energy_restored_by_weapon=result.concerto_energy_restored_by_weapon,
+        concerto_energy_after_weapon_effect=result.concerto_energy_after_weapon_effect,
+        concerto_energy_wasted_by_weapon=result.concerto_energy_wasted_by_weapon,
+        weapon_effect_cooldown_seconds=result.weapon_effect_cooldown_seconds,
+        weapon_effect_cooldown_remaining=result.weapon_effect_cooldown_remaining,
+        weapon_effect_cooldown_blocked=result.weapon_effect_cooldown_blocked,
+        weapon_effect_buff_refreshed=result.weapon_effect_buff_refreshed,
+        weapon_effect_duration_seconds=result.weapon_effect_duration_seconds,
+        starfield_calibrator_concerto_restore_trigger_count=result.starfield_calibrator_concerto_restore_trigger_count,
+        starfield_calibrator_party_crit_damage_trigger_count=result.starfield_calibrator_party_crit_damage_trigger_count,
         aemeath_trailblazing_star_5set_active=result.aemeath_trailblazing_star_5set_active,
         aemeath_trailblazing_star_5set_applied_before_triggering_damage=(
             result.aemeath_trailblazing_star_5set_applied_before_triggering_damage

@@ -152,6 +152,7 @@ def build_profile_controls(
                         "crit_rate": summary.get("crit_rate"),
                         "crit_damage": summary.get("crit_damage"),
                         "energy_regen": summary.get("energy_regen"),
+                        "weapon": summary.get("weapon"),
                         "support_stats": summary.get("support_stats"),
                         "damage_bonuses": summary.get("damage_bonuses"),
                     }
@@ -358,6 +359,49 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
                 st.warning(validation["warnings"])
         with st.expander("Active Team Buffs"):
             st.write([buff.model_dump() for buff in simulation.state.active_buffs])
+        with st.expander("Weapon Effects"):
+            weapon_rows = []
+            for character_id, weapon in (summary.active_weapons or {}).items():
+                weapon_rows.append(
+                    {
+                        "character_id": character_id,
+                        "weapon_id": weapon.get("weapon_id"),
+                        "weapon_type": weapon.get("weapon_type"),
+                        "rank": weapon.get("rank", 1),
+                        "static_stats_already_in_profile": weapon.get("static_stats_already_in_profile"),
+                        "def_percent_passive_already_in_profile": weapon.get("def_percent_passive_already_in_profile"),
+                    }
+                )
+            if weapon_rows:
+                st.dataframe(pd.DataFrame(weapon_rows), use_container_width=True, hide_index=True)
+            weapon_cols = st.columns(4)
+            weapon_cols[0].metric("Weapon effects", "Enabled" if summary.weapon_effects_enabled else "Disabled")
+            weapon_cols[1].metric(
+                "Starfield Concerto triggers",
+                summary.starfield_calibrator_concerto_restore_trigger_count,
+            )
+            weapon_cols[2].metric(
+                "Starfield Concerto restored",
+                f"{summary.starfield_calibrator_concerto_restored_total:.1f}",
+            )
+            weapon_cols[3].metric(
+                "Starfield Crit DMG uptime",
+                f"{summary.starfield_calibrator_party_crit_damage_uptime_seconds:.2f}s",
+            )
+            st.write(
+                {
+                    "Trigger counts": summary.weapon_effect_trigger_counts,
+                    "Cooldown blocked counts": summary.weapon_effect_cooldown_blocked_counts,
+                    "Weapon effect source status": summary.weapon_effect_source_status,
+                    "Starfield party Crit DMG trigger count": (
+                        summary.starfield_calibrator_party_crit_damage_trigger_count
+                    ),
+                    "Starfield active Crit DMG bonus": summary.starfield_calibrator_party_crit_damage_bonus,
+                    "Discord support": summary.discord_concerto_restore_support_status,
+                    "Static weapon stats applied at runtime": False,
+                    "Starfield DEF% passive applied at runtime": False,
+                }
+            )
         if "mornye" in simulation.selected_party_character_ids:
             mornye_state = simulation.state.character_states.get("mornye", {})
             mornye_mechanic = simulation.character_mechanics.get("mornye")
@@ -657,6 +701,27 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "effective_damage_bonus",
         "crit_rate_before_buffs",
         "crit_rate_after_buffs",
+        "crit_damage_before_buffs",
+        "crit_damage_after_buffs",
+        "runtime_crit_damage_bonus",
+        "starfield_calibrator_party_crit_damage_active",
+        "starfield_calibrator_party_crit_damage_bonus",
+        "weapon_effects_enabled",
+        "weapon_effect_triggered",
+        "weapon_id",
+        "weapon_rank",
+        "weapon_effect_id",
+        "weapon_effect_type",
+        "weapon_effect_resource",
+        "weapon_effect_source_status",
+        "concerto_energy_before_weapon_effect",
+        "concerto_energy_restored_by_weapon",
+        "concerto_energy_after_weapon_effect",
+        "weapon_effect_cooldown_seconds",
+        "weapon_effect_cooldown_remaining",
+        "weapon_effect_cooldown_blocked",
+        "weapon_effect_buff_refreshed",
+        "weapon_effect_duration_seconds",
         "scaling_stat",
         "scaling_value",
         "stat_component_source",

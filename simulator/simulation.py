@@ -57,6 +57,16 @@ from simulator.roster import (
 from simulator.state import create_initial_state
 from simulator.transition_config import build_effective_transition_config, load_transition_config, mechanics_mode_summary
 from simulator.tune_break import calculate_tune_response_damage_detail
+from simulator.weapon_effects import (
+    STARFIELD_CALIBRATOR_BUFF_ID,
+    active_weapons_for_characters,
+    advance_weapon_effect_cooldowns,
+    apply_weapon_buff_effects,
+    load_weapon_definition,
+    process_weapon_effects_before_or_after_action,
+    weapon_effect_uptime_seconds,
+    weapon_effects_enabled,
+)
 
 
 class Simulation:
@@ -74,6 +84,7 @@ class Simulation:
         active_build_profiles: dict[str, str] | None = None,
         stat_overrides: dict[str, dict[str, float]] | None = None,
         tune_response_defs: dict[str, dict[str, Any]] | None = None,
+        weapon_definitions: dict[str, Any] | None = None,
     ) -> None:
         self.all_characters = characters
         self.selected_character_ids = parse_party_character_ids(selected_character_ids, characters)
@@ -90,6 +101,7 @@ class Simulation:
         }
         self.stat_overrides = stat_overrides or {}
         self.tune_response_defs = dict(tune_response_defs or self._default_tune_response_defs())
+        self.weapon_definitions = dict(weapon_definitions or {})
         self.preset_generic_swap = self.party_preset_config.get("generic_swap", {})
         self.characters = {
             character_id: characters[character_id]
@@ -103,6 +115,7 @@ class Simulation:
         self.effective_build_stats_summary = effective_build_stats_summary(self.characters, self.action_scaling_summary)
         self.build_profile_validation = validate_effective_build_profiles(self.effective_build_stats_summary)
         self.buffs = buffs
+        self.weapon_effects_enabled = weapon_effects_enabled(self.characters, self.weapon_definitions)
         self.combat_duration = combat_duration
         self.enemy = enemy or EnemyData()
         self.state: CombatState = create_initial_state(self.characters, self.enemy, self.initial_active_character)
@@ -170,6 +183,7 @@ class Simulation:
             item["id"]: BuffData.model_validate(item)
             for item in _read_json(data_path / "buffs.json")
         }
+        weapon_definitions = load_weapon_definition(data_path)
         tune_response_path = data_path / "tune_responses.json"
         tune_response_defs = (
             {item["id"]: item for item in _read_json(tune_response_path)}
@@ -241,6 +255,7 @@ class Simulation:
                 if character_id in selected_ids
             },
             tune_response_defs=tune_response_defs,
+            weapon_definitions=weapon_definitions,
         )
 
     def validate_build_profiles(self) -> dict[str, object]:
@@ -341,6 +356,20 @@ class Simulation:
         if transition_resolution is not None:
             self._apply_transition_resolution(result, transition_resolution)
 
+        weapon_action_log = {}
+        if not result.truncated_by_combat_limit:
+            weapon_action_log = process_weapon_effects_before_or_after_action(
+                action=action,
+                state=self.state,
+                characters=self.characters,
+                buffs=self.buffs,
+                weapon_definitions=self.weapon_definitions,
+                application_time=result.end_time,
+            )
+            self._sync_weapon_result_fields(result, weapon_action_log)
+        if not bool(weapon_action_log.get("weapon_effect_triggered", False)):
+            advance_weapon_effect_cooldowns(self.state, result.action_time)
+
         self._advance_tune_break_runtime(result.action_time)
         self._apply_off_tune_accumulation(action, result)
         if action.action_type == "tune_break":
@@ -353,6 +382,7 @@ class Simulation:
             actor_mechanic.after_action(self.state, action, result)
         if not result.truncated_by_combat_limit:
             self._apply_mornye_post_action_support_events(action, result)
+        self._sync_weapon_result_fields(result)
         result.mechanic_debug_after = {
             character_id: mechanic.get_debug_state(self.state)
             for character_id, mechanic in self.character_mechanics.items()
@@ -1121,6 +1151,14 @@ class Simulation:
                     "high_syntony_field_healing_multiplier_metadata_only": True,
                 }
             )
+        log.update(
+            self._apply_team_heal_weapon_effects(
+                log,
+                source_character_id="mornye",
+                application_time=self.state.current_time,
+                event_source="simplified_syntony_field_uptime_action_boundary",
+            )
+        )
         return log
 
     def _apply_mornye_same_action_high_syntony_field(self, action: ActionData) -> dict[str, Any]:
@@ -1213,6 +1251,18 @@ class Simulation:
                 ),
                 applied_before_field_creation_damage=True,
             )
+            halo_log.update(
+                self._apply_team_heal_weapon_effects(
+                    halo_log,
+                    source_character_id="mornye",
+                    application_time=self.state.current_time,
+                    event_source=(
+                        "high_syntony_field_creation_only"
+                        if mode == "field_creation_only"
+                        else "simplified_high_syntony_field_creation_proxy"
+                    ),
+                )
+            )
             log_updates.update(halo_log)
             log_updates.update(high_syntony_log_fields)
             log_updates["high_syntony_field_heal_proxy_active"] = True
@@ -1237,11 +1287,20 @@ class Simulation:
         if TEAM_HEAL_EVENT_TAG not in set(action.mechanic_event_tags or []) and effects.get("team_heal_event_tag") != TEAM_HEAL_EVENT_TAG:
             return {}
         if not halo_of_starry_radiance_enabled(self.characters.get("mornye")):
-            return {
+            log_updates = {
                 "mornye_heal_event_mode": mode,
                 "team_heal_event_triggered": True,
                 "halo_of_starry_radiance_5set_unavailable_reason": "mornye_halo_5set_not_enabled",
             }
+            log_updates.update(
+                self._apply_team_heal_weapon_effects(
+                    log_updates,
+                    source_character_id="mornye",
+                    application_time=self.state.current_time,
+                    event_source="field_creation_halo_disabled_team_heal",
+                )
+            )
+            return log_updates
 
         syntony_duration = effects.get("syntony_field_duration", effects.get("set_syntony_field_remaining"))
         emits_team_heal_proxy = syntony_duration is not None
@@ -1276,6 +1335,18 @@ class Simulation:
                     else "simplified_syntony_field_creation_proxy"
                 ),
                 applied_before_field_creation_damage=True,
+            )
+        )
+        log_updates.update(
+            self._apply_team_heal_weapon_effects(
+                log_updates,
+                source_character_id="mornye",
+                application_time=self.state.current_time,
+                event_source=(
+                    "field_creation_only"
+                    if mode == "field_creation_only"
+                    else "simplified_syntony_field_creation_proxy"
+                ),
             )
         )
         return log_updates
@@ -1325,6 +1396,18 @@ class Simulation:
                 application_time=result.end_time,
                 event_source="field_creation_only" if mode == "field_creation_only" else "simplified_syntony_field_creation_proxy",
             )
+            halo_log.update(
+                self._apply_team_heal_weapon_effects(
+                    halo_log,
+                    source_character_id="mornye",
+                    application_time=result.end_time,
+                    event_source=(
+                        "field_creation_only"
+                        if mode == "field_creation_only"
+                        else "simplified_syntony_field_creation_proxy"
+                    ),
+                )
+            )
             log_updates.update(halo_log)
         if high_syntony_heal_metadata:
             log_updates["high_syntony_field_healing_multiplier_bonus"] = 0.40
@@ -1344,6 +1427,76 @@ class Simulation:
             self.state.action_log[-1].update(result.model_dump(mode="json"))
         if self.state.damage_log and self.state.damage_log[-1].get("action_id") == action.id:
             self.state.damage_log[-1].update(log_updates)
+
+    def _apply_team_heal_weapon_effects(
+        self,
+        event_log: dict[str, Any],
+        *,
+        source_character_id: str,
+        application_time: float,
+        event_source: str,
+    ) -> dict[str, Any]:
+        if not event_log.get("team_heal_event_triggered", False):
+            return {}
+        return apply_weapon_buff_effects(
+            trigger=TEAM_HEAL_EVENT_TAG,
+            source_character_id=source_character_id,
+            state=self.state,
+            characters=self.characters,
+            buffs=self.buffs,
+            weapon_definitions=self.weapon_definitions,
+            application_time=application_time,
+            event_source=event_source,
+        )
+
+    def _sync_weapon_result_fields(self, result, log_updates: dict[str, Any] | None = None) -> None:
+        log = log_updates or {}
+        result.weapon_effects_enabled = bool(
+            result.weapon_effects_enabled or self.weapon_effects_enabled or log.get("weapon_effects_enabled", False)
+        )
+        result.weapon_effect_triggered = bool(result.weapon_effect_triggered or log.get("weapon_effect_triggered", False))
+        result.weapon_effect_cooldown_blocked = bool(
+            result.weapon_effect_cooldown_blocked or log.get("weapon_effect_cooldown_blocked", False)
+        )
+        if log.get("weapon_effect_logs"):
+            result.weapon_effect_logs = [*result.weapon_effect_logs, *list(log.get("weapon_effect_logs") or [])]
+        for field in (
+            "weapon_id",
+            "weapon_rank",
+            "weapon_effect_id",
+            "weapon_effect_type",
+            "weapon_effect_resource",
+            "weapon_effect_source_status",
+            "concerto_energy_before_weapon_effect",
+            "concerto_energy_restored_by_weapon",
+            "concerto_energy_after_weapon_effect",
+            "concerto_energy_wasted_by_weapon",
+            "weapon_effect_cooldown_seconds",
+            "weapon_effect_cooldown_remaining",
+            "weapon_effect_buff_refreshed",
+            "weapon_effect_duration_seconds",
+            "starfield_calibrator_party_crit_damage_active",
+            "starfield_calibrator_party_crit_damage_bonus",
+        ):
+            if field in log:
+                value = log[field]
+                if value in (None, "", [], {}) and getattr(result, field, None) not in (None, "", [], {}):
+                    continue
+                if isinstance(value, (int, float)) and value == 0 and getattr(result, field, None) not in (0, 0.0, None):
+                    continue
+                setattr(result, field, value)
+        result.weapon_effect_trigger_counts = dict(self.state.weapon_effect_trigger_counts)
+        result.weapon_effect_cooldown_blocked_counts = dict(self.state.weapon_effect_cooldown_blocked_counts)
+        result.starfield_calibrator_concerto_restore_trigger_count = sum(
+            count
+            for key, count in self.state.weapon_effect_trigger_counts.items()
+            if ":starfield_calibrator:resonance_skill_concerto_restore" in key
+        )
+        result.starfield_calibrator_party_crit_damage_trigger_count = sum(
+            count
+            for key, count in self.state.weapon_effect_trigger_counts.items()
+            if ":starfield_calibrator:heal_party_crit_damage_buff" in key
+        )
 
     def _mechanic_for_character(self, character_id: str) -> CharacterMechanic:
         mechanic = self.character_mechanics.get(character_id)
@@ -1430,6 +1583,17 @@ class Simulation:
                 halo_unavailable_reason = "no_team_heal_event_occurred"
         elif mornye_character is not None:
             halo_unavailable_reason = "mornye_halo_5set_not_enabled"
+        active_weapons = active_weapons_for_characters(self.characters)
+        starfield_concerto_key = ":starfield_calibrator:resonance_skill_concerto_restore"
+        starfield_crit_key = ":starfield_calibrator:heal_party_crit_damage_buff"
+        starfield_crit_buff = next(
+            (
+                buff
+                for buff in self.state.active_buffs
+                if buff.buff_id == STARFIELD_CALIBRATOR_BUFF_ID and buff.remaining_duration > 0.0
+            ),
+            None,
+        )
 
         return SimulationSummary(
             total_damage=self.state.total_damage,
@@ -1520,6 +1684,41 @@ class Simulation:
             mechanic_event_unresolved_reason=mechanic_event_metadata["mechanic_event_unresolved_reason"],
             unsupported_aemeath_followup_mechanics=mechanic_event_metadata["unsupported_aemeath_followup_mechanics"],
             active_echo_sets=active_echo_sets_for_characters(self.characters),
+            active_weapons=active_weapons,
+            weapon_effects_enabled=self.weapon_effects_enabled,
+            weapon_effect_trigger_counts=dict(self.state.weapon_effect_trigger_counts),
+            weapon_effect_cooldown_blocked_counts=dict(self.state.weapon_effect_cooldown_blocked_counts),
+            weapon_effect_logs=list(self.state.weapon_effect_logs),
+            weapon_effect_source_status=next(
+                (
+                    log.get("weapon_effect_source_status")
+                    for log in reversed(self.state.weapon_effect_logs)
+                    if log.get("weapon_effect_source_status")
+                ),
+                None,
+            ),
+            starfield_calibrator_concerto_restore_trigger_count=sum(
+                count for key, count in self.state.weapon_effect_trigger_counts.items() if starfield_concerto_key in key
+            ),
+            starfield_calibrator_concerto_restored_total=self.state.starfield_calibrator_concerto_restored_total,
+            starfield_calibrator_party_crit_damage_trigger_count=sum(
+                count for key, count in self.state.weapon_effect_trigger_counts.items() if starfield_crit_key in key
+            ),
+            starfield_calibrator_party_crit_damage_uptime_seconds=weapon_effect_uptime_seconds(
+                self.state,
+                STARFIELD_CALIBRATOR_BUFF_ID,
+                self.state.current_time,
+            ),
+            starfield_calibrator_party_crit_damage_bonus=float(
+                (starfield_crit_buff.metadata or {}).get("dynamic_value", 0.0)
+                if starfield_crit_buff is not None
+                else 0.0
+            ),
+            discord_concerto_restore_support_status=(
+                "implemented_data_driven"
+                if "discord" in ((self.weapon_definitions.get("weapons") or {}).keys())
+                else "weapon_definition_missing"
+            ),
             echo_set_active_buffs=echo_set_active_buff_ids(self.state, self.buffs),
             aemeath_trailblazing_star_5set_enabled=trailblazing_star_enabled(aemeath_character),
             aemeath_trailblazing_star_5set_trigger_event_tags=list(

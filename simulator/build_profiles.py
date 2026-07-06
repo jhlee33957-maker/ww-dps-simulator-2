@@ -514,6 +514,8 @@ def resolve_character_build_stats(
             effective.damage_bonuses = merge_damage_bonuses(effective.damage_bonuses, {"all": profile.get("damage_bonus")})
         if profile.get("echo_sets") is not None:
             effective.echo_sets = dict(profile.get("echo_sets") or {})
+        if profile.get("weapon") is not None:
+            effective.weapon = dict(profile.get("weapon") or {})
         effective.support_stats = merge_support_stats(effective.support_stats, profile.get("support_stats"))
         effective.build_profile_id = resolved_id
         effective.build_profile_display_name = profile.get("display_name", resolved_id)
@@ -725,6 +727,7 @@ def effective_build_stats_summary(
             "crit_damage": character.crit_damage,
             "damage_bonuses": character.damage_bonuses,
             "echo_sets": character.echo_sets,
+            "weapon": character.weapon,
             "support_stats": normalize_support_stats(character.support_stats),
             **stat_fields,
             **support_stat_log_fields(character),

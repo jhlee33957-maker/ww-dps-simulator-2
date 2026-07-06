@@ -230,6 +230,23 @@ def main() -> None:
         "mechanic_event_unresolved_reason": summary.mechanic_event_unresolved_reason,
         "unsupported_aemeath_followup_mechanics": summary.unsupported_aemeath_followup_mechanics,
         "active_echo_sets": summary.active_echo_sets,
+        "active_weapons": summary.active_weapons,
+        "weapon_effects_enabled": summary.weapon_effects_enabled,
+        "weapon_effect_trigger_counts": summary.weapon_effect_trigger_counts,
+        "weapon_effect_source_status": summary.weapon_effect_source_status,
+        "starfield_calibrator_concerto_restore_trigger_count": (
+            summary.starfield_calibrator_concerto_restore_trigger_count
+        ),
+        "starfield_calibrator_concerto_restored_total": summary.starfield_calibrator_concerto_restored_total,
+        "starfield_calibrator_party_crit_damage_trigger_count": (
+            summary.starfield_calibrator_party_crit_damage_trigger_count
+        ),
+        "starfield_calibrator_party_crit_damage_uptime_seconds": (
+            summary.starfield_calibrator_party_crit_damage_uptime_seconds
+        ),
+        "starfield_calibrator_party_crit_damage_bonus": summary.starfield_calibrator_party_crit_damage_bonus,
+        "weapon_effect_cooldown_blocked_counts": summary.weapon_effect_cooldown_blocked_counts,
+        "discord_concerto_restore_support_status": summary.discord_concerto_restore_support_status,
         "echo_set_active_buffs": summary.echo_set_active_buffs,
         "aemeath_trailblazing_star_5set_enabled": summary.aemeath_trailblazing_star_5set_enabled,
         "aemeath_trailblazing_star_5set_trigger_event_tags": (
@@ -340,6 +357,21 @@ def main() -> None:
                 "effective_damage_bonus": row.effective_damage_bonus,
                 "crit_rate_before_buffs": row.crit_rate_before_buffs,
                 "crit_rate_after_buffs": row.crit_rate_after_buffs,
+                "crit_damage_before_buffs": row.crit_damage_before_buffs,
+                "crit_damage_after_buffs": row.crit_damage_after_buffs,
+                "runtime_crit_damage_bonus": row.runtime_crit_damage_bonus,
+                "weapon_effect_triggered": row.weapon_effect_triggered,
+                "weapon_id": row.weapon_id,
+                "weapon_rank": row.weapon_rank,
+                "weapon_effect_id": row.weapon_effect_id,
+                "weapon_effect_resource": row.weapon_effect_resource,
+                "weapon_effect_source_status": row.weapon_effect_source_status,
+                "concerto_energy_restored_by_weapon": row.concerto_energy_restored_by_weapon,
+                "weapon_effect_cooldown_blocked": row.weapon_effect_cooldown_blocked,
+                "starfield_calibrator_party_crit_damage_active": (
+                    row.starfield_calibrator_party_crit_damage_active
+                ),
+                "starfield_calibrator_party_crit_damage_bonus": row.starfield_calibrator_party_crit_damage_bonus,
                 "echo_set_triggered_buff_ids": row.echo_set_triggered_buff_ids,
                 "echo_set_buff_refreshed": row.echo_set_buff_refreshed,
                 "aemeath_trailblazing_star_5set_active": row.aemeath_trailblazing_star_5set_active,

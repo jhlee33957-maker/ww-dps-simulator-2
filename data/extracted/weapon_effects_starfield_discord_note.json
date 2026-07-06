@@ -1,0 +1,109 @@
+{
+  "source_status": "user_supplied_weapon_tooltip",
+  "weapon_effect_source_status": "user_supplied_weapon_tooltip",
+  "weapon_ids": [
+    "starfield_calibrator",
+    "discord"
+  ],
+  "affected_profile_ids": [
+    "mornye_user_real_01"
+  ],
+  "static_stats_already_in_profile": true,
+  "starfield_def_percent_passive_runtime_application": "metadata_only_already_in_profile",
+  "supported_trigger_event_names": [
+    "resonance_skill_cast",
+    "resonance_liberation_cast",
+    "intro_cast",
+    "outro_cast",
+    "team_heal",
+    "damage_dealt",
+    "tune_break_dealt",
+    "crit_hit",
+    "swap_in",
+    "swap_out"
+  ],
+  "supported_effect_types": [
+    "resource_restore",
+    "stat_buff",
+    "party_stat_buff",
+    "damage_bonus_buff",
+    "damage_taken_amp",
+    "cooldown_gated_effect",
+    "stackable_effect"
+  ],
+  "rank_tables": {
+    "starfield_calibrator": {
+      "1": {
+        "def_percent_passive": 0.16,
+        "concerto_restore_on_resonance_skill": 8.0,
+        "party_crit_damage_on_heal": 0.2
+      },
+      "2": {
+        "def_percent_passive": 0.2,
+        "concerto_restore_on_resonance_skill": 10.0,
+        "party_crit_damage_on_heal": 0.25
+      },
+      "3": {
+        "def_percent_passive": 0.24,
+        "concerto_restore_on_resonance_skill": 12.0,
+        "party_crit_damage_on_heal": 0.3
+      },
+      "4": {
+        "def_percent_passive": 0.28,
+        "concerto_restore_on_resonance_skill": 14.0,
+        "party_crit_damage_on_heal": 0.35
+      },
+      "5": {
+        "def_percent_passive": 0.32,
+        "concerto_restore_on_resonance_skill": 16.0,
+        "party_crit_damage_on_heal": 0.4
+      }
+    },
+    "discord": {
+      "1": {
+        "concerto_restore_on_resonance_skill": 8.0
+      },
+      "2": {
+        "concerto_restore_on_resonance_skill": 10.0
+      },
+      "3": {
+        "concerto_restore_on_resonance_skill": 12.0
+      },
+      "4": {
+        "concerto_restore_on_resonance_skill": 14.0
+      },
+      "5": {
+        "concerto_restore_on_resonance_skill": 16.0
+      }
+    }
+  },
+  "effects": {
+    "starfield_calibrator": [
+      {
+        "effect_id": "resonance_skill_concerto_restore",
+        "trigger": "resonance_skill_cast",
+        "effect_type": "resource_restore",
+        "resource": "concerto_energy",
+        "cooldown_seconds": 20.0
+      },
+      {
+        "effect_id": "heal_party_crit_damage_buff",
+        "trigger": "team_heal",
+        "effect_type": "party_stat_buff",
+        "stat": "crit_damage",
+        "duration_seconds": 4.0,
+        "max_stacks": 1,
+        "stacking_rule": "refresh_duration"
+      }
+    ],
+    "discord": [
+      {
+        "effect_id": "resonance_skill_concerto_restore",
+        "trigger": "resonance_skill_cast",
+        "effect_type": "resource_restore",
+        "resource": "concerto_energy",
+        "cooldown_seconds": 20.0
+      }
+    ]
+  }
+}

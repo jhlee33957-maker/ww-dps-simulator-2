@@ -281,6 +281,10 @@ def buffed_combat_stats(
         "damage_bonus_by_element_buff": {},
         "echo_set_damage_bonus_by_element": {},
         "crit_rate_before_buffs": character.crit_rate,
+        "crit_damage_before_buffs": character.crit_damage,
+        "runtime_crit_damage_bonus": 0.0,
+        "starfield_calibrator_party_crit_damage_active": False,
+        "starfield_calibrator_party_crit_damage_bonus": 0.0,
         "high_syntony_field_def_bonus_active": False,
         "high_syntony_field_def_percent_bonus": 0.0,
         "high_syntony_field_off_tune_inherited": False,
@@ -317,6 +321,12 @@ def buffed_combat_stats(
         if buff.id == "mornye_high_syntony_field_off_tune_buildup_rate":
             stats["high_syntony_field_off_tune_inherited"] = True
             stats["high_syntony_field_healing_multiplier_bonus"] = 0.40
+        if buff.id == "starfield_calibrator_party_crit_damage":
+            stats["starfield_calibrator_party_crit_damage_active"] = True
+            stats["starfield_calibrator_party_crit_damage_bonus"] = max(
+                float(stats.get("starfield_calibrator_party_crit_damage_bonus", 0.0)),
+                float(active.metadata.get("dynamic_value", buff.stat_modifiers.get("crit_damage", 0.0)) or 0.0),
+            )
         if buff.modifier_type == "attack":
             stats["runtime_atk_percent_bonus"] += buff_value
         elif buff.modifier_type == "damage_bonus":
@@ -340,6 +350,10 @@ def buffed_combat_stats(
                 stats["runtime_hp_percent_bonus"] += stat_value
             elif stat_name == "flat_hp":
                 stats["runtime_hp_flat_bonus"] += stat_value
+            elif stat_name == "crit_damage":
+                value = float(active.metadata.get("dynamic_value", stat_value))
+                stats["crit_damage"] += value
+                stats["runtime_crit_damage_bonus"] += value
             elif stat_name in stats:
                 stats[stat_name] += stat_value
         if buff.damage_bonus_by_element:
@@ -356,6 +370,7 @@ def buffed_combat_stats(
     _recalculate_scaling_stats(stats)
     stats.update(support_stat_log_fields(stats))
     stats["crit_rate_after_buffs"] = stats["crit_rate"]
+    stats["crit_damage_after_buffs"] = stats["crit_damage"]
     stats["active_buff_count"] = float(len(active_buff_names))
     stats["active_buff_summary"] = active_buff_names
     return stats

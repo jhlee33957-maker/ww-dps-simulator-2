@@ -36,6 +36,7 @@ class CharacterData(BaseModel):
     dmg_bonus: float = 0.0
     damage_bonuses: dict[str, Any] = Field(default_factory=dict)
     echo_sets: dict[str, Any] = Field(default_factory=dict)
+    weapon: dict[str, Any] = Field(default_factory=dict)
     support_stats: dict[str, Any] = Field(default_factory=dict)
     element: str | None = None
     damage_attribute: str | None = None
@@ -341,6 +342,12 @@ class CombatState(BaseModel):
     concerto_energy: dict[str, float] = Field(default_factory=dict)
     wasted_resonance_energy: dict[str, float] = Field(default_factory=dict)
     wasted_concerto_energy: dict[str, float] = Field(default_factory=dict)
+    weapon_effect_cooldowns: dict[str, float] = Field(default_factory=dict)
+    weapon_effect_trigger_counts: dict[str, int] = Field(default_factory=dict)
+    weapon_effect_cooldown_blocked_counts: dict[str, int] = Field(default_factory=dict)
+    weapon_effect_logs: list[dict[str, Any]] = Field(default_factory=list)
+    weapon_effect_buff_windows: list[dict[str, Any]] = Field(default_factory=list)
+    starfield_calibrator_concerto_restored_total: float = 0.0
     enemy_off_tune_max: float = 3920.0
     enemy_off_tune_current: float = 0.0
     enemy_mistune_active: bool = False
@@ -443,6 +450,9 @@ class ActionResult(BaseModel):
     effective_damage_bonus: float = 0.0
     crit_rate_before_buffs: float = 0.0
     crit_rate_after_buffs: float = 0.0
+    crit_damage_before_buffs: float = 0.0
+    crit_damage_after_buffs: float = 0.0
+    runtime_crit_damage_bonus: float = 0.0
     build_profile_id: str | None = None
     scaling_stat: str | None = None
     scaling_value: float = 0.0
@@ -605,6 +615,30 @@ class ActionResult(BaseModel):
     mechanic_event_unresolved_reason: str | None = None
     echo_set_triggered_buff_ids: list[str] = Field(default_factory=list)
     echo_set_buff_refreshed: bool = False
+    weapon_effects_enabled: bool = False
+    weapon_effect_triggered: bool = False
+    weapon_effect_logs: list[dict[str, Any]] = Field(default_factory=list)
+    weapon_effect_trigger_counts: dict[str, int] = Field(default_factory=dict)
+    weapon_effect_cooldown_blocked_counts: dict[str, int] = Field(default_factory=dict)
+    weapon_id: str | None = None
+    weapon_rank: int = 0
+    weapon_effect_id: str | None = None
+    weapon_effect_type: str | None = None
+    weapon_effect_resource: str | None = None
+    weapon_effect_source_status: str | None = None
+    concerto_energy_before_weapon_effect: float = 0.0
+    concerto_energy_restored_by_weapon: float = 0.0
+    concerto_energy_after_weapon_effect: float = 0.0
+    concerto_energy_wasted_by_weapon: float = 0.0
+    weapon_effect_cooldown_seconds: float = 0.0
+    weapon_effect_cooldown_remaining: float = 0.0
+    weapon_effect_cooldown_blocked: bool = False
+    weapon_effect_buff_refreshed: bool = False
+    weapon_effect_duration_seconds: float = 0.0
+    starfield_calibrator_party_crit_damage_active: bool = False
+    starfield_calibrator_party_crit_damage_bonus: float = 0.0
+    starfield_calibrator_concerto_restore_trigger_count: int = 0
+    starfield_calibrator_party_crit_damage_trigger_count: int = 0
     aemeath_trailblazing_star_5set_active: bool = False
     aemeath_trailblazing_star_5set_applied_before_triggering_damage: bool = False
     trailblazing_star_5set_same_action_application: bool = False
@@ -743,6 +777,9 @@ class TimelineEntry(BaseModel):
     effective_damage_bonus: float = 0.0
     crit_rate_before_buffs: float = 0.0
     crit_rate_after_buffs: float = 0.0
+    crit_damage_before_buffs: float = 0.0
+    crit_damage_after_buffs: float = 0.0
+    runtime_crit_damage_bonus: float = 0.0
     build_profile_id: str | None = None
     scaling_stat: str | None = None
     scaling_value: float = 0.0
@@ -905,6 +942,30 @@ class TimelineEntry(BaseModel):
     mechanic_event_unresolved_reason: str | None = None
     echo_set_triggered_buff_ids: list[str] = Field(default_factory=list)
     echo_set_buff_refreshed: bool = False
+    weapon_effects_enabled: bool = False
+    weapon_effect_triggered: bool = False
+    weapon_effect_logs: list[dict[str, Any]] = Field(default_factory=list)
+    weapon_effect_trigger_counts: dict[str, int] = Field(default_factory=dict)
+    weapon_effect_cooldown_blocked_counts: dict[str, int] = Field(default_factory=dict)
+    weapon_id: str | None = None
+    weapon_rank: int = 0
+    weapon_effect_id: str | None = None
+    weapon_effect_type: str | None = None
+    weapon_effect_resource: str | None = None
+    weapon_effect_source_status: str | None = None
+    concerto_energy_before_weapon_effect: float = 0.0
+    concerto_energy_restored_by_weapon: float = 0.0
+    concerto_energy_after_weapon_effect: float = 0.0
+    concerto_energy_wasted_by_weapon: float = 0.0
+    weapon_effect_cooldown_seconds: float = 0.0
+    weapon_effect_cooldown_remaining: float = 0.0
+    weapon_effect_cooldown_blocked: bool = False
+    weapon_effect_buff_refreshed: bool = False
+    weapon_effect_duration_seconds: float = 0.0
+    starfield_calibrator_party_crit_damage_active: bool = False
+    starfield_calibrator_party_crit_damage_bonus: float = 0.0
+    starfield_calibrator_concerto_restore_trigger_count: int = 0
+    starfield_calibrator_party_crit_damage_trigger_count: int = 0
     aemeath_trailblazing_star_5set_active: bool = False
     aemeath_trailblazing_star_5set_applied_before_triggering_damage: bool = False
     trailblazing_star_5set_same_action_application: bool = False
@@ -1074,6 +1135,18 @@ class SimulationSummary(BaseModel):
     mechanic_event_unresolved_reason: str | None = None
     unsupported_aemeath_followup_mechanics: list[str] = Field(default_factory=list)
     active_echo_sets: dict[str, dict[str, Any]] = Field(default_factory=dict)
+    active_weapons: dict[str, dict[str, Any]] = Field(default_factory=dict)
+    weapon_effects_enabled: bool = False
+    weapon_effect_trigger_counts: dict[str, int] = Field(default_factory=dict)
+    weapon_effect_cooldown_blocked_counts: dict[str, int] = Field(default_factory=dict)
+    weapon_effect_logs: list[dict[str, Any]] = Field(default_factory=list)
+    weapon_effect_source_status: str | None = None
+    starfield_calibrator_concerto_restore_trigger_count: int = 0
+    starfield_calibrator_concerto_restored_total: float = 0.0
+    starfield_calibrator_party_crit_damage_trigger_count: int = 0
+    starfield_calibrator_party_crit_damage_uptime_seconds: float = 0.0
+    starfield_calibrator_party_crit_damage_bonus: float = 0.0
+    discord_concerto_restore_support_status: str | None = None
     echo_set_active_buffs: list[str] = Field(default_factory=list)
     aemeath_trailblazing_star_5set_enabled: bool = False
     aemeath_trailblazing_star_5set_trigger_event_tags: list[str] = Field(default_factory=list)

@@ -21,6 +21,14 @@ The common combat engine handles shared systems: damage formulas, action_time, h
 
 Characters now support `energy_regen` as a decimal stat where `1.0 = 100%` and missing values default to `1.0`. The stat applies only to Resonance Energy gain: `final_resonance_energy_gain = base_resonance_energy_gain * actor.energy_regen`. Resonance Energy costs, Concerto gain, Mornye Rest Mass Energy, Mornye Relative Momentum, cooldowns, and direct damage are not scaled by this shared resource formula. Timeline rows log base Resonance Energy gain, Energy Regen, final Resonance Energy gain, gained energy after caps, and wasted energy.
 
+## Weapon Effects
+
+Runtime weapon effects are data-driven through `data/weapons.json`. Weapon definitions can provide a weapon id, type, rank values, trigger event, target scope, cooldown, duration, stacking rule, stat modifiers, resource modifiers, and source metadata. Build profiles can assign equipped weapon metadata without applying static weapon stats again.
+
+Current Broadblade support includes Starfield Calibrator and Discord. Starfield Calibrator and Discord restore Concerto Energy, not Resonance Energy, when the holder casts a Resonance Skill; R1 restores 8 Concerto Energy and uses a 20s per-character weapon-effect cooldown, with R1-R5 scaling in data. Starfield Calibrator also listens to existing `team_heal` events and applies a party Crit DMG buff for 4s; R1 adds `crit_damage +0.20`, and same-name effects refresh duration instead of stacking.
+
+For `mornye_user_real_01`, Starfield Calibrator weapon base/static stats and its DEF% passive are marked as already reflected in the user-entered final profile. This patch does not apply weapon base ATK, Energy Regen, DEF, or the Starfield DEF% passive as runtime stats.
+
 Character mechanic modules can:
 
 - initialize character-specific state

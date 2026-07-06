@@ -437,6 +437,15 @@
             "fusion": 0.0
           }
         },
+        "weapon": {
+          "weapon_id": "starfield_calibrator",
+          "weapon_type": "broadblade",
+          "rank": 1,
+          "static_stats_already_in_profile": true,
+          "def_percent_passive_already_in_profile": true,
+          "source_status": "user_supplied_weapon_tooltip",
+          "notes": "Weapon base/static stats and Starfield Calibrator DEF% passive are assumed already reflected in user-entered real stat profile. Runtime effects are applied separately."
+        },
         "echo_sets": {
           "halo_of_starry_radiance": {
             "pieces": 5,

@@ -182,6 +182,27 @@ def main() -> None:
         "mechanic_event_unresolved_reason": mechanic_event_metadata["mechanic_event_unresolved_reason"],
         "unsupported_aemeath_followup_mechanics": mechanic_event_metadata["unsupported_aemeath_followup_mechanics"],
         "active_echo_sets": training_summary.active_echo_sets,
+        "active_weapons": training_summary.active_weapons,
+        "weapon_effects_enabled": training_summary.weapon_effects_enabled,
+        "weapon_effect_trigger_counts": training_summary.weapon_effect_trigger_counts,
+        "weapon_effect_source_status": training_summary.weapon_effect_source_status,
+        "starfield_calibrator_concerto_restore_trigger_count": (
+            training_summary.starfield_calibrator_concerto_restore_trigger_count
+        ),
+        "starfield_calibrator_concerto_restored_total": (
+            training_summary.starfield_calibrator_concerto_restored_total
+        ),
+        "starfield_calibrator_party_crit_damage_trigger_count": (
+            training_summary.starfield_calibrator_party_crit_damage_trigger_count
+        ),
+        "starfield_calibrator_party_crit_damage_uptime_seconds": (
+            training_summary.starfield_calibrator_party_crit_damage_uptime_seconds
+        ),
+        "starfield_calibrator_party_crit_damage_bonus": (
+            training_summary.starfield_calibrator_party_crit_damage_bonus
+        ),
+        "weapon_effect_cooldown_blocked_counts": training_summary.weapon_effect_cooldown_blocked_counts,
+        "discord_concerto_restore_support_status": training_summary.discord_concerto_restore_support_status,
         "echo_set_active_buffs": training_summary.echo_set_active_buffs,
         "aemeath_trailblazing_star_5set_enabled": training_summary.aemeath_trailblazing_star_5set_enabled,
         "aemeath_trailblazing_star_5set_trigger_event_tags": (

@@ -196,6 +196,31 @@
     }
   },
   {
+    "id": "starfield_calibrator_party_crit_damage",
+    "name": "Starfield Calibrator Party Crit Damage",
+    "duration": 4.0,
+    "modifier_type": "boost",
+    "value": 0.0,
+    "target": "team",
+    "target_scope": "team",
+    "source_character_id": "mornye",
+    "stacking_rule": "refresh_duration",
+    "max_stacks": 1,
+    "stat_modifiers": {
+      "crit_damage": 0.0
+    },
+    "metadata": {
+      "source_type": "weapon",
+      "weapon_id": "starfield_calibrator",
+      "trigger_event_tags": [
+        "team_heal"
+      ],
+      "effect_type": "party_stat_buff",
+      "source_status": "user_supplied_weapon_tooltip",
+      "note": "Triggered when healing occurs. Same-name effects do not stack; re-trigger refreshes duration."
+    }
+  },
+  {
     "id": "aemeath_trailblazing_star_5set",
     "name": "Aemeath Trailblazing Star 5-set Runtime Buff",
     "duration": 8.0,
