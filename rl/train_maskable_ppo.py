@@ -152,6 +152,7 @@ def main() -> None:
     model.save(args.model_path)
     mechanic_event_metadata = mechanic_event_metadata_for_config(transition_config.get("mechanics"))
     training_summary = env.simulation.summary()
+    observation_meta = env.observation_metadata()
 
     metadata: dict[str, Any] = {
         "algorithm": "MaskablePPO",
@@ -297,7 +298,13 @@ def main() -> None:
         ),
         "transition_config_source": transition_config.get("_transition_config_source", ["default"]),
         "party_preset": party_preset.get("party_id") if party_preset else None,
-        "observation_shape": list(env.observation_space.shape),
+        "observation_shape": observation_meta["observation_shape"],
+        "observation_version": observation_meta["observation_version"],
+        "deprecated_observation_version": observation_meta["deprecated_observation_version"],
+        "observation_labels": observation_meta["observation_labels"],
+        "observation_channel_mapping": observation_meta["observation_channel_mapping"],
+        "observation_slot_mapping": observation_meta["observation_slot_mapping"],
+        "max_party_slots": observation_meta["max_party_slots"],
         "reward": "damage_this_action / 10000.0",
         "uses_action_masks": True,
         "note": "Maskable PPO models are party-specific because action space and observation shape can change.",

@@ -709,6 +709,16 @@ reward = damage_this_action / 10000.0
 
 damage_this_action is the simulator total_action_damage for the selected action, including normal, Tune Break, and active anomaly tick components that occur before or at the timed-combat cutoff. Resource waste, buff usage, cooldown usage, and action counts are analysis metrics only. They are not reward terms. Training is done by script, not inside Streamlit. Streamlit only evaluates a saved model in PPO Model mode. Demo Sequence mode is for deterministic simulator validation.
 
+## RL Observation Schema
+
+The PPO observation vector is the normalized state that the policy sees at each decision point. The action mask only says which policy actions are currently legal; it does not explain why setup actions matter or how close a mechanic is to becoming useful.
+
+Observation version `slot_generic_mechanics_v1` uses a slot-based generic schema with `max_party_slots = 3`. The labels use stable global and `slot_0` / `slot_1` / `slot_2` channels rather than hardcoded character, weapon, or echo names. Empty slots and unused mechanic/effect channels are zero-filled so Aemeath-only, Aemeath + Mornye, and 3-character test parties share the same observation shape.
+
+Concrete mechanics are described in metadata. For example, `observation_slot_mapping` records which character occupies each slot, and `observation_channel_mapping` can map generic channels such as `slot_0.echo_effect_0`, `slot_0.weapon_effect_1`, or `global.target_marker_1` to concrete effects such as Trailblazing Star, Halo of Starry Radiance, Starfield Calibrator, Observation Marker, or Interfered Marker. Future characters should reuse the existing generic mechanic/effect channels where possible instead of appending new observation labels.
+
+The previous observation version `off_tune_tune_break_weapon_state_v1` is obsolete. Existing PPO models trained on older observation versions or shapes are incompatible and must be retrained before evaluation. This schema refactor does not change damage formulas, action timing, action availability, runtime mechanics, or the PPO reward.
+
 ## Install
 
 ```bash

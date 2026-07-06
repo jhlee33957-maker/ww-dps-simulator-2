@@ -9,6 +9,13 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
+from env.observation_features import (
+    OBSERVATION_VERSION,
+    build_observation_channel_mapping,
+    build_observation_labels,
+    build_observation_slot_mapping,
+    build_observation_values,
+)
 from simulator.models import CharacterData
 from simulator.build_profiles import (
     effective_build_stats_summary,
@@ -35,6 +42,10 @@ from ui.mechanics_reference import render_mechanics_reference
 
 DATA_DIR = Path(__file__).parent / "data"
 DEFAULT_PPO_MODEL_PATH = Path(__file__).parent / "models" / "maskable_ppo_wuwa.zip"
+
+
+def simulation_observation_shape(simulation: Simulation) -> list[int]:
+    return [len(build_observation_labels())]
 
 
 def merge_override_blocks(*blocks: dict[str, Any] | None) -> dict[str, Any]:
@@ -349,6 +360,49 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
             st.write(simulation.get_policy_action_ids())
         with st.expander("Registered Character Mechanics"):
             st.write({character_id: mechanic.__class__.__name__ for character_id, mechanic in simulation.character_mechanics.items()})
+        with st.expander("RL Observation Diagnostics"):
+            observation_labels = build_observation_labels()
+            observation_values = build_observation_values(simulation)
+            channel_mapping = build_observation_channel_mapping(simulation)
+            slot_mapping = build_observation_slot_mapping(simulation)
+            mornye_runtime_state = simulation.state.character_mechanics_state.get("mornye", {})
+            st.write(
+                {
+                    "observation_shape": simulation_observation_shape(simulation),
+                    "observation_version": OBSERVATION_VERSION,
+                    "max_party_slots": len(slot_mapping),
+                    "slot_mapping": slot_mapping,
+                    "channel_mapping": channel_mapping,
+                    "enemy_off_tune": f"{summary.enemy_off_tune_current:.1f}/{summary.enemy_off_tune_max:.0f}",
+                    "enemy_mistune_active": summary.enemy_mistune_active,
+                    "enemy_tune_break_available": summary.enemy_tune_break_available,
+                    "enemy_tune_break_cooldown_remaining": summary.enemy_tune_break_cooldown_remaining,
+                    "observation_marker_remaining": summary.observation_marker_remaining,
+                    "interfered_marker_remaining": summary.interfered_marker_remaining,
+                    "interfered_marker_damage_taken_amp": summary.interfered_marker_damage_taken_amp,
+                    "syntony_field_remaining": float(mornye_runtime_state.get("syntony_field_remaining", 0.0) or 0.0),
+                    "high_syntony_field_remaining": summary.high_syntony_field_remaining,
+                    "halo_5set_active": summary.halo_of_starry_radiance_5set_active,
+                    "starfield_party_crit_damage_bonus": summary.starfield_calibrator_party_crit_damage_bonus,
+                    "starfield_concerto_cooldown_remaining": max(
+                        (
+                            float(remaining or 0.0)
+                            for key, remaining in simulation.state.weapon_effect_cooldowns.items()
+                            if ":starfield_calibrator:resonance_skill_concerto_restore" in str(key)
+                        ),
+                        default=0.0,
+                    ),
+                    "aemeath_starburst_cooldown_remaining": summary.aemeath_starburst_response_cooldown_remaining,
+                    "mornye_particle_jet_cooldown_remaining": summary.mornye_particle_jet_response_cooldown_remaining,
+                }
+            )
+            st.dataframe(
+                pd.DataFrame(
+                    {"label": observation_labels, "value": observation_values}
+                ),
+                use_container_width=True,
+                hide_index=True,
+            )
         with st.expander("Effective Build Profiles"):
             st.write(simulation.active_build_profiles)
             st.write(simulation.effective_build_stats_summary)
@@ -1239,6 +1293,21 @@ elif mode == "PPO Model":
                             "current_effective_stats": current_sim.effective_build_stats_summary,
                         }
                     )
+            observation_mismatch = {
+                key: {"model": metadata.get(key), "current": value}
+                for key, value in {
+                    "observation_shape": simulation_observation_shape(current_sim),
+                    "observation_version": OBSERVATION_VERSION,
+                }.items()
+                if metadata.get(key) != value
+            }
+            if observation_mismatch:
+                st.warning(
+                    "PPO observation metadata differs from the current simulator. "
+                    "Retrain before evaluating this model with the current observation vector."
+                )
+                with st.expander("Observation metadata mismatch"):
+                    st.write(observation_mismatch)
         try:
             ppo_summary, ppo_actions, ppo_simulation = evaluate_ppo_model(
                 model_path,

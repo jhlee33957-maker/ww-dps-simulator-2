@@ -7,6 +7,14 @@ import numpy as np
 from gymnasium import spaces
 
 from env.action_mask import action_mask
+from env.observation_features import (
+    OBSERVATION_VERSION,
+    build_observation_channel_mapping,
+    build_observation_labels,
+    build_observation_slot_mapping,
+    build_observation_values,
+    observation_metadata,
+)
 from env.reward import calculate_reward
 from simulator.simulation import Simulation
 
@@ -63,6 +71,7 @@ class WuwaDpsEnv(gym.Env):
             shape=(self._get_observation_size(),),
             dtype=np.float32,
         )
+        self.observation_version = OBSERVATION_VERSION
 
     def reset(self, seed: int | None = None, options: dict | None = None):
         super().reset(seed=seed)
@@ -141,87 +150,28 @@ class WuwaDpsEnv(gym.Env):
         return list(self.simulation.buffs)
 
     def _get_observation_size(self) -> int:
-        base_values = 3
-        active_character_one_hot = len(self.character_ids)
-        resonance_ratios = len(self.character_ids)
-        concerto_ratios = len(self.character_ids)
-        cooldown_ratios = len(self.action_ids)
-        buff_duration_ratios = len(self.buff_ids)
-        anomaly_stack_counts = 4
-        anomaly_duration_ratios = 4
-        character_mechanic_values = sum(
-            len(self.simulation.character_mechanics[character_id].get_observation_labels())
-            for character_id in self.character_ids
-        )
-        return (
-            base_values
-            + active_character_one_hot
-            + resonance_ratios
-            + concerto_ratios
-            + cooldown_ratios
-            + buff_duration_ratios
-            + anomaly_stack_counts
-            + anomaly_duration_ratios
-            + character_mechanic_values
-        )
+        return len(self.observation_labels())
 
     def _get_observation(self) -> np.ndarray:
-        state = self.simulation.state
-        duration = self.simulation.combat_duration
-        values: list[float] = [
-            state.combat_time / duration,
-            max(0.0, duration - state.combat_time) / duration,
-            state.total_damage / 1_000_000.0,
-        ]
-        values.extend(
-            1.0 if character_id == state.active_character_id else 0.0
-            for character_id in self.character_ids
-        )
-        values.extend(
-            state.resonance_energy.get(character_id, 0.0)
-            / self.simulation.characters[character_id].resonance_energy_max
-            for character_id in self.character_ids
-        )
-        values.extend(
-            state.concerto_energy.get(character_id, 0.0) / 100.0
-            for character_id in self.character_ids
-        )
-        values.extend(self._cooldown_ratio(action_id) for action_id in self.action_ids)
-        values.extend(self._buff_duration_ratio(buff_id) for buff_id in self.buff_ids)
-        anomaly_order = ["aero_erosion", "spectro_frazzle", "electro_flare", "havoc_bane"]
-        values.extend(
-            self.simulation.state.active_anomalies.get(anomaly_type).stacks / 99.0
-            if anomaly_type in self.simulation.state.active_anomalies
-            else 0.0
-            for anomaly_type in anomaly_order
-        )
-        values.extend(
-            self.simulation.state.active_anomalies.get(anomaly_type).remaining_duration / 6.0
-            if anomaly_type in self.simulation.state.active_anomalies
-            else 0.0
-            for anomaly_type in anomaly_order
-        )
-        for character_id in self.character_ids:
-            mechanic = self.simulation.character_mechanics[character_id]
-            values.extend(mechanic.get_observation_values(state))
+        values = build_observation_values(self.simulation)
+        labels = self.observation_labels()
+        assert len(values) == len(labels), f"Observation value/label mismatch: {len(values)} != {len(labels)}"
         return np.array(values, dtype=np.float32)
 
     def observation_labels(self) -> list[str]:
-        labels = [
-            "combat_time_elapsed",
-            "combat_time_remaining",
-            "total_damage",
-        ]
-        labels.extend(f"active_character.{character_id}" for character_id in self.character_ids)
-        labels.extend(f"resonance_ratio.{character_id}" for character_id in self.character_ids)
-        labels.extend(f"concerto_ratio.{character_id}" for character_id in self.character_ids)
-        labels.extend(f"cooldown_ratio.{action_id}" for action_id in self.action_ids)
-        labels.extend(f"buff_duration_ratio.{buff_id}" for buff_id in self.buff_ids)
-        labels.extend(f"anomaly_stacks.{anomaly_type}" for anomaly_type in ["aero_erosion", "spectro_frazzle", "electro_flare", "havoc_bane"])
-        labels.extend(f"anomaly_duration.{anomaly_type}" for anomaly_type in ["aero_erosion", "spectro_frazzle", "electro_flare", "havoc_bane"])
-        for character_id in self.character_ids:
-            labels.extend(self.simulation.character_mechanics[character_id].get_observation_labels())
-        return labels
+        return build_observation_labels()
+
+    def global_mechanic_observation_labels(self) -> list[str]:
+        return [label for label in self.observation_labels() if label.startswith("global.")]
+
+    def observation_channel_mapping(self) -> dict[str, str]:
+        return build_observation_channel_mapping(self.simulation)
+
+    def observation_slot_mapping(self) -> dict[str, str | None]:
+        return build_observation_slot_mapping(self.simulation)
+
+    def observation_metadata(self) -> dict:
+        return observation_metadata(self)
 
     def _cooldown_ratio(self, action_id: str) -> float:
         action_data = self.simulation.resolve_action(self.simulation.actions[action_id])

@@ -27,6 +27,23 @@ from simulator.transition_config import (
 )
 
 
+OBSERVATION_METADATA_KEYS = (
+    "observation_shape",
+    "observation_version",
+    "observation_labels",
+    "max_party_slots",
+)
+
+
+def observation_metadata_mismatches(metadata: dict[str, Any], env: Any) -> dict[str, dict[str, Any]]:
+    expected = env.observation_metadata()
+    return {
+        key: {"model": metadata.get(key), "evaluation": expected[key]}
+        for key in OBSERVATION_METADATA_KEYS
+        if metadata.get(key) != expected[key]
+    }
+
+
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Evaluate a trained Maskable PPO model.")
     parser.add_argument("--model-path", type=Path, default=PROJECT_ROOT / "models" / "maskable_ppo_wuwa.zip")
@@ -118,6 +135,52 @@ def main() -> None:
     except ValueError as exc:
         print(f"Invalid build/stat override: {exc}")
         raise SystemExit(2) from None
+    from env.wuwa_env import WuwaDpsEnv
+
+    metadata_env = WuwaDpsEnv(
+        PROJECT_ROOT / "data",
+        selected_character_ids=args.character_ids or args.party_character_ids,
+        party=args.party,
+        initial_active_character=args.initial_active_character,
+        transition_config=transition_config,
+        build_profile_overrides=build_profile_overrides,
+        stat_overrides=stat_overrides,
+    )
+    validation = metadata_env.simulation.validate_build_profiles()
+    if not validation.get("ok", False):
+        print("Build profile validation failed.")
+        for error in validation.get("errors", []):
+            print(f"- {error}")
+        raise SystemExit(2)
+    for warning in validation.get("warnings", []):
+        print(f"Build profile warning: {warning}")
+    metadata_path = PROJECT_ROOT / "results" / "training_metadata.json"
+    metadata: dict[str, Any] = {}
+    if metadata_path.exists():
+        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        expected = {
+            "selected_party_character_ids": metadata_env.get_selected_party_character_ids(),
+            "policy_action_ids": metadata_env.get_policy_action_ids(),
+            "active_build_profiles": metadata_env.get_active_build_profiles(),
+            "effective_build_stats_summary": metadata_env.get_effective_build_stats_summary(),
+        }
+        mismatches = {
+            key: {"model": metadata.get(key), "evaluation": value}
+            for key, value in expected.items()
+            if metadata.get(key) != value
+        }
+        mismatches.update(observation_metadata_mismatches(metadata, metadata_env))
+        if mismatches and not args.allow_mismatch:
+            print(
+                "Model metadata does not match the requested evaluation roster, build profile config, "
+                "or observation contract."
+            )
+            print(json.dumps(mismatches, indent=2))
+            print("Use --allow-mismatch only if you intentionally want to bypass this check.")
+            raise SystemExit(1)
+        if mismatches:
+            print("WARNING: evaluating with model metadata mismatches:")
+            print(json.dumps(mismatches, indent=2))
     model = MaskablePPO.load(args.model_path)
     env, action_sequence, resolved_action_sequence = run_masked_episode(
         model,
@@ -130,34 +193,6 @@ def main() -> None:
         build_profile_overrides=build_profile_overrides,
         stat_overrides=stat_overrides,
     )
-    validation = env.simulation.validate_build_profiles()
-    if not validation.get("ok", False):
-        print("Build profile validation failed.")
-        for error in validation.get("errors", []):
-            print(f"- {error}")
-        raise SystemExit(2)
-    for warning in validation.get("warnings", []):
-        print(f"Build profile warning: {warning}")
-    metadata_path = PROJECT_ROOT / "results" / "training_metadata.json"
-    if metadata_path.exists():
-        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-        expected = {
-            "selected_party_character_ids": env.get_selected_party_character_ids(),
-            "policy_action_ids": env.get_policy_action_ids(),
-            "observation_shape": list(env.observation_space.shape),
-            "active_build_profiles": env.get_active_build_profiles(),
-            "effective_build_stats_summary": env.get_effective_build_stats_summary(),
-        }
-        mismatches = {
-            key: {"model": metadata.get(key), "evaluation": value}
-            for key, value in expected.items()
-            if metadata.get(key) != value
-        }
-        if mismatches and not args.allow_mismatch:
-            print("Model metadata does not match the requested evaluation roster or build profile config.")
-            print(json.dumps(mismatches, indent=2))
-            print("Use --allow-mismatch only if you intentionally want to bypass this check.")
-            raise SystemExit(1)
     summary = env.simulation.summary()
     counts = action_count_breakdown(action_sequence)
     resolved_counts = action_count_breakdown(resolved_action_sequence)
@@ -326,6 +361,18 @@ def main() -> None:
         "stat_overrides": stat_overrides,
         "transition_config_source": transition_config.get("_transition_config_source", ["default"]),
         "party_preset": party_preset.get("party_id") if party_preset else None,
+        "observation_shape": list(env.observation_space.shape),
+        "observation_version": env.observation_version,
+        "deprecated_observation_version": env.observation_metadata()["deprecated_observation_version"],
+        "observation_labels": env.observation_labels(),
+        "observation_channel_mapping": env.observation_channel_mapping(),
+        "observation_slot_mapping": env.observation_slot_mapping(),
+        "max_party_slots": env.observation_metadata()["max_party_slots"],
+        "model_observation_shape": metadata.get("observation_shape") if metadata_path.exists() else None,
+        "current_observation_shape": list(env.observation_space.shape),
+        "observation_shape_matches_model": (
+            metadata.get("observation_shape") == list(env.observation_space.shape) if metadata_path.exists() else None
+        ),
         **transition_event_counts(summary.timeline),
         "action_sequence": action_sequence,
         "resolved_action_sequence": resolved_action_sequence,
