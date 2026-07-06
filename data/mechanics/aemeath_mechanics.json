@@ -1,8 +1,13 @@
 {
   "character_id": "aemeath",
   "display_name": "Aemeath",
+  "implementation_status": "current_simulator_interpretation_reference",
+  "source_notes": [
+    "This reference describes the simulator's current implemented interpretation, not raw game tooltip text.",
+    "Runtime behavior is controlled by data/actions.json, data/buffs.json, data/weapons.json, party presets, transition config, and mechanics modules."
+  ],
   "scope": {
-    "title": "Aemeath-lite Scope",
+    "title": "Aemeath Implemented Scope",
     "included": [
       "Human / Mech form switching",
       "Basic attack chains",
@@ -10,27 +15,29 @@
       "Sync Strike",
       "Seraphic Duo / Seraphic Duet",
       "Overdrive / Unbound / Finale",
+      "Instant Response",
       "Synchronization Rate",
       "Resonance Rate",
-      "Instant Response",
-      "Heavy Attack normal timing and Instant Response timing override",
       "action_time / combat_time_cost separation",
-      "Aemeath solo/party selection structure",
-      "Resonance Mode event trigger metadata for Fusion Burst / Tune Rupture - Shifting"
+      "global time stop for source-backed liberation and finale actions",
+      "Aemeath Resonance Mode: tune_rupture, fusion_burst, and unresolved fallback",
+      "Tune Rupture - Shifting / Fusion Burst mechanic event emission",
+      "Trailblazing Star 5-set runtime buff",
+      "Everbright Polestar runtime weapon passive effects",
+      "Excel-based Aemeath Tune Break action",
+      "Tune Rupture Response - Starburst off-field party response",
+      "QTE / Intro transition metadata and reviewed transition action candidates"
     ],
     "excluded": [
-      "Starflux utility system",
       "Fusion Burst explosion damage",
-      "Tune Rupture damage",
-      "Fusion Trail / Rupturous Trail systems",
-      "Trailblazing Star 5-set effects",
-      "QTE / Intro / Outro",
+      "Fusion Trail / Rupturous Trail full stack systems",
+      "full Starflux utility",
+      "exact hitstop / enemy movement / hit loss",
+      "multi-target state tracking",
+      "exact Tune Strain stack system",
       "aerial attack",
       "dodge counter",
-      "hitstop in DPS calculation",
-      "full enemy behavior / hit loss / movement",
-      "sequence/chain variants",
-      "full team buff system"
+      "sequence/chain variants not represented in action data"
     ]
   },
   "resources": [
@@ -56,14 +63,14 @@
       "name": "Resonance Energy",
       "modeled_behavior": [
         "Starts full in the current Nightmare/Matrix context.",
-        "Overdrive costs 125 if modeled by action data."
+        "Overdrive costs 125 when the resource system is active."
       ]
     },
     {
       "name": "Concerto",
       "modeled_behavior": [
         "Preserved when present in action data.",
-        "Not central to current Aemeath-lite logic."
+        "Used by transition systems where configured."
       ]
     }
   ],
@@ -80,7 +87,7 @@
       "name": "Stardust Resonance",
       "modeled_behavior": [
         "Granted by Overdrive.",
-        "Currently simplified in Aemeath-lite."
+        "Tracked for implemented Aemeath-lite routing; extra unimplemented utility remains omitted."
       ]
     },
     {
@@ -95,117 +102,53 @@
       "modeled_behavior": [
         "Active when Unbound is active and Resonance Rate reaches 4.",
         "Makes Charged II use Charged I timing.",
-        "Charged II during Instant Response recovers Synchronization Rate through the current implemented instant_response_sync_delta behavior.",
+        "Charged II during Instant Response recovers Synchronization Rate through the implemented instant_response_sync_delta behavior.",
         "Consumed or cleared after applicable Charged II / Finale behavior according to current code."
       ]
     },
     {
-      "name": "Overdrive follow-up window",
+      "name": "Aemeath Resonance Mode",
       "modeled_behavior": [
-        "After Overdrive, the next normal E1 switch to Aemeath resolves to a special Aemeath A2 form switch if no higher-priority skill resolves.",
-        "The window lasts one action decision and clears when consumed or when another resolved action occurs."
+        "Configured as fusion_burst, tune_rupture, or unresolved.",
+        "fusion_burst emits fusion_burst on supported damage trigger actions.",
+        "tune_rupture emits tune_rupture_shifting on supported damage trigger actions.",
+        "unresolved emits no event and logs the unresolved fallback."
       ]
     }
   ],
-  "action_resolution_priority": [
+  "known_runtime_modes": [
     {
-      "priority": 1,
-      "rule": "Finale if ready"
-    },
-    {
-      "priority": 2,
-      "rule": "Seraphic Duet if Seraphic Duo is active and Synchronization Rate is at least 100"
-    },
-    {
-      "priority": 3,
-      "rule": "Sync Strike if a sync-strike window is active"
-    },
-    {
-      "priority": 4,
-      "rule": "Special Overdrive E1 form switch if the Overdrive follow-up window is active"
-    },
-    {
-      "priority": 5,
-      "rule": "Normal Form Switch"
-    },
-    {
-      "priority": 6,
-      "rule": "Normal fallback behavior"
+      "name": "Aemeath Resonance Mode",
+      "modes": [
+        "fusion_burst",
+        "tune_rupture",
+        "unresolved"
+      ],
+      "default": "unresolved",
+      "notes": "Party presets or UI overrides can select the mode."
     }
   ],
+  "action_resolution_priority": [
+    {"priority": 1, "rule": "Finale if ready"},
+    {"priority": 2, "rule": "Seraphic Duet if Seraphic Duo is active and Synchronization Rate is at least 100"},
+    {"priority": 3, "rule": "Sync Strike if a sync-strike window is active"},
+    {"priority": 4, "rule": "Special Overdrive E1 form switch if the Overdrive follow-up window is active"},
+    {"priority": 5, "rule": "Normal Form Switch"},
+    {"priority": 6, "rule": "Normal fallback behavior"}
+  ],
   "timing_model": [
-    {
-      "name": "action_time",
-      "action_time": null,
-      "combat_time_cost": null,
-      "notes": "Action lock, internal action progression, hit timing progression, buffs, anomalies, and mechanic state duration ticking."
-    },
-    {
-      "name": "combat_time_cost",
-      "action_time": null,
-      "combat_time_cost": null,
-      "notes": "Timed combat clock cost and cooldown reduction time. If omitted from an action, it falls back to action_time."
-    },
-    {
-      "name": "Overdrive",
-      "action_time": 4.3667,
-      "combat_time_cost": 0.0
-    },
-    {
-      "name": "Finale",
-      "action_time": 5.6667,
-      "combat_time_cost": 0.0
-    },
-    {
-      "name": "Seraphic Duet Overturn/Ouverture",
-      "action_time": 3.0,
-      "combat_time_cost": 1.3167
-    },
-    {
-      "name": "Seraphic Duet Encore",
-      "action_time": 2.4167,
-      "combat_time_cost": 1.3333
-    },
-    {
-      "name": "Sync Strike Armament Merge",
-      "action_time": 1.1667,
-      "combat_time_cost": 1.1667
-    },
-    {
-      "name": "Sync Strike Call of Dawn",
-      "action_time": 0.9667,
-      "combat_time_cost": 0.9667
-    },
-    {
-      "name": "Heavy Human Charged I",
-      "action_time": 1.8333,
-      "combat_time_cost": 1.8333
-    },
-    {
-      "name": "Human Charged II",
-      "action_time": 3.6667,
-      "combat_time_cost": 3.6667
-    },
-    {
-      "name": "Instant Response Human Charged II",
-      "action_time": 1.8333,
-      "combat_time_cost": 1.8333
-    },
-    {
-      "name": "Heavy Mech Charged I",
-      "action_time": 1.0333,
-      "combat_time_cost": 1.0333
-    },
-    {
-      "name": "Heavy Mech Charged II",
-      "action_time": 2.0667,
-      "combat_time_cost": 2.0667
-    },
-    {
-      "name": "Instant Response Mech Charged II",
-      "action_time": 1.0333,
-      "combat_time_cost": 1.0333
-    }
+    {"name": "action_time", "action_time": null, "combat_time_cost": null, "notes": "Action lock, internal action progression, hit timing progression, buffs, anomalies, and mechanic state duration ticking."},
+    {"name": "combat_time_cost", "action_time": null, "combat_time_cost": null, "notes": "Timed combat clock cost and cooldown reduction time. If omitted from an action, it falls back to action_time."},
+    {"name": "Overdrive", "action_time": 4.3667, "combat_time_cost": 0.0, "notes": "Confirmed global time-stop style action in current source interpretation."},
+    {"name": "Finale", "action_time": 5.6667, "combat_time_cost": 0.0, "notes": "Confirmed global time-stop style action in current source interpretation."},
+    {"name": "Seraphic Duet Overturn/Ouverture", "action_time": 3.0, "combat_time_cost": 1.3167},
+    {"name": "Seraphic Duet Encore", "action_time": 2.4167, "combat_time_cost": 1.3333},
+    {"name": "Sync Strike Armament Merge", "action_time": 1.1667, "combat_time_cost": 1.1667},
+    {"name": "Sync Strike Call of Dawn", "action_time": 0.9667, "combat_time_cost": 0.9667},
+    {"name": "Human Charged II", "action_time": 3.6667, "combat_time_cost": 3.6667},
+    {"name": "Instant Response Human Charged II", "action_time": 1.8333, "combat_time_cost": 1.8333},
+    {"name": "Heavy Mech Charged II", "action_time": 2.0667, "combat_time_cost": 2.0667},
+    {"name": "Instant Response Mech Charged II", "action_time": 1.0333, "combat_time_cost": 1.0333}
   ],
   "form_switch": [
     "Normal Human -> Mech Form Switch immediately casts Mech Basic Stage 1.",
@@ -218,210 +161,124 @@
     "Outside Instant Response, the policy action resolves to Charged I in the current form.",
     "During Instant Response, the policy action resolves to Charged II in the current form.",
     "Instant Response Charged II uses the corresponding Charged I timing override.",
-    "Heavy attacks do not receive notice-aligned sync_delta in the current implementation."
+    "Heavy Charged source damage type maps to resonance_liberation damage_bonus_category in current action data."
   ],
   "sync_strike": [
-    {
-      "name": "Armament Merge",
-      "modeled_behavior": [
-        "Human-side Sync Strike.",
-        "Switches to Mech.",
-        "Sets the next Mech Basic Attack to Stage 2."
-      ]
-    },
-    {
-      "name": "Call of Dawn",
-      "modeled_behavior": [
-        "Mech-side Sync Strike.",
-        "Switches to Human.",
-        "Sets the next Human Basic Attack to Stage 2."
-      ]
-    }
+    {"name": "Armament Merge", "modeled_behavior": ["Human-side Sync Strike.", "Switches to Mech.", "Sets the next Mech Basic Attack to Stage 2.", "Can emit the selected Aemeath Resonance Mode event when it deals damage."]},
+    {"name": "Call of Dawn", "modeled_behavior": ["Mech-side Sync Strike.", "Switches to Human.", "Sets the next Human Basic Attack to Stage 2.", "Can emit the selected Aemeath Resonance Mode event when it deals damage."]}
   ],
   "seraphic_duet": [
+    {"name": "Overturn/Ouverture", "modeled_behavior": ["Human-side Seraphic Duet.", "Requires Seraphic Duo and Synchronization Rate at least 100.", "Costs 100 Synchronization Rate.", "Adds Resonance Rate.", "Switches to Mech.", "Uses resonance_liberation damage_bonus_category from source damage type."]},
+    {"name": "Encore", "modeled_behavior": ["Mech-side Seraphic Duet.", "Requires Seraphic Duo and Synchronization Rate at least 100.", "Costs 100 Synchronization Rate.", "Adds Resonance Rate.", "Switches to Human.", "Uses resonance_liberation damage_bonus_category from source damage type."]},
+    {"name": "Priority", "modeled_behavior": ["Seraphic Duet takes priority over normal Form Switch."]}
+  ],
+  "overdrive_finale": [
+    {"name": "Overdrive", "modeled_behavior": ["Grants Unbound.", "Grants Stardust Resonance in the current implementation.", "Adds 30 Synchronization Rate.", "Adds 1 Resonance Rate.", "Switches to Mech.", "Opens the special E1 follow-up window.", "Costs 0 timed combat seconds."]},
+    {"name": "Finale", "modeled_behavior": ["Requires Unbound, Synchronization Rate 200, and Resonance Rate 4.", "Clears Synchronization Rate and Resonance Rate.", "Ends Unbound and Seraphic Duo.", "Switches to Human.", "Costs 0 timed combat seconds."]}
+  ],
+  "echo_sets": [
     {
-      "name": "Overturn/Ouverture",
-      "modeled_behavior": [
-        "Human-side Seraphic Duet.",
-        "Requires Seraphic Duo and Synchronization Rate at least 100.",
-        "Costs 100 Synchronization Rate.",
-        "Adds Resonance Rate.",
-        "Switches to Mech."
-      ]
-    },
+      "name": "Trailblazing Star 5-set",
+      "implementation_status": "implemented_runtime_buff",
+      "trigger_event_tags": ["fusion_burst", "tune_rupture_shifting"],
+      "duration": 8.0,
+      "effects": ["Crit Rate +20%", "Fusion DMG +20%"],
+      "timing": "same-action aggregate approximation for triggering damage",
+      "notes": "The 2-set Fusion DMG bonus is treated as already reflected in the selected Aemeath real profile."
+    }
+  ],
+  "weapons": [
     {
-      "name": "Encore",
-      "modeled_behavior": [
-        "Mech-side Seraphic Duet.",
-        "Requires Seraphic Duo and Synchronization Rate at least 100.",
-        "Costs 100 Synchronization Rate.",
-        "Adds Resonance Rate.",
-        "Switches to Human."
-      ]
-    },
-    {
-      "name": "Priority",
-      "modeled_behavior": [
-        "Seraphic Duet takes priority over normal Form Switch."
+      "name": "Everbright Polestar",
+      "implementation_status": "implemented_runtime_weapon_effect",
+      "profile": "aemeath_user_real_01",
+      "rank_default": 1,
+      "static_stats": {
+        "weapon_base_attack": "already reflected in user-entered profile",
+        "crit_stat": "already reflected in user-entered profile",
+        "runtime_reapplied": false
+      },
+      "runtime_effects": [
+        {
+          "name": "All Attribute DMG",
+          "effect": "All Attribute DMG +12% at R1",
+          "implementation_status": "implemented_runtime_weapon_effect"
+        },
+        {
+          "name": "Resonance Liberation Penetration",
+          "trigger_event_tags": ["fusion_burst", "tune_rupture_shifting"],
+          "trigger_description": "Tune Rupture - Shifting / Fusion Burst triggers an 8s resonance_liberation penetration buff.",
+          "duration": "8s",
+          "r1_formula_modifiers": {
+            "def_ignore": "+32%",
+            "fusion_res_ignore": "+10%"
+          },
+          "notes": "DEF Ignore and Fusion RES Ignore are formula modifiers, not damage bonuses."
+        }
+      ],
+      "exclusions": [
+        "not applied to Tune Break formula damage",
+        "not applied to Tune Response formula damage"
       ]
     }
   ],
-  "overdrive_finale": [
+  "tune_break": [
     {
-      "name": "Overdrive",
-      "modeled_behavior": [
-        "Grants Unbound.",
-        "Grants Stardust Resonance in the current implementation.",
-        "Adds 30 Synchronization Rate.",
-        "Adds 1 Resonance Rate.",
-        "Switches to Mech.",
-        "Opens the special E1 follow-up window.",
-        "Costs 0 timed combat seconds."
-      ]
-    },
+      "name": "Aemeath Tune Break",
+      "implementation_status": "implemented_excel_single_target",
+      "availability": "Conditional on enemy Mistune / Tune Break availability.",
+      "formula": "base-10000 Tune Break formula",
+      "hit_multipliers": [1.0, 12.0],
+      "notes": "Uses Tune formula damage, not normal damage bonus or Everbright conditional penetration."
+    }
+  ],
+  "response_damage": [
     {
-      "name": "Finale",
-      "modeled_behavior": [
-        "Requires Unbound, Synchronization Rate 200, and Resonance Rate 4.",
-        "Clears Synchronization Rate and Resonance Rate.",
-        "Ends Unbound and Seraphic Duo.",
-        "Switches to Human.",
-        "Costs 0 timed combat seconds."
-      ]
+      "name": "Tune Rupture Response - Starburst",
+      "implementation_status": "implemented_party_response",
+      "trigger": "After Tune Rupture - Interfered",
+      "coefficient": 5.9643,
+      "formula": "base-10000 Tune Response formula",
+      "cooldown": "8s same target",
+      "notes": "Off-field party response; not affected by Everbright conditional penetration."
+    }
+  ],
+  "qte_intro_outro": [
+    {
+      "name": "Aemeath QTE / Intro transition metadata",
+      "implementation_status": "reviewed_transition_metadata_and_actions",
+      "notes": "Reviewed QTE/Intro candidates and transition actions exist. This is not listed as fully excluded."
     }
   ],
   "sync_delta_table": [
-    {
-      "name": "Human Basic 1",
-      "sync_delta": 3.29
-    },
-    {
-      "name": "Human Basic 2",
-      "sync_delta": 6.44
-    },
-    {
-      "name": "Human Basic 3",
-      "sync_delta": 16.66
-    },
-    {
-      "name": "Human Basic 4",
-      "sync_delta": 23.31
-    },
-    {
-      "name": "Mech Basic 1",
-      "sync_delta": 6.45
-    },
-    {
-      "name": "Mech Basic 2",
-      "sync_delta": 9.6
-    },
-    {
-      "name": "Mech Basic 3",
-      "sync_delta": 18.54
-    },
-    {
-      "name": "Mech Basic 4",
-      "sync_delta": 23.28
-    },
-    {
-      "name": "Armament Merge",
-      "sync_delta": 18.29
-    },
-    {
-      "name": "Call of Dawn",
-      "sync_delta": 22.18
-    },
-    {
-      "name": "Form Switch to Mech Normal",
-      "sync_delta": 6.45
-    },
-    {
-      "name": "Form Switch to Aemeath Normal",
-      "sync_delta": 3.29
-    },
-    {
-      "name": "Form Switch to Aemeath After Overdrive",
-      "sync_delta": 6.44
-    },
-    {
-      "name": "Overdrive",
-      "sync_delta": 30
-    },
-    {
-      "name": "Seraphic Duet",
-      "sync_delta": -100
-    },
-    {
-      "name": "Finale",
-      "sync_delta": null,
-      "notes": "Clears Synchronization Rate."
-    }
-  ],
-  "build_profile_damage_type_bonus_notes": {
-    "title": "Build Profile / Damage Type Bonus Notes",
-    "profiles": {
-      "default": "Backward-compatible default profile derived from existing characters.json stats.",
-      "liberation_focus_test": "Editable test build assumption that adds Resonance Liberation DMG Bonus through data/build_profiles.json. It is intended to test Liberation-heavy damage distribution and is not claimed as final real-game build data."
-    },
-    "damage_categories": [
-      {
-        "action_id": "aemeath_liberation_overdrive",
-        "damage_bonus_category": "resonance_liberation"
-      },
-      {
-        "action_id": "aemeath_heavenfall_finale",
-        "damage_bonus_category": "resonance_liberation"
-      },
-      {
-        "action_id": "aemeath_basic_form_stage_1..4",
-        "damage_bonus_category": "basic_attack"
-      },
-      {
-        "action_id": "aemeath_mech_basic_stage_1..4",
-        "damage_bonus_category": "basic_attack"
-      },
-      {
-        "action_id": "aemeath_heavy_*_charged_*",
-        "damage_bonus_category": "resonance_liberation",
-        "notes": "Mechanically Heavy Attack, source 伤害类型 is 共鸣解放伤害."
-      },
-      {
-        "action_id": "aemeath_seraphic_duet_*",
-        "damage_bonus_category": "resonance_liberation",
-        "notes": "Mechanically Resonance Skill, source 伤害类型 is 共鸣解放伤害."
-      }
-    ],
-    "notes": "Build profiles are stat overlays only. They do not change Aemeath action routing, coefficients, timings, resources, or policy action availability."
-  },
-  "known_limitations": [
-    "This page describes the simulator's modeled interpretation, not a complete game-client recreation.",
-    "The current goal is 2-minute DPS and balance comparison, not exact frame-perfect combat reproduction.",
-    "Aemeath Resonance Mode emits source-backed mechanic event tags only; Fusion Burst, Tune Rupture, Trail, set-bonus follow-up damage, QTE follow-up state, aerial, dodge, movement, hit loss, and full team systems remain outside Aemeath-lite scope."
+    {"name": "Human Basic 1", "sync_delta": 3.29},
+    {"name": "Human Basic 2", "sync_delta": 6.44},
+    {"name": "Human Basic 3", "sync_delta": 16.66},
+    {"name": "Human Basic 4", "sync_delta": 23.31},
+    {"name": "Mech Basic 1", "sync_delta": 6.45},
+    {"name": "Mech Basic 2", "sync_delta": 9.6},
+    {"name": "Mech Basic 3", "sync_delta": 18.54},
+    {"name": "Mech Basic 4", "sync_delta": 23.28},
+    {"name": "Armament Merge", "sync_delta": 18.29},
+    {"name": "Call of Dawn", "sync_delta": 22.18},
+    {"name": "Form Switch to Mech Normal", "sync_delta": 6.45},
+    {"name": "Form Switch to Aemeath Normal", "sync_delta": 3.29},
+    {"name": "Form Switch to Aemeath After Overdrive", "sync_delta": 6.44},
+    {"name": "Overdrive", "sync_delta": 30},
+    {"name": "Seraphic Duet", "sync_delta": -100},
+    {"name": "Finale", "sync_delta": null, "notes": "Clears Synchronization Rate."}
   ],
   "resonance_mode_mechanic_events": {
     "title": "Aemeath Resonance Mode Mechanic Events",
-    "implementation_status": "event_trigger_only",
+    "implementation_status": "implemented_event_trigger",
     "source_status": "user_supplied_skill_screenshot_not_embedded",
-    "source_audit": [
-      "Workbook data/source/鸣潮动作数据汇总.xlsx was scanned, but the current workbook/extracted rows do not clearly confirm the Fusion Burst / Tune Rupture - Shifting trigger mapping.",
-      "The simulator stores the trigger mapping as user-supplied screenshot metadata until an embedded source row is available."
-    ],
-    "mode_config": {
-      "config_path": "mechanics.aemeath.aemeath_resonance_mode",
-      "supported_modes": [
-        "fusion_burst",
-        "tune_rupture",
-        "unresolved"
-      ],
-      "default_mode": "unresolved"
-    },
+    "supported_modes": ["fusion_burst", "tune_rupture", "unresolved"],
     "mode_behavior": [
       "fusion_burst mode emits event tag fusion_burst when a listed trigger action deals damage.",
       "tune_rupture mode emits event tag tune_rupture_shifting when a listed trigger action deals damage.",
       "unresolved mode emits no event and logs aemeath_resonance_mode_unresolved_no_events_emit."
     ],
-    "cooldown_rule": "The same skill can trigger once every 3 seconds. Cooldown keys include character_id, action_id, and trigger_id. Multi-hit actions emit at most one event per action execution.",
-    "damage_rule": "Mechanic event emission adds 0 damage and does not change coefficients, timings, resources, cooldowns, scaling_stat, damage_bonus_category, or PPO reward formula.",
+    "cooldown_rule": "The same skill can trigger once every 3 seconds. Multi-hit actions emit at most one event per action execution.",
     "trigger_action_ids": [
       "aemeath_basic_form_stage_3",
       "aemeath_basic_form_stage_4",
@@ -433,22 +290,6 @@
     "transition_trigger_action_ids": [
       "aemeath_qte_intro_human",
       "aemeath_qte_intro_mech"
-    ],
-    "not_mapped_without_source_evidence": [
-      "Aemeath basic stages 1-2",
-      "Mech basic stages 1-2",
-      "Seraphic Duet",
-      "Heavy Charged",
-      "Overdrive / Finale",
-      "Form Switch"
-    ],
-    "unsupported_followup_mechanics": [
-      "fusion_burst_explosion_damage",
-      "fusion_trail",
-      "rupturous_trail",
-      "seraphic_duet_extra_tune_rupture_damage",
-      "seraphic_duet_fusion_burst_multiplier",
-      "stardust_resonance_extra_effects"
     ]
   },
   "damage_bonus_category_source_damage_type": {
@@ -457,146 +298,49 @@
       "action_type and damage_bonus_category are intentionally separate fields.",
       "action_type controls mechanical routing, cooldown grouping, policy identity, and character mechanics.",
       "damage_bonus_category controls additive DMG Bonus lookup from build profiles.",
-      "Seraphic Duet is mechanically Resonance Skill but uses Resonance Liberation damage bonus because source 伤害类型 is 共鸣解放伤害.",
-      "Heavy Charged actions are mechanically Heavy Attack but use Resonance Liberation damage bonus because source 伤害类型 is 共鸣解放伤害.",
-      "Overdrive and Finale are Resonance Liberation actions and use Resonance Liberation damage bonus.",
-      "Source 震谐伤害 remains unresolved/unmodeled for damage bonus category and maps to other until a source rule says otherwise."
+      "Seraphic Duet and Heavy Charged actions use resonance_liberation damage bonus from source damage type.",
+      "Overdrive and Finale are Resonance Liberation actions and use Resonance Liberation damage bonus."
     ],
     "explicit_actions": [
-      {
-        "action_id": "aemeath_basic_form_stage_1",
-        "action_type": "basic_attack",
-        "damage_bonus_category": "basic_attack",
-        "raw_skill_category": "普攻",
-        "raw_damage_type": "普攻伤害"
-      },
-      {
-        "action_id": "aemeath_basic_form_stage_2",
-        "action_type": "basic_attack",
-        "damage_bonus_category": "basic_attack",
-        "raw_skill_category": "普攻",
-        "raw_damage_type": "普攻伤害"
-      },
-      {
-        "action_id": "aemeath_basic_form_stage_3",
-        "action_type": "basic_attack",
-        "damage_bonus_category": "basic_attack",
-        "raw_skill_category": "普攻",
-        "raw_damage_type": "普攻伤害"
-      },
-      {
-        "action_id": "aemeath_basic_form_stage_4",
-        "action_type": "basic_attack",
-        "damage_bonus_category": "basic_attack",
-        "raw_skill_category": "普攻",
-        "raw_damage_type": "普攻伤害"
-      },
-      {
-        "action_id": "aemeath_mech_basic_stage_1",
-        "action_type": "basic_attack",
-        "damage_bonus_category": "basic_attack",
-        "raw_skill_category": "普攻",
-        "raw_damage_type": "普攻伤害"
-      },
-      {
-        "action_id": "aemeath_mech_basic_stage_2",
-        "action_type": "basic_attack",
-        "damage_bonus_category": "basic_attack",
-        "raw_skill_category": "普攻",
-        "raw_damage_type": "普攻伤害"
-      },
-      {
-        "action_id": "aemeath_mech_basic_stage_3",
-        "action_type": "basic_attack",
-        "damage_bonus_category": "basic_attack",
-        "raw_skill_category": "普攻",
-        "raw_damage_type": "普攻伤害"
-      },
-      {
-        "action_id": "aemeath_mech_basic_stage_4",
-        "action_type": "basic_attack",
-        "damage_bonus_category": "basic_attack",
-        "raw_skill_category": "普攻",
-        "raw_damage_type": "普攻伤害"
-      },
-      {
-        "action_id": "aemeath_liberation_overdrive",
-        "action_type": "resonance_liberation",
-        "damage_bonus_category": "resonance_liberation",
-        "raw_skill_category": "共鸣解放",
-        "raw_damage_type": "共鸣解放伤害"
-      },
-      {
-        "action_id": "aemeath_heavenfall_finale",
-        "action_type": "resonance_liberation",
-        "damage_bonus_category": "resonance_liberation",
-        "raw_skill_category": "共鸣解放",
-        "raw_damage_type": "共鸣解放伤害"
-      },
-      {
-        "action_id": "aemeath_seraphic_duet_overturn",
-        "action_type": "resonance_skill",
-        "damage_bonus_category": "resonance_liberation",
-        "raw_skill_category": "共鸣技能",
-        "raw_damage_type": "共鸣解放伤害"
-      },
-      {
-        "action_id": "aemeath_seraphic_duet_encore",
-        "action_type": "resonance_skill",
-        "damage_bonus_category": "resonance_liberation",
-        "raw_skill_category": "共鸣技能",
-        "raw_damage_type": "共鸣解放伤害"
-      },
-      {
-        "action_id": "aemeath_heavy_aemeath_charged_1",
-        "action_type": "heavy_attack",
-        "damage_bonus_category": "resonance_liberation",
-        "raw_skill_category": "重击",
-        "raw_damage_type": "共鸣解放伤害"
-      },
-      {
-        "action_id": "aemeath_heavy_aemeath_charged_2",
-        "action_type": "heavy_attack",
-        "damage_bonus_category": "resonance_liberation",
-        "raw_skill_category": "重击",
-        "raw_damage_type": "共鸣解放伤害"
-      },
-      {
-        "action_id": "aemeath_heavy_mech_charged_1",
-        "action_type": "heavy_attack",
-        "damage_bonus_category": "resonance_liberation",
-        "raw_skill_category": "重击",
-        "raw_damage_type": "共鸣解放伤害"
-      },
-      {
-        "action_id": "aemeath_heavy_mech_charged_2",
-        "action_type": "heavy_attack",
-        "damage_bonus_category": "resonance_liberation",
-        "raw_skill_category": "重击",
-        "raw_damage_type": "共鸣解放伤害"
-      }
-    ],
-    "ambiguous_or_unmodeled": [
-      {
-        "action_id": "aemeath_form_switch_to_mech_normal",
-        "notes": "Source damage type is '-' in extracted data; simulator keeps generic fallback until damage bonus rules are confirmed."
-      },
-      {
-        "action_id": "aemeath_form_switch_to_aemeath_normal",
-        "notes": "Source damage type is not assigned here unless clearly available from extracted data."
-      },
-      {
-        "action_id": "aemeath_form_switch_to_aemeath_after_overdrive",
-        "notes": "Source damage type is not assigned here unless clearly available from extracted data."
-      },
-      {
-        "action_id": "aemeath_sync_strike_armament_merge",
-        "notes": "Source rows are not clearly mapped to a modeled damage bonus type in this patch."
-      },
-      {
-        "action_id": "aemeath_sync_strike_call_of_dawn",
-        "notes": "Source rows are not clearly mapped to a modeled damage bonus type in this patch."
-      }
+      {"action_id": "aemeath_liberation_overdrive", "action_type": "resonance_liberation", "damage_bonus_category": "resonance_liberation"},
+      {"action_id": "aemeath_heavenfall_finale", "action_type": "resonance_liberation", "damage_bonus_category": "resonance_liberation"},
+      {"action_id": "aemeath_basic_form_stage_1..4", "action_type": "basic_attack", "damage_bonus_category": "basic_attack"},
+      {"action_id": "aemeath_mech_basic_stage_1..4", "action_type": "basic_attack", "damage_bonus_category": "basic_attack"},
+      {"action_id": "aemeath_heavy_*_charged_*", "action_type": "heavy_attack", "damage_bonus_category": "resonance_liberation"},
+      {"action_id": "aemeath_seraphic_duet_*", "action_type": "resonance_skill", "damage_bonus_category": "resonance_liberation"}
     ]
-  }
+  },
+  "build_profile_damage_type_bonus_notes": {
+    "title": "Build Profile / Damage Type Bonus Notes",
+    "profiles": {
+      "default": "Backward-compatible default profile derived from existing characters.json stats.",
+      "liberation_focus_test": "Editable test build assumption that adds Resonance Liberation DMG Bonus through data/build_profiles.json. It is intended to test Liberation-heavy damage distribution and is not claimed as final real-game build data.",
+      "aemeath_user_real_01": "User-supplied profile with Trailblazing Star 2-set and Everbright Polestar static stats already reflected where marked."
+    },
+    "damage_categories": [
+      {"action_id": "aemeath_liberation_overdrive", "damage_bonus_category": "resonance_liberation"},
+      {"action_id": "aemeath_heavenfall_finale", "damage_bonus_category": "resonance_liberation"},
+      {"action_id": "aemeath_basic_form_stage_1..4", "damage_bonus_category": "basic_attack"},
+      {"action_id": "aemeath_mech_basic_stage_1..4", "damage_bonus_category": "basic_attack"},
+      {"action_id": "aemeath_heavy_*_charged_*", "damage_bonus_category": "resonance_liberation"},
+      {"action_id": "aemeath_seraphic_duet_*", "damage_bonus_category": "resonance_liberation"}
+    ],
+    "notes": "Build profiles are stat overlays only. They do not change Aemeath action routing, coefficients, timings, resources, or policy action availability."
+  },
+  "known_limitations": [
+    "This page describes the simulator's modeled interpretation, not a complete game-client recreation.",
+    "The current goal is DPS comparison, not exact frame-perfect combat reproduction.",
+    "Fusion Burst explosion damage remains omitted.",
+    "Fusion Trail / Rupturous Trail full stack systems remain omitted.",
+    "full Starflux utility remains omitted.",
+    "exact hitstop, enemy movement, hit loss, and multi-target state tracking remain omitted.",
+    "exact Tune Strain stack system remains omitted.",
+    "aerial and dodge-counter actions remain omitted unless later represented in action data."
+  ],
+  "simplified_assumptions": [
+    "Trailblazing Star 5-set uses same-action aggregate approximation for triggering damage.",
+    "Tune Break and Tune Response are modeled as single-target formula damage.",
+    "QTE / Intro transition data is represented through reviewed metadata and transition actions, not a full cinematic/client transition recreation."
+  ],
+  "legacy_modes": []
 }

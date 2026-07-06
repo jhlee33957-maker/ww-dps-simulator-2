@@ -755,9 +755,9 @@ Streamlit supports Demo Sequence, PPO Model, and Character Mechanics modes. PPO 
 
 ## Character Mechanics Reference UI
 
-The Streamlit app includes a Character Mechanics page. It currently supports Aemeath and documents the simulator's implemented interpretation rather than a complete game-client recreation. The page is data-driven from `data/mechanics/aemeath_mechanics.json` and covers modeled scope, omitted systems, resources, states, action resolution priority, timing, form switching, Heavy Attack, Sync Strike, Seraphic Duet, Overdrive / Finale, sync_delta values, and known limitations.
+The Streamlit app includes a Character Mechanics page. It currently supports Aemeath and Mornye and documents the simulator's implemented interpretation rather than a complete game-client recreation or raw game tooltip text. The page is data-driven from `data/mechanics/*_mechanics.json` and covers modeled scope, omitted systems, resources, states, action resolution, timing, runtime buffs/weapons, Tune Break / Off-Tune notes, response damage, build-profile notes, known simplifications, and known limitations.
 
-This reference page does not affect simulation results or PPO training. Update the mechanics JSON when character mechanics change.
+This reference page does not affect simulation results or PPO training. Update the mechanics JSON when character mechanics, runtime buffs, weapons, party presets, or known simplifications change.
 
 ## Checks
 

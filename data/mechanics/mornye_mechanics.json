@@ -1,59 +1,286 @@
 {
   "character_id": "mornye",
   "display_name": "Mornye Support v1",
+  "implementation_status": "current_simulator_interpretation_reference",
+  "source_notes": [
+    "This reference describes the simulator's current implemented interpretation, not raw game tooltip text.",
+    "Runtime behavior is controlled by data/actions.json, data/buffs.json, data/weapons.json, party presets, transition config, and mechanics modules.",
+    "Source workbook references are retained as provenance notes where useful, but this file is documentation only."
+  ],
   "source": {
-    "workbook": "data/source/\u9e23\u6f6e\u52a8\u4f5c\u6570\u636e\u6c47\u603b.xlsx",
-    "source_character_name": "\u83ab\u5b81",
-    "frame_rows": "\u89d2\u8272-\u5973 rows 4102-4185",
-    "skill_type_rows": "\u89d2\u8272\u6280\u80fd\u7c7b\u578b rows 2639-2673"
+    "workbook": "data/source/mingchao_action_data_summary.xlsx",
+    "source_character_name": "Mornye",
+    "frame_rows": "character female rows 4102-4185",
+    "skill_type_rows": "character skill type rows 2639-2673"
   },
   "scope": {
-    "title": "Mornye Support v1 Scope",
+    "title": "Mornye Implemented Scope",
     "included": [
       "Fusion support character identity and party-capable registry module",
       "Baseline and Wide Field Observation modes",
       "Rest Mass Energy and Relative Momentum caps and state ticking",
-      "Basic/WFO Basic action resolution skeleton using workbook coefficients",
-      "Heavy Geopotential Shift and Heavy Inversion skeleton",
-      "Expectation Error / Optimal Solution Resonance Skill routing modes",
+      "Basic / WFO Basic action routing using workbook coefficients",
+      "Heavy Geopotential Shift and Heavy Inversion routing",
+      "Expectation Error / Optimal Solution / Distributed Array Resonance Skill routing modes",
       "Resonance Liberation Critical Protocol",
       "Energy Regen stat scaling for Resonance Energy gain and Mornye Liberation crit bonuses",
-      "Optional simplified Interfered Marker enemy damage amp on Heavy Inversion",
-      "Syntony and High Syntony Field simplified runtime support",
-      "Outro Recursion party 25% All DMG Amplification for 30s"
+      "Syntony Field simplified runtime support",
+      "High Syntony Field simplified runtime support",
+      "Halo of Starry Radiance 5-set runtime buff",
+      "Starfield Calibrator runtime weapon effects",
+      "Off-Tune Level / Mistune single-target gauge",
+      "Excel-based Mornye Tune Break action",
+      "Observation Marker",
+      "Interfered Marker through Observation Marker + Tune Break",
+      "Tune Rupture Response - Particle Jet",
+      "Outro Recursion party 25% All DMG Amplification for 30s",
+      "Reviewed Intro / QTE transition metadata and action candidate"
     ],
     "excluded": [
-      "Full Tune Break / Tune Rupture / Tune Strain systems",
-      "Full Tune/Tune Rupture/Tune Strain Interfered Marker conversion",
-      "Full enemy attack timing and GP/counter success detection",
-      "Proof of Boundedness defensive survival logic",
-      "Healing and DEF survival value in DPS",
-      "Exact WFO stamina drain",
-      "Automatic Syntony Field damage scheduling"
+      "exact healing amount calculation",
+      "exact 3s heal tick timing",
+      "defensive survival value / Proof of Boundedness survival logic",
+      "exact WFO stamina drain",
+      "automatic Syntony Field damage scheduling",
+      "full multi-target marker tracking",
+      "exact Tune Strain stack system",
+      "exact Particle Jet / Starburst multi-target behavior",
+      "full enemy behavior, hit loss, and movement"
     ]
   },
   "resources": [
-    {"name": "Rest Mass Energy", "cap": 100, "starts": 0, "implemented": true, "notes": "Baseline actions add source-aligned core values where clear."},
-    {"name": "Relative Momentum", "cap": 100, "starts": 0, "implemented": true, "notes": "WFO actions add source-aligned core values where clear."},
-    {"name": "Concerto Energy", "cap": 100, "starts": 0, "implemented": true, "notes": "Uses the shared party Concerto system."},
-    {"name": "Resonance Energy", "cap": 175, "starts": 175, "implemented": true, "notes": "Critical Protocol costs 175 when the shared resource system is active."},
-    {"name": "Energy Regen", "value": 2.6, "implemented": true, "notes": "Character stat uses decimal form where 1.0 = 100%. Mornye uses 2.60 as a configurable support-test assumption; missing character values default to 1.0."}
+    {
+      "name": "Rest Mass Energy",
+      "cap": 100,
+      "starts": 0,
+      "implemented": true,
+      "notes": "Baseline actions add source-aligned core values where clear."
+    },
+    {
+      "name": "Relative Momentum",
+      "cap": 100,
+      "starts": 0,
+      "implemented": true,
+      "notes": "Wide Field Observation actions add source-aligned core values where clear."
+    },
+    {
+      "name": "Concerto Energy",
+      "cap": 100,
+      "starts": 0,
+      "implemented": true,
+      "notes": "Uses the shared party Concerto system."
+    },
+    {
+      "name": "Resonance Energy",
+      "cap": 175,
+      "starts": 175,
+      "implemented": true,
+      "notes": "Critical Protocol costs 175 when the shared resource system is active."
+    },
+    {
+      "name": "Energy Regen",
+      "implemented": true,
+      "notes": "Character stat uses decimal form where 1.0 = 100%. The selected build profile supplies the value; Mornye user profile mornye_user_real_01 uses 2.7944 / 279.44%, while support_er_cap remains a 2.60 / 260% support-test profile."
+    }
   ],
   "modes": [
-    {"mode": "baseline", "implemented": true, "notes": "Default mode. Basic Attack cycles Stage 1 to Stage 4."},
-    {"mode": "wide_field_observation", "implemented": true, "duration": 30, "notes": "Entered by Geopotential Shift and reviewed Intro Convergence. WFO Basic cycles Stage 1 to Stage 3."}
+    {
+      "mode": "baseline",
+      "implemented": true,
+      "notes": "Default mode. Basic Attack cycles Stage 1 to Stage 4."
+    },
+    {
+      "mode": "wide_field_observation",
+      "implemented": true,
+      "duration": 30,
+      "notes": "Entered by Geopotential Shift and reviewed Intro Convergence. WFO Basic cycles Stage 1 to Stage 3."
+    }
   ],
   "states": [
-    {"state": "syntony_field", "duration": 25, "implemented": "implemented_simplified_support", "notes": "Generated by Geopotential Shift and reviewed Intro Convergence. Off-Tune Buildup Rate +50% is implemented as a party support-stat buff. Healing uses a simplified field-uptime team_heal proxy for Echo Set triggers; exact healing amount and exact tick timing are not modeled."},
-    {"state": "high_syntony_field", "duration": 25, "implemented": "implemented_simplified_runtime_support", "notes": "Generated by Critical Protocol when Syntony Field is active. High Syntony Field DEF +20%, inherited Off-Tune +50%, simplified heal proxy inheritance, and Critical Protocol same-action buff application are implemented. Exact healing amount and exact tick timing remain unmodeled."},
-    {"state": "observation_marker", "duration": 30, "implemented": "metadata_only", "notes": "Applied by Heavy Inversion. Full Tune conversion is not implemented."},
-    {"state": "interfered_marker_damage_amp", "duration": "8/20", "implemented": "tune_break_triggered_single_target", "notes": "Aemeath + Mornye presets use tune_break_triggered. Heavy Inversion applies Observation Marker; Observation Marker + Tune Break applies the non-stacking enemy DMG Taken amp. simplified_on_inversion remains an explicit legacy mode only."}
+    {
+      "state": "syntony_field",
+      "duration": 25,
+      "implemented": "implemented_simplified_runtime_support",
+      "notes": "Generated by Geopotential Shift and reviewed Intro Convergence. Off-Tune Buildup Rate +50% is implemented as a party support-stat buff. Healing uses a simplified field-uptime team_heal proxy for Echo Set triggers; exact healing amount and exact tick timing are not modeled."
+    },
+    {
+      "state": "high_syntony_field",
+      "duration": 25,
+      "implemented": "implemented_simplified_runtime_support",
+      "notes": "Generated by Critical Protocol when Syntony Field is active. High Syntony Field DEF +20%, inherited Off-Tune +50%, simplified heal proxy inheritance, and Critical Protocol same-action buff application are implemented. Exact healing amount and exact tick timing remain unmodeled."
+    },
+    {
+      "state": "observation_marker",
+      "duration": 30,
+      "implemented": "implemented_marker_prerequisite",
+      "notes": "Applied by Heavy Inversion. Observation Marker enables the implemented single-target Interfered Marker flow when a Tune Break is applied."
+    },
+    {
+      "state": "interfered_marker_damage_amp",
+      "duration": "8s default / 20s with Starfield Calibrator support",
+      "implemented": "tune_break_triggered_single_target",
+      "notes": "Aemeath + Mornye party presets use tune_break_triggered. Heavy Inversion applies Observation Marker; Observation Marker + Tune Break applies the non-stacking enemy DMG Taken amp. simplified_on_inversion remains an explicit legacy mode only."
+    }
   ],
   "actions": [
-    {"selected": "mornye_basic_attack", "baseline_resolution": "mornye_basic_stage_1..4", "wfo_resolution": "mornye_wfo_basic_stage_1..3", "implemented": true},
-    {"selected": "mornye_heavy_attack", "baseline_resolution": "normal Heavy or Geopotential Shift at 100 Rest Mass", "wfo_resolution": "Inversion at 100 Relative Momentum; otherwise unavailable", "implemented": true},
-    {"selected": "mornye_resonance_skill", "baseline_resolution": "mornye_skill_expectation_error by default; mornye_skill_optimal_solution only in explicit always_success GP diagnostics", "wfo_resolution": "mornye_skill_distributed_array", "implemented": "configurable_routing_v1"},
-    {"selected": "mornye_resonance_liberation", "resolution": "mornye_liberation_critical_protocol", "implemented": true}
+    {
+      "selected": "mornye_basic_attack",
+      "baseline_resolution": "mornye_basic_stage_1..4",
+      "wfo_resolution": "mornye_wfo_basic_stage_1..3",
+      "implemented": true
+    },
+    {
+      "selected": "mornye_heavy_attack",
+      "baseline_resolution": "normal Heavy or Geopotential Shift at 100 Rest Mass",
+      "wfo_resolution": "Inversion at 100 Relative Momentum; otherwise unavailable",
+      "implemented": true
+    },
+    {
+      "selected": "mornye_resonance_skill",
+      "baseline_resolution": "mornye_skill_expectation_error by default; mornye_skill_optimal_solution only in explicit always_success GP diagnostics",
+      "wfo_resolution": "mornye_skill_distributed_array",
+      "implemented": "configurable_routing_v1"
+    },
+    {
+      "selected": "mornye_resonance_liberation",
+      "resolution": "mornye_liberation_critical_protocol",
+      "implemented": true
+    }
+  ],
+  "timing_model": [
+    {
+      "name": "action_time",
+      "action_time": null,
+      "combat_time_cost": null,
+      "notes": "Action lock, internal action progression, hit timing progression, and mechanic state duration ticking."
+    },
+    {
+      "name": "combat_time_cost",
+      "action_time": null,
+      "combat_time_cost": null,
+      "notes": "Timed combat clock cost. If omitted from an action, it usually falls back to action_time."
+    },
+    {
+      "name": "global_time_stop",
+      "action_time": null,
+      "combat_time_cost": null,
+      "notes": "Source-backed liberation global time stop can make combat_time_cost = 0 while action_time remains nonzero."
+    },
+    {
+      "name": "Convergence / Intro",
+      "action_time": 1.7,
+      "combat_time_cost": 1.7
+    },
+    {
+      "name": "Basic Stage 1",
+      "action_time": 1.0167,
+      "combat_time_cost": 1.0167
+    },
+    {
+      "name": "Basic Stage 2",
+      "action_time": 1.1333,
+      "combat_time_cost": 1.1333
+    },
+    {
+      "name": "Basic Stage 3",
+      "action_time": 1.5167,
+      "combat_time_cost": 1.5167
+    },
+    {
+      "name": "Basic Stage 4",
+      "action_time": 2.8333,
+      "combat_time_cost": 2.8333
+    },
+    {
+      "name": "WFO Basic Stage 1",
+      "action_time": 0.7167,
+      "combat_time_cost": 0.7167
+    },
+    {
+      "name": "WFO Basic Stage 2",
+      "action_time": 1.1333,
+      "combat_time_cost": 1.1333
+    },
+    {
+      "name": "WFO Basic Stage 3",
+      "action_time": 1.0167,
+      "combat_time_cost": 1.0167
+    },
+    {
+      "name": "Heavy Attack Normal",
+      "action_time": 2.3333,
+      "combat_time_cost": 2.3333
+    },
+    {
+      "name": "Heavy Geopotential Shift",
+      "action_time": 1.2,
+      "combat_time_cost": 1.2
+    },
+    {
+      "name": "Heavy Inversion",
+      "action_time": 1.3,
+      "combat_time_cost": 1.3
+    },
+    {
+      "name": "Expectation Error",
+      "action_time": 0.8667,
+      "combat_time_cost": 0.8667
+    },
+    {
+      "name": "Optimal Solution",
+      "action_time": 1.8333,
+      "combat_time_cost": 1.8333
+    },
+    {
+      "name": "Distributed Array",
+      "action_time": 1.0,
+      "combat_time_cost": 1.0
+    },
+    {
+      "name": "Critical Protocol / Resonance Liberation",
+      "action_time": 4.9333,
+      "combat_time_cost": 0.0,
+      "notes": "Excel/source-backed global time stop covers damage timing. Do not treat this as missing timing."
+    },
+    {
+      "name": "Mornye Tune Break",
+      "action_time": 1.5667,
+      "combat_time_cost": 0.0,
+      "notes": "Tune Break uses its own timing model / stop behavior according to current simulator interpretation."
+    },
+    {
+      "name": "Syntony Field damage",
+      "action_time": 2.0,
+      "combat_time_cost": 2.0,
+      "notes": "Manual/simplified field damage action; automatic field damage scheduling is not fully implemented."
+    },
+    {
+      "name": "Outro Recursion",
+      "action_time": 0.001,
+      "combat_time_cost": 0.0,
+      "notes": "Transition/outro support action, not a normal policy damage action."
+    },
+    {
+      "name": "High Syntony Field State",
+      "action_time": 0.001,
+      "combat_time_cost": 0.0,
+      "notes": "State/buff support action, not a normal damage action."
+    },
+    {
+      "name": "Selector / Wrapper Actions",
+      "action_ids": [
+        "mornye_basic_attack",
+        "mornye_heavy_attack",
+        "mornye_resonance_skill",
+        "mornye_resonance_liberation"
+      ],
+      "placeholder_timing": "These selector/wrapper actions are routing placeholders, not source skill timings. They may have 0.1s placeholder timing for routing/fallback and should not be read as real source action timing.",
+      "notes": "Use the resolved action rows above for readable source timing references."
+    },
+    {
+      "name": "Timing Source Scope",
+      "notes": "Some Mornye timing source metadata is documented in reports, but this timing_model section is a simulator reference, not a full frame-table reproduction. Exact hit-level timing, hitstop, enemy movement, hit loss, and exact automatic Syntony Field tick scheduling are not fully modeled."
+    }
   ],
   "expectation_error_routing": {
     "implemented": true,
@@ -62,7 +289,11 @@
     "wfo_resolution": "mornye_skill_distributed_array",
     "success_follow_up_action_id": "mornye_skill_optimal_solution",
     "default_mode": "expectation_error_only",
-    "available_modes": ["expectation_error_only", "dry_run_success_candidate", "always_success"],
+    "available_modes": [
+      "expectation_error_only",
+      "dry_run_success_candidate",
+      "always_success"
+    ],
     "modes": {
       "expectation_error_only": {
         "resolution": "mornye_skill_expectation_error",
@@ -88,8 +319,17 @@
   },
   "energy_regen_scaling": {
     "implemented": true,
-    "energy_regen_decimal": 2.6,
-    "energy_regen_percent": 260,
+    "energy_regen_source": "selected build profile",
+    "profile_examples": {
+      "mornye_user_real_01": {
+        "energy_regen_decimal": 2.7944,
+        "energy_regen_percent": 279.44
+      },
+      "support_er_cap": {
+        "energy_regen_decimal": 2.6,
+        "energy_regen_percent": 260
+      }
+    },
     "resonance_energy_gain_formula": "final Resonance Energy gain = base gain * actor.energy_regen",
     "scope": "Resonance Energy gain only; costs, Concerto, Rest Mass Energy, Relative Momentum, cooldowns, and direct damage are not scaled by this resource formula.",
     "mornye_liberation": {
@@ -98,168 +338,304 @@
       "temporary_bonus_only": true,
       "crit_rate_bonus_formula": "min(ER excess percent * 0.005, 0.80)",
       "crit_dmg_bonus_formula": "min(ER excess percent * 0.01, 1.60)",
-      "at_260_percent_er": {"crit_rate_bonus": 0.8, "crit_dmg_bonus": 1.6}
-    }
-  },
-  "action_data_timing_resource_source_notes": {
-    "title": "Action Data Timing / Resource Source Notes",
-    "source_guard": "scripts/mornye_action_data_source_guard_smoke_test.py",
-    "generated_artifacts": [
-      "data/extracted/mornye_action_data_time_resource_source_guard.json",
-      "reports/mornye_action_data_time_resource_source_guard.md"
-    ],
-    "time_stop_rule": "Only source AC = 全局时停 is treated as global time stop for combat_time_cost. Source AC = 时停 alone is logged as non-global time stop and does not reduce combat_time_cost.",
-    "action_time_rule": "action_time remains animation/action lock duration. combat_time_cost is the timed-combat timer loss and can differ when a confirmed global time-stop row covers the damage timing.",
-    "liberation_critical_protocol": {
-      "action_id": "mornye_liberation_critical_protocol",
-      "source_rows": [4150, 4151, 4153, 4154],
-      "action_time": 4.9333333333,
-      "combat_time_cost": 0.0,
-      "global_time_stop_frames": 300,
-      "concerto_energy_gain": 20,
-      "notes": "Rows 4150/4151 show Liberation timing with a confirmed 全局时停 row; damage row 4154 ends at 296F inside the global time-stop window."
-    },
-    "heavy_inversion": {
-      "action_id": "mornye_heavy_inversion",
-      "source_rows": [4135, 4136],
-      "action_time": 1.3,
-      "combat_time_cost": 1.3,
-      "has_global_time_stop": false,
-      "time_dilation_type": "时停",
-      "source_status": "not_source_confirmed_direct_interfered",
-      "notes": "Source row 4135 has AC = 时停, not 全局时停. Heavy Inversion remains non-global time stop and uses 78F / 60 for combat timer loss. In tune_break_triggered mode it applies Observation Marker only; Interfered Marker waits for Observation Marker + Tune Break."
-    },
-    "distributed_array": {
-      "action_id": "mornye_skill_distributed_array",
-      "source_rows": [4143, 4144, 4145, 4146, 4147],
-      "base_concerto_gain": 10,
-      "relative_momentum_gain_per_hit": [15, 15, 15, 15],
-      "relative_momentum_gain_total": 60,
-      "notes": "Row 4143 provides the +10 Concerto base value. Rows 4144-4147 provide four +15 Relative Momentum hits for +60 total."
-    },
-    "intro_convergence": {
-      "action_id": "mornye_intro_convergence",
-      "source_rows": [4148, 4149, 4164],
-      "action_time": 1.7,
-      "combat_time_cost": 1.7,
-      "has_global_time_stop": false,
-      "time_dilation_type": "时停",
-      "base_concerto_gain": 10,
-      "passive_concerto_gain": 20,
-      "final_concerto_gain": 30,
-      "passive_concerto_source": "角色-女!4164",
-      "notes": "QTE/Intro is a non-policy transition event. Row 4148 has AC = 时停 but no confirmed 全局时停 row, so it keeps 102F / 60 combat timer loss from the damage row. Row 4164 confirms +20 passive Concerto after QTE and Observation A3."
-    },
-    "observation_a3": {
-      "action_id": "mornye_wfo_basic_stage_3",
-      "source_rows": [4131, 4132, 4133, 4134, 4164],
-      "passive_concerto_gain": 20,
-      "passive_concerto_source": "角色-女!4164",
-      "notes": "The passive +20 Concerto on Observation A3 is implemented from row 4164 while preserving existing Relative Momentum gain."
-    },
-    "tune_disruption_note": {
-      "source_rows": [4155, 4156, 4159],
-      "notes": "谐度破坏 has a confirmed 全局时停 row in the source guard, but the full Tune/Tune Rupture/Tune Strain system is not implemented in Mornye v1."
+      "at_260_percent_er": {
+        "crit_rate_bonus": 0.8,
+        "crit_dmg_bonus": 1.6
+      },
+      "at_279_44_percent_er": {
+        "crit_rate_bonus": 0.8,
+        "crit_dmg_bonus": 1.6,
+        "notes": "Caps are already reached."
+      }
     }
   },
   "interfered_marker": {
-    "implemented": "simplified_optional",
+    "implemented": "tune_break_triggered_single_target",
     "default_mode": "disabled",
-    "available_modes": ["disabled", "dry_run", "simplified_on_inversion", "tune_break_triggered"],
-    "simplified_formula": "damage_taken_amp = min(ER excess percent * 0.0025, 0.40)",
-    "at_260_percent_er": {"damage_taken_amp": 0.4},
-    "duration": 30,
-    "notes": "The simplified mode applies a non-stacking enemy-scope damage taken amp on Mornye Heavy Inversion and refreshes value/duration. Full Tune, Tune Rupture, Tune Strain, and marker conversion logic are not implemented."
+    "party_preset_mode": "tune_break_triggered",
+    "available_modes": [
+      "disabled",
+      "dry_run",
+      "simplified_on_inversion",
+      "tune_break_triggered"
+    ],
+    "damage_amp_formula": "damage_taken_amp = min(ER excess percent * 0.0025, 0.40)",
+    "at_260_percent_er": {
+      "damage_taken_amp": 0.4
+    },
+    "at_279_44_percent_er": {
+      "damage_taken_amp": 0.4,
+      "notes": "Cap is already reached."
+    },
+    "duration": "8s default, 20s with Starfield Calibrator effect support",
+    "implemented_flow": [
+      "Heavy Inversion applies Observation Marker.",
+      "Observation Marker + Mornye Tune Break applies Interfered Marker.",
+      "The damage taken amp is enemy-scoped, non-stacking, and refreshes value/duration.",
+      "Interfered Marker modes are optional runtime configuration modes unless a party preset selects one.",
+      "simplified_on_inversion is retained only as an explicit legacy diagnostic mode."
+    ],
+    "not_implemented": [
+      "full Tune system multi-target conversion is not implemented",
+      "full multi-target Tune / Tune Rupture / Tune Strain conversion",
+      "exact Tune Strain stack accounting"
+    ]
   },
   "outro": [
-    {"action_id": "mornye_outro_recursion", "implemented": true, "trigger": "Mornye outgoing full-Concerto party swap", "effect": "mornye_outro_recursion_all_dmg_amp", "duration": 30, "damage_amp_modifiers": {"all": 0.25}}
+    {
+      "action_id": "mornye_outro_recursion",
+      "implemented": true,
+      "trigger": "Mornye outgoing full-Concerto party swap",
+      "effect": "mornye_outro_recursion_all_dmg_amp",
+      "duration": 30,
+      "damage_amp_modifiers": {
+        "all": 0.25
+      }
+    }
   ],
   "intro": [
-    {"action_id": "mornye_intro_convergence", "implemented": "reviewed_candidate_disabled_by_default", "hits": [2.0279], "base_concerto_gain": 10, "passive_concerto_gain": 20, "concerto_energy_gain": 30, "effects": ["clear Rest Mass Energy", "enter Wide Field Observation for 30s", "generate Syntony Field for 25s"]}
+    {
+      "action_id": "mornye_intro_convergence",
+      "implemented": "reviewed_transition_candidate",
+      "hits": [
+        2.0279
+      ],
+      "base_concerto_gain": 10,
+      "passive_concerto_gain": 20,
+      "concerto_energy_gain": 30,
+      "effects": [
+        "clear Rest Mass Energy",
+        "enter Wide Field Observation for 30s",
+        "generate Syntony Field for 25s"
+      ],
+      "notes": "QTE/Intro is represented through transition metadata/action data, not a full cinematic/client transition recreation."
+    }
   ],
   "syntony_field": [
-    {"field": "Syntony Field", "duration": 25, "implemented": "implemented_simplified_support", "effects": ["party off_tune_buildup_rate +0.5", "simplified team_heal field uptime proxy"], "source_rows": ["角色-女!D4120", "角色-女!D4122"], "not_implemented": ["exact healing amount", "exact 180F tick scheduling", "interruption resistance survival value"]},
-    {"field": "High Syntony Field", "duration": 25, "implemented": "implemented_simplified_runtime_support", "effects": ["party DEF +20%", "inherits party off_tune_buildup_rate +0.5", "inherits simplified team_heal field uptime proxy", "Critical Protocol same-action DEF/Off-Tune application"], "metadata_only": ["healing multiplier +40%"], "high_syntony_field_off_tune_bonus_status": "implemented_simplified_inheritance", "source_rows": ["角色-女!D4121 row", "角色-女!D4122", "角色-女!D4124", "角色-女!D4150"], "not_implemented": ["exact healing amount", "exact heal tick timing", "automatic Syntony Field damage scheduling", "full Tune Break / Interfered system", "full C2 default behavior unless configured"]}
-  ],
-  "off_tune_buildup_rate_and_halo": {
-    "implemented": true,
-    "default_off_tune_buildup_rate": 1.0,
-    "default_source_status": "user_confirmed_game_default",
-    "support_stat_key": "support_stats.off_tune_buildup_rate",
-    "energy_regen_is_not_off_tune_buildup_rate": true,
-    "syntony_field_off_tune_bonus": {
-      "value": 0.5,
+    {
+      "field": "Syntony Field",
       "duration": 25,
-      "target": "team",
-      "source": "角色-女!D4122",
-      "raw_text": "全队偏谐效率+50%，解锁C2时额外+20%"
+      "implemented": "implemented_simplified_runtime_support",
+      "effects": [
+        "party off_tune_buildup_rate +0.5",
+        "simplified team_heal field uptime proxy"
+      ],
+      "not_implemented": [
+        "exact healing amount",
+        "exact 3s heal tick timing",
+        "interruption resistance survival value"
+      ]
     },
-    "c2_bonus": {
-      "additional_value": 0.2,
-      "default_active": false,
-      "enabled_when": "mornye_constellation >= 2"
-    },
-    "team_heal_proxy": {
-      "event_tag": "team_heal",
-      "default_mode": "simplified_syntony_field_uptime",
-      "source": "角色-女!D4120",
-      "raw_text": "持续帧内每180F进行一次判定，被命中后回血，仅对己方生效",
-      "implementation_status": "simplified_field_uptime_heal_proxy",
-      "notes": "Field uptime refreshes Halo at action boundaries. Exact healing amount and exact 180F tick timing are not modeled."
-    },
-    "halo_of_starry_radiance_5set": {
-      "implemented": "implemented_simplified_heal_proxy",
-      "trigger_event_tags": ["team_heal"],
+    {
+      "field": "High Syntony Field",
+      "duration": 25,
+      "implemented": "implemented_simplified_runtime_support",
+      "effects": [
+        "party DEF +20%",
+        "inherits party off_tune_buildup_rate +0.5",
+        "inherits simplified team_heal field uptime proxy",
+        "Critical Protocol same-action DEF / Off-Tune application"
+      ],
+      "metadata_only": [
+        "healing multiplier +40%"
+      ],
+      "not_implemented": [
+        "exact healing amount",
+        "exact heal tick timing",
+        "automatic Syntony Field damage scheduling"
+      ]
+    }
+  ],
+  "echo_sets": [
+    {
+      "name": "Halo of Starry Radiance 5-set",
+      "implementation_status": "implemented_simplified_heal_proxy",
+      "trigger_event_tags": [
+        "team_heal"
+      ],
       "formula": "min(current_off_tune_buildup_rate * 0.20, 0.25)",
       "duration": 4.0,
       "max_stacks": 1,
       "stacking_rule": "refresh_duration",
       "effect": "team ATK%",
-      "notes": "Affects ATK-scaling party members. It does not increase Mornye DEF-scaling damage."
+      "notes": "Syntony Field uptime refreshes Halo at action boundaries through the simplified heal proxy. Exact healing amount and exact tick timing are intentionally omitted."
+    }
+  ],
+  "weapons": [
+    {
+      "name": "Starfield Calibrator",
+      "implementation_status": "implemented_runtime_weapon_effect",
+      "profile": "mornye_user_real_01",
+      "rank_default": 1,
+      "static_stats": {
+        "weapon_base_attack": "already reflected in user-entered profile",
+        "energy_regen_substat": "already reflected in user-entered profile if present",
+        "def_percent_passive": "already reflected in user-entered profile",
+        "runtime_reapplied": false
+      },
+      "runtime_effects": [
+        {
+          "name": "Resonance Skill Concerto Restore",
+          "trigger": "resonance_skill_cast",
+          "effect": "restore Concerto Energy to Mornye",
+          "r1_value": 8.0,
+          "rank_scaling": "8/10/12/14/16",
+          "cooldown": "20s",
+          "notes": "Restores Concerto Energy, not Resonance Energy."
+        },
+        {
+          "name": "Party Crit DMG on Healing",
+          "trigger": "team_heal",
+          "effect": "party Crit DMG bonus",
+          "r1_value": "+20%",
+          "rank_scaling": "20%/25%/30%/35%/40%",
+          "duration": "4s",
+          "stacking": "same-name effects do not stack; re-trigger refreshes duration",
+          "notes": "Uses existing Mornye Syntony / High Syntony team_heal proxy. Exact healing amount is not modeled."
+        }
+      ],
+      "exclusions": [
+        "Weapon base/static stats are not applied again at runtime.",
+        "2-set Healing Bonus does not directly affect DPS in the current simulator.",
+        "Tune Break / Tune Response damage does not use crit unless a future source confirms it."
+      ],
+      "source_status": "user_supplied_weapon_tooltip"
+    }
+  ],
+  "off_tune": [
+    {
+      "name": "Off-Tune Level / Mistune",
+      "implementation_status": "implemented_single_target_gauge",
+      "max_value": 3920,
+      "source": "Excel character female action data",
+      "accumulation": "Off-Tune buildup uses current party support_stats.off_tune_buildup_rate.",
+      "cooldown": "3s after Tune Break",
+      "blocked_during_cooldown": true,
+      "reset": "Tune Break resets the gauge to 0."
+    }
+  ],
+  "tune_break": [
+    {
+      "name": "Mornye Tune Break",
+      "implementation_status": "implemented_excel_single_target",
+      "availability": "Conditional on enemy Mistune / Tune Break availability.",
+      "formula": "base-10000 Tune Break formula",
+      "hit_multipliers": [
+        1.7334,
+        2.2666,
+        12.0
+      ],
+      "notes": "The simulator implements Excel-based single-target Tune Break / Mistune. Full multi-target Tune Break / Tune Rupture / Tune Strain conversion remains omitted."
+    }
+  ],
+  "response_damage": [
+    {
+      "name": "Tune Rupture Response - Particle Jet",
+      "implementation_status": "implemented_party_response",
+      "trigger": "After Tune Rupture - Interfered",
+      "coefficient_c0": 2.9822,
+      "coefficient_c5": 7.7536,
+      "formula": "base-10000 Tune Response formula",
+      "cooldown": "8s same target",
+      "notes": "Off-field party response. Exact multi-target behavior remains omitted."
+    }
+  ],
+  "known_runtime_modes": [
+    {
+      "name": "Expectation Error routing",
+      "modes": [
+        "expectation_error_only",
+        "dry_run_success_candidate",
+        "always_success"
+      ],
+      "default": "expectation_error_only"
     },
-    "unsupported": [
-      "full healing amount calculation",
-      "exact heal tick timing",
-      "defensive survival value",
-      "full automatic Syntony Field damage scheduling"
-    ]
-  },
-  "scaling_stat_notes": {
-    "title": "Scaling Stat Notes",
-    "damage_scaling_stat": "def",
-    "source": "user_supplied_skill_screenshot",
-    "source_status": "user_supplied_screenshot_not_embedded",
-    "report": "reports/mornye_scaling_stat_source_note.md",
-    "structured_note": "data/extracted/mornye_scaling_stat_source_note.json",
-    "notes": "Mornye direct damage is modeled as DEF-scaling based on user-provided skill description evidence. This is not labeled Excel-confirmed because the workbook coefficient rows alone do not explicitly encode scaling stat."
-  },
+    {
+      "name": "Interfered Marker",
+      "modes": [
+        "disabled",
+        "dry_run",
+        "simplified_on_inversion",
+        "tune_break_triggered"
+      ],
+      "default": "disabled",
+      "party_preset": "tune_break_triggered"
+    }
+  ],
+  "legacy_modes": [
+    {
+      "name": "simplified_on_inversion",
+      "status": "legacy_diagnostic_only",
+      "notes": "Applies the simplified Interfered Marker damage amp directly on Heavy Inversion. It is retained for comparison and is not the current Aemeath + Mornye party interpretation."
+    },
+    {
+      "name": "support_er_cap",
+      "status": "legacy_support_test_profile",
+      "notes": "Uses 2.60 / 260% Energy Regen to test caps. Current user profile data can provide different Energy Regen, such as 2.7944."
+    }
+  ],
   "build_profile_damage_type_bonus_notes": {
     "title": "Build Profile / Damage Type Bonus Notes",
     "profiles": {
       "default": "Backward-compatible default profile derived from existing characters.json stats.",
-      "support_er_cap": "Support-test build assumption using Energy Regen 2.60 / 260% from data/build_profiles.json to reach Mornye Energy Regen scaling caps."
+      "support_er_cap": "Support-test build assumption using Energy Regen 2.60 / 260% from data/build_profiles.json to reach Mornye Energy Regen scaling caps.",
+      "mornye_user_real_01": "User-supplied profile using Energy Regen 2.7944 / 279.44%; runtime mechanics read the selected profile rather than hardcoding Energy Regen in this reference."
     },
     "damage_categories": [
-      {"action_id": "mornye_basic_stage_1..4", "damage_bonus_category": "basic_attack"},
-      {"action_id": "mornye_wfo_basic_stage_1..3", "damage_bonus_category": "basic_attack"},
-      {"action_id": "mornye_heavy_*", "damage_bonus_category": "heavy_attack"},
-      {"action_id": "mornye_skill_*", "damage_bonus_category": "resonance_skill"},
-      {"action_id": "mornye_liberation_critical_protocol", "damage_bonus_category": "resonance_liberation"},
-      {"action_id": "mornye_intro_convergence", "damage_bonus_category": "intro"},
-      {"action_id": "mornye_outro_recursion", "damage_bonus_category": "outro", "notes": "Outro is modeled as a party amplification buff, not direct additive damage bonus."}
+      {
+        "action_id": "mornye_basic_stage_1..4",
+        "damage_bonus_category": "basic_attack"
+      },
+      {
+        "action_id": "mornye_wfo_basic_stage_1..3",
+        "damage_bonus_category": "basic_attack"
+      },
+      {
+        "action_id": "mornye_heavy_*",
+        "damage_bonus_category": "heavy_attack"
+      },
+      {
+        "action_id": "mornye_skill_*",
+        "damage_bonus_category": "resonance_skill"
+      },
+      {
+        "action_id": "mornye_liberation_critical_protocol",
+        "damage_bonus_category": "resonance_liberation"
+      },
+      {
+        "action_id": "mornye_intro_convergence",
+        "damage_bonus_category": "intro"
+      },
+      {
+        "action_id": "mornye_outro_recursion",
+        "damage_bonus_category": "outro",
+        "notes": "Outro is modeled as a party amplification buff, not direct additive damage bonus."
+      }
     ],
     "notes": "Energy Regen remains generic build profile data and is not hardcoded into the damage formula. Mornye-specific Energy Regen effects remain in Mornye mechanics."
   },
   "known_limitations": [
-    "Full Tune Break / Tune Rupture / Tune Strain conversion is not implemented in Mornye Support v1.",
-    "Interfered Marker is implemented only as an optional simplified damage amp mode.",
+    "This page describes the simulator's modeled interpretation, not a complete game-client recreation.",
+    "The current goal is DPS comparison, not exact frame-perfect combat reproduction.",
+    "exact healing amount calculation remains omitted.",
+    "exact 3s heal tick timing remains omitted.",
+    "Full Tune Break multi-target conversion is not implemented; current simulator uses the documented single-target Tune Break / Mistune path.",
+    "Full multi-target Tune Break / Tune Rupture / Tune Strain conversion remains omitted; current simulator implements Excel-based single-target Tune Break / Mistune.",
+    "full multi-target marker tracking remains omitted.",
+    "exact Tune Strain stack system remains omitted.",
     "GP/counter success timing against enemy attacks is not fully modeled.",
     "Optimal Solution is not automatically available in conservative Expectation Error mode.",
     "Old direct baseline Resonance Skill routing to Optimal Solution has been removed from the default path.",
-    "Particle Jet response is metadata only.",
-    "Mornye Energy Regen scaling on Critical Protocol crit stats is implemented as temporary action-local stat modifiers.",
-    "Proof of Boundedness survival behavior, healing, and DEF effects do not affect DPS in v1.",
-    "QTE/Intro and Heavy Inversion source rows use 时停 rather than 全局时停, so they do not receive global time-stop combat timer reduction.",
-    "谐度破坏 timing is source-audited but the full Tune system remains unimplemented."
+    "Proof of Boundedness defensive survival behavior and interruption resistance survival value do not affect DPS in v1.",
+    "Some Mornye timing source metadata is documented in reports, but the timing_model section is a simulator reference, not a full frame-table reproduction.",
+    "Exact hit-level timing, hitstop, enemy movement, and hit loss are not modeled.",
+    "exact Particle Jet / Starburst multi-target behavior remains omitted.",
+    "automatic Syntony Field damage scheduling remains omitted."
+  ],
+  "simplified_assumptions": [
+    "Syntony Field and High Syntony Field healing are represented by a field-uptime team_heal proxy for Halo of Starry Radiance 5-set triggering.",
+    "Tune Break, Interfered Marker, and Particle Jet are modeled as single-target mechanics.",
+    "Exact automatic Syntony Field tick scheduling is not fully modeled.",
+    "QTE / Intro transition data is represented through reviewed metadata and transition actions, not a full cinematic/client transition recreation."
   ]
 }
