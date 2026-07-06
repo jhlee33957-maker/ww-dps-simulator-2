@@ -3,7 +3,7 @@
 - Source: user-provided workbook, `角色-女` column S.
 - Boss Tune Break cooldown: 3.0s from `附页2!B227` for COST4/red-name targets.
 - Cooldown rule: Off-Tune accumulation is blocked entirely while Tune Break cooldown is active.
-- Mapping rule: sum column S across separate workbook rows mapped to one simulator action; do not multiply one workbook row only because a simulator action has repeated hits.
+- Mapping rule: sum column S across separate workbook rows mapped to one simulator action; apply repeat-aware expansion only when a workbook frame-row repeat note is explicitly confirmed for the action.
 - Damaging actions checked: 39.
 - Mapped action count: 41.
 - Unresolved damaging action ids: none.
@@ -26,6 +26,7 @@
 
 - `mornye_heavy_geopotential_shift`: 29.6 from `??-?!S4117`.
 - `mornye_heavy_inversion`: 104.0 from `??-?!S4136`.
+- `aemeath_mech_basic_stage_3`: 62.54 repeat-aware Off-Tune from `??-?!S2889:S2892`, with A3-2 repeated by `??-?!D2890`.
 - `aemeath_seraphic_duet_encore`: 128.0 from `??-?!S2925:S2929`.
 
 ## Mappings
@@ -47,7 +48,7 @@
 | `aemeath_liberation_overdrive` | 392.0 | `workbook_confirmed_summed_from_rows` | `角色-女!S2796:S2797` |  |
 | `aemeath_mech_basic_stage_1` | 13.34 | `workbook_confirmed` | `角色-女!S2886` |  |
 | `aemeath_mech_basic_stage_2` | 53.37 | `workbook_confirmed_summed_from_rows` | `角色-女!S2887:S2888` |  |
-| `aemeath_mech_basic_stage_3` | 58.06 | `workbook_confirmed_summed_from_rows` | `角色-女!S2889:S2892` |  |
+| `aemeath_mech_basic_stage_3` | 62.54 | `workbook_confirmed_repeat_aware` | `角色-女!S2889:S2892`; repeat `角色-女!D2890` |  |
 | `aemeath_mech_basic_stage_4` | 77.37 | `workbook_confirmed_summed_from_rows` | `角色-女!S2897:S2898` |  |
 | `aemeath_qte_intro_human` | 77.37 | `workbook_confirmed_summed_from_rows` | `角色-女!S2790:S2792` |  |
 | `aemeath_qte_intro_mech` | 93.85 | `workbook_confirmed_summed_from_rows` | `角色-女!S2935:S2936` |  |

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "action_id": "aemeath_mech_basic_stage_3",
+  "repeat_row": "角色-女!2890",
+  "repeat_source_ref": "角色-女!D2890",
+  "repeat_count": 3,
+  "off_tune_simple_sum": 58.06,
+  "off_tune_repeat_aware": 62.54,
+  "current_off_tune_before_patch": 58.06,
+  "corrected_off_tune_after_patch": 62.54,
+  "raw_resonance_energy_repeat_aware": 1.96,
+  "raw_concerto_energy_repeat_aware": 3.91,
+  "raw_core_resource_repeat_aware": 18.54,
+  "current_simulator_resonance_energy_gain": 7,
+  "current_simulator_concerto_energy_gain": 6,
+  "current_simulator_sync_delta": 18.54,
+  "resource_unit_status": "simulator_resource_units_not_direct_excel_raw_values",
+  "resource_numeric_changes_this_patch": false,
+  "reason": "A3-2 frame row 2890 confirms a max-3 repeat, so Off-Tune and raw workbook resource audit values can be computed repeat-aware. Simulator resonance and concerto gains remain unchanged because their unit conversion from workbook raw values is not confirmed project-wide.",
+  "recommendation": "Keep simulator resonance_energy_gain and concerto_energy_gain at 7 and 6 until a project-wide resource unit conversion audit proves how workbook raw values map to simulator resource gains."
+}

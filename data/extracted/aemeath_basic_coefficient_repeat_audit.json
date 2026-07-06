@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "target_action_id": "aemeath_mech_basic_stage_3",
+  "old_multipliers": [0.0389, 0.0389, 0.0389, 0.0389, 0.0389, 0.0389, 0.8154, 0.6165],
+  "old_total": 1.6653,
+  "corrected_multipliers": [0.1165, 0.0389, 0.0389, 0.0389, 0.0389, 0.8154],
+  "corrected_total": 1.0875,
+  "removed_unsupported_hits": [
+    {
+      "damage_multiplier": 0.6165,
+      "reason": "No inspected workbook row supports this hit for aemeath_mech_basic_stage_3."
+    }
+  ],
+  "source_rows": [
+    {
+      "segment": "A3-1",
+      "skill_source_ref": "角色技能类型!I2746",
+      "frame_source_ref": "角色-女!C2889:S2889",
+      "damage_multiplier": 0.1165,
+      "repeat_count": 1
+    },
+    {
+      "segment": "A3-2",
+      "skill_source_ref": "角色技能类型!I2747",
+      "frame_source_ref": "角色-女!C2890:S2890",
+      "repeat_note_ref": "角色-女!D2890",
+      "repeat_note": "持续帧内每9F进行一次判定，最多3次",
+      "damage_multiplier": 0.0389,
+      "repeat_count": 3
+    },
+    {
+      "segment": "A3-3",
+      "skill_source_ref": "角色技能类型!I2748",
+      "frame_source_ref": "角色-女!C2891:S2891",
+      "damage_multiplier": 0.0389,
+      "repeat_count": 1
+    },
+    {
+      "segment": "A3-4",
+      "skill_source_ref": "角色技能类型!I2749",
+      "frame_source_ref": "角色-女!C2892:S2892",
+      "damage_multiplier": 0.8154,
+      "repeat_count": 1
+    }
+  ],
+  "repeat_interpretation": {
+    "damage": "A3-2 is expanded to three damage hits because frame row 2890 says max 3 hits.",
+    "off_tune": "corrected_to_repeat_aware",
+    "resources": "unresolved"
+  },
+  "off_tune_resource_repeat_issues": [
+    {
+      "field": "off_tune_value",
+      "current_value": 62.54,
+      "current_source_ref": "角色-女!S2889:S2892",
+      "simple_row_sum": 58.06,
+      "repeat_aware_candidate": 62.54,
+      "status": "corrected_to_repeat_aware",
+      "reason": "A3-2 frame row 2890 confirms a max-3 repeat, so Off-Tune applies A3-2 three times."
+    },
+    {
+      "field": "resonance_energy_gain",
+      "current_value": 7,
+      "raw_workbook_repeat_aware": 1.96,
+      "status": "unresolved_not_changed",
+      "reason": "Repeat-aware raw workbook value is known, but simulator resource unit conversion is not confirmed."
+    },
+    {
+      "field": "concerto_energy_gain",
+      "current_value": 6,
+      "raw_workbook_repeat_aware": 3.91,
+      "status": "unresolved_not_changed",
+      "reason": "Repeat-aware raw workbook value is known, but simulator resource unit conversion is not confirmed."
+    }
+  ],
+  "nearby_basic_action_audit": [
+    {
+      "action_id": "aemeath_basic_form_stage_1",
+      "multipliers": [0.4635],
+      "total": 0.4635,
+      "status": "unchanged"
+    },
+    {
+      "action_id": "aemeath_basic_form_stage_2",
+      "multipliers": [0.1389, 0.2084, 0.3473],
+      "total": 0.6946,
+      "status": "unchanged"
+    },
+    {
+      "action_id": "aemeath_basic_form_stage_3",
+      "multipliers": [0.0932, 0.0932, 0.0932, 0.1863, 0.4656],
+      "total": 0.9315,
+      "status": "unchanged"
+    },
+    {
+      "action_id": "aemeath_basic_form_stage_4",
+      "multipliers": [0.0673, 0.0673, 0.0673, 0.0673, 0.0673, 1.0094],
+      "total": 1.3459,
+      "status": "unchanged"
+    },
+    {
+      "action_id": "aemeath_mech_basic_stage_1",
+      "multipliers": [0.232, 0.232, 0.232],
+      "total": 0.696,
+      "status": "unchanged"
+    },
+    {
+      "action_id": "aemeath_mech_basic_stage_2",
+      "multipliers": [0.1857, 0.7426],
+      "total": 0.9283,
+      "status": "unchanged"
+    },
+    {
+      "action_id": "aemeath_mech_basic_stage_4",
+      "multipliers": [0.4038, 0.9421],
+      "total": 1.3459,
+      "status": "unchanged"
+    }
+  ]
+}

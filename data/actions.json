@@ -2647,10 +2647,11 @@
       {
         "time": 0.14,
         "damage_category": "normal",
-        "damage_multiplier": 0.0389,
+        "damage_multiplier": 0.1165,
         "tune_break_multiplier": 0,
         "tags": [],
-        "name": "aemeath mech basic 3a"
+        "name": "A3-1",
+        "source_ref": "角色技能类型!I2746 / 角色-女!C2889:S2889"
       },
       {
         "time": 0.2,
@@ -2658,7 +2659,9 @@
         "damage_multiplier": 0.0389,
         "tune_break_multiplier": 0,
         "tags": [],
-        "name": "aemeath mech basic 3b"
+        "name": "A3-2 repeat hit 1",
+        "source_ref": "角色技能类型!I2747 / 角色-女!C2890:S2890",
+        "repeat_source_note": "角色-女!D2890 says max 3 hits"
       },
       {
         "time": 0.26,
@@ -2666,7 +2669,9 @@
         "damage_multiplier": 0.0389,
         "tune_break_multiplier": 0,
         "tags": [],
-        "name": "aemeath mech basic 3c"
+        "name": "A3-2 repeat hit 2",
+        "source_ref": "角色技能类型!I2747 / 角色-女!C2890:S2890",
+        "repeat_source_note": "角色-女!D2890 says max 3 hits"
       },
       {
         "time": 0.32,
@@ -2674,7 +2679,9 @@
         "damage_multiplier": 0.0389,
         "tune_break_multiplier": 0,
         "tags": [],
-        "name": "aemeath mech basic 3d"
+        "name": "A3-2 repeat hit 3",
+        "source_ref": "角色技能类型!I2747 / 角色-女!C2890:S2890",
+        "repeat_source_note": "角色-女!D2890 says max 3 hits"
       },
       {
         "time": 0.38,
@@ -2682,15 +2689,8 @@
         "damage_multiplier": 0.0389,
         "tune_break_multiplier": 0,
         "tags": [],
-        "name": "aemeath mech basic 3e"
-      },
-      {
-        "time": 0.44,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0389,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath mech basic 3f"
+        "name": "A3-3",
+        "source_ref": "角色技能类型!I2748 / 角色-女!C2891:S2891"
       },
       {
         "time": 0.58,
@@ -2698,15 +2698,8 @@
         "damage_multiplier": 0.8154,
         "tune_break_multiplier": 0,
         "tags": [],
-        "name": "aemeath mech basic 3g"
-      },
-      {
-        "time": 0.7,
-        "damage_category": "normal",
-        "damage_multiplier": 0.6165,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath mech basic 3h"
+        "name": "A3-4",
+        "source_ref": "角色技能类型!I2749 / 角色-女!C2892:S2892"
       }
     ],
     "resonance_energy_gain": 7,
@@ -2742,9 +2735,14 @@
       }
     ],
     "scaling_stat": "atk",
-    "off_tune_value": 58.06,
-    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
-    "off_tune_value_source_ref": "角色-女!S2889:S2892"
+    "off_tune_value": 62.54,
+    "off_tune_value_source_status": "workbook_confirmed_repeat_aware",
+    "off_tune_value_source_ref": "角色-女!S2889:S2892",
+    "off_tune_value_repeat_formula": "6.7 + 2.24 * 3 + 2.24 + 46.88",
+    "off_tune_value_repeat_source_ref": "角色-女!D2890",
+    "off_tune_value_repeat_note": "A3-2 checks once every 9F during active frames, up to 3 times; repeat-aware Off-Tune applies A3-2 three times.",
+    "sync_delta_source_status": "workbook_confirmed_repeat_aware",
+    "sync_delta_repeat_formula": "1.99 + 0.67 * 3 + 0.67 + 13.87"
   },
   {
     "id": "aemeath_mech_basic_stage_4",

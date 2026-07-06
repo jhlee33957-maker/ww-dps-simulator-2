@@ -65,6 +65,10 @@ def main() -> None:
     assert_close(action_by_id("mornye_wfo_basic_stage_1")["off_tune_value"], 7.0, "WFO stage 1")
     assert_close(action_by_id("mornye_syntony_field_damage")["off_tune_value"], 66.4, "Syntony Field")
     assert_close(action_by_id("aemeath_mech_basic_stage_1")["off_tune_value"], 13.34, "Aemeath mech stage 1")
+    mech_a3 = action_by_id("aemeath_mech_basic_stage_3")
+    assert_close(mech_a3["off_tune_value"], 62.54, "Aemeath mech stage 3 repeat-aware")
+    assert mech_a3["off_tune_value_source_status"] == "workbook_confirmed_repeat_aware"
+    assert mech_a3["off_tune_value_repeat_formula"] == "6.7 + 2.24 * 3 + 2.24 + 46.88"
     assert_close(action_by_id("aemeath_sync_strike_call_of_dawn")["off_tune_value"], 93.86, "Call of Dawn")
     assert_close(action_by_id("aemeath_heavy_mech_charged_2")["off_tune_value"], 133.36, "Mech charged 2")
     assert_close(transition_by_id("aemeath_qte_intro_human")["off_tune_value"], 77.37, "Aemeath human QTE")
@@ -95,6 +99,10 @@ def main() -> None:
     assert summary.off_tune_value_mapping_source_report == "reports/off_tune_value_mapping_audit.md"
 
     report = report_path.read_text(encoding="utf-8")
+    mapping = {row["action_id"]: row for row in audit["mappings"]}["aemeath_mech_basic_stage_3"]
+    assert_close(mapping["off_tune_value"], 62.54, "Aemeath mech stage 3 mapping")
+    assert mapping["source_status"] == "workbook_confirmed_repeat_aware"
+    assert mapping["repeat_formula"] == "6.7 + 2.24 * 3 + 2.24 + 46.88"
     assert "mornye_heavy_inversion" in report
     assert "角色-女!S4136" in report
 

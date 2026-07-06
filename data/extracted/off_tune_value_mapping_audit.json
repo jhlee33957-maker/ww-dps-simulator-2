@@ -5,7 +5,7 @@
   "boss_tune_break_cooldown_source_ref": "附页2!B227",
   "boss_tune_break_cooldown_source_status": "workbook_confirmed_cost4_red_name_boss_default",
   "cooldown_blocks_off_tune_accumulation": true,
-  "mapping_rule": "Sum column S across separate workbook rows mapped to one simulator action; do not multiply a single workbook row solely because the simulator action has repeated hits.",
+  "mapping_rule": "Sum column S across separate workbook rows mapped to one simulator action; apply repeat-aware expansion only when a workbook frame-row repeat note is explicitly confirmed for the action.",
   "mapped_action_count": 41,
   "mappings": [
     {
@@ -188,8 +188,8 @@
     },
     {
       "action_id": "aemeath_mech_basic_stage_3",
-      "off_tune_value": 58.06,
-      "source_status": "workbook_confirmed_summed_from_rows",
+      "off_tune_value": 62.54,
+      "source_status": "workbook_confirmed_repeat_aware",
       "source_ref": "角色-女!S2889:S2892",
       "source_rows": [
         2889,
@@ -198,7 +198,9 @@
         2892
       ],
       "sheet": "角色-女",
-      "column": "S"
+      "column": "S",
+      "repeat_formula": "6.7 + 2.24 * 3 + 2.24 + 46.88",
+      "repeat_source_ref": "角色-女!D2890"
     },
     {
       "action_id": "aemeath_mech_basic_stage_4",

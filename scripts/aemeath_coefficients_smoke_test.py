@@ -15,7 +15,7 @@ EXPECTED_MULTIPLIERS = {
     "aemeath_basic_form_stage_4": [0.0673, 0.0673, 0.0673, 0.0673, 0.0673, 1.0094],
     "aemeath_mech_basic_stage_1": [0.232, 0.232, 0.232],
     "aemeath_mech_basic_stage_2": [0.1857, 0.7426],
-    "aemeath_mech_basic_stage_3": [0.0389, 0.0389, 0.0389, 0.0389, 0.0389, 0.0389, 0.8154, 0.6165],
+    "aemeath_mech_basic_stage_3": [0.1165, 0.0389, 0.0389, 0.0389, 0.0389, 0.8154],
     "aemeath_mech_basic_stage_4": [0.4038, 0.9421],
     "aemeath_form_switch_to_mech_normal": [0.232, 0.232, 0.232],
     "aemeath_form_switch_to_aemeath_normal": [0.4635],
