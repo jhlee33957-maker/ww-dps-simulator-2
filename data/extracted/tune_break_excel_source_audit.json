@@ -1,17 +1,11 @@
 {
   "enemy_off_tune_max_default": 3920,
   "enemy_off_tune_max_source_status": "project_boss_default_for_single_target_endgame_matrix_style_simulation",
-  "workbook": "data/source/鸣潮动作数据汇总.xlsx",
+  "workbook": "user-provided Wuthering Waves-style source workbook",
   "sheets_inspected": [
     "角色-女",
     "角色-男",
     "角色技能类型",
-    "敌对属性列表",
-    "伤害配置",
-    "伤害计算",
-    "base",
-    "prop",
-    "weapon",
     "dmg"
   ],
   "off_tune_value_column": {
@@ -25,14 +19,14 @@
         "value": 26.64
       },
       {
-        "action": "Mornye A1 rows",
-        "ref": "角色-女!S4102:S4104",
-        "value_sum": 28.0
+        "action": "Mornye Heavy Geopotential Shift",
+        "ref": "角色-女!S4117",
+        "value": 29.6
       },
       {
         "action": "Mornye Heavy Inversion",
-        "ref": "角色-女!S4117",
-        "value": 29.6
+        "ref": "角色-女!S4136",
+        "value": 104.0
       }
     ]
   },
@@ -40,21 +34,17 @@
     "action_rows": [
       {
         "ref": "角色-女!C2802",
-        "label": "谐度破坏-时停",
         "duration_frames": 90
       },
       {
         "ref": "角色-女!C2804",
-        "label": "谐度破坏-1",
         "hit_frame": 30,
         "off_tune_value_ref": "角色-女!S2804",
         "off_tune_value": 0
       },
       {
         "ref": "角色-女!C2805",
-        "label": "谐度破坏-2",
         "hit_frame": 72,
-        "interfered_text_ref": "角色-女!D2805",
         "off_tune_value_ref": "角色-女!S2805",
         "off_tune_value": 0
       }
@@ -76,27 +66,22 @@
     "action_rows": [
       {
         "ref": "角色-女!C4155",
-        "label": "谐度破坏-时停",
-        "duration_frames": 94,
-        "interfered_text_ref": "角色-女!D4155"
+        "duration_frames": 94
       },
       {
         "ref": "角色-女!C4157",
-        "label": "谐度破坏-1",
         "hit_frame": 4,
         "off_tune_value_ref": "角色-女!S4157",
         "off_tune_value": 0
       },
       {
         "ref": "角色-女!C4158",
-        "label": "谐度破坏-2",
         "hit_frame": 26,
         "off_tune_value_ref": "角色-女!S4158",
         "off_tune_value": 0
       },
       {
         "ref": "角色-女!C4159",
-        "label": "谐度破坏-3",
         "hit_frame": 66,
         "off_tune_value_ref": "角色-女!S4159",
         "off_tune_value": 0
@@ -129,36 +114,62 @@
   },
   "aemeath_starburst_response": {
     "refs": [
-      "角色-女!D2728",
-      "角色-女!D2880"
+      "角色-女!D2844",
+      "角色-女!C2880:D2880",
+      "角色技能类型!A2737:I2737",
+      "dmg!A2590:C2590"
     ],
-    "source_status": "excel_text_plus_user_supplied_skill_screenshot_not_embedded",
+    "source_status": "workbook_confirmed",
     "cooldown_seconds": 8,
-    "damage_source_status": "unresolved"
+    "damage_source_status": "workbook_confirmed",
+    "multiplier": 5.9643,
+    "formula": "10000 * tune_response_multiplier * tune_response_boost * RES * DEF * Tune DMG Bonus * target_damage_taken_amp_if_present",
+    "policy_selectable": false
   },
   "mornye_particle_jet_response": {
     "refs": [
       "角色-女!D4181",
-      "角色-女!D4185"
+      "角色-女!C4185:D4185",
+      "角色技能类型!A2676:I2676",
+      "dmg!A2532:C2532"
     ],
-    "source_status": "excel_text_plus_user_supplied_skill_screenshot_not_embedded",
+    "c5_refs": [
+      "角色技能类型!A2677:I2677"
+    ],
+    "source_status": "workbook_confirmed",
     "cooldown_seconds": 8,
-    "damage_source_status": "unresolved"
+    "damage_source_status": "workbook_confirmed",
+    "c0_multiplier": 2.9822,
+    "c5_multiplier": 7.7536,
+    "c5_enabled_condition": "mornye_constellation >= 5",
+    "formula": "10000 * tune_response_multiplier * tune_response_boost * RES * DEF * Tune DMG Bonus * target_damage_taken_amp_if_present",
+    "policy_selectable": false
+  },
+  "response_event_order": {
+    "source_status": "excel_event_order_derived",
+    "response_amp_timing_source_status": "excel_event_order_derived",
+    "tune_response_damage_formula_source_status": "workbook_confirmed",
+    "order": [
+      "Tune Break hit damage calculated first",
+      "Final Tune Break hit applies tune_rupture_interfered",
+      "Observation Marker applies Interfered Marker if present",
+      "Party response scan",
+      "Response damage before next policy action"
+    ],
+    "tune_break_damage_receives_new_interfered_marker_amp": false,
+    "response_damage_receives_interfered_marker_amp_if_any_marker_active": true,
+    "response_damage_receives_new_interfered_marker_amp_if_marker_applied_before_response": true,
+    "response_triggers_without_observation_marker": true
   },
   "unresolved": {
-    "tune_break_cooldown": "not_found_uses_explicit_default_8s",
     "exact_off_tune_reset_behavior": "not_found_implementation_assumption_reset_to_zero",
     "exact_non_boss_enemy_off_tune_table_selection": "not_implemented",
-    "exact_tune_strain_stack_system": "unresolved",
-    "exact_particle_jet_damage": "unresolved_no_damage_invented",
-    "exact_starburst_damage": "unresolved_no_damage_invented"
+    "exact_tune_strain_stack_system": "unresolved"
   },
   "unsupported_full_mechanics": [
     "multi-target marker tracking",
     "exact non-boss enemy Off-Tune table selection",
-    "exact Tune Strain stack system if not fully sourced",
-    "exact Particle Jet damage if coefficients/timings are missing",
-    "exact Starburst damage if coefficients/timings are missing"
+    "exact Tune Strain stack system if not fully sourced"
   ],
   "enemy_tune_break_cooldown_seconds": 3.0,
   "enemy_tune_break_cooldown_source_status": "workbook_confirmed_cost4_red_name_boss_default",

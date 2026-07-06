@@ -1,0 +1,45 @@
+[
+  {
+    "id": "aemeath_starburst",
+    "name": "Aemeath Starburst",
+    "source_character_id": "aemeath",
+    "trigger_interfered_state": "tune_rupture_interfered",
+    "element": "fusion",
+    "raw_damage_type": "tune_break_response",
+    "multiplier": 5.9643,
+    "cooldown_seconds": 8.0,
+    "base_value": 10000.0,
+    "policy_selectable": false,
+    "source_status": "workbook_confirmed",
+    "source_refs": [
+      "角色-女!D2844",
+      "角色-女!C2880:D2880",
+      "角色技能类型!A2737:I2737",
+      "dmg!A2590:C2590"
+    ]
+  },
+  {
+    "id": "mornye_particle_jet",
+    "name": "Mornye Particle Jet",
+    "source_character_id": "mornye",
+    "trigger_interfered_state": "tune_rupture_interfered",
+    "element": "fusion",
+    "raw_damage_type": "tune_break_response",
+    "multiplier": 2.9822,
+    "c5_multiplier": 7.7536,
+    "c5_enabled_constellation": 5,
+    "cooldown_seconds": 8.0,
+    "base_value": 10000.0,
+    "policy_selectable": false,
+    "source_status": "workbook_confirmed",
+    "source_refs": [
+      "角色-女!D4181",
+      "角色-女!C4185:D4185",
+      "角色技能类型!A2676:I2676",
+      "dmg!A2532:C2532"
+    ],
+    "c5_source_refs": [
+      "角色技能类型!A2677:I2677"
+    ]
+  }
+]

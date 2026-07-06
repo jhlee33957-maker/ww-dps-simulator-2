@@ -26,18 +26,24 @@ def main() -> None:
     assert row.party_response_scan_triggered is True
     assert row.aemeath_starburst_triggered is True
     assert row.mornye_particle_jet_triggered is True
-    assert row.aemeath_starburst_damage_unresolved is True
-    assert row.mornye_particle_jet_damage_unresolved is True
-    assert "aemeath_starburst" in row.unresolved_response_damage_events
-    assert "mornye_particle_jet" in row.unresolved_response_damage_events
+    assert row.aemeath_starburst_damage_unresolved is False
+    assert row.mornye_particle_jet_damage_unresolved is False
+    assert row.aemeath_starburst_response_damage > 0.0
+    assert row.mornye_particle_jet_response_damage > 0.0
+    assert row.tune_response_damage == row.aemeath_starburst_response_damage + row.mornye_particle_jet_response_damage
+    assert row.unresolved_response_damage_events == []
     assert sim.summary().aemeath_starburst_trigger_count == 1
     assert sim.summary().mornye_particle_jet_trigger_count == 1
+    assert sim.summary().tune_response_damage_total == row.tune_response_damage
 
     ready(sim)
     assert sim.execute_action("mornye_tune_break")
     blocked = sim.timeline[-1]
     assert blocked.aemeath_starburst_cooldown_blocked is True
     assert blocked.mornye_particle_jet_cooldown_blocked is True
+    assert blocked.tune_response_damage == 0.0
+    assert sim.summary().aemeath_starburst_cooldown_blocked_count == 1
+    assert sim.summary().mornye_particle_jet_cooldown_blocked_count == 1
 
     print("tune_break_party_response_smoke_test ok")
 

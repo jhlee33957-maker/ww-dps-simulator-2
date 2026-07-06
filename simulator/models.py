@@ -372,8 +372,21 @@ class CombatState(BaseModel):
     mornye_particle_jet_response_cooldown_remaining: float = 0.0
     aemeath_starburst_trigger_count: int = 0
     mornye_particle_jet_trigger_count: int = 0
+    aemeath_starburst_cooldown_blocked_count: int = 0
+    mornye_particle_jet_cooldown_blocked_count: int = 0
     tune_break_action_used_count: int = 0
     tune_break_damage_total: float = 0.0
+    tune_response_damage_total: float = 0.0
+    aemeath_starburst_damage_total: float = 0.0
+    mornye_particle_jet_damage_total: float = 0.0
+    tune_response_events: list[dict[str, Any]] = Field(default_factory=list)
+    tune_response_damage_formula_source_status: str = "workbook_confirmed"
+    tune_response_event_order_source_status: str = "excel_event_order_derived"
+    tune_break_damage_receives_new_interfered_marker_amp: bool = False
+    response_damage_receives_interfered_marker_amp: bool = False
+    response_damage_receives_newly_applied_interfered_marker_amp: bool = False
+    response_damage_receives_existing_interfered_marker_amp: bool = False
+    response_damage_receives_new_interfered_marker_amp: bool = False
     unresolved_response_damage_events: list[str] = Field(default_factory=list)
     simplified_assumptions: list[str] = Field(default_factory=list)
 
@@ -541,15 +554,40 @@ class ActionResult(BaseModel):
     energy_regen_excess_for_interfered_marker: float = 0.0
     interfered_marker_cap_applied: bool = False
     interfered_marker_source: str | None = None
+    interfered_marker_newly_applied_this_action: bool = False
+    previous_interfered_marker_active_before_response: bool = False
     party_response_scan_triggered: bool = False
     tune_break_response_event_tags: list[str] = Field(default_factory=list)
     aemeath_starburst_triggered: bool = False
     aemeath_starburst_cooldown_blocked: bool = False
+    aemeath_starburst_cooldown_started: bool = False
+    aemeath_starburst_response_cooldown_remaining: float = 0.0
+    aemeath_starburst_response_damage: float = 0.0
+    aemeath_starburst_damage_total: float = 0.0
+    aemeath_starburst_cooldown_blocked_count: int = 0
     aemeath_starburst_damage_unresolved: bool = False
     mornye_particle_jet_triggered: bool = False
     mornye_particle_jet_cooldown_blocked: bool = False
+    mornye_particle_jet_cooldown_started: bool = False
+    mornye_particle_jet_response_cooldown_remaining: float = 0.0
+    mornye_particle_jet_response_damage: float = 0.0
+    mornye_particle_jet_damage_total: float = 0.0
+    mornye_particle_jet_cooldown_blocked_count: int = 0
+    mornye_particle_jet_multiplier_used: float = 0.0
+    mornye_particle_jet_constellation_variant: str | None = None
     mornye_particle_jet_damage_unresolved: bool = False
     response_source_status: str | None = None
+    tune_response_damage: float = 0.0
+    tune_response_damage_total: float = 0.0
+    tune_response_hit_details: list[dict[str, Any]] = Field(default_factory=list)
+    tune_response_events: list[dict[str, Any]] = Field(default_factory=list)
+    tune_response_damage_formula_source_status: str | None = None
+    tune_response_event_order_source_status: str | None = None
+    tune_break_damage_receives_new_interfered_marker_amp: bool = False
+    response_damage_receives_interfered_marker_amp: bool = False
+    response_damage_receives_newly_applied_interfered_marker_amp: bool = False
+    response_damage_receives_existing_interfered_marker_amp: bool = False
+    response_damage_receives_new_interfered_marker_amp: bool = False
     unresolved_response_damage_events: list[str] = Field(default_factory=list)
     halo_atk_buff_does_not_affect_mornye_def_damage: bool = False
     halo_of_starry_radiance_5set_active: bool = False
@@ -816,15 +854,40 @@ class TimelineEntry(BaseModel):
     energy_regen_excess_for_interfered_marker: float = 0.0
     interfered_marker_cap_applied: bool = False
     interfered_marker_source: str | None = None
+    interfered_marker_newly_applied_this_action: bool = False
+    previous_interfered_marker_active_before_response: bool = False
     party_response_scan_triggered: bool = False
     tune_break_response_event_tags: list[str] = Field(default_factory=list)
     aemeath_starburst_triggered: bool = False
     aemeath_starburst_cooldown_blocked: bool = False
+    aemeath_starburst_cooldown_started: bool = False
+    aemeath_starburst_response_cooldown_remaining: float = 0.0
+    aemeath_starburst_response_damage: float = 0.0
+    aemeath_starburst_damage_total: float = 0.0
+    aemeath_starburst_cooldown_blocked_count: int = 0
     aemeath_starburst_damage_unresolved: bool = False
     mornye_particle_jet_triggered: bool = False
     mornye_particle_jet_cooldown_blocked: bool = False
+    mornye_particle_jet_cooldown_started: bool = False
+    mornye_particle_jet_response_cooldown_remaining: float = 0.0
+    mornye_particle_jet_response_damage: float = 0.0
+    mornye_particle_jet_damage_total: float = 0.0
+    mornye_particle_jet_cooldown_blocked_count: int = 0
+    mornye_particle_jet_multiplier_used: float = 0.0
+    mornye_particle_jet_constellation_variant: str | None = None
     mornye_particle_jet_damage_unresolved: bool = False
     response_source_status: str | None = None
+    tune_response_damage: float = 0.0
+    tune_response_damage_total: float = 0.0
+    tune_response_hit_details: list[dict[str, Any]] = Field(default_factory=list)
+    tune_response_events: list[dict[str, Any]] = Field(default_factory=list)
+    tune_response_damage_formula_source_status: str | None = None
+    tune_response_event_order_source_status: str | None = None
+    tune_break_damage_receives_new_interfered_marker_amp: bool = False
+    response_damage_receives_interfered_marker_amp: bool = False
+    response_damage_receives_newly_applied_interfered_marker_amp: bool = False
+    response_damage_receives_existing_interfered_marker_amp: bool = False
+    response_damage_receives_new_interfered_marker_amp: bool = False
     unresolved_response_damage_events: list[str] = Field(default_factory=list)
     halo_atk_buff_does_not_affect_mornye_def_damage: bool = False
     halo_of_starry_radiance_5set_active: bool = False
@@ -984,6 +1047,21 @@ class SimulationSummary(BaseModel):
     party_response_scan_triggered: bool = False
     aemeath_starburst_trigger_count: int = 0
     mornye_particle_jet_trigger_count: int = 0
+    aemeath_starburst_cooldown_blocked_count: int = 0
+    mornye_particle_jet_cooldown_blocked_count: int = 0
+    aemeath_starburst_response_cooldown_remaining: float = 0.0
+    mornye_particle_jet_response_cooldown_remaining: float = 0.0
+    tune_response_damage_total: float = 0.0
+    aemeath_starburst_damage_total: float = 0.0
+    mornye_particle_jet_damage_total: float = 0.0
+    tune_response_events: list[dict[str, Any]] = Field(default_factory=list)
+    tune_response_damage_formula_source_status: str | None = None
+    tune_response_event_order_source_status: str | None = None
+    tune_break_damage_receives_new_interfered_marker_amp: bool = False
+    response_damage_receives_interfered_marker_amp: bool = False
+    response_damage_receives_newly_applied_interfered_marker_amp: bool = False
+    response_damage_receives_existing_interfered_marker_amp: bool = False
+    response_damage_receives_new_interfered_marker_amp: bool = False
     unresolved_response_damage_events: list[str] = Field(default_factory=list)
     simplified_assumptions: list[str] = Field(default_factory=list)
     aemeath_resonance_mode: str = "unresolved"

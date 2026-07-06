@@ -61,7 +61,9 @@ The Aemeath + Mornye party preset can use a single-target Excel-based Off-Tune /
 
 Aemeath Tune Break uses coefficients `1.0` and `12.0`; Mornye Tune Break uses `1.7334`, `2.2666`, and `12.0`. Tune Break damage uses fixed base `10000 * multiplier * boost * RES * DEF * Tune DMG Bonus` and does not use ATK/DEF/HP scaling or normal damage bonus categories.
 
-After the final Tune Break hit, sourced Shifting/Offset state can become Interfered. The same hit removes Mistune/offset state, resets the Off-Tune gauge to `0`, and starts a `3.0s` boss Tune Break cooldown sourced from workbook `附页2!B227` for COST4/red-name targets. Mornye Observation Marker plus Tune Break applies Interfered Marker as target damage taken amplification. For the real-test Mornye profile with Energy Regen `2.7944`, the amp reaches the `40%` cap. Aemeath Starburst and Mornye Particle Jet response scans are logged with 8s same-target cooldowns; unresolved response damage is intentionally not invented.
+After the final Tune Break hit, sourced Shifting/Offset state can become Interfered. The same hit removes Mistune/offset state, resets the Off-Tune gauge to `0`, and starts a `3.0s` boss Tune Break cooldown sourced from workbook `附页2!B227` for COST4/red-name targets. Mornye Observation Marker plus Tune Break applies Interfered Marker as target damage taken amplification. For the real-test Mornye profile with Energy Regen `2.7944`, the amp reaches the `40%` cap. Tune Break hits that create the marker do not receive the newly applied amp; Aemeath Starburst and Mornye Particle Jet response damage is injected after marker application and before the next policy action, so those response hits receive the new amp when Observation Marker was active.
+
+Aemeath Starburst uses multiplier `5.9643` from `角色-女!D2844`, `角色-女!C2880:D2880`, `角色技能类型!A2737:I2737`, and `dmg!A2590:C2590`. Mornye Particle Jet uses C0 multiplier `2.9822` from `角色-女!D4181`, `角色-女!C4185:D4185`, `角色技能类型!A2676:I2676`, and `dmg!A2532:C2532`; C5 swaps to multiplier `7.7536` from `角色技能类型!A2677:I2677` only when `mornye_constellation >= 5`. Response damage uses fixed base `10000 * multiplier * Tune Response Boost * RES * DEF * Tune DMG Bonus`, plus target damage taken amp when present. These responses are data-backed runtime events, not policy actions and not PPO action exposure.
 
 Off-Tune values are mapped from workbook `角色-女` column `S`; the current mapping audit is in `reports/off_tune_value_mapping_audit.md` and `data/extracted/off_tune_value_mapping_audit.json`. Notable corrections include `mornye_heavy_geopotential_shift = 29.6` from `角色-女!S4117` and `mornye_heavy_inversion = 104.0` from `角色-女!S4136`. Transition QTE/Intro actions preserve Off-Tune source metadata when converted to runtime actions.
 
@@ -107,8 +109,8 @@ Implemented in v1:
 
 Not implemented in v1:
 
-- full Tune Break / Tune Rupture / Tune Strain systems
-- full Interfered Marker Tune conversion and Particle Jet response
+- full Tune Strain stack system
+- multi-target Interfered Marker tracking
 - full GP/counter timing against enemy attacks for automatic Optimal Solution success
 - Proof of Boundedness defensive survival logic
 - exact healing / DEF defensive value in DPS

@@ -226,6 +226,32 @@ def main() -> None:
         "tune_break_action_available_ids": training_summary.tune_break_action_available_ids,
         "tune_break_action_used_count": training_summary.tune_break_action_used_count,
         "tune_break_damage_total": training_summary.tune_break_damage_total,
+        "tune_response_damage_total": training_summary.tune_response_damage_total,
+        "aemeath_starburst_damage_total": training_summary.aemeath_starburst_damage_total,
+        "mornye_particle_jet_damage_total": training_summary.mornye_particle_jet_damage_total,
+        "aemeath_starburst_trigger_count": training_summary.aemeath_starburst_trigger_count,
+        "mornye_particle_jet_trigger_count": training_summary.mornye_particle_jet_trigger_count,
+        "aemeath_starburst_cooldown_blocked_count": training_summary.aemeath_starburst_cooldown_blocked_count,
+        "mornye_particle_jet_cooldown_blocked_count": training_summary.mornye_particle_jet_cooldown_blocked_count,
+        "tune_response_damage_formula_source_status": (
+            training_summary.tune_response_damage_formula_source_status
+        ),
+        "tune_response_event_order_source_status": training_summary.tune_response_event_order_source_status,
+        "tune_break_damage_receives_new_interfered_marker_amp": (
+            training_summary.tune_break_damage_receives_new_interfered_marker_amp
+        ),
+        "response_damage_receives_interfered_marker_amp": (
+            training_summary.response_damage_receives_interfered_marker_amp
+        ),
+        "response_damage_receives_newly_applied_interfered_marker_amp": (
+            training_summary.response_damage_receives_newly_applied_interfered_marker_amp
+        ),
+        "response_damage_receives_existing_interfered_marker_amp": (
+            training_summary.response_damage_receives_existing_interfered_marker_amp
+        ),
+        "response_damage_receives_new_interfered_marker_amp": (
+            training_summary.response_damage_receives_new_interfered_marker_amp
+        ),
         "target_tune_shift_state": training_summary.target_tune_shift_state,
         "target_interfered_state": training_summary.target_interfered_state,
         "interfered_marker_damage_taken_amp": training_summary.interfered_marker_damage_taken_amp,

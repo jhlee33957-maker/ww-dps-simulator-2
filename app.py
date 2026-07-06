@@ -459,6 +459,18 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
                 marker_cols[1].metric("Tune Break uses", summary.tune_break_action_used_count)
                 marker_cols[2].metric("Interfered amp", f"+{summary.interfered_marker_damage_taken_amp * 100:.0f}%")
                 marker_cols[3].metric("Marker remaining", f"{summary.interfered_marker_remaining:.1f}s")
+                response_cols = st.columns(4)
+                response_cols[0].metric("Response damage", f"{summary.tune_response_damage_total:.0f}")
+                response_cols[1].metric("Starburst damage", f"{summary.aemeath_starburst_damage_total:.0f}")
+                response_cols[2].metric("Particle Jet damage", f"{summary.mornye_particle_jet_damage_total:.0f}")
+                response_cols[3].metric(
+                    "Response amp rule",
+                    "New marker applies"
+                    if summary.response_damage_receives_newly_applied_interfered_marker_amp
+                    else "Existing marker"
+                    if summary.response_damage_receives_existing_interfered_marker_amp
+                    else "No marker amp",
+                )
                 st.write(
                     {
                         "Available Tune Break actions": summary.tune_break_action_available_ids,
@@ -477,7 +489,38 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
                         "Target interfered state": summary.target_interfered_state,
                         "Observation Marker remaining": summary.observation_marker_remaining,
                         "Aemeath Starburst response triggers": summary.aemeath_starburst_trigger_count,
+                        "Aemeath Starburst cooldown blocked count": (
+                            summary.aemeath_starburst_cooldown_blocked_count
+                        ),
+                        "Aemeath Starburst cooldown remaining": (
+                            summary.aemeath_starburst_response_cooldown_remaining
+                        ),
                         "Mornye Particle Jet response triggers": summary.mornye_particle_jet_trigger_count,
+                        "Mornye Particle Jet cooldown blocked count": (
+                            summary.mornye_particle_jet_cooldown_blocked_count
+                        ),
+                        "Mornye Particle Jet cooldown remaining": (
+                            summary.mornye_particle_jet_response_cooldown_remaining
+                        ),
+                        "Mornye Particle Jet constellation": summary.mornye_constellation,
+                        "Response events": summary.tune_response_events,
+                        "Tune Break receives newly applied marker amp": (
+                            summary.tune_break_damage_receives_new_interfered_marker_amp
+                        ),
+                        "Response receives any marker amp": (
+                            summary.response_damage_receives_interfered_marker_amp
+                        ),
+                        "Response receives newly applied marker amp": (
+                            summary.response_damage_receives_newly_applied_interfered_marker_amp
+                        ),
+                        "Response receives existing marker amp": (
+                            summary.response_damage_receives_existing_interfered_marker_amp
+                        ),
+                        "Deprecated new-marker alias": (
+                            summary.response_damage_receives_new_interfered_marker_amp
+                        ),
+                        "Response formula source status": summary.tune_response_damage_formula_source_status,
+                        "Response event order source status": summary.tune_response_event_order_source_status,
                         "Unresolved response damages": summary.unresolved_response_damage_events,
                         "Assumptions": summary.simplified_assumptions,
                     }
@@ -653,7 +696,19 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "interfered_marker_damage_taken_amp",
         "party_response_scan_triggered",
         "aemeath_starburst_triggered",
+        "aemeath_starburst_response_damage",
+        "aemeath_starburst_response_cooldown_remaining",
         "mornye_particle_jet_triggered",
+        "mornye_particle_jet_response_damage",
+        "mornye_particle_jet_response_cooldown_remaining",
+        "mornye_particle_jet_multiplier_used",
+        "mornye_particle_jet_constellation_variant",
+        "tune_response_damage",
+        "tune_response_damage_total",
+        "response_damage_receives_interfered_marker_amp",
+        "response_damage_receives_newly_applied_interfered_marker_amp",
+        "response_damage_receives_existing_interfered_marker_amp",
+        "response_damage_receives_new_interfered_marker_amp",
         "unresolved_response_damage_events",
         "mornye_constellation",
         "mornye_heal_event_mode",

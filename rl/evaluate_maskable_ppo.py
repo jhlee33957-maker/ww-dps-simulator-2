@@ -272,6 +272,28 @@ def main() -> None:
         "tune_break_action_available_ids": summary.tune_break_action_available_ids,
         "tune_break_action_used_count": summary.tune_break_action_used_count,
         "tune_break_damage_total": summary.tune_break_damage_total,
+        "tune_response_damage_total": summary.tune_response_damage_total,
+        "aemeath_starburst_damage_total": summary.aemeath_starburst_damage_total,
+        "mornye_particle_jet_damage_total": summary.mornye_particle_jet_damage_total,
+        "aemeath_starburst_trigger_count": summary.aemeath_starburst_trigger_count,
+        "mornye_particle_jet_trigger_count": summary.mornye_particle_jet_trigger_count,
+        "aemeath_starburst_cooldown_blocked_count": summary.aemeath_starburst_cooldown_blocked_count,
+        "mornye_particle_jet_cooldown_blocked_count": summary.mornye_particle_jet_cooldown_blocked_count,
+        "tune_response_damage_formula_source_status": summary.tune_response_damage_formula_source_status,
+        "tune_response_event_order_source_status": summary.tune_response_event_order_source_status,
+        "tune_break_damage_receives_new_interfered_marker_amp": (
+            summary.tune_break_damage_receives_new_interfered_marker_amp
+        ),
+        "response_damage_receives_interfered_marker_amp": summary.response_damage_receives_interfered_marker_amp,
+        "response_damage_receives_newly_applied_interfered_marker_amp": (
+            summary.response_damage_receives_newly_applied_interfered_marker_amp
+        ),
+        "response_damage_receives_existing_interfered_marker_amp": (
+            summary.response_damage_receives_existing_interfered_marker_amp
+        ),
+        "response_damage_receives_new_interfered_marker_amp": (
+            summary.response_damage_receives_new_interfered_marker_amp
+        ),
         "target_tune_shift_state": summary.target_tune_shift_state,
         "target_interfered_state": summary.target_interfered_state,
         "interfered_marker_damage_taken_amp": summary.interfered_marker_damage_taken_amp,
@@ -352,6 +374,21 @@ def main() -> None:
                 "target_tune_shift_state": row.target_tune_shift_state,
                 "target_interfered_state": row.target_interfered_state,
                 "interfered_marker_damage_taken_amp": row.interfered_marker_damage_taken_amp,
+                "tune_response_damage": row.tune_response_damage,
+                "aemeath_starburst_response_damage": row.aemeath_starburst_response_damage,
+                "mornye_particle_jet_response_damage": row.mornye_particle_jet_response_damage,
+                "mornye_particle_jet_multiplier_used": row.mornye_particle_jet_multiplier_used,
+                "mornye_particle_jet_constellation_variant": row.mornye_particle_jet_constellation_variant,
+                "response_damage_receives_interfered_marker_amp": row.response_damage_receives_interfered_marker_amp,
+                "response_damage_receives_newly_applied_interfered_marker_amp": (
+                    row.response_damage_receives_newly_applied_interfered_marker_amp
+                ),
+                "response_damage_receives_existing_interfered_marker_amp": (
+                    row.response_damage_receives_existing_interfered_marker_amp
+                ),
+                "response_damage_receives_new_interfered_marker_amp": (
+                    row.response_damage_receives_new_interfered_marker_amp
+                ),
                 "unresolved_response_damage_events": row.unresolved_response_damage_events,
                 "halo_of_starry_radiance_5set_active": row.halo_of_starry_radiance_5set_active,
                 "halo_of_starry_radiance_5set_atk_percent_bonus": (

@@ -56,6 +56,7 @@ from simulator.roster import (
 )
 from simulator.state import create_initial_state
 from simulator.transition_config import build_effective_transition_config, load_transition_config, mechanics_mode_summary
+from simulator.tune_break import calculate_tune_response_damage_detail
 
 
 class Simulation:
@@ -72,6 +73,7 @@ class Simulation:
         party_preset_config: dict | None = None,
         active_build_profiles: dict[str, str] | None = None,
         stat_overrides: dict[str, dict[str, float]] | None = None,
+        tune_response_defs: dict[str, dict[str, Any]] | None = None,
     ) -> None:
         self.all_characters = characters
         self.selected_character_ids = parse_party_character_ids(selected_character_ids, characters)
@@ -87,6 +89,7 @@ class Simulation:
             if character.build_profile_id is not None
         }
         self.stat_overrides = stat_overrides or {}
+        self.tune_response_defs = dict(tune_response_defs or self._default_tune_response_defs())
         self.preset_generic_swap = self.party_preset_config.get("generic_swap", {})
         self.characters = {
             character_id: characters[character_id]
@@ -167,6 +170,12 @@ class Simulation:
             item["id"]: BuffData.model_validate(item)
             for item in _read_json(data_path / "buffs.json")
         }
+        tune_response_path = data_path / "tune_responses.json"
+        tune_response_defs = (
+            {item["id"]: item for item in _read_json(tune_response_path)}
+            if tune_response_path.exists()
+            else cls._default_tune_response_defs()
+        )
         enemy_path = data_path / "enemy.json"
         enemy = EnemyData.model_validate(_read_json_object(enemy_path)) if enemy_path.exists() else EnemyData()
         party_presets = read_party_presets(data_path)
@@ -231,6 +240,7 @@ class Simulation:
                 for character_id, overrides in (stat_overrides or {}).items()
                 if character_id in selected_ids
             },
+            tune_response_defs=tune_response_defs,
         )
 
     def validate_build_profiles(self) -> dict[str, object]:
@@ -393,6 +403,37 @@ class Simulation:
     def _tune_break_system_config(self) -> dict[str, Any]:
         return dict((self.state.mechanics_config.get("tune_break_system") if hasattr(self, "state") else None) or {})
 
+    @staticmethod
+    def _default_tune_response_defs() -> dict[str, dict[str, Any]]:
+        return {
+            "aemeath_starburst": {
+                "id": "aemeath_starburst",
+                "name": "Aemeath Starburst",
+                "source_character_id": "aemeath",
+                "trigger_interfered_state": "tune_rupture_interfered",
+                "element": "fusion",
+                "raw_damage_type": "tune_break_response",
+                "multiplier": 5.9643,
+                "cooldown_seconds": 8.0,
+                "base_value": 10000.0,
+                "source_status": "workbook_confirmed",
+            },
+            "mornye_particle_jet": {
+                "id": "mornye_particle_jet",
+                "name": "Mornye Particle Jet",
+                "source_character_id": "mornye",
+                "trigger_interfered_state": "tune_rupture_interfered",
+                "element": "fusion",
+                "raw_damage_type": "tune_break_response",
+                "multiplier": 2.9822,
+                "c5_multiplier": 7.7536,
+                "c5_enabled_constellation": 5,
+                "cooldown_seconds": 8.0,
+                "base_value": 10000.0,
+                "source_status": "workbook_confirmed",
+            },
+        }
+
     def _current_off_tune_buildup_rate(self) -> float:
         mornye = self.characters.get("mornye")
         if mornye is None:
@@ -554,6 +595,10 @@ class Simulation:
         result.enemy_tune_break_cooldown_source_ref = self.state.enemy_tune_break_cooldown_source_ref
 
         if interfered_state is not None:
+            result.previous_interfered_marker_active_before_response = (
+                self.state.interfered_marker_remaining > 0.0
+                and self.state.interfered_marker_damage_taken_amp > 0.0
+            )
             self._apply_observation_marker_interfered_marker(result, interfered_state)
             self._scan_party_responses(result, interfered_state)
 
@@ -606,6 +651,7 @@ class Simulation:
         result.energy_regen_excess_for_interfered_marker = excess
         result.interfered_marker_cap_applied = uncapped_amp > amp
         result.interfered_marker_source = "observation_marker_tune_break"
+        result.interfered_marker_newly_applied_this_action = True
         result.mornye_interfered_marker_mode = "tune_break_triggered"
         result.interfered_marker_mode = "tune_break_triggered"
         result.mornye_interfered_amp = amp
@@ -617,45 +663,220 @@ class Simulation:
             return
         log = {
             "target_interfered_state": interfered_state,
-            "response_source_status": "user_supplied_skill_screenshot_not_embedded",
+            "response_source_status": "workbook_confirmed",
+            "tune_response_damage_formula_source_status": "workbook_confirmed",
+            "tune_response_event_order_source_status": "excel_event_order_derived",
+            "tune_break_damage_receives_new_interfered_marker_amp": False,
+            "response_damage_receives_interfered_marker_amp": False,
+            "response_damage_receives_newly_applied_interfered_marker_amp": False,
+            "response_damage_receives_existing_interfered_marker_amp": False,
+            "response_damage_receives_new_interfered_marker_amp": False,
             "aemeath_starburst_triggered": False,
             "aemeath_starburst_cooldown_blocked": False,
             "mornye_particle_jet_triggered": False,
             "mornye_particle_jet_cooldown_blocked": False,
             "unresolved_response_damage_events": [],
+            "tune_response_events": [],
         }
         result.party_response_scan_triggered = True
         result.response_source_status = log["response_source_status"]
+        result.tune_response_damage_formula_source_status = log["tune_response_damage_formula_source_status"]
+        result.tune_response_event_order_source_status = log["tune_response_event_order_source_status"]
+        result.tune_break_damage_receives_new_interfered_marker_amp = False
         result.tune_break_response_event_tags = []
         if interfered_state == "tune_rupture_interfered" and "aemeath" in self.characters:
-            if self.state.aemeath_starburst_response_cooldown_remaining > 0.0:
-                result.aemeath_starburst_cooldown_blocked = True
-                log["aemeath_starburst_cooldown_blocked"] = True
-            else:
-                self.state.aemeath_starburst_trigger_count += 1
-                self.state.aemeath_starburst_response_cooldown_remaining = 8.0
-                result.aemeath_starburst_triggered = True
-                result.aemeath_starburst_damage_unresolved = True
-                result.tune_break_response_event_tags.append("aemeath_tune_rupture_response_starburst")
-                log["aemeath_starburst_triggered"] = True
-                log["unresolved_response_damage_events"].append("aemeath_starburst")
+            self._trigger_tune_response(
+                result=result,
+                log=log,
+                response_id="aemeath_starburst",
+                cooldown_attr="aemeath_starburst_response_cooldown_remaining",
+                trigger_count_attr="aemeath_starburst_trigger_count",
+                blocked_count_attr="aemeath_starburst_cooldown_blocked_count",
+                triggered_field="aemeath_starburst_triggered",
+                blocked_field="aemeath_starburst_cooldown_blocked",
+                cooldown_started_field="aemeath_starburst_cooldown_started",
+                response_damage_field="aemeath_starburst_response_damage",
+                damage_total_attr="aemeath_starburst_damage_total",
+                damage_total_field="aemeath_starburst_damage_total",
+                event_tag="aemeath_tune_rupture_response_starburst",
+            )
         if interfered_state == "tune_rupture_interfered" and "mornye" in self.characters:
-            if self.state.mornye_particle_jet_response_cooldown_remaining > 0.0:
-                result.mornye_particle_jet_cooldown_blocked = True
-                log["mornye_particle_jet_cooldown_blocked"] = True
-            else:
-                self.state.mornye_particle_jet_trigger_count += 1
-                self.state.mornye_particle_jet_response_cooldown_remaining = 8.0
-                result.mornye_particle_jet_triggered = True
-                result.mornye_particle_jet_damage_unresolved = True
-                result.tune_break_response_event_tags.append("mornye_tune_rupture_response_particle_jet")
-                log["mornye_particle_jet_triggered"] = True
-                log["unresolved_response_damage_events"].append("mornye_particle_jet")
+            self._trigger_tune_response(
+                result=result,
+                log=log,
+                response_id="mornye_particle_jet",
+                cooldown_attr="mornye_particle_jet_response_cooldown_remaining",
+                trigger_count_attr="mornye_particle_jet_trigger_count",
+                blocked_count_attr="mornye_particle_jet_cooldown_blocked_count",
+                triggered_field="mornye_particle_jet_triggered",
+                blocked_field="mornye_particle_jet_cooldown_blocked",
+                cooldown_started_field="mornye_particle_jet_cooldown_started",
+                response_damage_field="mornye_particle_jet_response_damage",
+                damage_total_attr="mornye_particle_jet_damage_total",
+                damage_total_field="mornye_particle_jet_damage_total",
+                event_tag="mornye_tune_rupture_response_particle_jet",
+            )
         for event_id in log["unresolved_response_damage_events"]:
             if event_id not in self.state.unresolved_response_damage_events:
                 self.state.unresolved_response_damage_events.append(event_id)
         result.unresolved_response_damage_events = list(self.state.unresolved_response_damage_events)
+        result.response_damage_receives_new_interfered_marker_amp = bool(
+            result.response_damage_receives_newly_applied_interfered_marker_amp
+        )
+        log["response_damage_receives_interfered_marker_amp"] = result.response_damage_receives_interfered_marker_amp
+        log["response_damage_receives_newly_applied_interfered_marker_amp"] = (
+            result.response_damage_receives_newly_applied_interfered_marker_amp
+        )
+        log["response_damage_receives_existing_interfered_marker_amp"] = (
+            result.response_damage_receives_existing_interfered_marker_amp
+        )
+        log["response_damage_receives_new_interfered_marker_amp"] = result.response_damage_receives_new_interfered_marker_amp
+        self.state.response_damage_receives_interfered_marker_amp = (
+            self.state.response_damage_receives_interfered_marker_amp
+            or result.response_damage_receives_interfered_marker_amp
+        )
+        self.state.response_damage_receives_newly_applied_interfered_marker_amp = (
+            self.state.response_damage_receives_newly_applied_interfered_marker_amp
+            or result.response_damage_receives_newly_applied_interfered_marker_amp
+        )
+        self.state.response_damage_receives_existing_interfered_marker_amp = (
+            self.state.response_damage_receives_existing_interfered_marker_amp
+            or result.response_damage_receives_existing_interfered_marker_amp
+        )
+        self.state.response_damage_receives_new_interfered_marker_amp = (
+            self.state.response_damage_receives_newly_applied_interfered_marker_amp
+        )
         self.state.party_response_scan_logs.append(log)
+
+    def _trigger_tune_response(
+        self,
+        *,
+        result: Any,
+        log: dict[str, Any],
+        response_id: str,
+        cooldown_attr: str,
+        trigger_count_attr: str,
+        blocked_count_attr: str,
+        triggered_field: str,
+        blocked_field: str,
+        cooldown_started_field: str,
+        response_damage_field: str,
+        damage_total_attr: str,
+        damage_total_field: str,
+        event_tag: str,
+    ) -> None:
+        response_def = self.tune_response_defs.get(response_id, {})
+        source_character_id = str(response_def.get("source_character_id") or "")
+        if source_character_id not in self.characters:
+            return
+        if float(getattr(self.state, cooldown_attr, 0.0) or 0.0) > 0.0:
+            setattr(result, blocked_field, True)
+            log[blocked_field] = True
+            setattr(self.state, blocked_count_attr, int(getattr(self.state, blocked_count_attr, 0) or 0) + 1)
+            return
+
+        character = self.characters[source_character_id]
+        multiplier = float(response_def.get("multiplier", 0.0) or 0.0)
+        constellation_variant = "c0"
+        if response_id == "mornye_particle_jet":
+            constellation = self._mornye_constellation()
+            c5_threshold = int(response_def.get("c5_enabled_constellation", 5) or 5)
+            if constellation >= c5_threshold:
+                multiplier = float(response_def.get("c5_multiplier", multiplier) or multiplier)
+                constellation_variant = "c5"
+            result.mornye_particle_jet_multiplier_used = multiplier
+            result.mornye_particle_jet_constellation_variant = constellation_variant
+        applied_amp = (
+            float(self.state.interfered_marker_damage_taken_amp or 0.0)
+            if self.state.interfered_marker_remaining > 0.0
+            else 0.0
+        )
+        receives_marker_amp = applied_amp > 0.0
+        receives_new_marker_amp = receives_marker_amp and bool(result.interfered_marker_newly_applied_this_action)
+        receives_existing_marker_amp = (
+            receives_marker_amp
+            and not receives_new_marker_amp
+            and bool(result.previous_interfered_marker_active_before_response)
+        )
+        detail = calculate_tune_response_damage_detail(
+            tune_response_id=response_id,
+            tune_response_hit_id=f"{response_id}_1",
+            tune_response_multiplier=multiplier,
+            additional_tune_response_boost=float(response_def.get("additional_tune_response_boost", 0.0) or 0.0),
+            tune_dmg_bonus=self.state.tune_dmg_bonus,
+            enemy_res=self.state.enemy_res,
+            res_pen=self.state.res_pen,
+            attacker_level=character.attacker_level,
+            enemy_level=self.state.enemy_level,
+            def_ignore=character.def_ignore,
+            def_reduction=self.state.def_reduction,
+            applied_damage_taken_amp=applied_amp,
+            tune_response_base_value=float(response_def.get("base_value", 10000.0) or 10000.0),
+            tune_response_raw_damage_type=str(response_def.get("raw_damage_type", "tune_break_response")),
+            tune_response_element=str(response_def.get("element", "fusion")),
+            source_status=str(response_def.get("source_status", "workbook_confirmed")),
+        )
+        detail["response_damage_receives_interfered_marker_amp"] = receives_marker_amp
+        detail["response_damage_receives_newly_applied_interfered_marker_amp"] = receives_new_marker_amp
+        detail["response_damage_receives_existing_interfered_marker_amp"] = receives_existing_marker_amp
+        detail["response_damage_receives_new_interfered_marker_amp"] = receives_new_marker_amp
+        detail["response_amp_timing_source_status"] = "excel_event_order_derived"
+        if response_id == "mornye_particle_jet":
+            detail["mornye_constellation"] = self._mornye_constellation()
+            detail["mornye_particle_jet_constellation_variant"] = constellation_variant
+        damage = float(detail["tune_response_damage"])
+        cooldown = float(response_def.get("cooldown_seconds", 8.0) or 8.0)
+
+        setattr(self.state, trigger_count_attr, int(getattr(self.state, trigger_count_attr, 0) or 0) + 1)
+        setattr(self.state, cooldown_attr, cooldown)
+        setattr(result, triggered_field, True)
+        setattr(result, cooldown_started_field, True)
+        setattr(result, response_damage_field, damage)
+        setattr(result, damage_total_field, float(getattr(self.state, damage_total_attr, 0.0) or 0.0) + damage)
+        setattr(result, f"{cooldown_attr}", cooldown)
+        result.tune_response_damage += damage
+        result.tune_response_damage_total = self.state.tune_response_damage_total + damage
+        result.damage += damage
+        result.total_action_damage += damage
+        result.hit_count += 1
+        result.hit_damage_by_category["tune_response"] = result.hit_damage_by_category.get("tune_response", 0.0) + damage
+        result.tune_response_hit_details.append(detail)
+        result.hit_details.append(detail)
+        result.response_damage_receives_interfered_marker_amp = (
+            bool(result.response_damage_receives_interfered_marker_amp) or receives_marker_amp
+        )
+        result.response_damage_receives_newly_applied_interfered_marker_amp = (
+            bool(result.response_damage_receives_newly_applied_interfered_marker_amp) or receives_new_marker_amp
+        )
+        result.response_damage_receives_existing_interfered_marker_amp = (
+            bool(result.response_damage_receives_existing_interfered_marker_amp) or receives_existing_marker_amp
+        )
+        result.response_damage_receives_new_interfered_marker_amp = (
+            bool(result.response_damage_receives_newly_applied_interfered_marker_amp)
+        )
+        self.state.total_damage += damage
+        self.state.tune_response_damage_total += damage
+        setattr(self.state, damage_total_attr, float(getattr(self.state, damage_total_attr, 0.0) or 0.0) + damage)
+        result.total_damage_after = self.state.total_damage
+
+        event = {
+            "response_id": response_id,
+            "source_character_id": source_character_id,
+            "damage": damage,
+            "cooldown_seconds": cooldown,
+            "applied_damage_taken_amp": applied_amp,
+            "response_damage_receives_interfered_marker_amp": receives_marker_amp,
+            "response_damage_receives_newly_applied_interfered_marker_amp": receives_new_marker_amp,
+            "response_damage_receives_existing_interfered_marker_amp": receives_existing_marker_amp,
+            "response_damage_receives_new_interfered_marker_amp": receives_new_marker_amp,
+            "response_amp_timing_source_status": "excel_event_order_derived",
+            "source_status": detail["source_status"],
+        }
+        result.tune_response_events.append(event)
+        self.state.tune_response_events.append(event)
+        log["tune_response_events"].append(event)
+        log[triggered_field] = True
+        result.tune_break_response_event_tags.append(event_tag)
 
     def _available_tune_break_action_ids(self) -> list[str]:
         return [
@@ -676,6 +897,25 @@ class Simulation:
         result.tune_break_action_available_ids = self._available_tune_break_action_ids()
         result.tune_break_action_used_count = self.state.tune_break_action_used_count
         result.tune_break_damage_total = self.state.tune_break_damage_total
+        result.tune_response_damage_total = self.state.tune_response_damage_total
+        result.aemeath_starburst_damage_total = self.state.aemeath_starburst_damage_total
+        result.mornye_particle_jet_damage_total = self.state.mornye_particle_jet_damage_total
+        result.aemeath_starburst_response_cooldown_remaining = (
+            self.state.aemeath_starburst_response_cooldown_remaining
+        )
+        result.mornye_particle_jet_response_cooldown_remaining = (
+            self.state.mornye_particle_jet_response_cooldown_remaining
+        )
+        result.aemeath_starburst_cooldown_blocked_count = self.state.aemeath_starburst_cooldown_blocked_count
+        result.mornye_particle_jet_cooldown_blocked_count = self.state.mornye_particle_jet_cooldown_blocked_count
+        result.tune_response_events = list(result.tune_response_events or [])
+        if not result.tune_response_damage_formula_source_status:
+            result.tune_response_damage_formula_source_status = self.state.tune_response_damage_formula_source_status
+        if not result.tune_response_event_order_source_status:
+            result.tune_response_event_order_source_status = self.state.tune_response_event_order_source_status
+        result.response_damage_receives_new_interfered_marker_amp = (
+            result.response_damage_receives_newly_applied_interfered_marker_amp
+        )
         result.target_tune_shift_state = self.state.target_tune_shift_state
         result.target_tune_shift_remaining = self.state.target_tune_shift_remaining
         result.target_interfered_state = self.state.target_interfered_state
@@ -1235,6 +1475,35 @@ class Simulation:
             party_response_scan_triggered=bool(self.state.party_response_scan_logs),
             aemeath_starburst_trigger_count=self.state.aemeath_starburst_trigger_count,
             mornye_particle_jet_trigger_count=self.state.mornye_particle_jet_trigger_count,
+            aemeath_starburst_cooldown_blocked_count=self.state.aemeath_starburst_cooldown_blocked_count,
+            mornye_particle_jet_cooldown_blocked_count=self.state.mornye_particle_jet_cooldown_blocked_count,
+            aemeath_starburst_response_cooldown_remaining=(
+                self.state.aemeath_starburst_response_cooldown_remaining
+            ),
+            mornye_particle_jet_response_cooldown_remaining=(
+                self.state.mornye_particle_jet_response_cooldown_remaining
+            ),
+            tune_response_damage_total=self.state.tune_response_damage_total,
+            aemeath_starburst_damage_total=self.state.aemeath_starburst_damage_total,
+            mornye_particle_jet_damage_total=self.state.mornye_particle_jet_damage_total,
+            tune_response_events=list(self.state.tune_response_events),
+            tune_response_damage_formula_source_status=self.state.tune_response_damage_formula_source_status,
+            tune_response_event_order_source_status=self.state.tune_response_event_order_source_status,
+            tune_break_damage_receives_new_interfered_marker_amp=(
+                self.state.tune_break_damage_receives_new_interfered_marker_amp
+            ),
+            response_damage_receives_interfered_marker_amp=(
+                self.state.response_damage_receives_interfered_marker_amp
+            ),
+            response_damage_receives_newly_applied_interfered_marker_amp=(
+                self.state.response_damage_receives_newly_applied_interfered_marker_amp
+            ),
+            response_damage_receives_existing_interfered_marker_amp=(
+                self.state.response_damage_receives_existing_interfered_marker_amp
+            ),
+            response_damage_receives_new_interfered_marker_amp=(
+                self.state.response_damage_receives_new_interfered_marker_amp
+            ),
             unresolved_response_damage_events=list(self.state.unresolved_response_damage_events),
             simplified_assumptions=list(self.state.simplified_assumptions),
             aemeath_resonance_mode=mechanic_event_metadata["aemeath_resonance_mode"],

@@ -21,12 +21,20 @@ def main() -> None:
     assert audit["mornye_tune_break"]["action_rows"]
     assert audit["mornye_observation_marker_interfered_marker"]["ref"] == "角色-女!D4164"
     assert "multi-target marker tracking" in audit["unsupported_full_mechanics"]
-    assert audit["unresolved"]["exact_starburst_damage"] == "unresolved_no_damage_invented"
-    assert "unresolved" in md.read_text(encoding="utf-8").lower()
+    assert audit["aemeath_starburst_response"]["damage_source_status"] == "workbook_confirmed"
+    assert audit["mornye_particle_jet_response"]["damage_source_status"] == "workbook_confirmed"
+    assert audit["response_event_order"]["response_triggers_without_observation_marker"] is True
+    assert audit["response_event_order"]["response_amp_timing_source_status"] == "excel_event_order_derived"
+    assert audit["unresolved"].get("tune_break_cooldown") != "not_found_uses_explicit_default_8s"
+    assert audit["enemy_tune_break_cooldown_seconds"] == 3.0
+    assert audit["enemy_tune_break_cooldown_source_status"] == "workbook_confirmed_cost4_red_name_boss_default"
+    assert audit["cooldown_blocks_off_tune_accumulation"] is True
+    assert "starburst" in md.read_text(encoding="utf-8").lower()
 
     runtime = json.loads(runtime_js.read_text(encoding="utf-8"))
     assert runtime["tune_break_action_model"] == "conditional_character_specific_policy_action_not_automatic_damage"
-    assert runtime["response_damage_status"] == "unresolved_no_damage_invented"
+    assert runtime["response_damage_status"] == "workbook_confirmed"
+    assert "response event order" in runtime_md.read_text(encoding="utf-8").lower()
 
     print("tune_break_excel_source_audit_smoke_test ok")
 
