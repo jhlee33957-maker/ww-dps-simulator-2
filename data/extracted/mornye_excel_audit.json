@@ -1,6 +1,6 @@
 {
   "source_name": "莫宁",
-  "generated_at": "2026-07-04T04:12:11.821073+00:00",
+  "generated_at": "2026-07-06T01:53:42.926262+00:00",
   "workbook": "C:\\Users\\coree\\OneDrive\\Documents\\GitHub\\ww-dps-simulator-2\\ww-dps-simulator-2\\data\\source\\鸣潮动作数据汇总.xlsx",
   "source_row_count": 109,
   "source_rows": [
@@ -8752,8 +8752,8 @@
         {
           "resource": "concerto_energy_gain",
           "source_value": 10,
-          "current_value": 10,
-          "status": "exact"
+          "current_value": 30,
+          "status": "differs"
         },
         {
           "resource": "mechanic_effects.rest_mass_energy_delta",
@@ -8883,8 +8883,9 @@
   ],
   "status_counts": {
     "exact": 30,
-    "resource_exact": 30,
+    "resource_exact": 29,
     "source_missing": 1,
+    "resource_differs": 1,
     "missing": 1
   },
   "audit_scope": {

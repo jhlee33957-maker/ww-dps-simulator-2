@@ -1,8 +1,16 @@
 {
   "source_name": "莫宁",
-  "generated_at": "2026-07-04T04:12:11.821073+00:00",
+  "generated_at": "2026-07-06T01:53:42.926262+00:00",
   "safe_to_patch_count": 0,
   "candidates": [
+    {
+      "target": "mornye_intro_convergence",
+      "aspect": "resource:concerto_energy_gain",
+      "current_value": 30,
+      "source_value": 10,
+      "safe_to_patch": false,
+      "reason": "Resource mismatch found in audit. Human review required before patching."
+    },
     {
       "target": "Syntony Field / High Syntony Field",
       "aspect": "mechanic_scope",

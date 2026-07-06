@@ -36,6 +36,11 @@ def test_party_preset_defaults() -> None:
     assert overrides["mornye"]["interfered_marker"]["mode"] == EXPECTED_MARKER_MODE
     assert overrides["tune_break_system"]["mode"] == EXPECTED_TUNE_BREAK_MODE
     assert overrides["tune_break_system"]["enemy_off_tune_max"] == 3920
+    assert overrides["tune_break_system"]["enemy_tune_break_cooldown_seconds"] == 3.0
+    assert (
+        overrides["tune_break_system"]["enemy_tune_break_cooldown_source_status"]
+        == "workbook_confirmed_cost4_red_name_boss_default"
+    )
 
     sim = Simulation.from_json(DATA_DIR, party=PARTY_ID)
     summary = sim.summary()
@@ -45,6 +50,8 @@ def test_party_preset_defaults() -> None:
     assert summary.mornye_heal_event_mode == EXPECTED_MORNYE_HEAL_MODE
     assert summary.mornye_heal_event_mode_source == "party_preset"
     assert summary.enemy_off_tune_max == 3920
+    assert summary.enemy_tune_break_cooldown_seconds == 3.0
+    assert summary.enemy_tune_break_cooldown_source_ref == "附页2!B227"
     assert summary.active_party_build_profiles == {"mornye": "default", "aemeath": "default"}
 
 

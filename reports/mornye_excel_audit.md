@@ -9,7 +9,7 @@
 - Unresolved/review-only rows: 46.
 - Safe-to-patch candidates emitted: 0.
 
-This is an audit-only artifact. It does not modify Mornye gameplay values, transition behavior, PPO reward logic, Beam Search, or RL training.
+This is an audit-only artifact. It does not modify Mornye gameplay values, transition behavior, PPO reward logic, or RL training.
 
 ## Current Mornye v1 scope
 
@@ -66,7 +66,7 @@ This is an audit-only artifact. It does not modify Mornye gameplay values, trans
 | `mornye_liberation_critical_protocol` | `concerto_energy_gain` | `20` | `20` | exact |
 | `mornye_liberation_critical_protocol` | `mechanic_effects.high_syntony_field_duration` | `25` | `25` | exact |
 | `mornye_syntony_field_damage` | n/a | n/a | n/a | no_resource_expectation |
-| `mornye_intro_convergence` | `concerto_energy_gain` | `10` | `10` | exact |
+| `mornye_intro_convergence` | `concerto_energy_gain` | `10` | `30` | differs |
 | `mornye_intro_convergence` | `mechanic_effects.rest_mass_energy_delta` | `-100` | `-100` | exact |
 | `mornye_intro_convergence` | `mechanic_effects.wide_field_observation_duration` | `30` | `30.0` | exact |
 | `mornye_intro_convergence` | `mechanic_effects.syntony_field_duration` | `25` | `25.0` | exact |

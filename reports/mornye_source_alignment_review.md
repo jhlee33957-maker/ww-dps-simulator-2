@@ -3,7 +3,7 @@
 ## Summary
 
 - Safe-to-patch candidates: 0.
-- Review-only/blocking candidates: 4.
+- Review-only/blocking candidates: 5.
 - Unresolved source rows retained: 46.
 
 No candidate should be applied automatically by this audit script.
@@ -16,6 +16,7 @@ No candidate should be applied automatically by this audit script.
 
 ### Review-Only / Out-of-Scope Candidates
 
+- `mornye_intro_convergence` / resource:concerto_energy_gain: Resource mismatch found in audit. Human review required before patching.
 - `Syntony Field / High Syntony Field` / mechanic_scope: Future implementation needs dedicated scheduling design.
 - `Tune Break / Interfered / Particle Jet` / mechanic_scope: Keep out of source-alignment patch; needs new mechanic design.
 - `Proof of Boundedness, healing, DEF, defensive survival` / mechanic_scope: Out of scope for audit/source alignment.

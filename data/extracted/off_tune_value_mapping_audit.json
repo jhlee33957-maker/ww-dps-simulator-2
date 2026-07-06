@@ -1,0 +1,616 @@
+{
+  "source_workbook": "user-provided Excel workbook",
+  "source_column": "角色-女 column S",
+  "boss_tune_break_cooldown_seconds": 3.0,
+  "boss_tune_break_cooldown_source_ref": "附页2!B227",
+  "boss_tune_break_cooldown_source_status": "workbook_confirmed_cost4_red_name_boss_default",
+  "cooldown_blocks_off_tune_accumulation": true,
+  "mapping_rule": "Sum column S across separate workbook rows mapped to one simulator action; do not multiply a single workbook row solely because the simulator action has repeated hits.",
+  "mapped_action_count": 41,
+  "mappings": [
+    {
+      "action_id": "aemeath_basic_form_stage_1",
+      "off_tune_value": 26.64,
+      "source_status": "workbook_confirmed",
+      "source_ref": "角色-女!S2739",
+      "source_rows": [
+        2739
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_basic_form_stage_2",
+      "off_tune_value": 39.93,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S2740:S2742",
+      "source_rows": [
+        2740,
+        2741,
+        2742
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_basic_form_stage_3",
+      "off_tune_value": 53.55,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S2743:S2747",
+      "source_rows": [
+        2743,
+        2744,
+        2745,
+        2746,
+        2747
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_basic_form_stage_4",
+      "off_tune_value": 65.76,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S2753:S2755",
+      "source_rows": [
+        2753,
+        2754,
+        2755
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_form_switch_to_aemeath_after_overdrive",
+      "off_tune_value": 39.93,
+      "source_status": "workbook_confirmed_internal_alias",
+      "source_ref": "角色-女!S2740:S2742",
+      "source_rows": [],
+      "sheet": "角色-女",
+      "column": "S",
+      "alias_of": "aemeath_basic_form_stage_2",
+      "alias_note": "Internal post-Overdrive form-switch damage uses the same workbook-backed hit shape as Aemeath Basic Form Stage 2."
+    },
+    {
+      "action_id": "aemeath_form_switch_to_aemeath_normal",
+      "off_tune_value": 26.64,
+      "source_status": "workbook_confirmed_internal_alias",
+      "source_ref": "角色-女!S2739",
+      "source_rows": [],
+      "sheet": "角色-女",
+      "column": "S",
+      "alias_of": "aemeath_basic_form_stage_1",
+      "alias_note": "Internal form-switch damage uses the same workbook-backed hit shape as Aemeath Basic Form Stage 1."
+    },
+    {
+      "action_id": "aemeath_form_switch_to_mech_normal",
+      "off_tune_value": 13.34,
+      "source_status": "workbook_confirmed_internal_alias",
+      "source_ref": "角色-女!S2886",
+      "source_rows": [],
+      "sheet": "角色-女",
+      "column": "S",
+      "alias_of": "aemeath_mech_basic_stage_1",
+      "alias_note": "Internal form-switch damage uses the same workbook-backed hit shape as Aemeath Mech Basic Stage 1."
+    },
+    {
+      "action_id": "aemeath_heavenfall_finale",
+      "off_tune_value": 840.0,
+      "source_status": "workbook_confirmed",
+      "source_ref": "角色-女!S2801",
+      "source_rows": [
+        2801
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_heavy_aemeath_charged_1",
+      "off_tune_value": 53.37,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S2761:S2762",
+      "source_rows": [
+        2761,
+        2762
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_heavy_aemeath_charged_2",
+      "off_tune_value": 120.03,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S2765:S2767",
+      "source_rows": [
+        2765,
+        2766,
+        2767
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_heavy_mech_charged_1",
+      "off_tune_value": 53.36,
+      "source_status": "workbook_confirmed",
+      "source_ref": "角色-女!S2904",
+      "source_rows": [
+        2904
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_heavy_mech_charged_2",
+      "off_tune_value": 133.36,
+      "source_status": "workbook_confirmed",
+      "source_ref": "角色-女!S2907",
+      "source_rows": [
+        2907
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_liberation_overdrive",
+      "off_tune_value": 392.0,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S2796:S2797",
+      "source_rows": [
+        2796,
+        2797
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_mech_basic_stage_1",
+      "off_tune_value": 13.34,
+      "source_status": "workbook_confirmed",
+      "source_ref": "角色-女!S2886",
+      "source_rows": [
+        2886
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_mech_basic_stage_2",
+      "off_tune_value": 53.37,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S2887:S2888",
+      "source_rows": [
+        2887,
+        2888
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_mech_basic_stage_3",
+      "off_tune_value": 58.06,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S2889:S2892",
+      "source_rows": [
+        2889,
+        2890,
+        2891,
+        2892
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_mech_basic_stage_4",
+      "off_tune_value": 77.37,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S2897:S2898",
+      "source_rows": [
+        2897,
+        2898
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_qte_intro_human",
+      "off_tune_value": 77.37,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S2790:S2792",
+      "source_rows": [
+        2790,
+        2791,
+        2792
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_qte_intro_mech",
+      "off_tune_value": 93.85,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S2935:S2936",
+      "source_rows": [
+        2935,
+        2936
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_seraphic_duet_encore",
+      "off_tune_value": 128.0,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S2925:S2929",
+      "source_rows": [
+        2925,
+        2926,
+        2927,
+        2928,
+        2929
+      ],
+      "sheet": "角色-女",
+      "column": "S",
+      "alias_of": null,
+      "alias_note": null
+    },
+    {
+      "action_id": "aemeath_seraphic_duet_overturn",
+      "off_tune_value": 52.01,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S2780:S2783",
+      "source_rows": [
+        2780,
+        2781,
+        2782,
+        2783
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_sync_strike_armament_merge",
+      "off_tune_value": 77.37,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S2773:S2775",
+      "source_rows": [
+        2773,
+        2774,
+        2775
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_sync_strike_call_of_dawn",
+      "off_tune_value": 93.86,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S2917:S2920",
+      "source_rows": [
+        2917,
+        2918,
+        2919,
+        2920
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "aemeath_tune_break",
+      "off_tune_value": 0.0,
+      "source_status": "workbook_confirmed_tune_break_rows_zero",
+      "source_ref": "角色-女!S2804:S2805",
+      "source_rows": [
+        2804,
+        2805
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "mornye_basic_stage_1",
+      "off_tune_value": 28.0,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S4102:S4104",
+      "source_rows": [
+        4102,
+        4103,
+        4104
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "mornye_basic_stage_2",
+      "off_tune_value": 33.0,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S4105:S4107",
+      "source_rows": [
+        4105,
+        4106,
+        4107
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "mornye_basic_stage_3",
+      "off_tune_value": 26.0,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S4108:S4109",
+      "source_rows": [
+        4108,
+        4109
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "mornye_basic_stage_4",
+      "off_tune_value": 68.0,
+      "source_status": "workbook_confirmed",
+      "source_ref": "角色-女!S4110",
+      "source_rows": [
+        4110
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "mornye_heavy_attack_normal",
+      "off_tune_value": 24.8,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S4114:S4116",
+      "source_rows": [
+        4114,
+        4115,
+        4116
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "mornye_heavy_geopotential_shift",
+      "off_tune_value": 29.6,
+      "source_status": "workbook_confirmed",
+      "source_ref": "角色-女!S4117",
+      "source_rows": [
+        4117
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "mornye_heavy_inversion",
+      "off_tune_value": 104.0,
+      "source_status": "workbook_confirmed",
+      "source_ref": "角色-女!S4136",
+      "source_rows": [
+        4136
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "mornye_intro_convergence",
+      "off_tune_value": 136.0,
+      "source_status": "workbook_confirmed",
+      "source_ref": "角色-女!S4149",
+      "source_rows": [
+        4149
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "mornye_liberation_critical_protocol",
+      "off_tune_value": 720.0,
+      "source_status": "workbook_confirmed_mode_representative",
+      "source_ref": "角色-女!S4153/S4154",
+      "source_rows": [
+        4153,
+        4154
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "mornye_skill_distributed_array",
+      "off_tune_value": 80.0,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S4144:S4147",
+      "source_rows": [
+        4144,
+        4145,
+        4146,
+        4147
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "mornye_skill_expectation_error",
+      "off_tune_value": 0.0,
+      "source_status": "not_found_or_non_damaging",
+      "source_ref": "角色-女!S4137",
+      "source_rows": [
+        4137
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "mornye_skill_optimal_solution",
+      "off_tune_value": 90.4,
+      "source_status": "workbook_confirmed",
+      "source_ref": "角色-女!S4142",
+      "source_rows": [
+        4142
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "mornye_syntony_field_damage",
+      "off_tune_value": 66.4,
+      "source_status": "workbook_confirmed",
+      "source_ref": "角色-女!S4127",
+      "source_rows": [
+        4127
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "mornye_tune_break",
+      "off_tune_value": 0.0,
+      "source_status": "workbook_confirmed_tune_break_rows_zero",
+      "source_ref": "角色-女!S4157:S4159",
+      "source_rows": [
+        4157,
+        4158,
+        4159
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "mornye_wfo_basic_stage_1",
+      "off_tune_value": 7.0,
+      "source_status": "workbook_confirmed",
+      "source_ref": "角色-女!S4128",
+      "source_rows": [
+        4128
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "mornye_wfo_basic_stage_2",
+      "off_tune_value": 13.0,
+      "source_status": "workbook_confirmed",
+      "source_ref": "角色-女!S4129",
+      "source_rows": [
+        4129
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    },
+    {
+      "action_id": "mornye_wfo_basic_stage_3",
+      "off_tune_value": 30.68,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S4131:S4134",
+      "source_rows": [
+        4131,
+        4132,
+        4133,
+        4134
+      ],
+      "sheet": "角色-女",
+      "column": "S"
+    }
+  ],
+  "key_corrections": {
+    "mornye_heavy_geopotential_shift": {
+      "off_tune_value": 29.6,
+      "source_ref": "角色-女!S4117"
+    },
+    "mornye_heavy_inversion": {
+      "off_tune_value": 104.0,
+      "source_ref": "角色-女!S4136"
+    }
+  },
+  "unresolved_damaging_action_ids": [],
+  "internal_alias_action_ids": [
+    "aemeath_form_switch_to_aemeath_after_overdrive",
+    "aemeath_form_switch_to_aemeath_normal",
+    "aemeath_form_switch_to_mech_normal"
+  ],
+  "damaging_actions_checked": [
+    "aemeath_basic_form_stage_1",
+    "aemeath_basic_form_stage_2",
+    "aemeath_basic_form_stage_3",
+    "aemeath_basic_form_stage_4",
+    "aemeath_form_switch_to_aemeath_after_overdrive",
+    "aemeath_form_switch_to_aemeath_normal",
+    "aemeath_form_switch_to_mech_normal",
+    "aemeath_heavenfall_finale",
+    "aemeath_heavy_aemeath_charged_1",
+    "aemeath_heavy_aemeath_charged_2",
+    "aemeath_heavy_mech_charged_1",
+    "aemeath_heavy_mech_charged_2",
+    "aemeath_liberation_overdrive",
+    "aemeath_mech_basic_stage_1",
+    "aemeath_mech_basic_stage_2",
+    "aemeath_mech_basic_stage_3",
+    "aemeath_mech_basic_stage_4",
+    "aemeath_qte_intro_human",
+    "aemeath_qte_intro_mech",
+    "aemeath_seraphic_duet_encore",
+    "aemeath_seraphic_duet_overturn",
+    "aemeath_sync_strike_armament_merge",
+    "aemeath_sync_strike_call_of_dawn",
+    "mornye_basic_stage_1",
+    "mornye_basic_stage_2",
+    "mornye_basic_stage_3",
+    "mornye_basic_stage_4",
+    "mornye_heavy_attack_normal",
+    "mornye_heavy_geopotential_shift",
+    "mornye_heavy_inversion",
+    "mornye_intro_convergence",
+    "mornye_intro_convergence",
+    "mornye_liberation_critical_protocol",
+    "mornye_skill_distributed_array",
+    "mornye_skill_optimal_solution",
+    "mornye_syntony_field_damage",
+    "mornye_wfo_basic_stage_1",
+    "mornye_wfo_basic_stage_2",
+    "mornye_wfo_basic_stage_3"
+  ],
+  "actions_with_missing_off_tune_metadata_before_patch": [
+    "aemeath_form_switch_to_mech_normal",
+    "aemeath_form_switch_to_aemeath_normal",
+    "aemeath_form_switch_to_aemeath_after_overdrive",
+    "aemeath_seraphic_duet_encore"
+  ],
+  "actions_fixed_this_patch": [
+    {
+      "action_id": "aemeath_form_switch_to_mech_normal",
+      "off_tune_value": 13.34,
+      "source_status": "workbook_confirmed_internal_alias",
+      "source_ref": "角色-女!S2886",
+      "alias_of": "aemeath_mech_basic_stage_1",
+      "final_status": "fixed_internal_alias"
+    },
+    {
+      "action_id": "aemeath_form_switch_to_aemeath_normal",
+      "off_tune_value": 26.64,
+      "source_status": "workbook_confirmed_internal_alias",
+      "source_ref": "角色-女!S2739",
+      "alias_of": "aemeath_basic_form_stage_1",
+      "final_status": "fixed_internal_alias"
+    },
+    {
+      "action_id": "aemeath_form_switch_to_aemeath_after_overdrive",
+      "off_tune_value": 39.93,
+      "source_status": "workbook_confirmed_internal_alias",
+      "source_ref": "角色-女!S2740:S2742",
+      "alias_of": "aemeath_basic_form_stage_2",
+      "final_status": "fixed_internal_alias"
+    },
+    {
+      "action_id": "aemeath_seraphic_duet_encore",
+      "off_tune_value": 128.0,
+      "source_status": "workbook_confirmed_summed_from_rows",
+      "source_ref": "角色-女!S2925:S2929",
+      "alias_of": null,
+      "final_status": "fixed_workbook_confirmed"
+    }
+  ],
+  "actions_with_missing_off_tune_metadata_after_patch": [],
+  "off_tune_mapping_completeness_status": "complete",
+  "notes": [
+    "Internal aliases copy source workbook Off-Tune metadata without changing damage/timing/resource behavior."
+  ]
+}

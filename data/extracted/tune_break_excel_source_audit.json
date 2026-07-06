@@ -19,33 +19,105 @@
     "column": "S",
     "source_status": "excel_column_identified_from_action_rows",
     "examples": [
-      {"action": "Aemeath A1", "ref": "角色-女!S2739", "value": 26.64},
-      {"action": "Mornye A1 rows", "ref": "角色-女!S4102:S4104", "value_sum": 28.0},
-      {"action": "Mornye Heavy Inversion", "ref": "角色-女!S4117", "value": 29.6}
+      {
+        "action": "Aemeath A1",
+        "ref": "角色-女!S2739",
+        "value": 26.64
+      },
+      {
+        "action": "Mornye A1 rows",
+        "ref": "角色-女!S4102:S4104",
+        "value_sum": 28.0
+      },
+      {
+        "action": "Mornye Heavy Inversion",
+        "ref": "角色-女!S4117",
+        "value": 29.6
+      }
     ]
   },
   "aemeath_tune_break": {
     "action_rows": [
-      {"ref": "角色-女!C2802", "label": "谐度破坏-时停", "duration_frames": 90},
-      {"ref": "角色-女!C2804", "label": "谐度破坏-1", "hit_frame": 30, "off_tune_value_ref": "角色-女!S2804", "off_tune_value": 0},
-      {"ref": "角色-女!C2805", "label": "谐度破坏-2", "hit_frame": 72, "interfered_text_ref": "角色-女!D2805", "off_tune_value_ref": "角色-女!S2805", "off_tune_value": 0}
+      {
+        "ref": "角色-女!C2802",
+        "label": "谐度破坏-时停",
+        "duration_frames": 90
+      },
+      {
+        "ref": "角色-女!C2804",
+        "label": "谐度破坏-1",
+        "hit_frame": 30,
+        "off_tune_value_ref": "角色-女!S2804",
+        "off_tune_value": 0
+      },
+      {
+        "ref": "角色-女!C2805",
+        "label": "谐度破坏-2",
+        "hit_frame": 72,
+        "interfered_text_ref": "角色-女!D2805",
+        "off_tune_value_ref": "角色-女!S2805",
+        "off_tune_value": 0
+      }
     ],
     "coefficients": [
-      {"hit_id": "aemeath_tune_break_1", "coefficient": 1.0, "source_status": "workbook_skill_type_reference_identified_by_user"},
-      {"hit_id": "aemeath_tune_break_2", "coefficient": 12.0, "source_status": "workbook_skill_type_reference_identified_by_user"}
+      {
+        "hit_id": "aemeath_tune_break_1",
+        "coefficient": 1.0,
+        "source_status": "workbook_skill_type_reference_identified_by_user"
+      },
+      {
+        "hit_id": "aemeath_tune_break_2",
+        "coefficient": 12.0,
+        "source_status": "workbook_skill_type_reference_identified_by_user"
+      }
     ]
   },
   "mornye_tune_break": {
     "action_rows": [
-      {"ref": "角色-女!C4155", "label": "谐度破坏-时停", "duration_frames": 94, "interfered_text_ref": "角色-女!D4155"},
-      {"ref": "角色-女!C4157", "label": "谐度破坏-1", "hit_frame": 4, "off_tune_value_ref": "角色-女!S4157", "off_tune_value": 0},
-      {"ref": "角色-女!C4158", "label": "谐度破坏-2", "hit_frame": 26, "off_tune_value_ref": "角色-女!S4158", "off_tune_value": 0},
-      {"ref": "角色-女!C4159", "label": "谐度破坏-3", "hit_frame": 66, "off_tune_value_ref": "角色-女!S4159", "off_tune_value": 0}
+      {
+        "ref": "角色-女!C4155",
+        "label": "谐度破坏-时停",
+        "duration_frames": 94,
+        "interfered_text_ref": "角色-女!D4155"
+      },
+      {
+        "ref": "角色-女!C4157",
+        "label": "谐度破坏-1",
+        "hit_frame": 4,
+        "off_tune_value_ref": "角色-女!S4157",
+        "off_tune_value": 0
+      },
+      {
+        "ref": "角色-女!C4158",
+        "label": "谐度破坏-2",
+        "hit_frame": 26,
+        "off_tune_value_ref": "角色-女!S4158",
+        "off_tune_value": 0
+      },
+      {
+        "ref": "角色-女!C4159",
+        "label": "谐度破坏-3",
+        "hit_frame": 66,
+        "off_tune_value_ref": "角色-女!S4159",
+        "off_tune_value": 0
+      }
     ],
     "coefficients": [
-      {"hit_id": "mornye_tune_break_1", "coefficient": 1.7334, "source_status": "workbook_skill_type_reference_identified_by_user"},
-      {"hit_id": "mornye_tune_break_2", "coefficient": 2.2666, "source_status": "workbook_skill_type_reference_identified_by_user"},
-      {"hit_id": "mornye_tune_break_3", "coefficient": 12.0, "source_status": "workbook_skill_type_reference_identified_by_user"}
+      {
+        "hit_id": "mornye_tune_break_1",
+        "coefficient": 1.7334,
+        "source_status": "workbook_skill_type_reference_identified_by_user"
+      },
+      {
+        "hit_id": "mornye_tune_break_2",
+        "coefficient": 2.2666,
+        "source_status": "workbook_skill_type_reference_identified_by_user"
+      },
+      {
+        "hit_id": "mornye_tune_break_3",
+        "coefficient": 12.0,
+        "source_status": "workbook_skill_type_reference_identified_by_user"
+      }
     ]
   },
   "mornye_observation_marker_interfered_marker": {
@@ -56,13 +128,19 @@
     "damage_taken_amp_formula": "min(max(energy_regen - 1.0, 0.0) * 0.25, 0.40)"
   },
   "aemeath_starburst_response": {
-    "refs": ["角色-女!D2728", "角色-女!D2880"],
+    "refs": [
+      "角色-女!D2728",
+      "角色-女!D2880"
+    ],
     "source_status": "excel_text_plus_user_supplied_skill_screenshot_not_embedded",
     "cooldown_seconds": 8,
     "damage_source_status": "unresolved"
   },
   "mornye_particle_jet_response": {
-    "refs": ["角色-女!D4181", "角色-女!D4185"],
+    "refs": [
+      "角色-女!D4181",
+      "角色-女!D4185"
+    ],
     "source_status": "excel_text_plus_user_supplied_skill_screenshot_not_embedded",
     "cooldown_seconds": 8,
     "damage_source_status": "unresolved"
@@ -81,5 +159,9 @@
     "exact Tune Strain stack system if not fully sourced",
     "exact Particle Jet damage if coefficients/timings are missing",
     "exact Starburst damage if coefficients/timings are missing"
-  ]
+  ],
+  "enemy_tune_break_cooldown_seconds": 3.0,
+  "enemy_tune_break_cooldown_source_status": "workbook_confirmed_cost4_red_name_boss_default",
+  "enemy_tune_break_cooldown_source_ref": "附页2!B227",
+  "cooldown_blocks_off_tune_accumulation": true
 }

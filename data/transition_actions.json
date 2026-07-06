@@ -43,7 +43,10 @@
         "implemented": false
       }
     },
-    "scaling_stat": "atk"
+    "scaling_stat": "atk",
+    "off_tune_value": 77.37,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2790:S2792"
   },
   {
     "id": "aemeath_qte_intro_mech",
@@ -88,7 +91,10 @@
         "implemented": false
       }
     },
-    "scaling_stat": "atk"
+    "scaling_stat": "atk",
+    "off_tune_value": 93.85,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2935:S2936"
   },
   {
     "id": "mornye_intro_convergence",
@@ -171,6 +177,9 @@
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
-    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
+    "off_tune_value": 136.0,
+    "off_tune_value_source_status": "workbook_confirmed",
+    "off_tune_value_source_ref": "角色-女!S4149"
   }
 ]

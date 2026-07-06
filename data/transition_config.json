@@ -11,7 +11,11 @@
     "enabled": true,
     "default_concerto_cap": 100.0,
     "qte_mode": "disabled",
-    "qte_modes": ["disabled", "dry_run", "enabled"],
+    "qte_modes": [
+      "disabled",
+      "dry_run",
+      "enabled"
+    ],
     "consume_concerto_on_enabled_transition": true,
     "consume_concerto_on_dry_run": false,
     "consume_concerto_on_disabled": false,
@@ -20,7 +24,11 @@
   "mechanics": {
     "aemeath": {
       "aemeath_resonance_mode": "unresolved",
-      "aemeath_resonance_modes": ["fusion_burst", "tune_rupture", "unresolved"],
+      "aemeath_resonance_modes": [
+        "fusion_burst",
+        "tune_rupture",
+        "unresolved"
+      ],
       "aemeath_resonance_mode_source": "default",
       "implementation_status": "event_trigger_only"
     },
@@ -44,17 +52,27 @@
       ],
       "interfered_marker": {
         "mode": "disabled",
-        "modes": ["disabled", "dry_run", "simplified_on_inversion", "tune_break_triggered"],
+        "modes": [
+          "disabled",
+          "dry_run",
+          "simplified_on_inversion",
+          "tune_break_triggered"
+        ],
         "duration": 30.0,
         "implementation_status": "simplified_optional"
       }
     },
     "tune_break_system": {
       "mode": "disabled",
-      "modes": ["disabled", "excel_off_tune_mistune_action"],
+      "modes": [
+        "disabled",
+        "excel_off_tune_mistune_action"
+      ],
       "enemy_off_tune_max": 3920,
-      "enemy_tune_break_cooldown_seconds": 8.0,
-      "implementation_status": "single_target_optional"
+      "enemy_tune_break_cooldown_seconds": 3.0,
+      "implementation_status": "single_target_optional",
+      "enemy_tune_break_cooldown_source_status": "workbook_confirmed_cost4_red_name_boss_default",
+      "enemy_tune_break_cooldown_source_ref": "??2!B227"
     }
   },
   "characters": {
@@ -88,7 +106,9 @@
         "action_id": "dummy_support_outro_damage_amp",
         "action_time": 0.0,
         "combat_time_cost": 0.0,
-        "applies_buffs": ["dummy_support_outro_damage_amp"],
+        "applies_buffs": [
+          "dummy_support_outro_damage_amp"
+        ],
         "requires_concerto": true,
         "source": "transition_config.dummy_support.outro",
         "notes": "Zero-time test-only outgoing outro event. It is gated behind outgoing concerto_ready. Physical swap timing still uses generic placeholder fallback when no incoming timed intro exists."
@@ -122,7 +142,9 @@
         "action_id": "mornye_outro_recursion",
         "action_time": 0.0,
         "combat_time_cost": 0.0,
-        "applies_buffs": ["mornye_outro_recursion_all_dmg_amp"],
+        "applies_buffs": [
+          "mornye_outro_recursion_all_dmg_amp"
+        ],
         "requires_concerto": true,
         "consume_concerto_on_apply": true,
         "source": "Mornye Outro Skill Recursion",

@@ -2,13 +2,26 @@
   {
     "party_id": "aemeath",
     "display_name": "Aemeath Solo",
-    "members": ["aemeath"],
-    "initial_active": "aemeath"
+    "members": [
+      "aemeath"
+    ],
+    "initial_active": "aemeath",
+    "mechanic_overrides": {
+      "tune_break_system": {
+        "enemy_tune_break_cooldown_seconds": 3.0,
+        "enemy_tune_break_cooldown_source_status": "workbook_confirmed_cost4_red_name_boss_default",
+        "enemy_tune_break_cooldown_source_ref": "附页2!B227"
+      }
+    }
   },
   {
     "party_id": "aemeath_test_party",
     "display_name": "Aemeath Test Party",
-    "members": ["aemeath", "dummy_support", "dummy_sub_dps"],
+    "members": [
+      "aemeath",
+      "dummy_support",
+      "dummy_sub_dps"
+    ],
     "initial_active": "aemeath",
     "generic_swap": {
       "action_time": 0.5,
@@ -16,12 +29,23 @@
       "is_placeholder": true,
       "source": "party_presets.aemeath_test_party.generic_swap",
       "warning": "Generic swap timing is a placeholder for party-structure testing. It is not sourced from Excel/client data. Real party DPS requires QTE/Intro/Outro transition modeling."
+    },
+    "mechanic_overrides": {
+      "tune_break_system": {
+        "enemy_tune_break_cooldown_seconds": 3.0,
+        "enemy_tune_break_cooldown_source_status": "workbook_confirmed_cost4_red_name_boss_default",
+        "enemy_tune_break_cooldown_source_ref": "附页2!B227"
+      }
     }
   },
   {
     "party_id": "aemeath_mornye_test_party",
     "display_name": "Aemeath + Mornye Test Party",
-    "members": ["mornye", "aemeath", "dummy_sub_dps"],
+    "members": [
+      "mornye",
+      "aemeath",
+      "dummy_sub_dps"
+    ],
     "initial_active": "mornye",
     "note": "Mornye is the first real support character.",
     "mechanic_overrides": {
@@ -39,7 +63,9 @@
       "tune_break_system": {
         "mode": "excel_off_tune_mistune_action",
         "enemy_off_tune_max": 3920,
-        "enemy_tune_break_cooldown_seconds": 8.0
+        "enemy_tune_break_cooldown_seconds": 3.0,
+        "enemy_tune_break_cooldown_source_status": "workbook_confirmed_cost4_red_name_boss_default",
+        "enemy_tune_break_cooldown_source_ref": "附页2!B227"
       }
     },
     "generic_swap": {
@@ -53,7 +79,11 @@
   {
     "party_id": "aemeath_mornye_enabled_test_party",
     "display_name": "Aemeath + Mornye Enabled Transition Test Party",
-    "members": ["mornye", "aemeath", "dummy_sub_dps"],
+    "members": [
+      "mornye",
+      "aemeath",
+      "dummy_sub_dps"
+    ],
     "initial_active": "mornye",
     "note": "Explicit test preset for enabled Aemeath QTE, Mornye Intro, and Mornye Outro transition behavior.",
     "build_profiles": {
@@ -95,7 +125,9 @@
       "tune_break_system": {
         "mode": "excel_off_tune_mistune_action",
         "enemy_off_tune_max": 3920,
-        "enemy_tune_break_cooldown_seconds": 8.0
+        "enemy_tune_break_cooldown_seconds": 3.0,
+        "enemy_tune_break_cooldown_source_status": "workbook_confirmed_cost4_red_name_boss_default",
+        "enemy_tune_break_cooldown_source_ref": "附页2!B227"
       }
     },
     "generic_swap": {
@@ -109,7 +141,11 @@
   {
     "party_id": "aemeath_mornye_optimistic_gp_test_party",
     "display_name": "Aemeath + Mornye Optimistic GP Test Party",
-    "members": ["mornye", "aemeath", "dummy_sub_dps"],
+    "members": [
+      "mornye",
+      "aemeath",
+      "dummy_sub_dps"
+    ],
     "initial_active": "mornye",
     "note": "Explicit optimistic diagnostic preset that forces Mornye Optimal Solution through simplified always-success GP modeling.",
     "transition_overrides": {
@@ -148,7 +184,9 @@
       "tune_break_system": {
         "mode": "excel_off_tune_mistune_action",
         "enemy_off_tune_max": 3920,
-        "enemy_tune_break_cooldown_seconds": 8.0
+        "enemy_tune_break_cooldown_seconds": 3.0,
+        "enemy_tune_break_cooldown_source_status": "workbook_confirmed_cost4_red_name_boss_default",
+        "enemy_tune_break_cooldown_source_ref": "附页2!B227"
       }
     },
     "generic_swap": {

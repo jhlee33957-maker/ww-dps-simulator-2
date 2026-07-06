@@ -57,11 +57,13 @@ No PPO retraining was performed for this foundation patch. Saved PPO models are 
 
 ## Excel-based Tune Break System
 
-The Aemeath + Mornye party preset can use a single-target Excel-based Off-Tune / Mistune / Tune Break system. Normal sourced actions add `off_tune_value * current_off_tune_buildup_rate` to the enemy gauge, using `3920` as the current boss-style default cap. When the gauge reaches cap, Mistune makes character-specific Tune Break actions available; Tune Break is not automatic damage and is not forced into a rotation.
+The Aemeath + Mornye party preset can use a single-target Excel-based Off-Tune / Mistune / Tune Break system. Normal sourced actions add `off_tune_value * current_off_tune_buildup_rate` to the enemy gauge, using `3920` as the current boss-style default cap. While Tune Break cooldown is active, Off-Tune accumulation is blocked entirely. When the gauge reaches cap outside cooldown, Mistune makes character-specific Tune Break actions available; Tune Break is not automatic damage and is not forced into a rotation.
 
 Aemeath Tune Break uses coefficients `1.0` and `12.0`; Mornye Tune Break uses `1.7334`, `2.2666`, and `12.0`. Tune Break damage uses fixed base `10000 * multiplier * boost * RES * DEF * Tune DMG Bonus` and does not use ATK/DEF/HP scaling or normal damage bonus categories.
 
-After the final Tune Break hit, sourced Shifting/Offset state can become Interfered. Mornye Observation Marker plus Tune Break applies Interfered Marker as target damage taken amplification. For the real-test Mornye profile with Energy Regen `2.7944`, the amp reaches the `40%` cap. Aemeath Starburst and Mornye Particle Jet response scans are logged with 8s same-target cooldowns; unresolved response damage is intentionally not invented.
+After the final Tune Break hit, sourced Shifting/Offset state can become Interfered. The same hit removes Mistune/offset state, resets the Off-Tune gauge to `0`, and starts a `3.0s` boss Tune Break cooldown sourced from workbook `附页2!B227` for COST4/red-name targets. Mornye Observation Marker plus Tune Break applies Interfered Marker as target damage taken amplification. For the real-test Mornye profile with Energy Regen `2.7944`, the amp reaches the `40%` cap. Aemeath Starburst and Mornye Particle Jet response scans are logged with 8s same-target cooldowns; unresolved response damage is intentionally not invented.
+
+Off-Tune values are mapped from workbook `角色-女` column `S`; the current mapping audit is in `reports/off_tune_value_mapping_audit.md` and `data/extracted/off_tune_value_mapping_audit.json`. Notable corrections include `mornye_heavy_geopotential_shift = 29.6` from `角色-女!S4117` and `mornye_heavy_inversion = 104.0` from `角色-女!S4136`. Transition QTE/Intro actions preserve Off-Tune source metadata when converted to runtime actions.
 
 The legacy `simplified_on_inversion` Interfered approximation is still available only when explicitly configured. PPO models should be retrained after this patch because action availability, simulator state, and damage/debuff behavior changed. No PPO training was performed for this patch.
 

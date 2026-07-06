@@ -38,7 +38,21 @@ def main() -> None:
     assert row.damage_bonus_category == "tune_break"
     assert row.hit_details[0]["tune_break_base_value"] == 10000.0
     assert row.enemy_tune_break_available is False
-    assert row.enemy_tune_break_cooldown_remaining > 0.0
+    assert row.enemy_tune_break_cooldown_started is True
+    assert row.enemy_tune_break_cooldown_seconds == 3.0
+    assert row.enemy_tune_break_cooldown_remaining == 3.0
+    assert row.enemy_tune_break_cooldown_source_status == "workbook_confirmed_cost4_red_name_boss_default"
+    assert row.enemy_tune_break_cooldown_source_ref == "附页2!B227"
+    assert row.enemy_off_tune_current_after_tune_break == 0.0
+    assert sim.is_action_available(sim.actions["mornye_tune_break"]) is False
+
+    sim.state.enemy_tune_break_cooldown_remaining = 0.0
+    sim.state.enemy_tune_break_available = False
+    assert sim.is_action_available(sim.actions["mornye_tune_break"]) is False
+    sim.state.enemy_off_tune_current = sim.state.enemy_off_tune_max
+    sim.state.enemy_mistune_active = True
+    sim.state.enemy_tune_break_available = True
+    assert sim.is_action_available(sim.actions["mornye_tune_break"]) is True
 
     aemeath = Simulation.from_json(
         ROOT / "data",

@@ -107,6 +107,20 @@ class Simulation:
         self.state.mechanics_config = dict(self.transition_config.get("mechanics") or {})
         tune_break_config = self._tune_break_system_config()
         self.state.enemy_off_tune_max = float(tune_break_config.get("enemy_off_tune_max", 3920.0) or 3920.0)
+        self.state.enemy_tune_break_cooldown_seconds = float(
+            tune_break_config.get("enemy_tune_break_cooldown_seconds", 3.0) or 3.0
+        )
+        self.state.enemy_tune_break_cooldown_source_status = str(
+            tune_break_config.get(
+                "enemy_tune_break_cooldown_source_status",
+                "workbook_confirmed_cost4_red_name_boss_default",
+            )
+        )
+        self.state.enemy_tune_break_cooldown_source_ref = str(
+            tune_break_config.get("enemy_tune_break_cooldown_source_ref", "附页2!B227")
+        )
+        self.state.off_tune_value_mapping_source_report = "reports/off_tune_value_mapping_audit.md"
+        self._refresh_off_tune_mapping_metadata()
         self.state.simplified_assumptions.append(
             "single_target_enemy_off_tune_state"
         )
@@ -385,6 +399,40 @@ class Simulation:
             return 1.0
         return float(support_stat_context(mornye, self.state, self.buffs)["current_off_tune_buildup_rate"])
 
+    def _refresh_off_tune_mapping_metadata(self) -> None:
+        mapped_status_prefixes = ("workbook_confirmed", "excel_cell", "excel_summed")
+        unresolved_statuses = {"unresolved_missing_excel_mapping"}
+        mapped_count = 0
+        unmapped: list[str] = []
+        unresolved: list[str] = []
+        selected = set(self.selected_character_ids)
+        for action in self.actions.values():
+            if action.character_id not in {"aemeath", "mornye"}:
+                continue
+            if action.character_id is not None and action.character_id not in selected:
+                continue
+            has_normal_damage = any(hit.damage_category == "normal" and hit.damage_multiplier > 0.0 for hit in action.effective_hits())
+            if not has_normal_damage:
+                continue
+            if action.action_type == "tune_break":
+                continue
+            source_status = str(action.off_tune_value_source_status or "")
+            has_value_metadata = action.off_tune_value is not None
+            if has_value_metadata and action.off_tune_value > 0.0 and source_status.startswith(mapped_status_prefixes):
+                mapped_count += 1
+            elif source_status in unresolved_statuses:
+                unresolved.append(action.id)
+            elif not has_value_metadata or not source_status:
+                unmapped.append(action.id)
+            elif action.off_tune_value <= 0.0 and source_status not in {"not_found_or_non_damaging", "non_damaging_selector"}:
+                unmapped.append(action.id)
+        self.state.mapped_off_tune_action_count = mapped_count
+        self.state.unmapped_off_tune_action_ids = sorted(set(unmapped))
+        self.state.unresolved_off_tune_damaging_action_ids = sorted(set(unresolved))
+        self.state.off_tune_mapping_completeness_status = (
+            "complete" if not self.state.unmapped_off_tune_action_ids and not self.state.unresolved_off_tune_damaging_action_ids else "incomplete"
+        )
+
     def _advance_tune_break_runtime(self, elapsed: float) -> None:
         elapsed = max(0.0, float(elapsed or 0.0))
         if elapsed <= 0.0:
@@ -415,26 +463,34 @@ class Simulation:
         result.enemy_off_tune_current_before = self.state.enemy_off_tune_current
         result.enemy_off_tune_max = self.state.enemy_off_tune_max
         result.off_tune_value = float(action.off_tune_value or 0.0)
+        result.off_tune_value_source_status = action.off_tune_value_source_status or "not_found_or_non_damaging"
+        result.off_tune_value_source_ref = action.off_tune_value_source_ref
         if action.action_type == "tune_break" or result.normal_damage <= 0.0:
             return
         rate = self._current_off_tune_buildup_rate()
-        added = max(0.0, result.off_tune_value) * rate
         before = self.state.enemy_off_tune_current
-        after = before + added
-        entered = False
-        behavior = "accumulated"
-        if self.state.enemy_tune_break_cooldown_remaining > 0.0 and after >= self.state.enemy_off_tune_max:
-            after = max(0.0, self.state.enemy_off_tune_max - 0.001)
-            behavior = "cooldown_blocks_mistune_reentry"
-        elif after >= self.state.enemy_off_tune_max:
-            self.state.off_tune_overflow += max(0.0, after - self.state.enemy_off_tune_max)
-            after = self.state.enemy_off_tune_max
-            if not self.state.enemy_mistune_active:
-                self.state.enemy_mistune_entered_count += 1
-                entered = True
-            self.state.enemy_mistune_active = True
-            self.state.enemy_tune_break_available = True
-            behavior = "mistune_entered"
+        if self.state.enemy_tune_break_cooldown_remaining > 0.0:
+            added = 0.0
+            after = before
+            entered = False
+            behavior = "blocked_by_tune_break_cooldown"
+            self.state.off_tune_accumulation_blocked_by_tune_break_cooldown_count += 1
+            result.off_tune_accumulation_blocked_by_tune_break_cooldown = True
+            result.off_tune_value_before_block = result.off_tune_value
+        else:
+            added = max(0.0, result.off_tune_value) * rate
+            after = before + added
+            entered = False
+            behavior = "accumulated"
+            if after >= self.state.enemy_off_tune_max:
+                self.state.off_tune_overflow += max(0.0, after - self.state.enemy_off_tune_max)
+                after = self.state.enemy_off_tune_max
+                if not self.state.enemy_mistune_active:
+                    self.state.enemy_mistune_entered_count += 1
+                    entered = True
+                self.state.enemy_mistune_active = True
+                self.state.enemy_tune_break_available = True
+                behavior = "mistune_entered"
         self.state.enemy_off_tune_current = after
         self.state.off_tune_accumulated_total += added
         self.state.off_tune_buildup_rate_used = rate
@@ -445,6 +501,11 @@ class Simulation:
             "off_tune_value_source_ref": action.off_tune_value_source_ref,
             "off_tune_buildup_rate_used": rate,
             "off_tune_added": added,
+            "off_tune_accumulation_blocked_by_tune_break_cooldown": (
+                result.off_tune_accumulation_blocked_by_tune_break_cooldown
+            ),
+            "off_tune_value_before_block": result.off_tune_value_before_block,
+            "enemy_tune_break_cooldown_remaining": self.state.enemy_tune_break_cooldown_remaining,
             "enemy_off_tune_current_before": before,
             "enemy_off_tune_current_after": after,
             "enemy_off_tune_max": self.state.enemy_off_tune_max,
@@ -482,12 +543,15 @@ class Simulation:
         self.state.enemy_mistune_active = False
         self.state.enemy_tune_break_available = False
         self.state.enemy_off_tune_current = 0.0
-        cooldown = float(self._tune_break_system_config().get("enemy_tune_break_cooldown_seconds", 8.0) or 8.0)
+        self.state.target_tune_shift_state = None
+        self.state.target_tune_shift_remaining = 0.0
+        cooldown = float(self.state.enemy_tune_break_cooldown_seconds or 3.0)
         self.state.enemy_tune_break_cooldown_remaining = cooldown
-        if "tune_break_reset_to_zero_until_exact_source_found" not in self.state.simplified_assumptions:
-            self.state.simplified_assumptions.append("tune_break_reset_to_zero_until_exact_source_found")
-        if "tune_break_cooldown_default_8s_until_exact_source_found" not in self.state.simplified_assumptions:
-            self.state.simplified_assumptions.append("tune_break_cooldown_default_8s_until_exact_source_found")
+        result.enemy_off_tune_current_after_tune_break = self.state.enemy_off_tune_current
+        result.enemy_tune_break_cooldown_started = True
+        result.enemy_tune_break_cooldown_seconds = cooldown
+        result.enemy_tune_break_cooldown_source_status = self.state.enemy_tune_break_cooldown_source_status
+        result.enemy_tune_break_cooldown_source_ref = self.state.enemy_tune_break_cooldown_source_ref
 
         if interfered_state is not None:
             self._apply_observation_marker_interfered_marker(result, interfered_state)
@@ -605,6 +669,9 @@ class Simulation:
         result.enemy_off_tune_max = self.state.enemy_off_tune_max
         result.enemy_mistune_active = self.state.enemy_mistune_active
         result.enemy_tune_break_available = self.state.enemy_tune_break_available
+        result.enemy_tune_break_cooldown_seconds = self.state.enemy_tune_break_cooldown_seconds
+        result.enemy_tune_break_cooldown_source_status = self.state.enemy_tune_break_cooldown_source_status
+        result.enemy_tune_break_cooldown_source_ref = self.state.enemy_tune_break_cooldown_source_ref
         result.enemy_tune_break_cooldown_remaining = self.state.enemy_tune_break_cooldown_remaining
         result.tune_break_action_available_ids = self._available_tune_break_action_ids()
         result.tune_break_action_used_count = self.state.tune_break_action_used_count
@@ -1142,10 +1209,21 @@ class Simulation:
             enemy_off_tune_max=self.state.enemy_off_tune_max,
             enemy_mistune_active=self.state.enemy_mistune_active,
             enemy_tune_break_available=self.state.enemy_tune_break_available,
+            enemy_tune_break_cooldown_seconds=self.state.enemy_tune_break_cooldown_seconds,
+            enemy_tune_break_cooldown_source_status=self.state.enemy_tune_break_cooldown_source_status,
+            enemy_tune_break_cooldown_source_ref=self.state.enemy_tune_break_cooldown_source_ref,
             enemy_tune_break_cooldown_remaining=self.state.enemy_tune_break_cooldown_remaining,
             off_tune_accumulated_total=self.state.off_tune_accumulated_total,
             off_tune_overflow=self.state.off_tune_overflow,
+            off_tune_accumulation_blocked_by_tune_break_cooldown_count=(
+                self.state.off_tune_accumulation_blocked_by_tune_break_cooldown_count
+            ),
             off_tune_accumulation_logs=list(self.state.off_tune_accumulation_logs),
+            mapped_off_tune_action_count=self.state.mapped_off_tune_action_count,
+            unmapped_off_tune_action_ids=list(self.state.unmapped_off_tune_action_ids),
+            unresolved_off_tune_damaging_action_ids=list(self.state.unresolved_off_tune_damaging_action_ids),
+            off_tune_mapping_completeness_status=self.state.off_tune_mapping_completeness_status,
+            off_tune_value_mapping_source_report=self.state.off_tune_value_mapping_source_report,
             tune_break_action_available_ids=self._available_tune_break_action_ids(),
             tune_break_action_used_count=self.state.tune_break_action_used_count,
             tune_break_damage_total=self.state.tune_break_damage_total,

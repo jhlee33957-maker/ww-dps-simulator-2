@@ -196,6 +196,8 @@ class ActionData(BaseModel):
     off_tune_value: float = 0.0
     off_tune_value_source_status: str | None = None
     off_tune_value_source_ref: str | None = None
+    off_tune_value_alias_of: str | None = None
+    off_tune_value_alias_note: str | None = None
     tune_break_action_time_source_status: str | None = None
     tune_break_element_source_status: str | None = None
     hits: list[HitData] = Field(default_factory=list)
@@ -344,11 +346,20 @@ class CombatState(BaseModel):
     enemy_mistune_active: bool = False
     enemy_mistune_entered_count: int = 0
     enemy_tune_break_available: bool = False
+    enemy_tune_break_cooldown_seconds: float = 3.0
+    enemy_tune_break_cooldown_source_status: str | None = "workbook_confirmed_cost4_red_name_boss_default"
+    enemy_tune_break_cooldown_source_ref: str | None = "附页2!B227"
     enemy_tune_break_cooldown_remaining: float = 0.0
     off_tune_accumulated_total: float = 0.0
     off_tune_overflow: float = 0.0
     off_tune_buildup_rate_used: float = 1.0
+    off_tune_accumulation_blocked_by_tune_break_cooldown_count: int = 0
     off_tune_accumulation_logs: list[dict[str, Any]] = Field(default_factory=list)
+    mapped_off_tune_action_count: int = 0
+    unmapped_off_tune_action_ids: list[str] = Field(default_factory=list)
+    unresolved_off_tune_damaging_action_ids: list[str] = Field(default_factory=list)
+    off_tune_mapping_completeness_status: str = "not_checked"
+    off_tune_value_mapping_source_report: str = "reports/off_tune_value_mapping_audit.md"
     target_tune_shift_state: str | None = None
     target_tune_shift_remaining: float = 0.0
     target_interfered_state: str | None = None
@@ -492,13 +503,22 @@ class ActionResult(BaseModel):
     high_syntony_field_application_timing: str | None = None
     high_syntony_field_unavailable_reason: str | None = None
     off_tune_value: float = 0.0
+    off_tune_value_source_status: str | None = None
+    off_tune_value_source_ref: str | None = None
     off_tune_buildup_rate_used: float = 1.0
     off_tune_added: float = 0.0
     enemy_off_tune_current_before: float = 0.0
     enemy_off_tune_current_after: float = 0.0
+    off_tune_accumulation_blocked_by_tune_break_cooldown: bool = False
+    off_tune_value_before_block: float = 0.0
     enemy_off_tune_max: float = 3920.0
     enemy_mistune_active: bool = False
     enemy_tune_break_available: bool = False
+    enemy_off_tune_current_after_tune_break: float = 0.0
+    enemy_tune_break_cooldown_started: bool = False
+    enemy_tune_break_cooldown_seconds: float = 3.0
+    enemy_tune_break_cooldown_source_status: str | None = "workbook_confirmed_cost4_red_name_boss_default"
+    enemy_tune_break_cooldown_source_ref: str | None = "附页2!B227"
     enemy_tune_break_cooldown_remaining: float = 0.0
     enemy_mistune_entered_this_action: bool = False
     off_tune_accumulation_log: dict[str, Any] = Field(default_factory=dict)
@@ -758,13 +778,22 @@ class TimelineEntry(BaseModel):
     high_syntony_field_application_timing: str | None = None
     high_syntony_field_unavailable_reason: str | None = None
     off_tune_value: float = 0.0
+    off_tune_value_source_status: str | None = None
+    off_tune_value_source_ref: str | None = None
     off_tune_buildup_rate_used: float = 1.0
     off_tune_added: float = 0.0
     enemy_off_tune_current_before: float = 0.0
     enemy_off_tune_current_after: float = 0.0
+    off_tune_accumulation_blocked_by_tune_break_cooldown: bool = False
+    off_tune_value_before_block: float = 0.0
     enemy_off_tune_max: float = 3920.0
     enemy_mistune_active: bool = False
     enemy_tune_break_available: bool = False
+    enemy_off_tune_current_after_tune_break: float = 0.0
+    enemy_tune_break_cooldown_started: bool = False
+    enemy_tune_break_cooldown_seconds: float = 3.0
+    enemy_tune_break_cooldown_source_status: str | None = "workbook_confirmed_cost4_red_name_boss_default"
+    enemy_tune_break_cooldown_source_ref: str | None = "附页2!B227"
     enemy_tune_break_cooldown_remaining: float = 0.0
     enemy_mistune_entered_this_action: bool = False
     off_tune_accumulation_log: dict[str, Any] = Field(default_factory=dict)
@@ -931,10 +960,19 @@ class SimulationSummary(BaseModel):
     enemy_off_tune_max: float = 3920.0
     enemy_mistune_active: bool = False
     enemy_tune_break_available: bool = False
+    enemy_tune_break_cooldown_seconds: float = 3.0
+    enemy_tune_break_cooldown_source_status: str | None = "workbook_confirmed_cost4_red_name_boss_default"
+    enemy_tune_break_cooldown_source_ref: str | None = "附页2!B227"
     enemy_tune_break_cooldown_remaining: float = 0.0
     off_tune_accumulated_total: float = 0.0
     off_tune_overflow: float = 0.0
+    off_tune_accumulation_blocked_by_tune_break_cooldown_count: int = 0
     off_tune_accumulation_logs: list[dict[str, Any]] = Field(default_factory=list)
+    mapped_off_tune_action_count: int = 0
+    unmapped_off_tune_action_ids: list[str] = Field(default_factory=list)
+    unresolved_off_tune_damaging_action_ids: list[str] = Field(default_factory=list)
+    off_tune_mapping_completeness_status: str = "not_checked"
+    off_tune_value_mapping_source_report: str = "reports/off_tune_value_mapping_audit.md"
     tune_break_action_available_ids: list[str] = Field(default_factory=list)
     tune_break_action_used_count: int = 0
     tune_break_damage_total: float = 0.0

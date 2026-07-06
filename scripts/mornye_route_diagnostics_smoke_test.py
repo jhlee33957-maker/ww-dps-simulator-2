@@ -42,6 +42,7 @@ def summarize(name: str, sim: Simulation) -> dict[str, Any]:
             "mornye_heavy_geopotential_shift",
             "mornye_heavy_inversion",
             "mornye_skill_distributed_array",
+            "mornye_tune_break",
             "transition:mornye_intro_convergence",
             "swap_to_aemeath",
         }
@@ -127,6 +128,13 @@ def run_conservative_wfo_inversion_route() -> Simulation:
     sim.execute_action("mornye_heavy_attack")
     state["relative_momentum"] = 100.0
     sim.execute_action("mornye_heavy_attack")
+    sim.state.enemy_off_tune_current = sim.state.enemy_off_tune_max
+    sim.state.enemy_mistune_active = True
+    sim.state.enemy_tune_break_available = True
+    sim.state.enemy_tune_break_cooldown_remaining = 0.0
+    sim.state.target_tune_shift_state = "tune_rupture_shifting"
+    sim.state.target_tune_shift_remaining = 25.0
+    sim.execute_action("mornye_tune_break")
     return sim
 
 

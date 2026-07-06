@@ -94,7 +94,20 @@ def test_damage_bonus_buckets() -> None:
 
 
 def test_amp_mechanics_are_not_additive_damage_bonus() -> None:
-    sim = Simulation.from_json(PROJECT_ROOT / "data", party="aemeath_mornye_enabled_test_party")
+    config = {
+        "mechanics": {
+            "mornye": {
+                "interfered_marker": {
+                    "mode": "simplified_on_inversion",
+                }
+            }
+        }
+    }
+    sim = Simulation.from_json(
+        PROJECT_ROOT / "data",
+        party="aemeath_mornye_enabled_test_party",
+        transition_config=config,
+    )
     assert sim.characters["mornye"].build_profile_id == "support_er_component_test"
     assert sim.characters["aemeath"].build_profile_id == "component_test"
     mornye_state = sim.state.character_states["mornye"]

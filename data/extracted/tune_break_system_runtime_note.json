@@ -3,8 +3,15 @@
   "enemy_off_tune_max_status": "single_target_boss_default",
   "off_tune_values_source": "Excel 角色-女 column S",
   "tune_break_action_model": "conditional_character_specific_policy_action_not_automatic_damage",
-  "aemeath_tune_break_coefficients": [1.0, 12.0],
-  "mornye_tune_break_coefficients": [1.7334, 2.2666, 12.0],
+  "aemeath_tune_break_coefficients": [
+    1.0,
+    12.0
+  ],
+  "mornye_tune_break_coefficients": [
+    1.7334,
+    2.2666,
+    12.0
+  ],
   "tune_break_formula": "10000 * tune_break_multiplier * tune_break_boost * RES * DEF * tune_dmg_bonus",
   "interfered_application_timing": "after_final_excel_defined_tune_break_hit",
   "interfered_marker_source": "Observation Marker + Tune Break",
@@ -16,5 +23,10 @@
     "mornye_particle_jet"
   ],
   "response_damage_status": "unresolved_no_damage_invented",
-  "legacy_simplified_on_inversion": "still_available_only_when_explicitly_configured"
+  "legacy_simplified_on_inversion": "still_available_only_when_explicitly_configured",
+  "enemy_tune_break_cooldown_seconds": 3.0,
+  "enemy_tune_break_cooldown_source_status": "workbook_confirmed_cost4_red_name_boss_default",
+  "enemy_tune_break_cooldown_source_ref": "附页2!B227",
+  "cooldown_behavior": "Off-Tune accumulation is blocked entirely while Tune Break cooldown is active.",
+  "off_tune_value_mapping_source_report": "reports/off_tune_value_mapping_audit.md"
 }

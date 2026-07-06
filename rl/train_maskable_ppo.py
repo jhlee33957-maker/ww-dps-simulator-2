@@ -211,7 +211,18 @@ def main() -> None:
         "enemy_off_tune_max": training_summary.enemy_off_tune_max,
         "enemy_mistune_active": training_summary.enemy_mistune_active,
         "enemy_tune_break_available": training_summary.enemy_tune_break_available,
+        "enemy_tune_break_cooldown_seconds": training_summary.enemy_tune_break_cooldown_seconds,
+        "enemy_tune_break_cooldown_source_status": training_summary.enemy_tune_break_cooldown_source_status,
+        "enemy_tune_break_cooldown_source_ref": training_summary.enemy_tune_break_cooldown_source_ref,
         "enemy_tune_break_cooldown_remaining": training_summary.enemy_tune_break_cooldown_remaining,
+        "off_tune_accumulation_blocked_by_tune_break_cooldown_count": (
+            training_summary.off_tune_accumulation_blocked_by_tune_break_cooldown_count
+        ),
+        "mapped_off_tune_action_count": training_summary.mapped_off_tune_action_count,
+        "unmapped_off_tune_action_ids": training_summary.unmapped_off_tune_action_ids,
+        "unresolved_off_tune_damaging_action_ids": training_summary.unresolved_off_tune_damaging_action_ids,
+        "off_tune_mapping_completeness_status": training_summary.off_tune_mapping_completeness_status,
+        "off_tune_value_mapping_source_report": training_summary.off_tune_value_mapping_source_report,
         "tune_break_action_available_ids": training_summary.tune_break_action_available_ids,
         "tune_break_action_used_count": training_summary.tune_break_action_used_count,
         "tune_break_damage_total": training_summary.tune_break_damage_total,

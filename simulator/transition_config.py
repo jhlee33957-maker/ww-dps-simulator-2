@@ -192,7 +192,15 @@ def mechanics_mode_summary(config: dict[str, Any]) -> dict[str, Any]:
             "mode": str(tune_break_config.get("mode", "disabled")),
             "enemy_off_tune_max": float(tune_break_config.get("enemy_off_tune_max", 3920.0) or 3920.0),
             "enemy_tune_break_cooldown_seconds": float(
-                tune_break_config.get("enemy_tune_break_cooldown_seconds", 8.0) or 8.0
+                tune_break_config.get("enemy_tune_break_cooldown_seconds", 3.0) or 3.0
+            ),
+            "enemy_tune_break_cooldown_source_status": tune_break_config.get(
+                "enemy_tune_break_cooldown_source_status",
+                "workbook_confirmed_cost4_red_name_boss_default",
+            ),
+            "enemy_tune_break_cooldown_source_ref": tune_break_config.get(
+                "enemy_tune_break_cooldown_source_ref",
+                "附页2!B227",
             ),
         },
     }

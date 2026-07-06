@@ -45,13 +45,24 @@ def main() -> None:
     assert sim.state.enemy_tune_break_available is True
     assert sim.state.tune_break_damage_total == 0.0
 
-    sim.state.enemy_tune_break_cooldown_remaining = 8.0
+    sim.state.enemy_tune_break_cooldown_remaining = 3.0
     sim.state.enemy_mistune_active = False
     sim.state.enemy_tune_break_available = False
     sim.state.enemy_off_tune_current = sim.state.enemy_off_tune_max - 1.0
+    before = sim.state.enemy_off_tune_current
     assert sim.execute_action("mornye_basic_attack")
     assert sim.state.enemy_tune_break_available is False
-    assert sim.state.off_tune_accumulation_logs[-1]["behavior"] == "cooldown_blocks_mistune_reentry"
+    row = sim.timeline[-1]
+    assert row.off_tune_accumulation_blocked_by_tune_break_cooldown is True
+    assert_close(row.off_tune_added, 0.0, "cooldown blocked Off-Tune added")
+    assert_close(sim.state.enemy_off_tune_current, before, "cooldown blocked current Off-Tune")
+    assert sim.state.off_tune_accumulation_logs[-1]["behavior"] == "blocked_by_tune_break_cooldown"
+
+    sim.state.enemy_tune_break_cooldown_remaining = 0.0
+    assert sim.execute_action("mornye_basic_attack")
+    row = sim.timeline[-1]
+    assert row.off_tune_accumulation_blocked_by_tune_break_cooldown is False
+    assert row.off_tune_added > 0.0
 
     print("off_tune_level_gauge_smoke_test ok")
 
