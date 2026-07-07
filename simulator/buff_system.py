@@ -294,6 +294,12 @@ def buffed_combat_stats(
         "halo_atk_buff_does_not_affect_mornye_def_damage": False,
         "halo_of_starry_radiance_5set_active": False,
         "halo_of_starry_radiance_5set_atk_percent_bonus": 0.0,
+        "static_mist_incoming_atk_buff_active": False,
+        "static_mist_incoming_atk_percent_bonus": 0.0,
+        "pact_neonlight_incoming_atk_buff_active": False,
+        "pact_neonlight_incoming_atk_percent_bonus": 0.0,
+        "hyvatia_incoming_all_attribute_buff_active": False,
+        "hyvatia_incoming_all_attribute_damage_bonus": 0.0,
     }
     active_buff_names: list[str] = []
     forced_ids = force_active_buff_ids or set()
@@ -310,6 +316,24 @@ def buffed_combat_stats(
             stats["halo_of_starry_radiance_5set_active"] = True
             stats["halo_of_starry_radiance_5set_atk_percent_bonus"] = max(
                 float(stats.get("halo_of_starry_radiance_5set_atk_percent_bonus", 0.0)),
+                buff_value,
+            )
+        if buff.id == "static_mist_incoming_atk":
+            stats["static_mist_incoming_atk_buff_active"] = True
+            stats["static_mist_incoming_atk_percent_bonus"] = max(
+                float(stats.get("static_mist_incoming_atk_percent_bonus", 0.0)),
+                buff_value,
+            )
+        if buff.id == "pact_neonlight_incoming_atk":
+            stats["pact_neonlight_incoming_atk_buff_active"] = True
+            stats["pact_neonlight_incoming_atk_percent_bonus"] = max(
+                float(stats.get("pact_neonlight_incoming_atk_percent_bonus", 0.0)),
+                buff_value,
+            )
+        if buff.id == "hyvatia_incoming_all_attribute_damage_bonus":
+            stats["hyvatia_incoming_all_attribute_buff_active"] = True
+            stats["hyvatia_incoming_all_attribute_damage_bonus"] = max(
+                float(stats.get("hyvatia_incoming_all_attribute_damage_bonus", 0.0)),
                 buff_value,
             )
         if buff.id == "mornye_high_syntony_field_def_bonus":

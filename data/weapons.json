@@ -121,17 +121,17 @@
         "1": {
           "all_attribute_damage_bonus": 0.12,
           "resonance_liberation_def_ignore": 0.32,
-          "resonance_liberation_fusion_res_ignore": 0.10
+          "resonance_liberation_fusion_res_ignore": 0.1
         },
         "2": {
           "all_attribute_damage_bonus": 0.15,
-          "resonance_liberation_def_ignore": 0.40,
+          "resonance_liberation_def_ignore": 0.4,
           "resonance_liberation_fusion_res_ignore": 0.15
         },
         "3": {
           "all_attribute_damage_bonus": 0.18,
           "resonance_liberation_def_ignore": 0.48,
-          "resonance_liberation_fusion_res_ignore": 0.20
+          "resonance_liberation_fusion_res_ignore": 0.2
         },
         "4": {
           "all_attribute_damage_bonus": 0.21,
@@ -141,7 +141,7 @@
         "5": {
           "all_attribute_damage_bonus": 0.24,
           "resonance_liberation_def_ignore": 0.64,
-          "resonance_liberation_fusion_res_ignore": 0.30
+          "resonance_liberation_fusion_res_ignore": 0.3
         }
       },
       "effects": {
@@ -170,6 +170,39 @@
         }
       },
       "source_status": "user_supplied_weapon_tooltip"
+    },
+    "static_mist": {
+      "id": "static_mist",
+      "display_name": "Static Mist",
+      "weapon_type": "pistol",
+      "static_stats_already_in_profile_supported": true,
+      "rank_values": {
+        "1": {
+          "energy_regen_static_bonus": 0.128,
+          "incoming_atk_percent_after_outro": 0.1
+        }
+      },
+      "effects": {
+        "outro_incoming_atk_buff": {
+          "effect_type": "stat_buff",
+          "trigger": "outro_cast",
+          "target": "incoming_character",
+          "duration_seconds": 14.0,
+          "stat": "atk_percent",
+          "rank_value_key": "incoming_atk_percent_after_outro",
+          "buff_id": "static_mist_incoming_atk",
+          "max_stacks": 1,
+          "stacking_rule": "refresh_duration"
+        }
+      },
+      "unresolved_rank_values": [
+        "2",
+        "3",
+        "4",
+        "5"
+      ],
+      "source_status": "user_supplied_weapon_tooltip",
+      "notes": "Static ER/base/crit are metadata/profile-reflected only for lynae_user_real_01; runtime implements only the Outro incoming ATK buff."
     }
   }
 }

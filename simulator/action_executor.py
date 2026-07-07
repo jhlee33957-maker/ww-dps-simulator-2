@@ -382,6 +382,20 @@ def _calculate_hit_damage(
         "halo_of_starry_radiance_5set_atk_percent_bonus": float(
             stats.get("halo_of_starry_radiance_5set_atk_percent_bonus", 0.0) or 0.0
         ),
+        "static_mist_incoming_atk_buff_active": bool(stats.get("static_mist_incoming_atk_buff_active", False)),
+        "static_mist_incoming_atk_percent_bonus": float(
+            stats.get("static_mist_incoming_atk_percent_bonus", 0.0) or 0.0
+        ),
+        "pact_neonlight_incoming_atk_buff_active": bool(stats.get("pact_neonlight_incoming_atk_buff_active", False)),
+        "pact_neonlight_incoming_atk_percent_bonus": float(
+            stats.get("pact_neonlight_incoming_atk_percent_bonus", 0.0) or 0.0
+        ),
+        "hyvatia_incoming_all_attribute_buff_active": bool(
+            stats.get("hyvatia_incoming_all_attribute_buff_active", False)
+        ),
+        "hyvatia_incoming_all_attribute_damage_bonus": float(
+            stats.get("hyvatia_incoming_all_attribute_damage_bonus", 0.0) or 0.0
+        ),
         "halo_of_starry_radiance_5set_applied_before_field_creation_damage": False,
         "halo_of_starry_radiance_5set_same_action_application": False,
         "halo_of_starry_radiance_5set_application_timing": None,
@@ -1605,6 +1619,19 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         halo_of_starry_radiance_5set_same_action_application=result.halo_of_starry_radiance_5set_same_action_application,
         halo_of_starry_radiance_5set_application_timing=result.halo_of_starry_radiance_5set_application_timing,
         halo_of_starry_radiance_5set_unavailable_reason=result.halo_of_starry_radiance_5set_unavailable_reason,
+        pact_neonlight_incoming_atk_buff=result.pact_neonlight_incoming_atk_buff,
+        pact_neonlight_incoming_atk_base=result.pact_neonlight_incoming_atk_base,
+        pact_neonlight_incoming_atk_from_tune_break_boost=result.pact_neonlight_incoming_atk_from_tune_break_boost,
+        pact_neonlight_incoming_atk_total=result.pact_neonlight_incoming_atk_total,
+        pact_neonlight_source_status=result.pact_neonlight_source_status,
+        lynae_static_mist_incoming_atk_buff=result.lynae_static_mist_incoming_atk_buff,
+        lynae_static_mist_incoming_atk_value=result.lynae_static_mist_incoming_atk_value,
+        lynae_hyvatia_incoming_all_attribute_buff=result.lynae_hyvatia_incoming_all_attribute_buff,
+        lynae_hyvatia_incoming_all_attribute_value=result.lynae_hyvatia_incoming_all_attribute_value,
+        lynae_outro_all_damage_amp_value=result.lynae_outro_all_damage_amp_value,
+        lynae_outro_liberation_damage_amp_value=result.lynae_outro_liberation_damage_amp_value,
+        lynae_liberation_party_damage_buff_active=result.lynae_liberation_party_damage_buff_active,
+        lynae_liberation_party_damage_buff_value=result.lynae_liberation_party_damage_buff_value,
         active_anomalies_after=result.active_anomalies_after,
         active_buffs=result.active_buffs,
         applied_buffs=result.applied_buffs,
@@ -1744,6 +1771,16 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         mornye_particle_jet_multiplier_used=result.mornye_particle_jet_multiplier_used,
         mornye_particle_jet_constellation_variant=result.mornye_particle_jet_constellation_variant,
         mornye_particle_jet_damage_unresolved=result.mornye_particle_jet_damage_unresolved,
+        lynae_spectral_analysis_triggered=result.lynae_spectral_analysis_triggered,
+        lynae_spectral_analysis_cooldown_blocked=result.lynae_spectral_analysis_cooldown_blocked,
+        lynae_spectral_analysis_cooldown_started=result.lynae_spectral_analysis_cooldown_started,
+        lynae_spectral_analysis_response_cooldown_remaining=result.lynae_spectral_analysis_response_cooldown_remaining,
+        lynae_spectral_analysis_response_damage=result.lynae_spectral_analysis_response_damage,
+        lynae_spectral_analysis_damage_total=result.lynae_spectral_analysis_damage_total,
+        lynae_spectral_analysis_cooldown_blocked_count=result.lynae_spectral_analysis_cooldown_blocked_count,
+        lynae_spectral_analysis_multiplier_used=result.lynae_spectral_analysis_multiplier_used,
+        lynae_spectral_analysis_constellation_variant=result.lynae_spectral_analysis_constellation_variant,
+        lynae_spectral_analysis_c2_disabled_by_default=result.lynae_spectral_analysis_c2_disabled_by_default,
         response_source_status=result.response_source_status,
         tune_response_damage=result.tune_response_damage,
         tune_response_damage_total=result.tune_response_damage_total,

@@ -73,6 +73,17 @@
       "implementation_status": "single_target_optional",
       "enemy_tune_break_cooldown_source_status": "workbook_confirmed_cost4_red_name_boss_default",
       "enemy_tune_break_cooldown_source_ref": "??2!B227"
+    },
+    "lynae": {
+      "lynae_constellation": 0,
+      "lynae_resonance_mode": "tune_rupture",
+      "lynae_resonance_modes": [
+        "tune_rupture",
+        "tune_strain",
+        "unresolved"
+      ],
+      "spectral_analysis_enabled": true,
+      "implementation_status": "implemented_v1_skeleton"
     }
   },
   "characters": {
@@ -149,6 +160,30 @@
         "consume_concerto_on_apply": true,
         "source": "Mornye Outro Skill Recursion",
         "notes": "Outgoing Mornye full-Concerto transition applies 25% party All DMG Amplification for 30s. Swap timing still comes from the generic fallback unless an incoming timed transition applies."
+      }
+    },
+    "lynae": {
+      "intro_qte": {
+        "enabled": true,
+        "mode": "enabled",
+        "implementation_status": "implemented_v1",
+        "action_id": "lynae_intro_time_to_show_some_colors",
+        "transition_actions": {
+          "default": "lynae_intro_time_to_show_some_colors"
+        },
+        "source": "dmg!2480:2481 user/source audit"
+      },
+      "outro": {
+        "enabled": true,
+        "implementation_status": "implemented_v1",
+        "action_id": "lynae_outro_lets_hit_the_road",
+        "action_time": 0.0,
+        "combat_time_cost": 0.0,
+        "applies_buffs": [],
+        "requires_concerto": true,
+        "consume_concerto_on_apply": true,
+        "source": "user_supplied_skill_tooltip",
+        "notes": "Lynae-specific transition hook applies Outro, Static Mist, Pact, and Hyvatia incoming buffs to the incoming character."
       }
     }
   }

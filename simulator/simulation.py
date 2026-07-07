@@ -25,6 +25,7 @@ from simulator.echo_sets import (
     MORNYE_HALO_OF_STARRY_RADIANCE_5SET_BUFF_ID,
     TEAM_HEAL_EVENT_TAG,
     active_echo_sets_for_characters,
+    apply_pact_neonlight_outro_incoming_buff,
     apply_high_syntony_field_support_buffs,
     apply_mornye_halo_of_starry_radiance_5set_event_buff,
     apply_syntony_field_off_tune_buff,
@@ -357,6 +358,7 @@ class Simulation:
         result.resolved_action_name = action.name
         if transition_resolution is not None:
             self._apply_transition_resolution(result, transition_resolution)
+            self._apply_lynae_transition_buffs(result, transition_resolution)
 
         weapon_action_log = {}
         if not result.truncated_by_combat_limit:
@@ -480,6 +482,22 @@ class Simulation:
                 "base_value": 10000.0,
                 "source_status": "workbook_confirmed",
             },
+            "lynae_spectral_analysis": {
+                "id": "lynae_spectral_analysis",
+                "name": "Lynae Spectral Analysis",
+                "source_character_id": "lynae",
+                "trigger_interfered_state": "tune_rupture_interfered",
+                "supported_interfered_states": ["tune_rupture_interfered", "tune_strain_interfered"],
+                "element": "spectro",
+                "raw_damage_type": "tune_break_response",
+                "multiplier": 18.8075,
+                "c2_multiplier": 31.9727,
+                "c2_enabled_constellation": 2,
+                "c2_enabled_by_default": False,
+                "cooldown_seconds": 8.0,
+                "base_value": 10000.0,
+                "source_status": "workbook_confirmed",
+            },
         }
 
     def _current_off_tune_buildup_rate(self) -> float:
@@ -546,6 +564,10 @@ class Simulation:
         self.state.mornye_particle_jet_response_cooldown_remaining = max(
             0.0,
             self.state.mornye_particle_jet_response_cooldown_remaining - elapsed,
+        )
+        self.state.lynae_spectral_analysis_response_cooldown_remaining = max(
+            0.0,
+            self.state.lynae_spectral_analysis_response_cooldown_remaining - elapsed,
         )
 
     def _apply_off_tune_accumulation(self, action: ActionData, result: Any) -> None:
@@ -723,6 +745,8 @@ class Simulation:
             "aemeath_starburst_cooldown_blocked": False,
             "mornye_particle_jet_triggered": False,
             "mornye_particle_jet_cooldown_blocked": False,
+            "lynae_spectral_analysis_triggered": False,
+            "lynae_spectral_analysis_cooldown_blocked": False,
             "unresolved_response_damage_events": [],
             "tune_response_events": [],
         }
@@ -764,6 +788,25 @@ class Simulation:
                 damage_total_field="mornye_particle_jet_damage_total",
                 event_tag="mornye_tune_rupture_response_particle_jet",
             )
+        if "lynae" in self.characters:
+            response_def = self.tune_response_defs.get("lynae_spectral_analysis", {})
+            supported_states = set(response_def.get("supported_interfered_states") or ["tune_rupture_interfered"])
+            if interfered_state in supported_states:
+                self._trigger_tune_response(
+                    result=result,
+                    log=log,
+                    response_id="lynae_spectral_analysis",
+                    cooldown_attr="lynae_spectral_analysis_response_cooldown_remaining",
+                    trigger_count_attr="lynae_spectral_analysis_trigger_count",
+                    blocked_count_attr="lynae_spectral_analysis_cooldown_blocked_count",
+                    triggered_field="lynae_spectral_analysis_triggered",
+                    blocked_field="lynae_spectral_analysis_cooldown_blocked",
+                    cooldown_started_field="lynae_spectral_analysis_cooldown_started",
+                    response_damage_field="lynae_spectral_analysis_response_damage",
+                    damage_total_attr="lynae_spectral_analysis_damage_total",
+                    damage_total_field="lynae_spectral_analysis_damage_total",
+                    event_tag="lynae_tune_response_spectral_analysis",
+                )
         for event_id in log["unresolved_response_damage_events"]:
             if event_id not in self.state.unresolved_response_damage_events:
                 self.state.unresolved_response_damage_events.append(event_id)
@@ -834,6 +877,16 @@ class Simulation:
                 constellation_variant = "c5"
             result.mornye_particle_jet_multiplier_used = multiplier
             result.mornye_particle_jet_constellation_variant = constellation_variant
+        if response_id == "lynae_spectral_analysis":
+            constellation = self._lynae_constellation()
+            c2_threshold = int(response_def.get("c2_enabled_constellation", 2) or 2)
+            c2_enabled = bool(response_def.get("c2_enabled_by_default", False)) and constellation >= c2_threshold
+            if c2_enabled:
+                multiplier = float(response_def.get("c2_multiplier", multiplier) or multiplier)
+                constellation_variant = "c2"
+            result.lynae_spectral_analysis_multiplier_used = multiplier
+            result.lynae_spectral_analysis_constellation_variant = constellation_variant
+            result.lynae_spectral_analysis_c2_disabled_by_default = not c2_enabled
         applied_amp = current_interfered_damage_taken_amp(self.state)
         receives_marker_amp = applied_amp > 0.0
         receives_new_marker_amp = receives_marker_amp and bool(result.interfered_marker_newly_applied_this_action)
@@ -868,6 +921,10 @@ class Simulation:
         if response_id == "mornye_particle_jet":
             detail["mornye_constellation"] = self._mornye_constellation()
             detail["mornye_particle_jet_constellation_variant"] = constellation_variant
+        if response_id == "lynae_spectral_analysis":
+            detail["lynae_constellation"] = self._lynae_constellation()
+            detail["lynae_spectral_analysis_constellation_variant"] = constellation_variant
+            detail["lynae_spectral_analysis_c2_disabled_by_default"] = result.lynae_spectral_analysis_c2_disabled_by_default
         damage = float(detail["tune_response_damage"])
         cooldown = float(response_def.get("cooldown_seconds", 8.0) or 8.0)
 
@@ -944,14 +1001,21 @@ class Simulation:
         result.tune_response_damage_total = self.state.tune_response_damage_total
         result.aemeath_starburst_damage_total = self.state.aemeath_starburst_damage_total
         result.mornye_particle_jet_damage_total = self.state.mornye_particle_jet_damage_total
+        result.lynae_spectral_analysis_damage_total = self.state.lynae_spectral_analysis_damage_total
         result.aemeath_starburst_response_cooldown_remaining = (
             self.state.aemeath_starburst_response_cooldown_remaining
         )
         result.mornye_particle_jet_response_cooldown_remaining = (
             self.state.mornye_particle_jet_response_cooldown_remaining
         )
+        result.lynae_spectral_analysis_response_cooldown_remaining = (
+            self.state.lynae_spectral_analysis_response_cooldown_remaining
+        )
         result.aemeath_starburst_cooldown_blocked_count = self.state.aemeath_starburst_cooldown_blocked_count
         result.mornye_particle_jet_cooldown_blocked_count = self.state.mornye_particle_jet_cooldown_blocked_count
+        result.lynae_spectral_analysis_cooldown_blocked_count = (
+            self.state.lynae_spectral_analysis_cooldown_blocked_count
+        )
         result.tune_response_events = list(result.tune_response_events or [])
         if not result.tune_response_damage_formula_source_status:
             result.tune_response_damage_formula_source_status = self.state.tune_response_damage_formula_source_status
@@ -1089,6 +1153,113 @@ class Simulation:
         if self.state.action_log:
             self.state.action_log[-1] = result.model_dump(mode="json")
 
+    def _apply_lynae_transition_buffs(self, result, transition_resolution) -> None:
+        if transition_resolution.outgoing_character_id != "lynae":
+            return
+        if not transition_resolution.outgoing_outro_applied:
+            return
+        if "lynae" not in self.characters:
+            return
+        incoming_character_id = transition_resolution.incoming_character_id
+        if incoming_character_id not in self.characters:
+            return
+        application_time = float(result.end_time)
+        applied: list[str] = []
+
+        for buff_id in ("lynae_outro_all_damage_amp", "lynae_outro_liberation_damage_amp"):
+            if self._apply_specific_character_buff(
+                buff_id=buff_id,
+                source_character_id="lynae",
+                target_character_id=incoming_character_id,
+                application_time=application_time,
+                metadata={"event_source": "lynae_outro"},
+            ):
+                applied.append(buff_id)
+        result.lynae_outro_all_damage_amp_value = 0.15 if "lynae_outro_all_damage_amp" in applied else 0.0
+        result.lynae_outro_liberation_damage_amp_value = (
+            0.25 if "lynae_outro_liberation_damage_amp" in applied else 0.0
+        )
+
+        lynae_weapon = (self.characters["lynae"].weapon or {}).get("weapon_id")
+        if lynae_weapon == "static_mist" and self._apply_specific_character_buff(
+            buff_id="static_mist_incoming_atk",
+            source_character_id="lynae",
+            target_character_id=incoming_character_id,
+            application_time=application_time,
+            metadata={"event_source": "lynae_outro", "weapon_id": "static_mist"},
+        ):
+            applied.append("static_mist_incoming_atk")
+            result.lynae_static_mist_incoming_atk_buff = True
+            result.lynae_static_mist_incoming_atk_value = 0.10
+
+        pact_log = apply_pact_neonlight_outro_incoming_buff(
+            source_character_id="lynae",
+            incoming_character_id=incoming_character_id,
+            characters=self.characters,
+            state=self.state,
+            buffs=self.buffs,
+            application_time=application_time,
+            event_source="lynae_outro",
+        )
+        if pact_log.get("pact_neonlight_incoming_atk_buff"):
+            applied.extend(pact_log.get("echo_set_triggered_buff_ids", []))
+            result.pact_neonlight_incoming_atk_buff = True
+            result.pact_neonlight_incoming_atk_base = float(pact_log.get("pact_neonlight_incoming_atk_base", 0.0))
+            result.pact_neonlight_incoming_atk_from_tune_break_boost = float(
+                pact_log.get("pact_neonlight_incoming_atk_from_tune_break_boost", 0.0)
+            )
+            result.pact_neonlight_incoming_atk_total = float(pact_log.get("pact_neonlight_incoming_atk_total", 0.0))
+            result.pact_neonlight_source_status = pact_log.get("pact_neonlight_source_status")
+
+        lynae_state = self.state.character_mechanics_state.get("lynae", {})
+        if float(lynae_state.get("hyvatia_outro_window_remaining", 0.0) or 0.0) > 0.0:
+            if self._apply_specific_character_buff(
+                buff_id="hyvatia_incoming_all_attribute_damage_bonus",
+                source_character_id="lynae",
+                target_character_id=incoming_character_id,
+                application_time=application_time,
+                metadata={"event_source": "lynae_outro_after_hyvatia", "main_echo_id": "hyvatia"},
+            ):
+                applied.append("hyvatia_incoming_all_attribute_damage_bonus")
+                result.lynae_hyvatia_incoming_all_attribute_buff = True
+                result.lynae_hyvatia_incoming_all_attribute_value = 0.10
+
+        for buff_id in applied:
+            if buff_id not in result.applied_buffs:
+                result.applied_buffs.append(buff_id)
+        result.active_buffs = [buff.buff_id for buff in self.state.active_buffs if buff.remaining_duration > 0.0]
+        if self.state.action_log:
+            self.state.action_log[-1] = result.model_dump(mode="json")
+
+    def _apply_specific_character_buff(
+        self,
+        *,
+        buff_id: str,
+        source_character_id: str,
+        target_character_id: str,
+        application_time: float,
+        metadata: dict[str, Any] | None = None,
+    ) -> bool:
+        buff = self.buffs.get(buff_id)
+        if buff is None:
+            return False
+        runtime_buff = buff.model_copy(deep=True)
+        runtime_buff.target_scope = "specific_character"
+        runtime_buff.target_character_id = target_character_id
+        runtime_buff.source_character_id = source_character_id
+        runtime_buff.metadata = {
+            **runtime_buff.metadata,
+            **(metadata or {}),
+            "source_character_id": source_character_id,
+            "target_character_id": target_character_id,
+            "dynamic_value": runtime_buff.value,
+            "application_time": application_time,
+        }
+        if runtime_buff.modifier_type == "attack":
+            runtime_buff.stat_modifiers = {**runtime_buff.stat_modifiers, "atk_percent": runtime_buff.value}
+        apply_buff(self.state, runtime_buff, source_character_id)
+        return True
+
     def _apply_pre_transition_events(self, transition_resolution) -> None:
         if transition_resolution is None:
             return
@@ -1120,6 +1291,12 @@ class Simulation:
 
     def _mornye_constellation(self) -> int:
         return max(0, int(self._mornye_mechanics_config().get("mornye_constellation", 0) or 0))
+
+    def _lynae_mechanics_config(self) -> dict[str, Any]:
+        return dict(((self.state.mechanics_config or {}).get("lynae") or {}))
+
+    def _lynae_constellation(self) -> int:
+        return max(0, int(self._lynae_mechanics_config().get("lynae_constellation", 0) or 0))
 
     def _mornye_heal_event_mode(self) -> str:
         mode = str(self._mornye_mechanics_config().get("mornye_heal_event_mode", "simplified_syntony_field_uptime"))
@@ -1683,17 +1860,25 @@ class Simulation:
             party_response_scan_triggered=bool(self.state.party_response_scan_logs),
             aemeath_starburst_trigger_count=self.state.aemeath_starburst_trigger_count,
             mornye_particle_jet_trigger_count=self.state.mornye_particle_jet_trigger_count,
+            lynae_spectral_analysis_trigger_count=self.state.lynae_spectral_analysis_trigger_count,
             aemeath_starburst_cooldown_blocked_count=self.state.aemeath_starburst_cooldown_blocked_count,
             mornye_particle_jet_cooldown_blocked_count=self.state.mornye_particle_jet_cooldown_blocked_count,
+            lynae_spectral_analysis_cooldown_blocked_count=(
+                self.state.lynae_spectral_analysis_cooldown_blocked_count
+            ),
             aemeath_starburst_response_cooldown_remaining=(
                 self.state.aemeath_starburst_response_cooldown_remaining
             ),
             mornye_particle_jet_response_cooldown_remaining=(
                 self.state.mornye_particle_jet_response_cooldown_remaining
             ),
+            lynae_spectral_analysis_response_cooldown_remaining=(
+                self.state.lynae_spectral_analysis_response_cooldown_remaining
+            ),
             tune_response_damage_total=self.state.tune_response_damage_total,
             aemeath_starburst_damage_total=self.state.aemeath_starburst_damage_total,
             mornye_particle_jet_damage_total=self.state.mornye_particle_jet_damage_total,
+            lynae_spectral_analysis_damage_total=self.state.lynae_spectral_analysis_damage_total,
             tune_response_events=list(self.state.tune_response_events),
             tune_response_damage_formula_source_status=self.state.tune_response_damage_formula_source_status,
             tune_response_event_order_source_status=self.state.tune_response_event_order_source_status,

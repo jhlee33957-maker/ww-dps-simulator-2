@@ -4038,5 +4038,1252 @@
     "action_time": 0.5,
     "hits": [],
     "scaling_stat": "none"
+  },
+  {
+    "id": "lynae_basic_attack",
+    "name": "Lynae Basic Attack Selector",
+    "character_id": "lynae",
+    "action_type": "basic_attack",
+    "duration": 0.1,
+    "action_time": 0.1,
+    "combat_time_cost": 0.1,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "basic_attack",
+    "damage_element": "spectro",
+    "damage_multiplier": 0.0,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 10,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "basic_attack",
+      "lynae"
+    ],
+    "policy_selectable": true,
+    "mechanic_effects": {},
+    "data_status": "non_damaging_selector",
+    "source_status": "non_damaging_selector",
+    "source_rows": [],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_basic_stage_1",
+    "name": "Lynae Basic Stage 1",
+    "character_id": "lynae",
+    "action_type": "basic_attack",
+    "duration": 0.65,
+    "action_time": 0.65,
+    "combat_time_cost": 0.65,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "basic_attack",
+    "damage_element": "spectro",
+    "damage_multiplier": 0.8619,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [
+      {
+        "time": 0.6,
+        "damage_category": "normal",
+        "damage_multiplier": 0.8619,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Basic Stage 1"
+      }
+    ],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 10,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "basic_attack",
+      "lynae"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {},
+    "data_status": "workbook_confirmed",
+    "source_status": "workbook_confirmed",
+    "source_rows": [
+      2577,
+      2408
+    ],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_basic_stage_2",
+    "name": "Lynae Basic Stage 2",
+    "character_id": "lynae",
+    "action_type": "basic_attack",
+    "duration": 0.95,
+    "action_time": 0.95,
+    "combat_time_cost": 0.95,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "basic_attack",
+    "damage_element": "spectro",
+    "damage_multiplier": 1.5717,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [
+      {
+        "time": 0.25,
+        "damage_category": "normal",
+        "damage_multiplier": 0.5239,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Basic Stage 2 hit 1"
+      },
+      {
+        "time": 0.55,
+        "damage_category": "normal",
+        "damage_multiplier": 0.5239,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Basic Stage 2 hit 2"
+      },
+      {
+        "time": 0.9,
+        "damage_category": "normal",
+        "damage_multiplier": 0.5239,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Basic Stage 2 hit 3"
+      }
+    ],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 10,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "basic_attack",
+      "lynae"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {},
+    "data_status": "workbook_confirmed",
+    "source_status": "workbook_confirmed",
+    "source_rows": [
+      2578,
+      2579,
+      2580,
+      2409,
+      2410,
+      2411
+    ],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_basic_stage_3",
+    "name": "Lynae Basic Stage 3",
+    "character_id": "lynae",
+    "action_type": "basic_attack",
+    "duration": 1.0,
+    "action_time": 1.0,
+    "combat_time_cost": 1.0,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "basic_attack",
+    "damage_element": "spectro",
+    "damage_multiplier": 1.2337,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [
+      {
+        "time": 0.95,
+        "damage_category": "normal",
+        "damage_multiplier": 1.2337,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Basic Stage 3"
+      }
+    ],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 10,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "basic_attack",
+      "lynae"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {},
+    "data_status": "workbook_confirmed",
+    "source_status": "workbook_confirmed",
+    "source_rows": [
+      2581,
+      2412
+    ],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_spark_collision",
+    "name": "Lynae Spark Collision",
+    "character_id": "lynae",
+    "action_type": "heavy_attack",
+    "duration": 1.2,
+    "action_time": 1.2,
+    "combat_time_cost": 1.2,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "heavy_attack",
+    "damage_element": "spectro",
+    "damage_multiplier": 0.0,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 0,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "heavy_attack",
+      "lynae"
+    ],
+    "policy_selectable": true,
+    "mechanic_effects": {
+      "metadata_only_review_required": "hold/movement behavior not fully modeled",
+      "consume_overflow": 120,
+      "enter_kaleidoscopic_parade": true
+    },
+    "data_status": "metadata_only_review_required",
+    "source_status": "metadata_only_review_required",
+    "source_rows": [
+      2585,
+      2416
+    ],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_kaleidoscopic_basic_stage_1",
+    "name": "Lynae Kaleidoscopic Basic Stage 1",
+    "character_id": "lynae",
+    "action_type": "basic_attack",
+    "duration": 0.6,
+    "action_time": 0.6,
+    "combat_time_cost": 0.6,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "basic_attack",
+    "damage_element": "spectro",
+    "damage_multiplier": 0.8281,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [
+      {
+        "time": 0.5499999999999999,
+        "damage_category": "normal",
+        "damage_multiplier": 0.8281,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Kaleidoscopic Basic Stage 1"
+      }
+    ],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 10,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "basic_attack",
+      "lynae"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {},
+    "data_status": "workbook_confirmed",
+    "source_status": "workbook_confirmed",
+    "source_rows": [
+      2423
+    ],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_kaleidoscopic_basic_stage_2",
+    "name": "Lynae Kaleidoscopic Basic Stage 2",
+    "character_id": "lynae",
+    "action_type": "basic_attack",
+    "duration": 0.8,
+    "action_time": 0.8,
+    "combat_time_cost": 0.8,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "basic_attack",
+    "damage_element": "spectro",
+    "damage_multiplier": 0.7774,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [
+      {
+        "time": 0.3,
+        "damage_category": "normal",
+        "damage_multiplier": 0.3887,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Kaleidoscopic Basic Stage 2 hit 1"
+      },
+      {
+        "time": 0.65,
+        "damage_category": "normal",
+        "damage_multiplier": 0.3887,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Kaleidoscopic Basic Stage 2 hit 2"
+      }
+    ],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 10,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "basic_attack",
+      "lynae"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {},
+    "data_status": "workbook_confirmed",
+    "source_status": "workbook_confirmed",
+    "source_rows": [
+      2425,
+      2426
+    ],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_kaleidoscopic_basic_stage_3",
+    "name": "Lynae Kaleidoscopic Basic Stage 3",
+    "character_id": "lynae",
+    "action_type": "basic_attack",
+    "duration": 0.9,
+    "action_time": 0.9,
+    "combat_time_cost": 0.9,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "basic_attack",
+    "damage_element": "spectro",
+    "damage_multiplier": 1.1325,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [
+      {
+        "time": 0.25,
+        "damage_category": "normal",
+        "damage_multiplier": 0.3775,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Kaleidoscopic Basic Stage 3 hit 1"
+      },
+      {
+        "time": 0.5,
+        "damage_category": "normal",
+        "damage_multiplier": 0.3775,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Kaleidoscopic Basic Stage 3 hit 2"
+      },
+      {
+        "time": 0.8,
+        "damage_category": "normal",
+        "damage_multiplier": 0.3775,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Kaleidoscopic Basic Stage 3 hit 3"
+      }
+    ],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 10,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "basic_attack",
+      "lynae"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {},
+    "data_status": "workbook_confirmed",
+    "source_status": "workbook_confirmed",
+    "source_rows": [
+      2427,
+      2428,
+      2429
+    ],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_kaleidoscopic_basic_stage_4",
+    "name": "Lynae Kaleidoscopic Basic Stage 4",
+    "character_id": "lynae",
+    "action_type": "basic_attack",
+    "duration": 1.0,
+    "action_time": 1.0,
+    "combat_time_cost": 1.0,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "basic_attack",
+    "damage_element": "spectro",
+    "damage_multiplier": 1.4874,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [
+      {
+        "time": 0.25,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2975,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Kaleidoscopic Basic Stage 4 hit 1"
+      },
+      {
+        "time": 0.5,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2975,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Kaleidoscopic Basic Stage 4 hit 2"
+      },
+      {
+        "time": 0.75,
+        "damage_category": "normal",
+        "damage_multiplier": 0.4462,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Kaleidoscopic Basic Stage 4 hit 3"
+      },
+      {
+        "time": 0.95,
+        "damage_category": "normal",
+        "damage_multiplier": 0.4462,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Kaleidoscopic Basic Stage 4 hit 4"
+      }
+    ],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 10,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "basic_attack",
+      "lynae"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {},
+    "data_status": "workbook_confirmed",
+    "source_status": "workbook_confirmed",
+    "source_rows": [
+      2430,
+      2431,
+      2432,
+      2433
+    ],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_kaleidoscopic_basic_stage_5",
+    "name": "Lynae Kaleidoscopic Basic Stage 5",
+    "character_id": "lynae",
+    "action_type": "basic_attack",
+    "duration": 1.1,
+    "action_time": 1.1,
+    "combat_time_cost": 1.1,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "basic_attack",
+    "damage_element": "spectro",
+    "damage_multiplier": 1.9137,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [
+      {
+        "time": 0.25,
+        "damage_category": "normal",
+        "damage_multiplier": 0.7554,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Kaleidoscopic Basic Stage 5 hit 1"
+      },
+      {
+        "time": 0.55,
+        "damage_category": "normal",
+        "damage_multiplier": 0.1511,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Kaleidoscopic Basic Stage 5 hit 2"
+      },
+      {
+        "time": 1.0,
+        "damage_category": "normal",
+        "damage_multiplier": 1.0072,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Kaleidoscopic Basic Stage 5 hit 3"
+      }
+    ],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 10,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "basic_attack",
+      "lynae"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {},
+    "data_status": "workbook_confirmed",
+    "source_status": "workbook_confirmed",
+    "source_rows": [
+      2434,
+      2435,
+      2436
+    ],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_resonance_skill",
+    "name": "Lynae Resonance Skill Selector",
+    "character_id": "lynae",
+    "action_type": "resonance_skill",
+    "duration": 0.1,
+    "action_time": 0.1,
+    "combat_time_cost": 0.1,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "resonance_skill",
+    "damage_element": "spectro",
+    "damage_multiplier": 0.0,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 10,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "resonance_skill",
+      "lynae"
+    ],
+    "policy_selectable": true,
+    "mechanic_effects": {},
+    "data_status": "non_damaging_selector",
+    "source_status": "non_damaging_selector",
+    "source_rows": [],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_resonance_skill_palette",
+    "name": "Lynae Resonance Skill Palette",
+    "character_id": "lynae",
+    "action_type": "resonance_skill",
+    "duration": 1.1,
+    "action_time": 1.1,
+    "combat_time_cost": 1.1,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "resonance_skill",
+    "damage_element": "spectro",
+    "damage_multiplier": 2.7863,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [
+      {
+        "time": 0.25,
+        "damage_category": "normal",
+        "damage_multiplier": 1.3931,
+        "tags": [
+          "spectro",
+          "resonance_skill"
+        ],
+        "name": "Palette hit 1"
+      },
+      {
+        "time": 0.5,
+        "damage_category": "normal",
+        "damage_multiplier": 0.4644,
+        "tags": [
+          "spectro",
+          "resonance_skill"
+        ],
+        "name": "Palette hit 2"
+      },
+      {
+        "time": 0.75,
+        "damage_category": "normal",
+        "damage_multiplier": 0.4644,
+        "tags": [
+          "spectro",
+          "resonance_skill"
+        ],
+        "name": "Palette hit 3"
+      },
+      {
+        "time": 1.0,
+        "damage_category": "normal",
+        "damage_multiplier": 0.4644,
+        "tags": [
+          "spectro",
+          "resonance_skill"
+        ],
+        "name": "Palette hit 4"
+      }
+    ],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 10,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "resonance_skill",
+      "lynae"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {},
+    "data_status": "workbook_confirmed",
+    "source_status": "workbook_confirmed",
+    "source_rows": [
+      2454,
+      2455,
+      2456,
+      2457
+    ],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_resonance_skill_additive_color",
+    "name": "Lynae Resonance Skill Additive Color",
+    "character_id": "lynae",
+    "action_type": "resonance_skill",
+    "duration": 0.9,
+    "action_time": 0.9,
+    "combat_time_cost": 0.9,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "resonance_skill",
+    "damage_element": "spectro",
+    "damage_multiplier": 2.3262,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [
+      {
+        "time": 0.35,
+        "damage_category": "normal",
+        "damage_multiplier": 1.1631,
+        "tags": [
+          "spectro",
+          "resonance_skill"
+        ],
+        "name": "Additive Color hit 1"
+      },
+      {
+        "time": 0.75,
+        "damage_category": "normal",
+        "damage_multiplier": 1.1631,
+        "tags": [
+          "spectro",
+          "resonance_skill"
+        ],
+        "name": "Additive Color hit 2"
+      }
+    ],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 10,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "resonance_skill",
+      "lynae"
+    ],
+    "policy_selectable": true,
+    "mechanic_effects": {},
+    "data_status": "workbook_confirmed",
+    "source_status": "workbook_confirmed",
+    "source_rows": [
+      2458,
+      2459
+    ],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_resonance_liberation",
+    "name": "Lynae Resonance Liberation Selector",
+    "character_id": "lynae",
+    "action_type": "resonance_liberation",
+    "duration": 0.1,
+    "action_time": 0.1,
+    "combat_time_cost": 0.1,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "resonance_liberation",
+    "damage_element": "spectro",
+    "damage_multiplier": 0.0,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 0,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "resonance_liberation",
+      "lynae"
+    ],
+    "policy_selectable": true,
+    "mechanic_effects": {},
+    "data_status": "non_damaging_selector",
+    "source_status": "non_damaging_selector",
+    "source_rows": [],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_resonance_liberation_prismatic_overblast",
+    "name": "Lynae Prismatic Overblast",
+    "character_id": "lynae",
+    "action_type": "resonance_liberation",
+    "duration": 2.0,
+    "action_time": 2.0,
+    "combat_time_cost": 2.0,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "resonance_liberation",
+    "damage_element": "spectro",
+    "damage_multiplier": 0.8748,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [
+      {
+        "time": 1.95,
+        "damage_category": "normal",
+        "damage_multiplier": 0.8748,
+        "tags": [
+          "spectro",
+          "resonance_liberation",
+          "lynae"
+        ],
+        "name": "Lynae Prismatic Overblast"
+      }
+    ],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 0,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [
+      "lynae_liberation_party_damage_amp"
+    ],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "resonance_liberation",
+      "lynae"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {},
+    "data_status": "workbook_confirmed_and_user_tooltip",
+    "source_status": "workbook_confirmed_and_user_tooltip",
+    "source_rows": [
+      2482
+    ],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_intro_time_to_show_some_colors",
+    "name": "Lynae Intro Time to Show Some Colors",
+    "character_id": "lynae",
+    "action_type": "swap",
+    "duration": 1.0,
+    "action_time": 1.0,
+    "combat_time_cost": 1.0,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "intro",
+    "damage_element": "spectro",
+    "damage_multiplier": 0.2248,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [
+      {
+        "time": 0.95,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2248,
+        "tags": [
+          "spectro",
+          "intro",
+          "transition",
+          "lynae"
+        ],
+        "name": "Lynae Intro Time to Show Some Colors"
+      }
+    ],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 0,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "intro",
+      "transition",
+      "lynae"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "transition_action": true,
+      "transition_actor_character_id": "lynae"
+    },
+    "data_status": "workbook_confirmed",
+    "source_status": "workbook_confirmed",
+    "source_rows": [
+      2480,
+      2481
+    ],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_outro_lets_hit_the_road",
+    "name": "Lynae Outro Let Us Hit the Road",
+    "character_id": "lynae",
+    "action_type": "swap",
+    "duration": 0.001,
+    "action_time": 0.001,
+    "combat_time_cost": 0.001,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "outro",
+    "damage_element": "spectro",
+    "damage_multiplier": 1.0,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [
+      {
+        "time": 0.0,
+        "damage_category": "normal",
+        "damage_multiplier": 1.0,
+        "tags": [
+          "spectro",
+          "outro",
+          "transition",
+          "lynae"
+        ],
+        "name": "Lynae Outro Let Us Hit the Road"
+      }
+    ],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 0,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "outro",
+      "transition",
+      "lynae"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "transition_only": true,
+      "outro_incoming_all_damage_amp": 0.15,
+      "outro_incoming_liberation_damage_amp": 0.25
+    },
+    "data_status": "user_supplied_skill_tooltip",
+    "source_status": "user_supplied_skill_tooltip",
+    "source_rows": [
+      2486,
+      2487
+    ],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_echo_hyvatia",
+    "name": "Lynae Echo Hyvatia",
+    "character_id": "lynae",
+    "action_type": "echo_skill",
+    "duration": 1.2,
+    "action_time": 1.2,
+    "combat_time_cost": 1.2,
+    "cooldown": 20.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "echo_ability",
+    "damage_element": "spectro",
+    "damage_multiplier": 0.0,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [
+      {
+        "time": 0.1,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2736,
+        "tags": [
+          "spectro",
+          "echo_ability"
+        ],
+        "name": "Hyvatia hit 1"
+      },
+      {
+        "time": 0.2,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2736,
+        "tags": [
+          "spectro",
+          "echo_ability"
+        ],
+        "name": "Hyvatia hit 2"
+      },
+      {
+        "time": 0.3,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2736,
+        "tags": [
+          "spectro",
+          "echo_ability"
+        ],
+        "name": "Hyvatia hit 3"
+      },
+      {
+        "time": 0.4,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2736,
+        "tags": [
+          "spectro",
+          "echo_ability"
+        ],
+        "name": "Hyvatia hit 4"
+      },
+      {
+        "time": 0.5,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2736,
+        "tags": [
+          "spectro",
+          "echo_ability"
+        ],
+        "name": "Hyvatia hit 5"
+      },
+      {
+        "time": 0.6,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2736,
+        "tags": [
+          "spectro",
+          "echo_ability"
+        ],
+        "name": "Hyvatia hit 6"
+      },
+      {
+        "time": 0.7,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2736,
+        "tags": [
+          "spectro",
+          "echo_ability"
+        ],
+        "name": "Hyvatia hit 7"
+      },
+      {
+        "time": 0.8,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2736,
+        "tags": [
+          "spectro",
+          "echo_ability"
+        ],
+        "name": "Hyvatia hit 8"
+      },
+      {
+        "time": 0.9,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2736,
+        "tags": [
+          "spectro",
+          "echo_ability"
+        ],
+        "name": "Hyvatia hit 9"
+      },
+      {
+        "time": 1.0,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2736,
+        "tags": [
+          "spectro",
+          "echo_ability"
+        ],
+        "name": "Hyvatia hit 10"
+      }
+    ],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 0,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "echo",
+      "echo_ability",
+      "lynae"
+    ],
+    "policy_selectable": true,
+    "mechanic_effects": {
+      "hyvatia_outro_window_seconds": 15.0
+    },
+    "data_status": "user_supplied_echo_tooltip",
+    "source_status": "user_supplied_echo_tooltip",
+    "source_rows": [],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_tune_response_spectral_analysis",
+    "name": "Lynae Tune Response Spectral Analysis",
+    "character_id": "lynae",
+    "action_type": "resonance_skill",
+    "duration": 0.001,
+    "action_time": 0.001,
+    "combat_time_cost": 0.001,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "tune_response",
+    "damage_element": "spectro",
+    "damage_multiplier": 0.0,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 10,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "tune_response",
+      "lynae"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "generated_tune_response_id": "lynae_spectral_analysis"
+    },
+    "data_status": "workbook_confirmed",
+    "source_status": "workbook_confirmed",
+    "source_rows": [
+      2489
+    ],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_tune_break",
+    "name": "Lynae Tune Break",
+    "character_id": "lynae",
+    "action_type": "tune_break",
+    "duration": 1.5,
+    "action_time": 1.5,
+    "combat_time_cost": 1.5,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "tune_break",
+    "damage_element": "spectro",
+    "damage_multiplier": 0.0,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 0,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "tune_break",
+      "spectro",
+      "lynae"
+    ],
+    "policy_selectable": true,
+    "mechanic_effects": {},
+    "data_status": "metadata_only_review_required",
+    "source_status": "metadata_only_review_required",
+    "source_rows": [
+      2488
+    ],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+  },
+  {
+    "id": "lynae_visual_impact",
+    "name": "Lynae Visual Impact",
+    "character_id": "lynae",
+    "action_type": "resonance_skill",
+    "duration": 0.001,
+    "action_time": 0.001,
+    "combat_time_cost": 0.001,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "other",
+    "damage_element": "spectro",
+    "damage_multiplier": 0.0,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null,
+    "hits": [],
+    "resonance_energy_gain": 0,
+    "concerto_energy_gain": 10,
+    "resonance_energy_cost": 0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "spectro",
+      "metadata_only",
+      "lynae"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "party_tune_break_boost": 40,
+      "duration": 30,
+      "metadata_only": true
+    },
+    "data_status": "metadata_only_review_required",
+    "source_status": "metadata_only_review_required",
+    "source_rows": [
+      2464,
+      2465
+    ],
+    "scaling_stat": "atk",
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
   }
 ]

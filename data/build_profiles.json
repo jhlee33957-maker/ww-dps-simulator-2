@@ -470,6 +470,114 @@
           }
         }
       }
+    },
+    "lynae": {
+      "default": {
+        "display_name": "Lynae Default User Real Build",
+        "description": "Alias to Lynae User Real Build 01.",
+        "inherits_from": "lynae_user_real_01",
+        "implementation_status": "user_supplied_required",
+        "default_scaling_stat": "atk"
+      },
+      "lynae_user_real_01": {
+        "display_name": "Lynae User Real Build 01",
+        "description": "Complete user-supplied Lynae real stat profile. Static Mist static stats and Pact 2pc Spectro are already reflected in these values.",
+        "implementation_status": "user_supplied_required",
+        "default_scaling_stat": "atk",
+        "required_scaling_stats": [
+          "atk"
+        ],
+        "stat_components": {
+          "atk": {
+            "character_base": 375,
+            "weapon_base": 587.5,
+            "percent": 0.559,
+            "flat": 430,
+            "final_reference": 1931
+          },
+          "def": {
+            "character_base": null,
+            "weapon_base": 0,
+            "percent": null,
+            "flat": null,
+            "final_reference": null
+          },
+          "hp": {
+            "character_base": null,
+            "weapon_base": 0,
+            "percent": null,
+            "flat": null,
+            "final_reference": null
+          }
+        },
+        "runtime_bonuses": {
+          "atk": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "def": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "hp": {
+            "percent": 0.0,
+            "flat": 0.0
+          }
+        },
+        "combat_stats": {
+          "crit_rate": 0.974,
+          "crit_damage": 2.088,
+          "energy_regen": 1.516
+        },
+        "support_stats": {
+          "tune_break_boost": 0.0
+        },
+        "damage_bonuses": {
+          "all": 0.0,
+          "by_category": {
+            "basic_attack": 0.289,
+            "heavy_attack": 0.101,
+            "resonance_skill": 0.195,
+            "resonance_liberation": 0.116,
+            "intro": 0.0,
+            "outro": 0.0,
+            "echo_ability": 0.0,
+            "coordinated_attack": 0.0,
+            "other": 0.0
+          },
+          "by_element": {
+            "generic": 0.0,
+            "spectro": 0.7
+          }
+        },
+        "weapon": {
+          "weapon_id": "static_mist",
+          "weapon_type": "pistol",
+          "rank": 1,
+          "static_stats_already_in_profile": true,
+          "base_atk_and_crit_already_in_profile": true,
+          "energy_regen_already_in_profile": true,
+          "source_status": "user_supplied_weapon_tooltip",
+          "notes": "Static Mist base ATK, crit rate, and ER are already reflected in profile; only Outro incoming ATK buff is runtime."
+        },
+        "echo_sets": {
+          "pact_of_neonlight_leap": {
+            "pieces": 5,
+            "static_2set_spectro_already_in_profile": true,
+            "echo_static_damage_bonuses_already_in_profile": true,
+            "conditional_5set_enabled": true,
+            "conditional_5set_status": "implemented",
+            "source_status": "user_supplied_echo_set_tooltip",
+            "buff_id": "pact_neonlight_incoming_atk",
+            "notes": "2pc Spectro +10% and user-entered damage bonuses are profile-reflected. 5pc incoming ATK buff is runtime."
+          }
+        },
+        "main_echo": {
+          "main_echo_id": "hyvatia",
+          "source_status": "user_supplied_echo_tooltip",
+          "notes": "Hyvatia echo action and Outro window are implemented at runtime."
+        }
+      }
     }
   }
 }

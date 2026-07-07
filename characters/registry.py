@@ -3,6 +3,7 @@ from __future__ import annotations
 from characters.aemeath import AemeathMechanic
 from characters.base import CharacterMechanic
 from characters.default import DefaultCharacterMechanic
+from characters.lynae import LynaeMechanic
 from characters.mornye import MornyeMechanic
 
 
@@ -11,6 +12,8 @@ def get_mechanic(character_id: str) -> CharacterMechanic:
         return AemeathMechanic()
     if character_id == "mornye":
         return MornyeMechanic()
+    if character_id == "lynae":
+        return LynaeMechanic()
     return DefaultCharacterMechanic(character_id)
 
 

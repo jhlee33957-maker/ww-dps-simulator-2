@@ -41,5 +41,33 @@
     "c5_source_refs": [
       "角色技能类型!A2677:I2677"
     ]
+  },
+  {
+    "id": "lynae_spectral_analysis",
+    "name": "Lynae Spectral Analysis",
+    "source_character_id": "lynae",
+    "trigger_interfered_state": "tune_rupture_interfered",
+    "supported_interfered_states": [
+      "tune_rupture_interfered",
+      "tune_strain_interfered"
+    ],
+    "element": "spectro",
+    "raw_damage_type": "tune_break_response",
+    "formula_type": "tune_response",
+    "multiplier": 18.8075,
+    "c2_multiplier": 31.9727,
+    "c2_enabled_constellation": 2,
+    "c2_enabled_by_default": false,
+    "cooldown_seconds": 8.0,
+    "base_value": 10000.0,
+    "policy_selectable": false,
+    "source_status": "workbook_confirmed",
+    "source_refs": [
+      "dmg!2489"
+    ],
+    "c2_source_refs": [
+      "dmg!2490"
+    ],
+    "c2_implementation_status": "disabled_by_default_constellation"
   }
 ]

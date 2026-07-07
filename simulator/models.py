@@ -377,10 +377,13 @@ class CombatState(BaseModel):
     party_response_scan_logs: list[dict[str, Any]] = Field(default_factory=list)
     aemeath_starburst_response_cooldown_remaining: float = 0.0
     mornye_particle_jet_response_cooldown_remaining: float = 0.0
+    lynae_spectral_analysis_response_cooldown_remaining: float = 0.0
     aemeath_starburst_trigger_count: int = 0
     mornye_particle_jet_trigger_count: int = 0
+    lynae_spectral_analysis_trigger_count: int = 0
     aemeath_starburst_cooldown_blocked_count: int = 0
     mornye_particle_jet_cooldown_blocked_count: int = 0
+    lynae_spectral_analysis_cooldown_blocked_count: int = 0
     tune_break_action_used_count: int = 0
     tune_break_damage_total: float = 0.0
     interfered_marker_direct_damage_amp_bonus_damage_total: float = 0.0
@@ -388,6 +391,7 @@ class CombatState(BaseModel):
     tune_response_damage_total: float = 0.0
     aemeath_starburst_damage_total: float = 0.0
     mornye_particle_jet_damage_total: float = 0.0
+    lynae_spectral_analysis_damage_total: float = 0.0
     tune_response_events: list[dict[str, Any]] = Field(default_factory=list)
     tune_response_damage_formula_source_status: str = "workbook_confirmed"
     tune_response_event_order_source_status: str = "excel_event_order_derived"
@@ -638,6 +642,16 @@ class ActionResult(BaseModel):
     mornye_particle_jet_multiplier_used: float = 0.0
     mornye_particle_jet_constellation_variant: str | None = None
     mornye_particle_jet_damage_unresolved: bool = False
+    lynae_spectral_analysis_triggered: bool = False
+    lynae_spectral_analysis_cooldown_blocked: bool = False
+    lynae_spectral_analysis_cooldown_started: bool = False
+    lynae_spectral_analysis_response_cooldown_remaining: float = 0.0
+    lynae_spectral_analysis_response_damage: float = 0.0
+    lynae_spectral_analysis_damage_total: float = 0.0
+    lynae_spectral_analysis_cooldown_blocked_count: int = 0
+    lynae_spectral_analysis_multiplier_used: float = 0.0
+    lynae_spectral_analysis_constellation_variant: str | None = None
+    lynae_spectral_analysis_c2_disabled_by_default: bool = True
     response_source_status: str | None = None
     tune_response_damage: float = 0.0
     tune_response_damage_total: float = 0.0
@@ -658,6 +672,19 @@ class ActionResult(BaseModel):
     halo_of_starry_radiance_5set_same_action_application: bool = False
     halo_of_starry_radiance_5set_application_timing: str | None = None
     halo_of_starry_radiance_5set_unavailable_reason: str | None = None
+    pact_neonlight_incoming_atk_buff: bool = False
+    pact_neonlight_incoming_atk_base: float = 0.0
+    pact_neonlight_incoming_atk_from_tune_break_boost: float = 0.0
+    pact_neonlight_incoming_atk_total: float = 0.0
+    pact_neonlight_source_status: str | None = None
+    lynae_static_mist_incoming_atk_buff: bool = False
+    lynae_static_mist_incoming_atk_value: float = 0.0
+    lynae_hyvatia_incoming_all_attribute_buff: bool = False
+    lynae_hyvatia_incoming_all_attribute_value: float = 0.0
+    lynae_outro_all_damage_amp_value: float = 0.0
+    lynae_outro_liberation_damage_amp_value: float = 0.0
+    lynae_liberation_party_damage_buff_active: bool = False
+    lynae_liberation_party_damage_buff_value: float = 0.0
     emitted_mechanic_event_tags: list[str] = Field(default_factory=list)
     mechanic_event_triggered: bool = False
     mechanic_event_trigger_id: str | None = None
@@ -1013,6 +1040,16 @@ class TimelineEntry(BaseModel):
     mornye_particle_jet_multiplier_used: float = 0.0
     mornye_particle_jet_constellation_variant: str | None = None
     mornye_particle_jet_damage_unresolved: bool = False
+    lynae_spectral_analysis_triggered: bool = False
+    lynae_spectral_analysis_cooldown_blocked: bool = False
+    lynae_spectral_analysis_cooldown_started: bool = False
+    lynae_spectral_analysis_response_cooldown_remaining: float = 0.0
+    lynae_spectral_analysis_response_damage: float = 0.0
+    lynae_spectral_analysis_damage_total: float = 0.0
+    lynae_spectral_analysis_cooldown_blocked_count: int = 0
+    lynae_spectral_analysis_multiplier_used: float = 0.0
+    lynae_spectral_analysis_constellation_variant: str | None = None
+    lynae_spectral_analysis_c2_disabled_by_default: bool = True
     response_source_status: str | None = None
     tune_response_damage: float = 0.0
     tune_response_damage_total: float = 0.0
@@ -1033,6 +1070,19 @@ class TimelineEntry(BaseModel):
     halo_of_starry_radiance_5set_same_action_application: bool = False
     halo_of_starry_radiance_5set_application_timing: str | None = None
     halo_of_starry_radiance_5set_unavailable_reason: str | None = None
+    pact_neonlight_incoming_atk_buff: bool = False
+    pact_neonlight_incoming_atk_base: float = 0.0
+    pact_neonlight_incoming_atk_from_tune_break_boost: float = 0.0
+    pact_neonlight_incoming_atk_total: float = 0.0
+    pact_neonlight_source_status: str | None = None
+    lynae_static_mist_incoming_atk_buff: bool = False
+    lynae_static_mist_incoming_atk_value: float = 0.0
+    lynae_hyvatia_incoming_all_attribute_buff: bool = False
+    lynae_hyvatia_incoming_all_attribute_value: float = 0.0
+    lynae_outro_all_damage_amp_value: float = 0.0
+    lynae_outro_liberation_damage_amp_value: float = 0.0
+    lynae_liberation_party_damage_buff_active: bool = False
+    lynae_liberation_party_damage_buff_value: float = 0.0
     emitted_mechanic_event_tags: list[str] = Field(default_factory=list)
     mechanic_event_triggered: bool = False
     mechanic_event_trigger_id: str | None = None
@@ -1208,13 +1258,17 @@ class SimulationSummary(BaseModel):
     party_response_scan_triggered: bool = False
     aemeath_starburst_trigger_count: int = 0
     mornye_particle_jet_trigger_count: int = 0
+    lynae_spectral_analysis_trigger_count: int = 0
     aemeath_starburst_cooldown_blocked_count: int = 0
     mornye_particle_jet_cooldown_blocked_count: int = 0
+    lynae_spectral_analysis_cooldown_blocked_count: int = 0
     aemeath_starburst_response_cooldown_remaining: float = 0.0
     mornye_particle_jet_response_cooldown_remaining: float = 0.0
+    lynae_spectral_analysis_response_cooldown_remaining: float = 0.0
     tune_response_damage_total: float = 0.0
     aemeath_starburst_damage_total: float = 0.0
     mornye_particle_jet_damage_total: float = 0.0
+    lynae_spectral_analysis_damage_total: float = 0.0
     tune_response_events: list[dict[str, Any]] = Field(default_factory=list)
     tune_response_damage_formula_source_status: str | None = None
     tune_response_event_order_source_status: str | None = None

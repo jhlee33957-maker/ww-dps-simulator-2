@@ -13,6 +13,8 @@ MORNYE_HIGH_SYNTONY_FIELD_DEF_BUFF_ID = "mornye_high_syntony_field_def_bonus"
 MORNYE_HIGH_SYNTONY_FIELD_OFF_TUNE_BUFF_ID = "mornye_high_syntony_field_off_tune_buildup_rate"
 MORNYE_HALO_OF_STARRY_RADIANCE_5SET_BUFF_ID = "mornye_halo_of_starry_radiance_5set"
 HALO_OF_STARRY_RADIANCE_SET_KEY = "halo_of_starry_radiance"
+PACT_OF_NEONLIGHT_LEAP_5SET_BUFF_ID = "pact_neonlight_incoming_atk"
+PACT_OF_NEONLIGHT_LEAP_SET_KEY = "pact_of_neonlight_leap"
 TEAM_HEAL_EVENT_TAG = "team_heal"
 HIGH_SYNTONY_SAME_ACTION_TIMING_MODE = "same_action_high_syntony_field_creation_approximation"
 
@@ -49,8 +51,30 @@ def halo_of_starry_radiance_enabled(character: CharacterData | None) -> bool:
     return int(config.get("pieces") or 0) >= 5 and bool(config.get("conditional_5set_enabled"))
 
 
+def pact_neonlight_config(character: CharacterData | None) -> dict[str, Any]:
+    if character is None:
+        return {}
+    config = (character.echo_sets or {}).get(PACT_OF_NEONLIGHT_LEAP_SET_KEY) or {}
+    return dict(config) if isinstance(config, dict) else {}
+
+
+def pact_neonlight_enabled(character: CharacterData | None) -> bool:
+    config = pact_neonlight_config(character)
+    return int(config.get("pieces") or 0) >= 5 and bool(config.get("conditional_5set_enabled"))
+
+
 def halo_of_starry_radiance_atk_percent(current_off_tune_buildup_rate: float) -> float:
     return min(max(0.0, float(current_off_tune_buildup_rate)) * 0.20, 0.25)
+
+
+def pact_neonlight_incoming_atk_percent(incoming_tune_break_boost: float) -> dict[str, float]:
+    base = 0.15
+    from_tune_break_boost = min(max(0.0, float(incoming_tune_break_boost)) * 0.003, 0.15)
+    return {
+        "base": base,
+        "from_tune_break_boost": from_tune_break_boost,
+        "total": min(base + from_tune_break_boost, 0.30),
+    }
 
 
 def echo_set_base_log_fields() -> dict[str, Any]:
@@ -79,6 +103,11 @@ def echo_set_base_log_fields() -> dict[str, Any]:
         "halo_of_starry_radiance_5set_same_action_application": False,
         "halo_of_starry_radiance_5set_application_timing": None,
         "halo_of_starry_radiance_5set_unavailable_reason": None,
+        "pact_neonlight_incoming_atk_buff": False,
+        "pact_neonlight_incoming_atk_base": 0.0,
+        "pact_neonlight_incoming_atk_from_tune_break_boost": 0.0,
+        "pact_neonlight_incoming_atk_total": 0.0,
+        "pact_neonlight_source_status": None,
     }
 
 
@@ -340,6 +369,59 @@ def apply_mornye_halo_of_starry_radiance_5set_event_buff(
                 "same_action_field_creation_approximation" if applied_before_field_creation_damage else None
             ),
             "halo_of_starry_radiance_5set_unavailable_reason": None,
+        }
+    )
+    return log
+
+
+def apply_pact_neonlight_outro_incoming_buff(
+    *,
+    source_character_id: str,
+    incoming_character_id: str,
+    characters: dict[str, CharacterData],
+    state: CombatState,
+    buffs: dict[str, BuffData],
+    application_time: float,
+    event_source: str,
+) -> dict[str, Any]:
+    log = echo_set_base_log_fields()
+    character = characters.get(source_character_id)
+    if not pact_neonlight_enabled(character):
+        return log
+    buff = buffs.get(PACT_OF_NEONLIGHT_LEAP_5SET_BUFF_ID)
+    if buff is None:
+        return log
+    incoming = characters.get(incoming_character_id)
+    incoming_tune_break_boost = float((incoming.support_stats or {}).get("tune_break_boost", 0.0) or 0.0) if incoming else 0.0
+    values = pact_neonlight_incoming_atk_percent(incoming_tune_break_boost)
+    runtime_buff = buff.model_copy(deep=True)
+    runtime_buff.value = values["total"]
+    runtime_buff.target_scope = "specific_character"
+    runtime_buff.target_character_id = incoming_character_id
+    runtime_buff.stat_modifiers = {**runtime_buff.stat_modifiers, "atk_percent": values["total"]}
+    runtime_buff.metadata = {
+        **runtime_buff.metadata,
+        "dynamic_value": values["total"],
+        "incoming_character_id": incoming_character_id,
+        "incoming_tune_break_boost": incoming_tune_break_boost,
+        "pact_neonlight_incoming_atk_base": values["base"],
+        "pact_neonlight_incoming_atk_from_tune_break_boost": values["from_tune_break_boost"],
+        "pact_neonlight_incoming_atk_total": values["total"],
+        "event_source": event_source,
+    }
+    was_active = _active_buff_exists(state, runtime_buff.id)
+    apply_buff(state, runtime_buff, source_character_id)
+    state.echo_set_trigger_counts[runtime_buff.id] = state.echo_set_trigger_counts.get(runtime_buff.id, 0) + 1
+    _record_echo_set_window(state, runtime_buff.id, source_character_id, application_time, float(runtime_buff.duration))
+    log.update(
+        {
+            "echo_set_triggered_buff_ids": [runtime_buff.id],
+            "echo_set_buff_refreshed": was_active,
+            "pact_neonlight_incoming_atk_buff": True,
+            "pact_neonlight_incoming_atk_base": values["base"],
+            "pact_neonlight_incoming_atk_from_tune_break_boost": values["from_tune_break_boost"],
+            "pact_neonlight_incoming_atk_total": values["total"],
+            "pact_neonlight_source_status": runtime_buff.metadata.get("source_status"),
         }
     )
     return log

@@ -1,0 +1,88 @@
+{
+  "id": "lynae",
+  "display_name": "Lynae",
+  "source_name": "琳奈",
+  "role": [
+    "sub-DPS",
+    "buffer",
+    "Tune Response support"
+  ],
+  "implemented": {
+    "user_real_profile": {
+      "profile_id": "lynae_user_real_01",
+      "source_status": "user_profile",
+      "notes": "Static Mist base ATK, crit rate, Energy Regen, Pact 2pc Spectro, and user-entered damage bonuses are already reflected in the profile."
+    },
+    "static_mist": {
+      "runtime_effect": "Lynae Outro grants incoming character ATK +10% for 14s.",
+      "static_stats_runtime": false,
+      "source_status": "user_supplied_weapon_tooltip"
+    },
+    "pact_of_neonlight_leap_5pc": {
+      "runtime_effect": "Lynae Outro grants incoming character ATK +15% plus min(incoming Tune Break Boost * 0.3%, 15%), capped at +30%, for 15s.",
+      "two_piece_runtime": false,
+      "source_status": "user_supplied_echo_set_tooltip"
+    },
+    "hyvatia": {
+      "echo_action": "lynae_echo_hyvatia",
+      "damage": "10 hits at 0.2736 Spectro ATK-scaling damage each; total multiplier 2.736.",
+      "runtime_effect": "After Hyvatia, Lynae Outro within 15s grants incoming character All-Attribute DMG Bonus +10% for 15s.",
+      "source_status": "user_supplied_echo_tooltip"
+    },
+    "liberation": {
+      "action": "lynae_resonance_liberation_prismatic_overblast",
+      "runtime_effect": "Party damage dealt +24% for 30s.",
+      "source_status": "user_supplied_skill_tooltip"
+    },
+    "outro": {
+      "action": "lynae_outro_lets_hit_the_road",
+      "runtime_effects": [
+        "Incoming All DMG Amplification +15% for 14s.",
+        "Incoming Resonance Liberation DMG Amplification +25% for 14s.",
+        "Static Mist, Pact 5pc, and Hyvatia incoming effects are triggered from this handoff when their conditions are met."
+      ],
+      "source_status": "user_supplied_skill_tooltip"
+    },
+    "spectral_analysis": {
+      "id": "lynae_spectral_analysis",
+      "source_label": "震谐响应",
+      "formula_type": "tune_response",
+      "multiplier": 18.8075,
+      "same_target_cooldown_seconds": 8.0,
+      "policy_selectable": false,
+      "source_status": "workbook_confirmed",
+      "source_ref": "dmg!2489"
+    },
+    "action_skeleton": {
+      "status": "implemented_v1",
+      "notes": "Basic, selected skill, Liberation, Outro, Hyvatia, Tune Break skeleton, and metadata-only Visual Impact action are present."
+    }
+  },
+  "simplified": {
+    "lumiflow_movement_recovery": "metadata_only",
+    "skating_movement_speed": "ignored",
+    "stamina_consumption": "ignored",
+    "air_ground_exact_branches": "simplified",
+    "spray_paint_periodic_field": "metadata_only",
+    "tune_strain": "scaffold only unless current simulator state reaches tune_strain_interfered",
+    "c2_spectral_analysis": "disabled by default unless constellation support is intentionally enabled later",
+    "visual_impact": "metadata-only action row; party Tune Break Boost +40 is not active until the action behavior is fully source-confirmed"
+  },
+  "source_references": {
+    "workbook": "data/source/鸣潮动作数据汇总.xlsx",
+    "actions": "角色-女!2577:2738",
+    "damage": "dmg!2408:2490",
+    "spectral_analysis": "dmg!2489",
+    "spectral_analysis_c2": "dmg!2490",
+    "passive_candidates": "角色技能类型!772:784",
+    "base_stats": "prop!51",
+    "weapon_candidate": "weapon!65",
+    "user_supplied": [
+      "Lynae profile stat panel",
+      "Static Mist tooltip",
+      "Pact of Neonlight Leap tooltip",
+      "Hyvatia tooltip",
+      "Lynae Liberation and Outro tooltip"
+    ]
+  }
+}

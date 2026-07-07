@@ -241,17 +241,17 @@
       "applies_to_damage_bonus_category": "resonance_liberation",
       "def_ignore_by_rank": {
         "1": 0.32,
-        "2": 0.40,
+        "2": 0.4,
         "3": 0.48,
         "4": 0.56,
         "5": 0.64
       },
       "fusion_res_ignore_by_rank": {
-        "1": 0.10,
+        "1": 0.1,
         "2": 0.15,
-        "3": 0.20,
+        "3": 0.2,
         "4": 0.25,
-        "5": 0.30
+        "5": 0.3
       },
       "source_status": "user_supplied_weapon_tooltip"
     }
@@ -288,6 +288,140 @@
         "seraphic_duet_trail_removal_extra_damage",
         "stardust_extra_mechanics"
       ]
+    }
+  },
+  {
+    "id": "lynae_liberation_party_damage_amp",
+    "name": "Lynae Prismatic Overblast Party Damage Dealt",
+    "duration": 30.0,
+    "modifier_type": "damage_amp",
+    "value": 0.0,
+    "target": "party",
+    "target_scope": "party",
+    "source_character_id": "lynae",
+    "stacking_rule": "refresh_duration",
+    "max_stacks": 1,
+    "damage_amp_modifiers": {
+      "all": 0.24
+    },
+    "metadata": {
+      "source_character_id": "lynae",
+      "source_action_id": "lynae_resonance_liberation_prismatic_overblast",
+      "source_status": "user_supplied_skill_tooltip",
+      "implementation_status": "implemented_v1",
+      "log_fields": [
+        "lynae_liberation_party_damage_buff_active",
+        "lynae_liberation_party_damage_buff_value"
+      ]
+    }
+  },
+  {
+    "id": "lynae_outro_all_damage_amp",
+    "name": "Lynae Outro Incoming All DMG Amplification",
+    "duration": 14.0,
+    "modifier_type": "damage_amp",
+    "value": 0.15,
+    "target": "specific_character",
+    "target_scope": "specific_character",
+    "source_character_id": "lynae",
+    "stacking_rule": "refresh_duration",
+    "max_stacks": 1,
+    "damage_amp_modifiers": {
+      "all": 0.15
+    },
+    "metadata": {
+      "source_character_id": "lynae",
+      "source_action_id": "lynae_outro_lets_hit_the_road",
+      "source_status": "user_supplied_skill_tooltip",
+      "expires_on_switch_out": true,
+      "implementation_status": "implemented_v1"
+    }
+  },
+  {
+    "id": "lynae_outro_liberation_damage_amp",
+    "name": "Lynae Outro Incoming Liberation DMG Amplification",
+    "duration": 14.0,
+    "modifier_type": "damage_amp",
+    "value": 0.0,
+    "target": "specific_character",
+    "target_scope": "specific_character",
+    "source_character_id": "lynae",
+    "stacking_rule": "refresh_duration",
+    "max_stacks": 1,
+    "damage_amp_modifiers": {
+      "resonance_liberation": 0.25
+    },
+    "metadata": {
+      "source_character_id": "lynae",
+      "source_action_id": "lynae_outro_lets_hit_the_road",
+      "source_status": "user_supplied_skill_tooltip",
+      "expires_on_switch_out": true,
+      "implementation_status": "implemented_v1"
+    }
+  },
+  {
+    "id": "static_mist_incoming_atk",
+    "name": "Static Mist Incoming ATK Buff",
+    "duration": 14.0,
+    "modifier_type": "attack",
+    "value": 0.1,
+    "target": "specific_character",
+    "target_scope": "specific_character",
+    "source_character_id": "lynae",
+    "stacking_rule": "refresh_duration",
+    "max_stacks": 1,
+    "stat_modifiers": {
+      "atk_percent": 0.1
+    },
+    "metadata": {
+      "source_type": "weapon",
+      "weapon_id": "static_mist",
+      "source_status": "user_supplied_weapon_tooltip",
+      "trigger": "owner_outro",
+      "target": "incoming_character",
+      "static_stats_already_in_profile": true
+    }
+  },
+  {
+    "id": "pact_neonlight_incoming_atk",
+    "name": "Pact of Neonlight Leap Incoming ATK Buff",
+    "duration": 15.0,
+    "modifier_type": "attack",
+    "value": 0.0,
+    "target": "specific_character",
+    "target_scope": "specific_character",
+    "source_character_id": "lynae",
+    "stacking_rule": "refresh_duration",
+    "max_stacks": 1,
+    "stat_modifiers": {
+      "atk_percent": 0.0
+    },
+    "metadata": {
+      "source_type": "echo_set",
+      "echo_set_id": "pact_of_neonlight_leap",
+      "source_status": "user_supplied_echo_set_tooltip",
+      "trigger": "owner_outro_incoming_intro",
+      "expires_on_switch_out": true,
+      "dynamic_value_formula": "0.15 + min(incoming_tune_break_boost * 0.003, 0.15)"
+    }
+  },
+  {
+    "id": "hyvatia_incoming_all_attribute_damage_bonus",
+    "name": "Hyvatia Incoming All-Attribute DMG Bonus",
+    "duration": 15.0,
+    "modifier_type": "damage_bonus",
+    "value": 0.1,
+    "target": "specific_character",
+    "target_scope": "specific_character",
+    "source_character_id": "lynae",
+    "stacking_rule": "refresh_duration",
+    "max_stacks": 1,
+    "metadata": {
+      "source_type": "main_echo",
+      "main_echo_id": "hyvatia",
+      "source_status": "user_supplied_echo_tooltip",
+      "trigger": "lynae_outro_within_hyvatia_window",
+      "implementation_status": "implemented_v1"
     }
   }
 ]
