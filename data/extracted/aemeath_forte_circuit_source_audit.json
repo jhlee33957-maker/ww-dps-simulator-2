@@ -1,0 +1,148 @@
+{
+  "audit_id": "aemeath_forte_circuit_source_audit",
+  "source_policy": "Only workbook/extracted/report sources are considered. External simulator websites are not used.",
+  "workbook_path": "data/source/*.xlsx",
+  "action_rows": [
+    {
+      "source_row": 2786,
+      "repeat_count": 5,
+      "hit_interval_frames": 4,
+      "formula_type": "tune_response",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "source_row": 2787,
+      "repeat_count": 10,
+      "hit_interval_frames": 2,
+      "formula_type": "tune_response",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "source_row": 2931,
+      "repeat_count": 5,
+      "hit_interval_frames": 4,
+      "formula_type": "tune_response",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "source_row": 2932,
+      "repeat_count": 10,
+      "hit_interval_frames": 2,
+      "formula_type": "tune_response",
+      "source_status": "workbook_confirmed"
+    }
+  ],
+  "dmg_rows": [
+    {
+      "source_row": 2578,
+      "rate_lv_10": 10935,
+      "multiplier": 1.0935,
+      "damage_element_source_value": 2,
+      "damage_type_source_value": 12,
+      "related_property_source_value": 10000099,
+      "damage_special_weakness_damage_ratio": 10000,
+      "formula_type": "tune_response",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "source_row": 2579,
+      "rate_lv_10": 10935,
+      "multiplier": 1.0935,
+      "damage_element_source_value": 2,
+      "damage_type_source_value": 12,
+      "related_property_source_value": 10000099,
+      "damage_special_weakness_damage_ratio": 10000,
+      "formula_type": "tune_response",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "source_row": 2628,
+      "rate_lv_10": 10935,
+      "multiplier": 1.0935,
+      "damage_element_source_value": 2,
+      "damage_type_source_value": 12,
+      "related_property_source_value": 10000099,
+      "damage_special_weakness_damage_ratio": 10000,
+      "formula_type": "tune_response",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "source_row": 2629,
+      "rate_lv_10": 10935,
+      "multiplier": 1.0935,
+      "damage_element_source_value": 2,
+      "damage_type_source_value": 12,
+      "related_property_source_value": 10000099,
+      "damage_special_weakness_damage_ratio": 10000,
+      "formula_type": "tune_response",
+      "source_status": "workbook_confirmed"
+    }
+  ],
+  "unresolved_rows": [],
+  "source_confirmed_followups": [
+    {
+      "id": "aemeath_seraphic_duet_tune_rupture_followup",
+      "variant": "normal",
+      "formula_type": "tune_response",
+      "source_status": "workbook_confirmed",
+      "implementation_status": "workbook_confirmed",
+      "repeat_count": 5,
+      "hit_interval_frames": 4,
+      "multiplier": 1.0935,
+      "source_refs": {
+        "action_rows": [
+          2786,
+          2931
+        ],
+        "dmg_rows": [
+          2578,
+          2628
+        ]
+      }
+    },
+    {
+      "id": "aemeath_seraphic_duet_tune_rupture_enhanced_followup",
+      "variant": "enhanced",
+      "formula_type": "tune_response",
+      "source_status": "workbook_confirmed",
+      "implementation_status": "workbook_confirmed",
+      "repeat_count": 10,
+      "hit_interval_frames": 2,
+      "multiplier": 1.0935,
+      "source_refs": {
+        "action_rows": [
+          2787,
+          2932
+        ],
+        "dmg_rows": [
+          2579,
+          2629
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "runtime_damage_status": "workbook_confirmed",
+    "formula_type": "tune_response",
+    "source_confirmed_action_rows": [
+      2786,
+      2787,
+      2931,
+      2932
+    ],
+    "source_confirmed_dmg_rows": [
+      2578,
+      2579,
+      2628,
+      2629
+    ],
+    "multiplier": 1.0935,
+    "normal_repeat_count": 5,
+    "enhanced_repeat_count": 10,
+    "unresolved_scope": [
+      "Fusion Burst / Fusion Trail runtime damage",
+      "C6 trail granting for default S0 runtime",
+      "Multi-target trail tracking"
+    ]
+  }
+}

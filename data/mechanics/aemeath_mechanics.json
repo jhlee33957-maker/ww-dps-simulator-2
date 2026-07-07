@@ -26,11 +26,15 @@
       "Everbright Polestar runtime weapon passive effects",
       "Excel-based Aemeath Tune Break action",
       "Tune Rupture Response - Starburst off-field party response",
+      "source-gated generated mechanic damage infrastructure",
+      "Aemeath Forte Circuit trail state scaffolding",
+      "Seraphic Duet follow-up source audit with unresolved runtime damage gate",
       "QTE / Intro transition metadata and reviewed transition action candidates"
     ],
     "excluded": [
-      "Fusion Burst explosion damage",
-      "Fusion Trail / Rupturous Trail full stack systems",
+      "Fusion Burst explosion runtime damage without source-confirmed coefficient/formula",
+      "Fusion Trail / Rupturous Trail source-confirmed stack mutation rules",
+      "Seraphic Duet follow-up runtime damage without source-confirmed coefficient/formula",
       "full Starflux utility",
       "exact hitstop / enemy movement / hit loss",
       "multi-target state tracking",
@@ -91,6 +95,22 @@
       ]
     },
     {
+      "name": "Forte Enhancement",
+      "modeled_behavior": [
+        "Granted by Overdrive / 大招1 as 2 stacks for 30 seconds.",
+        "Seraphic Duet consumes 1 stack when available and selects the enhanced 10-hit Tune Rupture follow-up.",
+        "This state is the source-backed enhanced follow-up selector; Stardust Resonance itself is not the selector."
+      ]
+    },
+    {
+      "name": "Trail No-cost",
+      "modeled_behavior": [
+        "Granted by Overdrive / 大招1 for 30 seconds.",
+        "Consumed by Seraphic Duet.",
+        "While consumed by Seraphic Duet, existing single-target trail scaffold stacks are preserved; unresolved S0 trail removal rules are not invented."
+      ]
+    },
+    {
       "name": "Heavenfall Edict: Unbound",
       "modeled_behavior": [
         "Granted by Overdrive.",
@@ -127,6 +147,113 @@
       "default": "unresolved",
       "notes": "Party presets or UI overrides can select the mode."
     }
+  ],
+  "forte_circuit": {
+    "title": "Aemeath Forte Circuit",
+    "implementation_status": "source_confirmed_runtime_damage",
+    "source_audit": "data/extracted/aemeath_forte_circuit_source_audit.json",
+    "runtime_config": "data/character_mechanic_effects/aemeath_forte_circuit.json",
+    "modeled_behavior": [
+      "The simulator can request generated mechanic damage packets from character mechanics after normal action damage is resolved.",
+      "Generated damage packets preserve source_action_id, source_status, source_ref, source_rows, formula_type, repeat_count, and notes.",
+      "Packets only add runtime damage when the config has source-confirmed formula type, coefficient, scaling, and repeat count.",
+      "Aemeath Seraphic Duet Tune Rupture follow-up damage is source-confirmed from action rows 2786/2787/2931/2932 and dmg rows 2578/2579/2628/2629.",
+      "The source multiplier is 1.0935 and uses the existing tune_response base-10000 formula path."
+    ],
+    "exclusions": [
+      "No coefficient is guessed from external simulator sites.",
+      "No reward shaping, PPO policy action, rotation forcing, or profile stat changes are part of this implementation."
+    ]
+  },
+  "rupturous_trail": {
+    "title": "Rupturous Trail",
+    "implementation_status": "state_scaffold_only",
+    "source_status": "candidate_rows_reviewed_without_confirmed_stack_mutation_formula",
+    "state_fields": [
+      "rupturous_trail_stacks",
+      "rupturous_trail_remaining",
+      "rupturous_trail_max_stacks"
+    ],
+    "modeled_behavior": [
+      "State is clamped to its configured max stack count.",
+      "Remaining duration ticks with action time and clears stacks when it reaches zero.",
+      "The current model is single-target only for observation and logging."
+    ],
+    "runtime_damage": "none_until_source_confirmed"
+  },
+  "fusion_trail": {
+    "title": "Fusion Trail",
+    "implementation_status": "state_scaffold_only",
+    "source_status": "candidate_rows_reviewed_without_confirmed_stack_mutation_formula",
+    "state_fields": [
+      "fusion_trail_stacks",
+      "fusion_trail_remaining",
+      "fusion_trail_max_stacks"
+    ],
+    "modeled_behavior": [
+      "State is clamped to its configured max stack count.",
+      "Remaining duration ticks with action time and clears stacks when it reaches zero.",
+      "Fusion Burst explosion damage is not applied without source-confirmed coefficient/formula data."
+    ],
+    "runtime_damage": "none_until_source_confirmed"
+  },
+  "seraphic_duet_followup_damage": {
+    "title": "Seraphic Duet Follow-up Damage",
+    "implementation_status": "implemented_workbook_confirmed",
+    "source_status": "workbook_confirmed",
+    "confirmed_rows": [
+      {"variant": "normal", "action_rows": [2786, 2931], "dmg_rows": [2578, 2628], "repeat_count": 5, "hit_interval_frames": 4, "multiplier": 1.0935},
+      {"variant": "enhanced", "action_rows": [2787, 2932], "dmg_rows": [2579, 2629], "repeat_count": 10, "hit_interval_frames": 2, "multiplier": 1.0935}
+    ],
+    "modeled_behavior": [
+      "Seraphic Duet asks the Forte Circuit config for follow-up packets in tune_rupture mode.",
+      "Normal follow-up uses 强化E-震谐: 1.0935 x 5 tune_response hits.",
+      "Enhanced follow-up uses 强化E-震谐增幅: 1.0935 x 10 tune_response hits.",
+      "Enhanced follow-up is selected by forte_enhancement_stacks from 大招1 / 强化E增幅次数, not directly by Stardust Resonance.",
+      "Interfered Marker +40% remains target damage-taken amp through the formula path and is not baked into the 1.0935 source coefficient.",
+      "1.531 / 1.5309 is not hardcoded as a coefficient."
+    ]
+  },
+  "stardust_resonance_interaction": {
+    "title": "Stardust Resonance Interaction",
+    "implementation_status": "metadata_and_state_tracking",
+    "modeled_behavior": [
+      "Stardust Resonance remains tracked as an Aemeath state.",
+      "Observation channel mechanic_state_3 now represents Heavenfall Unbound or Stardust Resonance activity.",
+      "The Seraphic Duet follow-up log records whether Stardust Resonance was active, but Stardust Resonance itself does not select the 10-hit enhanced follow-up.",
+      "The direct 10-hit selector is forte_enhancement_stacks / 强化E增幅次数."
+    ],
+    "runtime_damage": "handled_by_seraphic_duet_followup_damage_when_forte_enhancement_stacks_are_available"
+  },
+  "generated_mechanic_damage": {
+    "title": "Generated Mechanic Damage",
+    "implementation_status": "generic_runtime_infrastructure",
+    "supported_formula_types": [
+      "tune_break",
+      "tune_response"
+    ],
+    "modeled_behavior": [
+      "Character mechanics can return generated damage packets without adding policy-selectable actions.",
+      "Runtime-applicable packets contribute to total damage, hit details, hit counts, timeline entries, and damage logs.",
+      "Unresolved packets remain visible in generated_mechanic_damage_events but add zero damage and zero generated hits.",
+      "Normal generated damage is explicitly blocked until damage bonus routing is source-safe; current source-confirmed Aemeath follow-up uses tune_response."
+    ]
+  },
+  "source_gated_implementation": {
+    "title": "Source-gated Implementation",
+    "rules": [
+      "Runtime generated damage requires traceable coefficient/formula/repeat/stack/duration data from source spreadsheets, extracted Aemeath audit files, or generated reports.",
+      "Seraphic Duet Tune Rupture follow-up satisfies this rule with action rows 2786/2787/2931/2932 and dmg rows 2578/2579/2628/2629.",
+      "Rows with visible event timing or labels but no usable coefficient/formula remain metadata only.",
+      "External simulator websites are intentionally not used as authority for runtime damage.",
+      "Build profile stats, weapon static stats, PPO training, reward shaping, and policy action spaces are not changed by this Forte Circuit patch."
+    ]
+  },
+  "remaining_unresolved_mechanics": [
+    "Rupturous Trail source-confirmed stack gain, stack consumption, and duration refresh rules.",
+    "Fusion Trail source-confirmed stack gain, stack consumption, duration refresh, and Fusion Burst explosion formula.",
+    "C6 trail stack granting remains scaffolded and is not active for default S0.",
+    "Exact hit-level timing, hitstop, enemy movement, hit loss, and multi-target trail state tracking."
   ],
   "action_resolution_priority": [
     {"priority": 1, "rule": "Finale if ready"},
@@ -173,7 +300,7 @@
     {"name": "Priority", "modeled_behavior": ["Seraphic Duet takes priority over normal Form Switch."]}
   ],
   "overdrive_finale": [
-    {"name": "Overdrive", "modeled_behavior": ["Grants Unbound.", "Grants Stardust Resonance in the current implementation.", "Adds 30 Synchronization Rate.", "Adds 1 Resonance Rate.", "Switches to Mech.", "Opens the special E1 follow-up window.", "Costs 0 timed combat seconds."]},
+    {"name": "Overdrive", "modeled_behavior": ["Grants Unbound.", "Grants Stardust Resonance in the current implementation.", "Adds 30 Synchronization Rate.", "Adds 1 Resonance Rate.", "Grants 2 Forte Enhancement stacks for 30 seconds.", "Grants Trail No-cost for 30 seconds.", "Switches to Mech.", "Opens the special E1 follow-up window.", "Costs 0 timed combat seconds."]},
     {"name": "Finale", "modeled_behavior": ["Requires Unbound, Synchronization Rate 200, and Resonance Rate 4.", "Clears Synchronization Rate and Resonance Rate.", "Ends Unbound and Seraphic Duo.", "Switches to Human.", "Costs 0 timed combat seconds."]}
   ],
   "echo_sets": [
@@ -330,8 +457,9 @@
   "known_limitations": [
     "This page describes the simulator's modeled interpretation, not a complete game-client recreation.",
     "The current goal is DPS comparison, not exact frame-perfect combat reproduction.",
-    "Fusion Burst explosion damage remains omitted.",
-    "Fusion Trail / Rupturous Trail full stack systems remain omitted.",
+    "Fusion Burst explosion runtime damage remains omitted until coefficient/formula data is source-confirmed.",
+    "Fusion Trail / Rupturous Trail stack state is scaffolded, but source-confirmed stack mutation and damage rules remain unresolved.",
+    "Seraphic Duet Tune Rupture follow-up damage is implemented only for the source-confirmed tune_response formula; Fusion Burst follow-up damage remains omitted.",
     "full Starflux utility remains omitted.",
     "exact hitstop, enemy movement, hit loss, and multi-target state tracking remain omitted.",
     "exact Tune Strain stack system remains omitted.",
@@ -340,7 +468,9 @@
   "simplified_assumptions": [
     "Trailblazing Star 5-set uses same-action aggregate approximation for triggering damage.",
     "Tune Break and Tune Response are modeled as single-target formula damage.",
-    "QTE / Intro transition data is represented through reviewed metadata and transition actions, not a full cinematic/client transition recreation."
+    "QTE / Intro transition data is represented through reviewed metadata and transition actions, not a full cinematic/client transition recreation.",
+    "Aemeath Forte Trail observation is modeled as a single-target trail state rather than full multi-target client state.",
+    "Observation schema slot_generic_mechanics_v3 exposes Forte Enhancement, Trail No-cost, Rupturous Trail, and Fusion Trail as generic mechanic channels."
   ],
   "legacy_modes": []
 }

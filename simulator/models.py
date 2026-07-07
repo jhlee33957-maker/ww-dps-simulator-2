@@ -427,6 +427,28 @@ class ActionResult(BaseModel):
     damage: float
     normal_damage: float = 0.0
     tune_break_damage: float = 0.0
+    generated_mechanic_damage: float = 0.0
+    generated_mechanic_damage_total: float = 0.0
+    generated_mechanic_hit_count: int = 0
+    generated_mechanic_damage_events: list[dict[str, Any]] = Field(default_factory=list)
+    aemeath_forte_generated_damage: float = 0.0
+    aemeath_forte_generated_damage_total: float = 0.0
+    aemeath_seraphic_duet_followup_triggered: bool = False
+    aemeath_seraphic_duet_followup_damage: float = 0.0
+    aemeath_seraphic_duet_followup_source_status: str | None = None
+    aemeath_seraphic_duet_followup_mode: str | None = None
+    aemeath_seraphic_duet_followup_variant: str | None = None
+    aemeath_seraphic_duet_followup_repeat_count: int = 0
+    aemeath_seraphic_duet_followup_multiplier: float = 0.0
+    aemeath_rupturous_trail_stacks_before: int = 0
+    aemeath_rupturous_trail_stacks_consumed: int = 0
+    aemeath_rupturous_trail_stacks_after: int = 0
+    aemeath_forte_enhancement_stacks_before: int = 0
+    aemeath_forte_enhancement_stacks_consumed: int = 0
+    aemeath_forte_enhancement_stacks_after: int = 0
+    aemeath_trail_no_cost_consumed: bool = False
+    aemeath_stardust_resonance_active_for_followup: bool = False
+    aemeath_seraphic_duet_followup_source_rows: list[int] = Field(default_factory=list)
     direct_anomaly_damage: float = 0.0
     anomaly_tick_damage: float = 0.0
     anomaly_damage: float = 0.0
@@ -772,6 +794,28 @@ class TimelineEntry(BaseModel):
     damage: float
     normal_damage: float = 0.0
     tune_break_damage: float = 0.0
+    generated_mechanic_damage: float = 0.0
+    generated_mechanic_damage_total: float = 0.0
+    generated_mechanic_hit_count: int = 0
+    generated_mechanic_damage_events: list[dict[str, Any]] = Field(default_factory=list)
+    aemeath_forte_generated_damage: float = 0.0
+    aemeath_forte_generated_damage_total: float = 0.0
+    aemeath_seraphic_duet_followup_triggered: bool = False
+    aemeath_seraphic_duet_followup_damage: float = 0.0
+    aemeath_seraphic_duet_followup_source_status: str | None = None
+    aemeath_seraphic_duet_followup_mode: str | None = None
+    aemeath_seraphic_duet_followup_variant: str | None = None
+    aemeath_seraphic_duet_followup_repeat_count: int = 0
+    aemeath_seraphic_duet_followup_multiplier: float = 0.0
+    aemeath_rupturous_trail_stacks_before: int = 0
+    aemeath_rupturous_trail_stacks_consumed: int = 0
+    aemeath_rupturous_trail_stacks_after: int = 0
+    aemeath_forte_enhancement_stacks_before: int = 0
+    aemeath_forte_enhancement_stacks_consumed: int = 0
+    aemeath_forte_enhancement_stacks_after: int = 0
+    aemeath_trail_no_cost_consumed: bool = False
+    aemeath_stardust_resonance_active_for_followup: bool = False
+    aemeath_seraphic_duet_followup_source_rows: list[int] = Field(default_factory=list)
     direct_anomaly_damage: float = 0.0
     anomaly_tick_damage: float = 0.0
     anomaly_damage: float = 0.0

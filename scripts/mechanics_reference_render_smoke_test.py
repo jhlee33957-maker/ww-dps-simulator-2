@@ -102,6 +102,17 @@ def main() -> None:
         rendered_keys = {key for _title, key, _value in sections}
         assert rendered_keys & expected_optional_keys, f"optional sections not rendered for {character_id}"
         assert "known_limitations" in rendered_keys, f"known_limitations missing from render sections for {character_id}"
+        if character_id == "aemeath":
+            for key in (
+                "forte_circuit",
+                "rupturous_trail",
+                "fusion_trail",
+                "seraphic_duet_followup_damage",
+                "generated_mechanic_damage",
+                "source_gated_implementation",
+                "remaining_unresolved_mechanics",
+            ):
+                assert key in rendered_keys, f"{key} missing from render sections for Aemeath"
         if character_id == "mornye":
             assert "timing_model" in data
             assert ("Timing Model", "timing_model", data["timing_model"]) in sections

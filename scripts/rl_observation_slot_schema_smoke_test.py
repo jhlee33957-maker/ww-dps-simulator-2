@@ -70,7 +70,7 @@ def test_slot_schema_labels_and_metadata() -> None:
     env = make_env()
     labels = env.observation_labels()
     metadata = env.observation_metadata()
-    assert env.observation_version == "slot_generic_mechanics_v1"
+    assert env.observation_version == "slot_generic_mechanics_v3"
     assert metadata["deprecated_observation_version"] == "off_tune_tune_break_weapon_state_v1"
     assert metadata["max_party_slots"] == 3
     for forbidden in FORBIDDEN_LABEL_PARTS:
@@ -97,6 +97,11 @@ def test_current_channel_mapping() -> None:
     assert mapping["slot_0.tune_response_0"] == "mornye_particle_jet"
     assert mapping["slot_1.echo_effect_0"] == "aemeath_trailblazing_star_5set"
     assert mapping["slot_1.tune_response_0"] == "aemeath_starburst"
+    assert mapping["slot_1.mechanic_state_3"] == "aemeath_heavenfall_unbound_or_stardust_resonance"
+    assert mapping["slot_1.mechanic_state_4"] == "aemeath_forte_enhancement_stacks"
+    assert mapping["slot_1.mechanic_state_5"] == "aemeath_trail_no_cost"
+    assert mapping["slot_1.mechanic_state_6"] == "aemeath_rupturous_trail"
+    assert mapping["slot_1.mechanic_state_7"] == "aemeath_fusion_trail"
 
 
 def main() -> None:

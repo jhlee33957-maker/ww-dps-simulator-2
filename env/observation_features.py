@@ -7,7 +7,7 @@ from simulator.buff_system import buffed_combat_stats, support_stat_context
 from simulator.mechanic_events import aemeath_resonance_mode_from_config
 
 
-OBSERVATION_VERSION = "slot_generic_mechanics_v1"
+OBSERVATION_VERSION = "slot_generic_mechanics_v3"
 DEPRECATED_OBSERVATION_VERSION = "off_tune_tune_break_weapon_state_v1"
 MAX_PARTY_SLOTS = 3
 
@@ -75,6 +75,18 @@ SLOT_SCHEMA = [
     "mechanic_state_3_active",
     "mechanic_state_3_remaining_ratio",
     "mechanic_state_3_value_scaled",
+    "mechanic_state_4_active",
+    "mechanic_state_4_remaining_ratio",
+    "mechanic_state_4_value_scaled",
+    "mechanic_state_5_active",
+    "mechanic_state_5_remaining_ratio",
+    "mechanic_state_5_value_scaled",
+    "mechanic_state_6_active",
+    "mechanic_state_6_remaining_ratio",
+    "mechanic_state_6_value_scaled",
+    "mechanic_state_7_active",
+    "mechanic_state_7_remaining_ratio",
+    "mechanic_state_7_value_scaled",
     "echo_effect_0_active",
     "echo_effect_0_remaining_ratio",
     "echo_effect_0_value_scaled",
@@ -133,7 +145,11 @@ def build_observation_channel_mapping(simulation: Any, max_party_slots: int = MA
                     f"slot_{slot_index}.mechanic_state_0": "aemeath_resonance_mode",
                     f"slot_{slot_index}.mechanic_state_1": "aemeath_form_state",
                     f"slot_{slot_index}.mechanic_state_2": "aemeath_seraphic_duo",
-                    f"slot_{slot_index}.mechanic_state_3": "aemeath_heavenfall_unbound",
+                    f"slot_{slot_index}.mechanic_state_3": "aemeath_heavenfall_unbound_or_stardust_resonance",
+                    f"slot_{slot_index}.mechanic_state_4": "aemeath_forte_enhancement_stacks",
+                    f"slot_{slot_index}.mechanic_state_5": "aemeath_trail_no_cost",
+                    f"slot_{slot_index}.mechanic_state_6": "aemeath_rupturous_trail",
+                    f"slot_{slot_index}.mechanic_state_7": "aemeath_fusion_trail",
                     f"slot_{slot_index}.echo_effect_0": "aemeath_trailblazing_star_5set",
                     f"slot_{slot_index}.tune_response_0": "aemeath_starburst",
                 }
@@ -300,6 +316,14 @@ def _mechanic_channel_values(
         mode_value = 1.0 if mode == "tune_rupture" else 0.5 if mode == "fusion_burst" else 0.0
         seraphic_remaining = float(character_state.get("seraphic_duo_remaining", 0.0) or 0.0)
         heavenfall_remaining = float(character_state.get("heavenfall_unbound_remaining", 0.0) or 0.0)
+        stardust_remaining = float(character_state.get("stardust_resonance_remaining", 0.0) or 0.0)
+        trail_remaining = float(character_state.get("rupturous_trail_remaining", 0.0) or 0.0)
+        fusion_trail_remaining = float(character_state.get("fusion_trail_remaining", 0.0) or 0.0)
+        trail_max = float(character_state.get("rupturous_trail_max_stacks", 5.0) or 5.0)
+        fusion_trail_max = float(character_state.get("fusion_trail_max_stacks", 5.0) or 5.0)
+        forte_remaining = float(character_state.get("forte_enhancement_remaining", 0.0) or 0.0)
+        forte_max = float(character_state.get("forte_enhancement_max_stacks", 2.0) or 2.0)
+        trail_no_cost_remaining = float(character_state.get("trail_no_cost_remaining", 0.0) or 0.0)
         return [
             _bool(mode != "unresolved"),
             0.0,
@@ -310,9 +334,21 @@ def _mechanic_channel_values(
             _bool(seraphic_remaining > 0.0),
             _ratio(seraphic_remaining, 5.0),
             _ratio(float(character_state.get("synchronization_rate", 0.0) or 0.0), 200.0),
-            _bool(character_state.get("heavenfall_unbound", False)),
-            _ratio(heavenfall_remaining, 60.0),
+            _bool(character_state.get("heavenfall_unbound", False) or stardust_remaining > 0.0),
+            _ratio(max(heavenfall_remaining, stardust_remaining), 60.0),
             _ratio(float(character_state.get("resonance_rate", 0.0) or 0.0), 4.0),
+            _bool(float(character_state.get("forte_enhancement_stacks", 0.0) or 0.0) > 0.0),
+            _ratio(forte_remaining, 30.0),
+            _ratio(float(character_state.get("forte_enhancement_stacks", 0.0) or 0.0), forte_max),
+            _bool(trail_no_cost_remaining > 0.0),
+            _ratio(trail_no_cost_remaining, 30.0),
+            _bool(trail_no_cost_remaining > 0.0),
+            _bool(float(character_state.get("rupturous_trail_stacks", 0.0) or 0.0) > 0.0),
+            _ratio(trail_remaining, 30.0),
+            _ratio(float(character_state.get("rupturous_trail_stacks", 0.0) or 0.0), trail_max),
+            _bool(float(character_state.get("fusion_trail_stacks", 0.0) or 0.0) > 0.0),
+            _ratio(fusion_trail_remaining, 30.0),
+            _ratio(float(character_state.get("fusion_trail_stacks", 0.0) or 0.0), fusion_trail_max),
         ]
     if character_id == "mornye":
         syntony_remaining = float(character_state.get("syntony_field_remaining", 0.0) or 0.0)
@@ -333,8 +369,20 @@ def _mechanic_channel_values(
             _bool(rest_mass > 0.0 or character_state.get("mode") == "wide_field_observation"),
             _ratio(float(character_state.get("wide_field_observation_remaining", 0.0) or 0.0), 30.0),
             rest_mass_ratio if rest_mass_ratio > 0.0 else _bool(character_state.get("mode") == "wide_field_observation"),
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
         ]
-    return [0.0 for _ in range(12)]
+    return [0.0 for _ in range(24)]
 
 
 def _echo_channel_values(simulation: Any, character_id: str) -> list[float]:

@@ -91,6 +91,10 @@ def test_labels_shape_and_metadata() -> None:
     assert env.observation_space.shape == (len(labels),)
     assert "global.target_marker_0" in metadata["observation_channel_mapping"]
     assert "global.target_marker_1" in metadata["observation_channel_mapping"]
+    assert channel_for(env, "aemeath_forte_enhancement_stacks") == "slot_1.mechanic_state_4"
+    assert channel_for(env, "aemeath_trail_no_cost") == "slot_1.mechanic_state_5"
+    assert channel_for(env, "aemeath_rupturous_trail") == "slot_1.mechanic_state_6"
+    assert channel_for(env, "aemeath_fusion_trail") == "slot_1.mechanic_state_7"
     assert metadata["observation_slot_mapping"]["slot_0"] == "mornye"
     assert metadata["observation_slot_mapping"]["slot_1"] == "aemeath"
 

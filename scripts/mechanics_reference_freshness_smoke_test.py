@@ -37,11 +37,24 @@ def main() -> None:
         "everbright polestar",
         "tune break",
         "starburst",
+        "forte circuit",
+        "seraphic duet follow-up",
+        "source-gated generated mechanic damage",
+        "1.0935",
+        "forte enhancement",
     ):
         assert phrase in aemeath_text, f"Aemeath reference missing {phrase}"
     assert "trailblazing" not in aemeath_excluded, "Trailblazing Star should not be listed as excluded"
     assert "everbright" not in aemeath_excluded, "Everbright Polestar should not be listed as excluded"
     assert "starburst" not in aemeath_excluded, "Starburst should not be listed as excluded"
+    assert "source-gated generated mechanic damage infrastructure" in _text(aemeath["scope"].get("included", []))
+    assert aemeath["seraphic_duet_followup_damage"]["implementation_status"] == "implemented_workbook_confirmed"
+    assert aemeath["seraphic_duet_followup_damage"]["source_status"] == "workbook_confirmed"
+    assert aemeath["generated_mechanic_damage"]["implementation_status"] == "generic_runtime_infrastructure"
+    assert "data/character_mechanic_effects/aemeath_forte_circuit.json" in _text(aemeath["forte_circuit"])
+    assert "external simulator websites" in _text(aemeath["source_gated_implementation"])
+    assert "fusion burst" in _text(aemeath["remaining_unresolved_mechanics"])
+    assert "c6" in _text(aemeath["remaining_unresolved_mechanics"])
 
     mornye_text = _text(mornye)
     for phrase in (

@@ -1,8 +1,16 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Any
 
 from characters.base import CharacterMechanic
+from simulator.generated_damage import GeneratedDamagePacket, packet_from_mapping
+from simulator.mechanic_events import aemeath_resonance_mode_from_config
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+FORTE_CONFIG_PATH = PROJECT_ROOT / "data" / "character_mechanic_effects" / "aemeath_forte_circuit.json"
 
 
 class AemeathMechanic(CharacterMechanic):
@@ -26,6 +34,30 @@ class AemeathMechanic(CharacterMechanic):
         "sync_strike_window_type": None,
         "sync_strike_window_remaining": 0,
         "overdrive_form_switch_window_remaining": 0,
+        "rupturous_trail_stacks": 0,
+        "rupturous_trail_remaining": 0.0,
+        "rupturous_trail_max_stacks": 5,
+        "fusion_trail_stacks": 0,
+        "fusion_trail_remaining": 0.0,
+        "fusion_trail_max_stacks": 5,
+        "forte_enhancement_stacks": 0,
+        "forte_enhancement_remaining": 0.0,
+        "forte_enhancement_max_stacks": 2,
+        "trail_no_cost_remaining": 0.0,
+        "last_seraphic_duet_consumed_rupturous_trail_stacks": 0,
+        "last_seraphic_duet_consumed_fusion_trail_stacks": 0,
+        "last_seraphic_duet_generated_damage": 0.0,
+        "last_seraphic_duet_followup_variant": None,
+        "last_seraphic_duet_followup_repeat_count": 0,
+        "last_seraphic_duet_followup_multiplier": 0.0,
+        "last_seraphic_duet_followup_damage": 0.0,
+        "last_seraphic_duet_followup_source_rows": [],
+        "last_seraphic_duet_followup_source_status": None,
+        "last_seraphic_duet_forte_enhancement_stacks_before": 0,
+        "last_seraphic_duet_forte_enhancement_stacks_consumed": 0,
+        "last_seraphic_duet_forte_enhancement_stacks_after": 0,
+        "last_seraphic_duet_trail_no_cost_consumed": False,
+        "forte_unresolved_runtime_notes": [],
     }
 
     _ARMAMENT_MERGE_WINDOW_ACTIONS = {
@@ -135,6 +167,86 @@ class AemeathMechanic(CharacterMechanic):
             return 3.0
         return 1.0
 
+    def get_generated_damage_packets(
+        self,
+        state: Any,
+        action: Any,
+        *,
+        action_time: float,
+        combat_time_cost: float,
+        combat_start_time: float,
+        characters: dict[str, Any],
+        buffs: dict[str, Any],
+        force_active_buff_ids: set[str],
+        mechanic_event_log_fields: dict[str, Any],
+        echo_set_log_fields: dict[str, Any],
+        weapon_definitions: dict[str, Any],
+    ) -> list[GeneratedDamagePacket]:
+        data = self._state(state)
+        data["last_seraphic_duet_generated_damage"] = 0.0
+        data["last_seraphic_duet_followup_variant"] = None
+        data["last_seraphic_duet_followup_repeat_count"] = 0
+        data["last_seraphic_duet_followup_multiplier"] = 0.0
+        data["last_seraphic_duet_followup_damage"] = 0.0
+        data["last_seraphic_duet_followup_source_rows"] = []
+        data["last_seraphic_duet_followup_source_status"] = None
+        data["last_seraphic_duet_consumed_rupturous_trail_stacks"] = 0
+        data["last_seraphic_duet_consumed_fusion_trail_stacks"] = 0
+        data["last_seraphic_duet_forte_enhancement_stacks_before"] = int(data.get("forte_enhancement_stacks", 0) or 0)
+        data["last_seraphic_duet_forte_enhancement_stacks_consumed"] = 0
+        data["last_seraphic_duet_forte_enhancement_stacks_after"] = int(data.get("forte_enhancement_stacks", 0) or 0)
+        data["last_seraphic_duet_trail_no_cost_consumed"] = False
+        if action.id not in {"aemeath_seraphic_duet_overturn", "aemeath_seraphic_duet_encore"}:
+            return []
+
+        mode = aemeath_resonance_mode_from_config(getattr(state, "mechanics_config", {}) or {})
+        config = self._forte_config()
+        mode_config = ((config.get("modes") or {}).get(mode) or {}) if isinstance(config, dict) else {}
+        followups = list(mode_config.get("seraphic_duet_followups", []))
+        if not followups:
+            note = f"aemeath_forte_{mode}_seraphic_duet_followup_unresolved_no_runtime_effect"
+            data["forte_unresolved_runtime_notes"] = sorted(set([*data.get("forte_unresolved_runtime_notes", []), note]))
+            data["last_seraphic_duet_followup_source_status"] = "unresolved_no_runtime_effect"
+            return []
+
+        enhanced_available = int(data.get("forte_enhancement_stacks", 0) or 0) > 0
+        wanted_variant = "enhanced" if enhanced_available else "normal"
+        packet_def = next((item for item in followups if item.get("variant") == wanted_variant), None)
+        if packet_def is None:
+            packet_def = next((item for item in followups if item.get("variant") == "normal"), None)
+        if packet_def is None:
+            return []
+
+        packet_data = dict(packet_def)
+        packet_data["source_action_id"] = action.id
+        packet = packet_from_mapping(packet_data)
+        packets = [packet]
+        data["last_seraphic_duet_followup_variant"] = packet.variant
+        data["last_seraphic_duet_followup_repeat_count"] = packet.repeat_count
+        data["last_seraphic_duet_followup_multiplier"] = float(packet.source_multiplier or packet.tune_multiplier or 0.0)
+        data["last_seraphic_duet_followup_source_rows"] = list(packet.source_rows)
+        data["last_seraphic_duet_followup_source_status"] = packet.source_status
+        if packet.variant == "enhanced" and packet.runtime_applicable:
+            before = int(data.get("forte_enhancement_stacks", 0) or 0)
+            data["forte_enhancement_stacks"] = max(0, before - 1)
+            data["last_seraphic_duet_forte_enhancement_stacks_before"] = before
+            data["last_seraphic_duet_forte_enhancement_stacks_consumed"] = 1 if before > 0 else 0
+            data["last_seraphic_duet_forte_enhancement_stacks_after"] = int(data.get("forte_enhancement_stacks", 0) or 0)
+        if float(data.get("trail_no_cost_remaining", 0.0) or 0.0) > 0.0:
+            data["trail_no_cost_remaining"] = 0.0
+            data["last_seraphic_duet_trail_no_cost_consumed"] = True
+        if not any(packet.runtime_applicable for packet in packets):
+            data["forte_unresolved_runtime_notes"] = sorted(
+                set(
+                    [
+                        *data.get("forte_unresolved_runtime_notes", []),
+                        "aemeath_seraphic_duet_followup_damage_unresolved_no_runtime_effect",
+                    ]
+                )
+            )
+            data["last_seraphic_duet_followup_source_status"] = "unresolved_no_runtime_effect"
+        return packets
+
     def resolve_incoming_qte_transition_action(
         self,
         character_state: Any,
@@ -213,6 +325,9 @@ class AemeathMechanic(CharacterMechanic):
             self._clear_sync_strike_window(data)
         if action.id == "aemeath_liberation_overdrive":
             data["overdrive_form_switch_window_remaining"] = 1
+            data["forte_enhancement_stacks"] = int(data.get("forte_enhancement_max_stacks", 2) or 2)
+            data["forte_enhancement_remaining"] = 30.0
+            data["trail_no_cost_remaining"] = 30.0
         else:
             data["overdrive_form_switch_window_remaining"] = 0
         if consumed_instant_response:
@@ -222,6 +337,15 @@ class AemeathMechanic(CharacterMechanic):
             data["instant_response_consumed"] = False
         if data["heavenfall_unbound_remaining"] <= 0.0:
             data["instant_response_consumed"] = False
+
+        if action.id in {"aemeath_seraphic_duet_overturn", "aemeath_seraphic_duet_encore"}:
+            data["last_seraphic_duet_generated_damage"] = float(
+                getattr(result, "aemeath_seraphic_duet_followup_damage", 0.0) or 0.0
+            )
+            data["last_seraphic_duet_followup_damage"] = data["last_seraphic_duet_generated_damage"]
+            data["last_seraphic_duet_followup_source_status"] = getattr(
+                result, "aemeath_seraphic_duet_followup_source_status", None
+            )
 
         self._clamp(data)
         self._derive_state(data)
@@ -237,6 +361,20 @@ class AemeathMechanic(CharacterMechanic):
             data["stardust_resonance_remaining"] = max(0.0, data["stardust_resonance_remaining"] - elapsed_time)
         if data["starlume_acceleration_remaining"] > 0.0:
             data["starlume_acceleration_remaining"] = max(0.0, data["starlume_acceleration_remaining"] - elapsed_time)
+        if data["forte_enhancement_remaining"] > 0.0:
+            data["forte_enhancement_remaining"] = max(0.0, data["forte_enhancement_remaining"] - elapsed_time)
+            if data["forte_enhancement_remaining"] <= 0.0:
+                data["forte_enhancement_stacks"] = 0
+        if data["trail_no_cost_remaining"] > 0.0:
+            data["trail_no_cost_remaining"] = max(0.0, data["trail_no_cost_remaining"] - elapsed_time)
+        if data["rupturous_trail_remaining"] > 0.0:
+            data["rupturous_trail_remaining"] = max(0.0, data["rupturous_trail_remaining"] - elapsed_time)
+            if data["rupturous_trail_remaining"] <= 0.0:
+                data["rupturous_trail_stacks"] = 0
+        if data["fusion_trail_remaining"] > 0.0:
+            data["fusion_trail_remaining"] = max(0.0, data["fusion_trail_remaining"] - elapsed_time)
+            if data["fusion_trail_remaining"] <= 0.0:
+                data["fusion_trail_stacks"] = 0
         self._derive_state(data)
 
     def get_observation_values(self, state: Any) -> list[float]:
@@ -293,6 +431,31 @@ class AemeathMechanic(CharacterMechanic):
             "sync_strike_window_remaining": data["sync_strike_window_remaining"],
             "next_resonance_skill_variant": data["sync_strike_window_type"],
             "overdrive_form_switch_window_remaining": data["overdrive_form_switch_window_remaining"],
+            "rupturous_trail_stacks": data["rupturous_trail_stacks"],
+            "rupturous_trail_remaining": data["rupturous_trail_remaining"],
+            "rupturous_trail_max_stacks": data["rupturous_trail_max_stacks"],
+            "fusion_trail_stacks": data["fusion_trail_stacks"],
+            "fusion_trail_remaining": data["fusion_trail_remaining"],
+            "fusion_trail_max_stacks": data["fusion_trail_max_stacks"],
+            "forte_enhancement_stacks": data["forte_enhancement_stacks"],
+            "forte_enhancement_remaining": data["forte_enhancement_remaining"],
+            "forte_enhancement_max_stacks": data["forte_enhancement_max_stacks"],
+            "trail_no_cost_remaining": data["trail_no_cost_remaining"],
+            "last_seraphic_duet_consumed_rupturous_trail_stacks": data["last_seraphic_duet_consumed_rupturous_trail_stacks"],
+            "last_seraphic_duet_consumed_fusion_trail_stacks": data["last_seraphic_duet_consumed_fusion_trail_stacks"],
+            "last_seraphic_duet_generated_damage": data["last_seraphic_duet_generated_damage"],
+            "last_seraphic_duet_followup_variant": data["last_seraphic_duet_followup_variant"],
+            "last_seraphic_duet_followup_repeat_count": data["last_seraphic_duet_followup_repeat_count"],
+            "last_seraphic_duet_followup_multiplier": data["last_seraphic_duet_followup_multiplier"],
+            "last_seraphic_duet_followup_damage": data["last_seraphic_duet_followup_damage"],
+            "last_seraphic_duet_followup_source_rows": list(data.get("last_seraphic_duet_followup_source_rows", [])),
+            "last_seraphic_duet_followup_source_status": data["last_seraphic_duet_followup_source_status"],
+            "last_seraphic_duet_forte_enhancement_stacks_before": data["last_seraphic_duet_forte_enhancement_stacks_before"],
+            "last_seraphic_duet_forte_enhancement_stacks_consumed": data["last_seraphic_duet_forte_enhancement_stacks_consumed"],
+            "last_seraphic_duet_forte_enhancement_stacks_after": data["last_seraphic_duet_forte_enhancement_stacks_after"],
+            "last_seraphic_duet_trail_no_cost_consumed": data["last_seraphic_duet_trail_no_cost_consumed"],
+            "forte_unresolved_runtime_notes": list(data.get("forte_unresolved_runtime_notes", [])),
+            "single_target_aemeath_forte_trail_state": True,
         }
 
     def _state(self, state: Any) -> dict[str, Any]:
@@ -317,6 +480,61 @@ class AemeathMechanic(CharacterMechanic):
             data["sync_strike_window_type"] = None
         data["sync_strike_window_remaining"] = 1 if data["sync_strike_window_type"] else 0
         data["overdrive_form_switch_window_remaining"] = 1 if int(data["overdrive_form_switch_window_remaining"]) > 0 else 0
+        data["rupturous_trail_max_stacks"] = max(1, int(data.get("rupturous_trail_max_stacks", 5) or 5))
+        data["fusion_trail_max_stacks"] = max(1, int(data.get("fusion_trail_max_stacks", 5) or 5))
+        data["forte_enhancement_max_stacks"] = max(1, int(data.get("forte_enhancement_max_stacks", 2) or 2))
+        data["forte_enhancement_stacks"] = max(
+            0,
+            min(data["forte_enhancement_max_stacks"], int(data.get("forte_enhancement_stacks", 0) or 0)),
+        )
+        data["forte_enhancement_remaining"] = max(0.0, float(data.get("forte_enhancement_remaining", 0.0) or 0.0))
+        if data["forte_enhancement_remaining"] <= 0.0:
+            data["forte_enhancement_stacks"] = 0
+        data["trail_no_cost_remaining"] = max(0.0, float(data.get("trail_no_cost_remaining", 0.0) or 0.0))
+        data["rupturous_trail_stacks"] = max(
+            0,
+            min(data["rupturous_trail_max_stacks"], int(data.get("rupturous_trail_stacks", 0) or 0)),
+        )
+        data["fusion_trail_stacks"] = max(
+            0,
+            min(data["fusion_trail_max_stacks"], int(data.get("fusion_trail_stacks", 0) or 0)),
+        )
+        data["rupturous_trail_remaining"] = max(0.0, float(data.get("rupturous_trail_remaining", 0.0) or 0.0))
+        data["fusion_trail_remaining"] = max(0.0, float(data.get("fusion_trail_remaining", 0.0) or 0.0))
+        data["last_seraphic_duet_consumed_rupturous_trail_stacks"] = max(
+            0, int(data.get("last_seraphic_duet_consumed_rupturous_trail_stacks", 0) or 0)
+        )
+        data["last_seraphic_duet_consumed_fusion_trail_stacks"] = max(
+            0, int(data.get("last_seraphic_duet_consumed_fusion_trail_stacks", 0) or 0)
+        )
+        data["last_seraphic_duet_generated_damage"] = max(
+            0.0, float(data.get("last_seraphic_duet_generated_damage", 0.0) or 0.0)
+        )
+        data["last_seraphic_duet_followup_repeat_count"] = max(
+            0, int(data.get("last_seraphic_duet_followup_repeat_count", 0) or 0)
+        )
+        data["last_seraphic_duet_followup_multiplier"] = max(
+            0.0, float(data.get("last_seraphic_duet_followup_multiplier", 0.0) or 0.0)
+        )
+        data["last_seraphic_duet_followup_damage"] = max(
+            0.0, float(data.get("last_seraphic_duet_followup_damage", 0.0) or 0.0)
+        )
+        if not isinstance(data.get("last_seraphic_duet_followup_source_rows"), list):
+            data["last_seraphic_duet_followup_source_rows"] = []
+        data["last_seraphic_duet_forte_enhancement_stacks_before"] = max(
+            0, int(data.get("last_seraphic_duet_forte_enhancement_stacks_before", 0) or 0)
+        )
+        data["last_seraphic_duet_forte_enhancement_stacks_consumed"] = max(
+            0, int(data.get("last_seraphic_duet_forte_enhancement_stacks_consumed", 0) or 0)
+        )
+        data["last_seraphic_duet_forte_enhancement_stacks_after"] = max(
+            0, int(data.get("last_seraphic_duet_forte_enhancement_stacks_after", 0) or 0)
+        )
+        data["last_seraphic_duet_trail_no_cost_consumed"] = bool(
+            data.get("last_seraphic_duet_trail_no_cost_consumed", False)
+        )
+        if not isinstance(data.get("forte_unresolved_runtime_notes"), list):
+            data["forte_unresolved_runtime_notes"] = []
 
     def _derive_state(self, data: dict[str, Any]) -> None:
         data["heavenfall_unbound"] = data["heavenfall_unbound_remaining"] > 0.0
@@ -346,3 +564,9 @@ class AemeathMechanic(CharacterMechanic):
             and data["synchronization_rate"] >= 200.0
             and data["resonance_rate"] >= 4.0
         )
+
+    def _forte_config(self) -> dict[str, Any]:
+        if not FORTE_CONFIG_PATH.exists():
+            return {}
+        with FORTE_CONFIG_PATH.open("r", encoding="utf-8-sig") as file:
+            return json.load(file)

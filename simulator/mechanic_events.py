@@ -22,10 +22,10 @@ AEMEATH_RESONANCE_MODE_TRANSITION_TRIGGER_ACTION_IDS = [
     "aemeath_qte_intro_mech",
 ]
 UNSUPPORTED_AEMEATH_FOLLOWUP_MECHANICS = [
-    "fusion_burst_explosion_damage",
-    "fusion_trail",
-    "rupturous_trail",
-    "seraphic_duet_extra_tune_rupture_damage",
+    "fusion_burst_explosion_runtime_damage_without_source_confirmed_formula",
+    "fusion_trail_source_confirmed_stack_mutation",
+    "rupturous_trail_source_confirmed_stack_mutation",
+    "seraphic_duet_extra_tune_rupture_runtime_damage_without_source_confirmed_formula",
     "seraphic_duet_fusion_burst_multiplier",
     "stardust_resonance_extra_effects",
 ]

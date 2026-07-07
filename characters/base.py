@@ -36,6 +36,23 @@ class CharacterMechanic:
     def get_action_log_fields(self, state: Any, action: Any, characters: dict[str, Any] | None = None) -> dict[str, Any]:
         return {}
 
+    def get_generated_damage_packets(
+        self,
+        state: Any,
+        action: Any,
+        *,
+        action_time: float,
+        combat_time_cost: float,
+        combat_start_time: float,
+        characters: dict[str, Any],
+        buffs: dict[str, Any],
+        force_active_buff_ids: set[str],
+        mechanic_event_log_fields: dict[str, Any],
+        echo_set_log_fields: dict[str, Any],
+        weapon_definitions: dict[str, Any],
+    ) -> list[Any]:
+        return []
+
     def after_action(self, state: Any, action: Any, result: Any) -> None:
         pass
 

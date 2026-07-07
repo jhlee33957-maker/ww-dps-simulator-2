@@ -29,6 +29,7 @@ from simulator.echo_sets import (
     echo_set_base_log_fields,
     merge_echo_set_logs,
 )
+from simulator.generated_damage import calculate_generated_damage_packet
 from simulator.mechanic_events import preview_mechanic_event_trigger, process_mechanic_event_triggers
 from simulator.models import ActionData, ActionResult, BuffData, CharacterData, CombatState, HitData, TimelineEntry
 from simulator.resource_system import apply_resource_changes, can_pay_resources
@@ -798,10 +799,135 @@ def execute_action(
     )
     _sync_hit_detail_runtime_event_logs(hit_details, echo_set_log_fields, mechanic_event_log_fields)
 
+    generated_packets = (
+        mechanic.get_generated_damage_packets(
+            state,
+            action,
+            action_time=action_time,
+            combat_time_cost=combat_time_cost,
+            combat_start_time=combat_start_time,
+            characters=characters,
+            buffs=buffs,
+            force_active_buff_ids=force_active_buff_ids,
+            mechanic_event_log_fields=mechanic_event_log_fields,
+            echo_set_log_fields=echo_set_log_fields,
+            weapon_definitions=weapon_definitions or {},
+        )
+        if mechanic is not None and hasattr(mechanic, "get_generated_damage_packets")
+        else []
+    )
+    generated_mechanic_damage = 0.0
+    generated_mechanic_events: list[dict[str, Any]] = []
+    generated_mechanic_hit_count = 0
+    for packet in generated_packets:
+        packet_damage, packet_details = calculate_generated_damage_packet(
+            packet,
+            source_action=action,
+            state=state,
+            characters=characters,
+            buffs=buffs,
+            force_active_buff_ids=force_active_buff_ids,
+        )
+        event = {
+            "id": packet.id,
+            "name": packet.name,
+            "source_character_id": packet.source_character_id,
+            "source_action_id": packet.source_action_id,
+            "formula_type": packet.formula_type,
+            "source_status": packet.source_status,
+            "source_ref": packet.source_ref,
+            "source_rows": list(packet.source_rows),
+            "repeat_count": packet.repeat_count,
+            "source_multiplier": packet.source_multiplier if packet.source_multiplier is not None else packet.tune_multiplier,
+            "tune_multiplier": packet.tune_multiplier,
+            "variant": packet.variant,
+            "hit_interval_frames": packet.hit_interval_frames,
+            "runtime_applicable": packet.runtime_applicable,
+            "damage": packet_damage,
+            "notes": packet.notes,
+        }
+        generated_mechanic_events.append(event)
+        if packet_damage <= 0.0:
+            continue
+        generated_mechanic_damage += packet_damage
+        generated_mechanic_hit_count += len(packet_details)
+        for detail in packet_details:
+            hit_details.append(detail)
+            category = str(detail.get("damage_category") or packet.formula_type)
+            hit_damage_by_category[category] = hit_damage_by_category.get(category, 0.0) + float(
+                detail.get("damage", 0.0) or 0.0
+            )
+    if generated_mechanic_events:
+        mechanic_log_fields.update(
+            {
+                "generated_mechanic_damage": generated_mechanic_damage,
+                "generated_mechanic_damage_total": generated_mechanic_damage,
+                "generated_mechanic_hit_count": generated_mechanic_hit_count,
+                "generated_mechanic_damage_events": generated_mechanic_events,
+            }
+        )
+    if action.character_id == "aemeath" and action.id in {"aemeath_seraphic_duet_overturn", "aemeath_seraphic_duet_encore"}:
+        aemeath_state = state.character_mechanics_state.get("aemeath", {})
+        packet_source_rows = sorted(
+            {
+                int(row)
+                for event in generated_mechanic_events
+                for row in event.get("source_rows", [])
+            }
+        )
+        source_status = (
+            "workbook_confirmed"
+            if generated_mechanic_damage > 0.0
+            else "unresolved_no_runtime_effect"
+            if generated_mechanic_events
+            else None
+        )
+        mechanic_log_fields.update(
+            {
+                "aemeath_forte_generated_damage": generated_mechanic_damage,
+                "aemeath_forte_generated_damage_total": generated_mechanic_damage,
+                "aemeath_seraphic_duet_followup_triggered": generated_mechanic_damage > 0.0,
+                "aemeath_seraphic_duet_followup_damage": generated_mechanic_damage,
+                "aemeath_seraphic_duet_followup_source_status": source_status,
+                "aemeath_seraphic_duet_followup_mode": (
+                    "tune_rupture"
+                    if any("tune_rupture" in event.get("id", "") for event in generated_mechanic_events)
+                    else None
+                ),
+                "aemeath_seraphic_duet_followup_variant": aemeath_state.get("last_seraphic_duet_followup_variant"),
+                "aemeath_seraphic_duet_followup_repeat_count": int(
+                    aemeath_state.get("last_seraphic_duet_followup_repeat_count", 0) or 0
+                ),
+                "aemeath_seraphic_duet_followup_multiplier": float(
+                    aemeath_state.get("last_seraphic_duet_followup_multiplier", 0.0) or 0.0
+                ),
+                "aemeath_rupturous_trail_stacks_before": int(aemeath_state.get("rupturous_trail_stacks", 0) or 0),
+                "aemeath_rupturous_trail_stacks_consumed": 0,
+                "aemeath_rupturous_trail_stacks_after": int(aemeath_state.get("rupturous_trail_stacks", 0) or 0),
+                "aemeath_forte_enhancement_stacks_before": int(
+                    aemeath_state.get("last_seraphic_duet_forte_enhancement_stacks_before", 0) or 0
+                ),
+                "aemeath_forte_enhancement_stacks_consumed": int(
+                    aemeath_state.get("last_seraphic_duet_forte_enhancement_stacks_consumed", 0) or 0
+                ),
+                "aemeath_forte_enhancement_stacks_after": int(
+                    aemeath_state.get("last_seraphic_duet_forte_enhancement_stacks_after", 0) or 0
+                ),
+                "aemeath_trail_no_cost_consumed": bool(
+                    aemeath_state.get("last_seraphic_duet_trail_no_cost_consumed", False)
+                ),
+                "aemeath_stardust_resonance_active_for_followup": float(
+                    aemeath_state.get("stardust_resonance_remaining", 0.0) or 0.0
+                )
+                > 0.0,
+                "aemeath_seraphic_duet_followup_source_rows": packet_source_rows,
+            }
+        )
+
     if action.action_type == "swap" and action.character_id is not None:
         state.active_character_id = action.character_id
 
-    state.total_damage += direct_damage
+    state.total_damage += direct_damage + generated_mechanic_damage
     resource_change = None if truncated_by_combat_limit else apply_resource_changes(state, action, characters)
 
     state.current_time += action_time
@@ -815,7 +941,7 @@ def execute_action(
         anomaly_damage_by_type = {}
     state.total_damage += anomaly_tick_damage
 
-    total_action_damage = direct_damage + anomaly_tick_damage
+    total_action_damage = direct_damage + generated_mechanic_damage + anomaly_tick_damage
 
     if not truncated_by_combat_limit:
         for buff_id in action.applies_buffs:
@@ -909,6 +1035,13 @@ def execute_action(
     }
     weapon_effect_logs = list(echo_set_log_fields.get("weapon_effect_logs", []))
     primary_weapon_log = weapon_effect_logs[0] if weapon_effect_logs else {}
+    for generated_key in (
+        "generated_mechanic_damage",
+        "generated_mechanic_damage_total",
+        "generated_mechanic_hit_count",
+        "generated_mechanic_damage_events",
+    ):
+        mechanic_log_fields.pop(generated_key, None)
 
     result = ActionResult(
         action_id=action.id,
@@ -930,6 +1063,10 @@ def execute_action(
         damage=total_action_damage,
         normal_damage=normal_damage,
         tune_break_damage=tune_break_damage,
+        generated_mechanic_damage=generated_mechanic_damage,
+        generated_mechanic_damage_total=generated_mechanic_damage,
+        generated_mechanic_hit_count=generated_mechanic_hit_count,
+        generated_mechanic_damage_events=generated_mechanic_events,
         direct_anomaly_damage=0.0,
         anomaly_tick_damage=anomaly_tick_damage,
         anomaly_damage=anomaly_tick_damage,
@@ -1137,6 +1274,8 @@ def execute_action(
                 "actor_character_id": actor_character_id,
                 "damage_before_cutoff": total_action_damage,
                 "damage_after_cutoff_excluded": damage_after_cutoff_excluded,
+                "generated_mechanic_damage": generated_mechanic_damage,
+                "generated_mechanic_damage_events": generated_mechanic_events,
                 **action_damage_bonus_context,
                 **mechanic_event_log_fields,
                 **echo_set_log_fields,
@@ -1185,6 +1324,28 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         damage=result.damage,
         normal_damage=result.normal_damage,
         tune_break_damage=result.tune_break_damage,
+        generated_mechanic_damage=result.generated_mechanic_damage,
+        generated_mechanic_damage_total=result.generated_mechanic_damage_total,
+        generated_mechanic_hit_count=result.generated_mechanic_hit_count,
+        generated_mechanic_damage_events=result.generated_mechanic_damage_events,
+        aemeath_forte_generated_damage=result.aemeath_forte_generated_damage,
+        aemeath_forte_generated_damage_total=result.aemeath_forte_generated_damage_total,
+        aemeath_seraphic_duet_followup_triggered=result.aemeath_seraphic_duet_followup_triggered,
+        aemeath_seraphic_duet_followup_damage=result.aemeath_seraphic_duet_followup_damage,
+        aemeath_seraphic_duet_followup_source_status=result.aemeath_seraphic_duet_followup_source_status,
+        aemeath_seraphic_duet_followup_mode=result.aemeath_seraphic_duet_followup_mode,
+        aemeath_seraphic_duet_followup_variant=result.aemeath_seraphic_duet_followup_variant,
+        aemeath_seraphic_duet_followup_repeat_count=result.aemeath_seraphic_duet_followup_repeat_count,
+        aemeath_seraphic_duet_followup_multiplier=result.aemeath_seraphic_duet_followup_multiplier,
+        aemeath_rupturous_trail_stacks_before=result.aemeath_rupturous_trail_stacks_before,
+        aemeath_rupturous_trail_stacks_consumed=result.aemeath_rupturous_trail_stacks_consumed,
+        aemeath_rupturous_trail_stacks_after=result.aemeath_rupturous_trail_stacks_after,
+        aemeath_forte_enhancement_stacks_before=result.aemeath_forte_enhancement_stacks_before,
+        aemeath_forte_enhancement_stacks_consumed=result.aemeath_forte_enhancement_stacks_consumed,
+        aemeath_forte_enhancement_stacks_after=result.aemeath_forte_enhancement_stacks_after,
+        aemeath_trail_no_cost_consumed=result.aemeath_trail_no_cost_consumed,
+        aemeath_stardust_resonance_active_for_followup=result.aemeath_stardust_resonance_active_for_followup,
+        aemeath_seraphic_duet_followup_source_rows=result.aemeath_seraphic_duet_followup_source_rows,
         direct_anomaly_damage=result.direct_anomaly_damage,
         anomaly_tick_damage=result.anomaly_tick_damage,
         anomaly_damage=result.anomaly_damage,

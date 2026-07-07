@@ -1,0 +1,167 @@
+{
+  "character_id": "aemeath",
+  "version": "aemeath_forte_circuit_v2_source_confirmed_tune_rupture",
+  "source_policy": "Workbook/extracted/report sources only. External simulator websites are not used.",
+  "source_audit": "reports/aemeath_forte_circuit_source_audit.md",
+  "source_audit_json": "data/extracted/aemeath_forte_circuit_source_audit.json",
+  "simplified_assumptions": [
+    "single_target_aemeath_forte_trail_state",
+    "source-confirmed Seraphic Duet Tune Rupture follow-up uses existing tune_response base-10000 formula path"
+  ],
+  "modes": {
+    "tune_rupture": {
+      "trail_state": "rupturous_trail",
+      "seraphic_duet_followups": [
+        {
+          "id": "aemeath_seraphic_duet_tune_rupture_followup",
+          "label": "强化E-震谐",
+          "source_character_id": "aemeath",
+          "source_action_ids": [
+            "aemeath_seraphic_duet_overturn",
+            "aemeath_seraphic_duet_encore"
+          ],
+          "name": "Seraphic Duet Tune Rupture Follow-up",
+          "variant": "normal",
+          "formula_type": "tune_response",
+          "damage_element": "fusion",
+          "damage_element_source_value": 2,
+          "damage_type_source_value": 12,
+          "related_property_source_value": 10000099,
+          "damage_special_weakness_damage_ratio": 10000,
+          "damage_bonus_category": null,
+          "scaling_stat": "none",
+          "normal_damage_multiplier": 0.0,
+          "tune_multiplier": 1.0935,
+          "source_multiplier": 1.0935,
+          "repeat_count": 5,
+          "hit_interval_frames": 4,
+          "base_value": 10000.0,
+          "additional_tune_boost": 0.0,
+          "applied_damage_taken_amp_mode": "current_target_marker",
+          "time_offset": 0.0,
+          "tags": [
+            "aemeath_forte",
+            "seraphic_duet_followup",
+            "tune_rupture",
+            "workbook_confirmed"
+          ],
+          "source_status": "workbook_confirmed",
+          "implementation_status": "workbook_confirmed",
+          "source_ref": "action rows 2786/2931 and dmg rows 2578/2628",
+          "source_rows": [
+            2786,
+            2931,
+            2578,
+            2628
+          ],
+          "source_refs": {
+            "action_rows": [
+              2786,
+              2931
+            ],
+            "dmg_rows": [
+              2578,
+              2628
+            ]
+          },
+          "confirmed_source_facts": [
+            "action rows 2786 and 2931 confirm normal follow-up repeat_count 5 and hit_interval_frames 4",
+            "dmg rows 2578 and 2628 confirm RateLv_10 10935, runtime multiplier 1.0935, Damage.Type 12, and RelatedProperty 10000099"
+          ],
+          "notes": "Do not apply normal elemental/category bonuses or Everbright modifiers. Current target damage-taken amp may apply through the tune_response formula path."
+        },
+        {
+          "id": "aemeath_seraphic_duet_tune_rupture_enhanced_followup",
+          "label": "强化E-震谐增幅",
+          "source_character_id": "aemeath",
+          "source_action_ids": [
+            "aemeath_seraphic_duet_overturn",
+            "aemeath_seraphic_duet_encore"
+          ],
+          "name": "Seraphic Duet Tune Rupture Enhanced Follow-up",
+          "variant": "enhanced",
+          "formula_type": "tune_response",
+          "damage_element": "fusion",
+          "damage_element_source_value": 2,
+          "damage_type_source_value": 12,
+          "related_property_source_value": 10000099,
+          "damage_special_weakness_damage_ratio": 10000,
+          "damage_bonus_category": null,
+          "scaling_stat": "none",
+          "normal_damage_multiplier": 0.0,
+          "tune_multiplier": 1.0935,
+          "source_multiplier": 1.0935,
+          "repeat_count": 10,
+          "hit_interval_frames": 2,
+          "base_value": 10000.0,
+          "additional_tune_boost": 0.0,
+          "applied_damage_taken_amp_mode": "current_target_marker",
+          "time_offset": 0.0,
+          "tags": [
+            "aemeath_forte",
+            "seraphic_duet_followup",
+            "tune_rupture",
+            "workbook_confirmed"
+          ],
+          "source_status": "workbook_confirmed",
+          "implementation_status": "workbook_confirmed",
+          "source_ref": "action rows 2787/2932 and dmg rows 2579/2629",
+          "source_rows": [
+            2787,
+            2932,
+            2579,
+            2629
+          ],
+          "source_refs": {
+            "action_rows": [
+              2787,
+              2932
+            ],
+            "dmg_rows": [
+              2579,
+              2629
+            ]
+          },
+          "confirmed_source_facts": [
+            "action rows 2787 and 2932 confirm enhanced follow-up repeat_count 10 and hit_interval_frames 2",
+            "dmg rows 2579 and 2629 confirm RateLv_10 10935, runtime multiplier 1.0935, Damage.Type 12, and RelatedProperty 10000099"
+          ],
+          "notes": "Enhanced variant is selected by forte_enhancement_stacks, not directly by Stardust Resonance. Do not bake Interfered Marker into this source multiplier."
+        }
+      ],
+      "unresolved_entries": [
+        {
+          "name": "Rupturous Trail stack application",
+          "implementation_status": "scaffold_only",
+          "source_rows": [
+            2784,
+            2930
+          ],
+          "notes": "C6 target trail granting is not enabled for default S0 runtime. Source-backed S0 stack gain/removal beyond trail_no_cost metadata remains unresolved."
+        }
+      ]
+    },
+    "fusion_burst": {
+      "trail_state": "fusion_trail",
+      "seraphic_duet_followups": [],
+      "implementation_status": "scaffold_only_until_source_confirmed",
+      "unresolved_entries": [
+        {
+          "name": "Fusion Burst / Fusion Trail generated damage",
+          "implementation_status": "unresolved_no_runtime_effect",
+          "source_rows": [
+            2788,
+            2933
+          ],
+          "notes": "Fusion Burst trail/damage scaffold is present, but no runtime damage is applied without source-confirmed coefficient and formula type."
+        }
+      ]
+    }
+  },
+  "remaining_unresolved_mechanics": [
+    "Fusion Trail source-confirmed stack application and duration",
+    "Fusion Burst explosion/follow-up damage",
+    "C6 trail stack granting remains disabled for S0 default runtime",
+    "Multi-target trail tracking"
+  ]
+}
