@@ -1,0 +1,1352 @@
+{
+  "overall_status": "REVIEW_REQUIRED",
+  "workbook": "data\\source\\鸣潮动作数据汇总.xlsx",
+  "sheets": {
+    "action": "角色-女",
+    "dmg": "dmg"
+  },
+  "sections": [
+    {
+      "id": "aemeath_forte_followup",
+      "title": "Aemeath Forte / Seraphic Duet Tune Rupture Follow-up",
+      "status": "PASS",
+      "source_rows": [
+        "角色-女!2786",
+        "角色-女!2787",
+        "角色-女!2931",
+        "角色-女!2932",
+        "dmg!2578",
+        "dmg!2579",
+        "dmg!2628",
+        "dmg!2629"
+      ],
+      "checks": [
+        {
+          "name": "action row 2786 label",
+          "expected": "强化E-震谐",
+          "actual": "强化E-震谐",
+          "source": {
+            "ref": "角色-女!C2786",
+            "row": 2786,
+            "column": "C",
+            "raw_value": "强化E-震谐",
+            "display_value": "强化E-震谐"
+          },
+          "ok": true
+        },
+        {
+          "name": "action row 2786 repeat text",
+          "expected": true,
+          "actual": true,
+          "source": {
+            "ref": "角色-女!D2786",
+            "row": 2786,
+            "column": "D",
+            "raw_value": "=\"持续帧内每\"&ROUND(0.06*base!$B$2+(0.06*base!$B$2<=base!$C$2),0)&\"F进行一次判定，最多5次，每次随机命中1个目标\"",
+            "display_value": "持续帧内每4F进行一次判定，最多5次，每次随机命中1个目标"
+          },
+          "ok": true
+        },
+        {
+          "name": "action row 2786 interval text",
+          "expected": true,
+          "actual": true,
+          "source": {
+            "ref": "角色-女!D2786",
+            "row": 2786,
+            "column": "D",
+            "raw_value": "=\"持续帧内每\"&ROUND(0.06*base!$B$2+(0.06*base!$B$2<=base!$C$2),0)&\"F进行一次判定，最多5次，每次随机命中1个目标\"",
+            "display_value": "持续帧内每4F进行一次判定，最多5次，每次随机命中1个目标"
+          },
+          "ok": true
+        },
+        {
+          "name": "action row 2787 label",
+          "expected": "强化E-震谐增幅",
+          "actual": "强化E-震谐增幅",
+          "source": {
+            "ref": "角色-女!C2787",
+            "row": 2787,
+            "column": "C",
+            "raw_value": "强化E-震谐增幅",
+            "display_value": "强化E-震谐增幅"
+          },
+          "ok": true
+        },
+        {
+          "name": "action row 2787 repeat text",
+          "expected": true,
+          "actual": true,
+          "source": {
+            "ref": "角色-女!D2787",
+            "row": 2787,
+            "column": "D",
+            "raw_value": "=\"持续帧内每\"&ROUND(0.03*base!$B$2+(0.03*base!$B$2<=base!$C$2),0)&\"F进行一次判定，最多10次，每次随机命中1个目标\"",
+            "display_value": "持续帧内每2F进行一次判定，最多10次，每次随机命中1个目标"
+          },
+          "ok": true
+        },
+        {
+          "name": "action row 2787 interval text",
+          "expected": true,
+          "actual": true,
+          "source": {
+            "ref": "角色-女!D2787",
+            "row": 2787,
+            "column": "D",
+            "raw_value": "=\"持续帧内每\"&ROUND(0.03*base!$B$2+(0.03*base!$B$2<=base!$C$2),0)&\"F进行一次判定，最多10次，每次随机命中1个目标\"",
+            "display_value": "持续帧内每2F进行一次判定，最多10次，每次随机命中1个目标"
+          },
+          "ok": true
+        },
+        {
+          "name": "action row 2931 label",
+          "expected": "强化E-震谐",
+          "actual": "强化E-震谐",
+          "source": {
+            "ref": "角色-女!C2931",
+            "row": 2931,
+            "column": "C",
+            "raw_value": "强化E-震谐",
+            "display_value": "强化E-震谐"
+          },
+          "ok": true
+        },
+        {
+          "name": "action row 2931 repeat text",
+          "expected": true,
+          "actual": true,
+          "source": {
+            "ref": "角色-女!D2931",
+            "row": 2931,
+            "column": "D",
+            "raw_value": "=\"持续帧内每\"&ROUND(0.06*base!$B$2+(0.06*base!$B$2<=base!$C$2),0)&\"F进行一次判定，最多5次，每次随机命中1个目标\"",
+            "display_value": "持续帧内每4F进行一次判定，最多5次，每次随机命中1个目标"
+          },
+          "ok": true
+        },
+        {
+          "name": "action row 2931 interval text",
+          "expected": true,
+          "actual": true,
+          "source": {
+            "ref": "角色-女!D2931",
+            "row": 2931,
+            "column": "D",
+            "raw_value": "=\"持续帧内每\"&ROUND(0.06*base!$B$2+(0.06*base!$B$2<=base!$C$2),0)&\"F进行一次判定，最多5次，每次随机命中1个目标\"",
+            "display_value": "持续帧内每4F进行一次判定，最多5次，每次随机命中1个目标"
+          },
+          "ok": true
+        },
+        {
+          "name": "action row 2932 label",
+          "expected": "强化E-震谐增幅",
+          "actual": "强化E-震谐增幅",
+          "source": {
+            "ref": "角色-女!C2932",
+            "row": 2932,
+            "column": "C",
+            "raw_value": "强化E-震谐增幅",
+            "display_value": "强化E-震谐增幅"
+          },
+          "ok": true
+        },
+        {
+          "name": "action row 2932 repeat text",
+          "expected": true,
+          "actual": true,
+          "source": {
+            "ref": "角色-女!D2932",
+            "row": 2932,
+            "column": "D",
+            "raw_value": "=\"持续帧内每\"&ROUND(0.03*base!$B$2+(0.03*base!$B$2<=base!$C$2),0)&\"F进行一次判定，最多10次，每次随机命中1个目标\"",
+            "display_value": "持续帧内每2F进行一次判定，最多10次，每次随机命中1个目标"
+          },
+          "ok": true
+        },
+        {
+          "name": "action row 2932 interval text",
+          "expected": true,
+          "actual": true,
+          "source": {
+            "ref": "角色-女!D2932",
+            "row": 2932,
+            "column": "D",
+            "raw_value": "=\"持续帧内每\"&ROUND(0.03*base!$B$2+(0.03*base!$B$2<=base!$C$2),0)&\"F进行一次判定，最多10次，每次随机命中1个目标\"",
+            "display_value": "持续帧内每2F进行一次判定，最多10次，每次随机命中1个目标"
+          },
+          "ok": true
+        },
+        {
+          "name": "dmg row 2578 Skill.Name",
+          "expected": "强化E-震谐",
+          "actual": "强化E-震谐",
+          "source": "dmg!B2578",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2578 Damage.RateLv_10",
+          "expected": 10935,
+          "actual": 10935,
+          "source": "dmg!AQ2578",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2578 derived multiplier",
+          "expected": 1.0935,
+          "actual": 1.0935,
+          "source": "dmg!AQ2578",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2578 Damage.Type",
+          "expected": 12,
+          "actual": 12,
+          "source": "dmg!J2578",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2578 Damage.RelatedProperty",
+          "expected": 10000099,
+          "actual": 10000099,
+          "source": "dmg!AG2578",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2579 Skill.Name",
+          "expected": "强化E-震谐增幅",
+          "actual": "强化E-震谐增幅",
+          "source": "dmg!B2579",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2579 Damage.RateLv_10",
+          "expected": 10935,
+          "actual": 10935,
+          "source": "dmg!AQ2579",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2579 derived multiplier",
+          "expected": 1.0935,
+          "actual": 1.0935,
+          "source": "dmg!AQ2579",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2579 Damage.Type",
+          "expected": 12,
+          "actual": 12,
+          "source": "dmg!J2579",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2579 Damage.RelatedProperty",
+          "expected": 10000099,
+          "actual": 10000099,
+          "source": "dmg!AG2579",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2628 Skill.Name",
+          "expected": "强化E-震谐",
+          "actual": "强化E-震谐",
+          "source": "dmg!B2628",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2628 Damage.RateLv_10",
+          "expected": 10935,
+          "actual": 10935,
+          "source": "dmg!AQ2628",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2628 derived multiplier",
+          "expected": 1.0935,
+          "actual": 1.0935,
+          "source": "dmg!AQ2628",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2628 Damage.Type",
+          "expected": 12,
+          "actual": 12,
+          "source": "dmg!J2628",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2628 Damage.RelatedProperty",
+          "expected": 10000099,
+          "actual": 10000099,
+          "source": "dmg!AG2628",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2629 Skill.Name",
+          "expected": "强化E-震谐增幅",
+          "actual": "强化E-震谐增幅",
+          "source": "dmg!B2629",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2629 Damage.RateLv_10",
+          "expected": 10935,
+          "actual": 10935,
+          "source": "dmg!AQ2629",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2629 derived multiplier",
+          "expected": 1.0935,
+          "actual": 1.0935,
+          "source": "dmg!AQ2629",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2629 Damage.Type",
+          "expected": 12,
+          "actual": 12,
+          "source": "dmg!J2629",
+          "ok": true
+        },
+        {
+          "name": "dmg row 2629 Damage.RelatedProperty",
+          "expected": 10000099,
+          "actual": 10000099,
+          "source": "dmg!AG2629",
+          "ok": true
+        },
+        {
+          "name": "normal formula_type",
+          "expected": "tune_response",
+          "actual": "tune_response",
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "normal tune_multiplier",
+          "expected": 1.0935,
+          "actual": 1.0935,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "normal repeat_count",
+          "expected": 5,
+          "actual": 5,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "normal hit_interval_frames",
+          "expected": 4,
+          "actual": 4,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "normal source_status",
+          "expected": "workbook_confirmed",
+          "actual": "workbook_confirmed",
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "enhanced formula_type",
+          "expected": "tune_response",
+          "actual": "tune_response",
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "enhanced tune_multiplier",
+          "expected": 1.0935,
+          "actual": 1.0935,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "enhanced repeat_count",
+          "expected": 10,
+          "actual": 10,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "enhanced hit_interval_frames",
+          "expected": 2,
+          "actual": 2,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "enhanced source_status",
+          "expected": "workbook_confirmed",
+          "actual": "workbook_confirmed",
+          "source": null,
+          "ok": true
+        }
+      ],
+      "mismatches": [],
+      "review_required": [],
+      "workbook_action_rows": [
+        {
+          "row": 2786,
+          "label": "强化E-震谐",
+          "legacy_label_alias": "凉뷴뙑E-?뉓컧",
+          "note": "持续帧内每4F进行一次判定，最多5次，每次随机命中1个目标",
+          "repeat_count": 5,
+          "hit_interval_frames": 4,
+          "label_cell": {
+            "ref": "角色-女!C2786",
+            "row": 2786,
+            "column": "C",
+            "raw_value": "强化E-震谐",
+            "display_value": "强化E-震谐"
+          },
+          "note_cell": {
+            "ref": "角色-女!D2786",
+            "row": 2786,
+            "column": "D",
+            "raw_value": "=\"持续帧内每\"&ROUND(0.06*base!$B$2+(0.06*base!$B$2<=base!$C$2),0)&\"F进行一次判定，最多5次，每次随机命中1个目标\"",
+            "display_value": "持续帧内每4F进行一次判定，最多5次，每次随机命中1个目标"
+          }
+        },
+        {
+          "row": 2787,
+          "label": "强化E-震谐增幅",
+          "legacy_label_alias": "凉뷴뙑E-?뉓컧罌욃퉭",
+          "note": "持续帧内每2F进行一次判定，最多10次，每次随机命中1个目标",
+          "repeat_count": 10,
+          "hit_interval_frames": 2,
+          "label_cell": {
+            "ref": "角色-女!C2787",
+            "row": 2787,
+            "column": "C",
+            "raw_value": "强化E-震谐增幅",
+            "display_value": "强化E-震谐增幅"
+          },
+          "note_cell": {
+            "ref": "角色-女!D2787",
+            "row": 2787,
+            "column": "D",
+            "raw_value": "=\"持续帧内每\"&ROUND(0.03*base!$B$2+(0.03*base!$B$2<=base!$C$2),0)&\"F进行一次判定，最多10次，每次随机命中1个目标\"",
+            "display_value": "持续帧内每2F进行一次判定，最多10次，每次随机命中1个目标"
+          }
+        },
+        {
+          "row": 2931,
+          "label": "强化E-震谐",
+          "legacy_label_alias": "凉뷴뙑E-?뉓컧",
+          "note": "持续帧内每4F进行一次判定，最多5次，每次随机命中1个目标",
+          "repeat_count": 5,
+          "hit_interval_frames": 4,
+          "label_cell": {
+            "ref": "角色-女!C2931",
+            "row": 2931,
+            "column": "C",
+            "raw_value": "强化E-震谐",
+            "display_value": "强化E-震谐"
+          },
+          "note_cell": {
+            "ref": "角色-女!D2931",
+            "row": 2931,
+            "column": "D",
+            "raw_value": "=\"持续帧内每\"&ROUND(0.06*base!$B$2+(0.06*base!$B$2<=base!$C$2),0)&\"F进行一次判定，最多5次，每次随机命中1个目标\"",
+            "display_value": "持续帧内每4F进行一次判定，最多5次，每次随机命中1个目标"
+          }
+        },
+        {
+          "row": 2932,
+          "label": "强化E-震谐增幅",
+          "legacy_label_alias": "凉뷴뙑E-?뉓컧罌욃퉭",
+          "note": "持续帧内每2F进行一次判定，最多10次，每次随机命中1个目标",
+          "repeat_count": 10,
+          "hit_interval_frames": 2,
+          "label_cell": {
+            "ref": "角色-女!C2932",
+            "row": 2932,
+            "column": "C",
+            "raw_value": "强化E-震谐增幅",
+            "display_value": "强化E-震谐增幅"
+          },
+          "note_cell": {
+            "ref": "角色-女!D2932",
+            "row": 2932,
+            "column": "D",
+            "raw_value": "=\"持续帧内每\"&ROUND(0.03*base!$B$2+(0.03*base!$B$2<=base!$C$2),0)&\"F进行一次判定，最多10次，每次随机命中1个目标\"",
+            "display_value": "持续帧内每2F进行一次判定，最多10次，每次随机命中1个目标"
+          }
+        }
+      ],
+      "workbook_dmg_rows": [
+        {
+          "row": 2578,
+          "skill_name": "强化E-震谐",
+          "damage_type": 12,
+          "related_property": 10000099,
+          "rate_lv_10": 10935,
+          "derived_multiplier": 1.0935,
+          "rate_lv_10_cell": {
+            "ref": "dmg!AQ2578",
+            "row": 2578,
+            "column": "AQ",
+            "raw_value": "10935",
+            "display_value": 10935
+          }
+        },
+        {
+          "row": 2579,
+          "skill_name": "强化E-震谐增幅",
+          "damage_type": 12,
+          "related_property": 10000099,
+          "rate_lv_10": 10935,
+          "derived_multiplier": 1.0935,
+          "rate_lv_10_cell": {
+            "ref": "dmg!AQ2579",
+            "row": 2579,
+            "column": "AQ",
+            "raw_value": "10935",
+            "display_value": 10935
+          }
+        },
+        {
+          "row": 2628,
+          "skill_name": "强化E-震谐",
+          "damage_type": 12,
+          "related_property": 10000099,
+          "rate_lv_10": 10935,
+          "derived_multiplier": 1.0935,
+          "rate_lv_10_cell": {
+            "ref": "dmg!AQ2628",
+            "row": 2628,
+            "column": "AQ",
+            "raw_value": "10935",
+            "display_value": 10935
+          }
+        },
+        {
+          "row": 2629,
+          "skill_name": "强化E-震谐增幅",
+          "damage_type": 12,
+          "related_property": 10000099,
+          "rate_lv_10": 10935,
+          "derived_multiplier": 1.0935,
+          "rate_lv_10_cell": {
+            "ref": "dmg!AQ2629",
+            "row": 2629,
+            "column": "AQ",
+            "raw_value": "10935",
+            "display_value": 10935
+          }
+        }
+      ],
+      "code_followups": {
+        "normal": {
+          "id": "aemeath_seraphic_duet_tune_rupture_followup",
+          "label": "强化E-震谐",
+          "source_character_id": "aemeath",
+          "source_action_ids": [
+            "aemeath_seraphic_duet_overturn",
+            "aemeath_seraphic_duet_encore"
+          ],
+          "name": "Seraphic Duet Tune Rupture Follow-up",
+          "variant": "normal",
+          "formula_type": "tune_response",
+          "damage_element": "fusion",
+          "damage_element_source_value": 2,
+          "damage_type_source_value": 12,
+          "related_property_source_value": 10000099,
+          "damage_special_weakness_damage_ratio": 10000,
+          "damage_bonus_category": null,
+          "scaling_stat": "none",
+          "normal_damage_multiplier": 0.0,
+          "tune_multiplier": 1.0935,
+          "source_multiplier": 1.0935,
+          "repeat_count": 5,
+          "hit_interval_frames": 4,
+          "base_value": 10000.0,
+          "additional_tune_boost": 0.0,
+          "applied_damage_taken_amp_mode": "current_target_marker",
+          "time_offset": 0.0,
+          "tags": [
+            "aemeath_forte",
+            "seraphic_duet_followup",
+            "tune_rupture",
+            "workbook_confirmed"
+          ],
+          "source_status": "workbook_confirmed",
+          "implementation_status": "workbook_confirmed",
+          "source_ref": "action rows 2786/2931 and dmg rows 2578/2628",
+          "source_rows": [
+            2786,
+            2931,
+            2578,
+            2628
+          ],
+          "source_refs": {
+            "action_rows": [
+              2786,
+              2931
+            ],
+            "dmg_rows": [
+              2578,
+              2628
+            ]
+          },
+          "confirmed_source_facts": [
+            "action rows 2786 and 2931 confirm normal follow-up repeat_count 5 and hit_interval_frames 4",
+            "dmg rows 2578 and 2628 confirm RateLv_10 10935, runtime multiplier 1.0935, Damage.Type 12, and RelatedProperty 10000099"
+          ],
+          "notes": "Do not apply normal elemental/category bonuses or Everbright modifiers. Current target damage-taken amp may apply through the tune_response formula path."
+        },
+        "enhanced": {
+          "id": "aemeath_seraphic_duet_tune_rupture_enhanced_followup",
+          "label": "强化E-震谐增幅",
+          "source_character_id": "aemeath",
+          "source_action_ids": [
+            "aemeath_seraphic_duet_overturn",
+            "aemeath_seraphic_duet_encore"
+          ],
+          "name": "Seraphic Duet Tune Rupture Enhanced Follow-up",
+          "variant": "enhanced",
+          "formula_type": "tune_response",
+          "damage_element": "fusion",
+          "damage_element_source_value": 2,
+          "damage_type_source_value": 12,
+          "related_property_source_value": 10000099,
+          "damage_special_weakness_damage_ratio": 10000,
+          "damage_bonus_category": null,
+          "scaling_stat": "none",
+          "normal_damage_multiplier": 0.0,
+          "tune_multiplier": 1.0935,
+          "source_multiplier": 1.0935,
+          "repeat_count": 10,
+          "hit_interval_frames": 2,
+          "base_value": 10000.0,
+          "additional_tune_boost": 0.0,
+          "applied_damage_taken_amp_mode": "current_target_marker",
+          "time_offset": 0.0,
+          "tags": [
+            "aemeath_forte",
+            "seraphic_duet_followup",
+            "tune_rupture",
+            "workbook_confirmed"
+          ],
+          "source_status": "workbook_confirmed",
+          "implementation_status": "workbook_confirmed",
+          "source_ref": "action rows 2787/2932 and dmg rows 2579/2629",
+          "source_rows": [
+            2787,
+            2932,
+            2579,
+            2629
+          ],
+          "source_refs": {
+            "action_rows": [
+              2787,
+              2932
+            ],
+            "dmg_rows": [
+              2579,
+              2629
+            ]
+          },
+          "confirmed_source_facts": [
+            "action rows 2787 and 2932 confirm enhanced follow-up repeat_count 10 and hit_interval_frames 2",
+            "dmg rows 2579 and 2629 confirm RateLv_10 10935, runtime multiplier 1.0935, Damage.Type 12, and RelatedProperty 10000099"
+          ],
+          "notes": "Enhanced variant is selected by forte_enhancement_stacks, not directly by Stardust Resonance. Do not bake Interfered Marker into this source multiplier."
+        }
+      }
+    },
+    {
+      "id": "aemeath_overdrive_forte_state",
+      "title": "Aemeath Overdrive / Forte Enhancement State",
+      "status": "PASS",
+      "source_rows": [
+        "角色-女!2793",
+        "角色-女!2796",
+        "角色-女!2806"
+      ],
+      "checks": [
+        {
+          "name": "workbook row 2793",
+          "source": {
+            "ref": "角色-女!D2793",
+            "row": 2793,
+            "column": "D",
+            "raw_value": "=\"无敌期间不能切人，第\"&ROUND(3.9633954*base!$B$2+(3.9633954*base!$B$2<=base!$C$2),0)&\"F移除流光增幅状态\n第\"&ROUND(0*base!$B$2+(0*base!$B$2<=base!$C$2),0)&\"F切换至机兵，获得30点同步率、1点共鸣率\n第\"&ROUND(0*base!$B$2+(0*base!$B$2<=base!$C$2),0)&\"F获得2层30秒强化E增幅次数，获得60秒【大招2解锁前置】\"",
+            "display_value": "无敌期间不能切人，第238F移除流光增幅状态\n第1F切换至机兵，获得30点同步率、1点共鸣率\n第1F获得2层30秒强化E增幅次数，获得60秒【大招2解锁前置】"
+          },
+          "ok": true
+        },
+        {
+          "name": "workbook row 2796",
+          "source": {
+            "ref": "角色-女!D2796",
+            "row": 2796,
+            "column": "D",
+            "raw_value": "=\"第\"&ROUND(0*base!$B$2+(0*base!$B$2<=base!$C$2),0)&\"F获得30秒轨迹无消耗状态\"",
+            "display_value": "第1F获得30秒轨迹无消耗状态"
+          },
+          "ok": true
+        },
+        {
+          "name": "workbook row 2806",
+          "source": {
+            "ref": "角色-女!D2806",
+            "row": 2806,
+            "column": "D",
+            "raw_value": "同步率：\n·上限200点\n·A、空中攻击、E2命中时获取；\n·施放QTE、大招1后，分别获取40、30点同步率；\n·施放强化E时，减少100点同步率；\n·施放大招2后清空同步率。\n\n共鸣率：\n·上限4点\n·施放强化E、大招1后，分别获得1点共鸣率；\n·施放大招2后清空共鸣率。\n\n流光增幅状态：\n·施放QTE后获得，持续15秒，触发获得刷新持续时间；\n·状态期间施放大招1后，移除状态，额外获得1点共鸣率。\n\n强化E解锁前置：\n·施放A4获得，持续5秒，触发获得刷新持续时间；\n·【前置】持续期间，同步率>=100点时解锁强化E；\n·施放强化E后移除。\n\n强化E增幅次数：\n·施放大招1后获得2层，持续30秒，触发获得刷新持续时间；\n·施放强化E时消耗1层，使 强化E-震谐 替换为 强化E-震谐增幅、强化E-聚爆 替换为 强化E-聚爆增幅。\n\n轨迹无消耗状态：\n·施放大招1后获得，持续30秒，触发获得刷新持续时间；\n·状态期间，施放强化E不会移除目标持有的震谐轨迹/聚爆轨迹\n·施放强化E后，移除该状态。\n\n大招2解锁前置：\n·施放大招1后获得，持续60秒，触发获得刷新持续时间；\n·速蓄状态期间，施放强化重击后获得200点同步率；\n·【前置】持续期间，同步率和共鸣率达到上限时解锁大招2；\n·施放大招2后移除。\n\n速蓄状态：\n·【大招2解锁前置】持续期间，共鸣率达到上限时获得；\n·状态期间，蓄力达到一段派生帧后自动施放强化重击；\n·施放强化重击、施放大招2、【前置】持续结束后移除该状态。\n\nC1速蓄状态：\n·解锁C1后，在非战斗状态下不处于重击/强化重击/大招2动作中超过4秒时获得；\n·获得后覆盖常规速蓄状态，且不会因【前置】结束而移除；\n·状态期间，蓄力达到一段派生帧后自动施放强化重击；\n·状态期间未持有【前置】时，施放强化重击后获得100点同步率\n·施放强化重击、施放大招2后，移除该状态。",
+            "display_value": "同步率：\n·上限200点\n·A、空中攻击、E2命中时获取；\n·施放QTE、大招1后，分别获取40、30点同步率；\n·施放强化E时，减少100点同步率；\n·施放大招2后清空同步率。\n\n共鸣率：\n·上限4点\n·施放强化E、大招1后，分别获得1点共鸣率；\n·施放大招2后清空共鸣率。\n\n流光增幅状态：\n·施放QTE后获得，持续15秒，触发获得刷新持续时间；\n·状态期间施放大招1后，移除状态，额外获得1点共鸣率。\n\n强化E解锁前置：\n·施放A4获得，持续5秒，触发获得刷新持续时间；\n·【前置】持续期间，同步率>=100点时解锁强化E；\n·施放强化E后移除。\n\n强化E增幅次数：\n·施放大招1后获得2层，持续30秒，触发获得刷新持续时间；\n·施放强化E时消耗1层，使 强化E-震谐 替换为 强化E-震谐增幅、强化E-聚爆 替换为 强化E-聚爆增幅。\n\n轨迹无消耗状态：\n·施放大招1后获得，持续30秒，触发获得刷新持续时间；\n·状态期间，施放强化E不会移除目标持有的震谐轨迹/聚爆轨迹\n·施放强化E后，移除该状态。\n\n大招2解锁前置：\n·施放大招1后获得，持续60秒，触发获得刷新持续时间；\n·速蓄状态期间，施放强化重击后获得200点同步率；\n·【前置】持续期间，同步率和共鸣率达到上限时解锁大招2；\n·施放大招2后移除。\n\n速蓄状态：\n·【大招2解锁前置】持续期间，共鸣率达到上限时获得；\n·状态期间，蓄力达到一段派生帧后自动施放强化重击；\n·施放强化重击、施放大招2、【前置】持续结束后移除该状态。\n\nC1速蓄状态：\n·解锁C1后，在非战斗状态下不处于重击/强化重击/大招2动作中超过4秒时获得；\n·获得后覆盖常规速蓄状态，且不会因【前置】结束而移除；\n·状态期间，蓄力达到一段派生帧后自动施放强化重击；\n·状态期间未持有【前置】时，施放强化重击后获得100点同步率\n·施放强化重击、施放大招2后，移除该状态。"
+          },
+          "ok": true
+        },
+        {
+          "name": "Overdrive sync_delta",
+          "expected": 30,
+          "actual": 30,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Overdrive resonance_rate_delta",
+          "expected": 1,
+          "actual": 1,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Overdrive stardust_resonance_duration",
+          "expected": 30,
+          "actual": 30,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Overdrive heavenfall_unbound_duration",
+          "expected": 60,
+          "actual": 60,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Finale clears synchronization",
+          "expected": 0,
+          "actual": 0,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Finale clears resonance",
+          "expected": 0,
+          "actual": 0,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Seraphic Duet consumes one enhancement stack",
+          "expected": 1,
+          "actual": 1,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Enhanced follow-up repeat_count",
+          "expected": 10,
+          "actual": 10,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "trail_no_cost consumed on Seraphic Duet",
+          "expected": true,
+          "actual": true,
+          "source": null,
+          "ok": true
+        }
+      ],
+      "mismatches": [],
+      "review_required": [],
+      "runtime_state_limits": {
+        "forte_enhancement_max_stacks": 2,
+        "forte_enhancement_remaining_seconds": 30,
+        "trail_no_cost_remaining_seconds": 30,
+        "synchronization_rate_max": 200,
+        "resonance_rate_max": 4
+      }
+    },
+    {
+      "id": "aemeath_mech_basic_stage_3_repeat_aware",
+      "title": "Aemeath Mech Basic Stage 3 Repeat-aware Correction",
+      "status": "PASS",
+      "source_rows": [
+        "角色-女!2889",
+        "角色-女!2890",
+        "角色-女!2891",
+        "角色-女!2892"
+      ],
+      "checks": [
+        {
+          "name": "off_tune_value",
+          "expected": 62.54,
+          "actual": 62.54,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "sync_delta",
+          "expected": 18.54,
+          "actual": 18.54,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "hit multiplier total",
+          "expected": 1.0875,
+          "actual": 1.0875,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "damage_bonus_category",
+          "expected": "basic_attack",
+          "actual": "basic_attack",
+          "source": null,
+          "ok": true
+        }
+      ],
+      "mismatches": [],
+      "review_required": [],
+      "workbook_values": {
+        "off_tune_formula": "6.7 + 2.24 * 3 + 2.24 + 46.88",
+        "sync_formula": "1.99 + 0.67 * 3 + 0.67 + 13.87",
+        "off_tune_expected": 62.54,
+        "sync_expected": 18.54,
+        "rows": {
+          "2889": {
+            "label": "A3-1",
+            "off_tune": 6.7,
+            "sync": 1.99
+          },
+          "2890": {
+            "label": "A3-2",
+            "off_tune": 2.24,
+            "sync": 0.67
+          },
+          "2891": {
+            "label": "A3-3",
+            "off_tune": 2.24,
+            "sync": 0.67
+          },
+          "2892": {
+            "label": "A3-4",
+            "off_tune": 46.88,
+            "sync": 13.87
+          }
+        }
+      },
+      "code_multipliers": [
+        0.1165,
+        0.0389,
+        0.0389,
+        0.0389,
+        0.0389,
+        0.8154
+      ]
+    },
+    {
+      "id": "aemeath_tune_break_starburst",
+      "title": "Aemeath Tune Break and Starburst",
+      "status": "PASS",
+      "source_rows": [
+        "dmg!2590",
+        "角色-女!2802",
+        "角色-女!2804",
+        "角色-女!2805"
+      ],
+      "checks": [
+        {
+          "name": "Starburst RateLv_10",
+          "expected": 59643,
+          "actual": 59643,
+          "source": "dmg!AQ2590",
+          "ok": true
+        },
+        {
+          "name": "Starburst derived multiplier",
+          "expected": 5.9643,
+          "actual": 5.9643,
+          "source": "dmg!AQ2590",
+          "ok": true
+        },
+        {
+          "name": "Starburst code multiplier",
+          "expected": 5.9643,
+          "actual": 5.9643,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Starburst source_status",
+          "expected": "workbook_confirmed",
+          "actual": "workbook_confirmed",
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Aemeath Tune Break multipliers",
+          "expected": [
+            1.0,
+            12.0
+          ],
+          "actual": [
+            1.0,
+            12.0
+          ],
+          "source": null,
+          "ok": true
+        }
+      ],
+      "mismatches": [],
+      "review_required": [],
+      "unresolved_intentionally_not_implemented": [
+        {
+          "name": "Fusion Burst / Fusion Trail generated damage",
+          "implementation_status": "unresolved_no_runtime_effect",
+          "source_rows": [
+            2788,
+            2933
+          ],
+          "notes": "Fusion Burst trail/damage scaffold is present, but no runtime damage is applied without source-confirmed coefficient and formula type."
+        }
+      ]
+    },
+    {
+      "id": "mornye_relative_momentum",
+      "title": "Mornye Relative Momentum / Rest Mass Energy",
+      "status": "PASS",
+      "source_rows": [
+        "角色-女!4128",
+        "角色-女!4129",
+        "角色-女!4132",
+        "角色-女!4133",
+        "角色-女!4144",
+        "角色-女!4145",
+        "角色-女!4146",
+        "角色-女!4147",
+        "角色-女!4135",
+        "角色-女!4136",
+        "角色-女!4164"
+      ],
+      "checks": [
+        {
+          "name": "mornye_wfo_basic_stage_1 relative_momentum_delta",
+          "expected": 10.0,
+          "actual": 10.0,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "mornye_wfo_basic_stage_2 relative_momentum_delta",
+          "expected": 12.0,
+          "actual": 12.0,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "mornye_wfo_basic_stage_3 relative_momentum_delta",
+          "expected": 18.0,
+          "actual": 18.0,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "mornye_skill_distributed_array relative_momentum_delta",
+          "expected": 60.0,
+          "actual": 60.0,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Heavy Inversion consumes Relative Momentum",
+          "expected": true,
+          "actual": true,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Heavy Inversion Observation Marker duration",
+          "expected": 30,
+          "actual": 30,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Route time to 100 RM",
+          "expected": 3.8667,
+          "actual": 3.8667,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Route time including Heavy Inversion",
+          "expected": 5.1667,
+          "actual": 5.1667,
+          "source": null,
+          "ok": true
+        }
+      ],
+      "mismatches": [],
+      "review_required": [],
+      "workbook_values": {
+        "4164_text": "特殊能量：\n静质量能=相对动能，上限100点\n\n观测状态：\n·施放强化重击、QTE后获得30秒观测状态；\n·期间不可恢复耐力\n·状态持续时间自然结束时，清空特殊能量\n·钩锁、翱翔、使用载具、处于地面状态、处于后台、施放空中攻击下落时，移除该状态。\n\n干涉标记：\n·持有观测标记的偏移状态目标受到谐度破坏伤害时，获得8/20秒干涉标记。\n·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。\n\n被动1：\n施放QTE、观测A3后，获得20点协奏能量\n\n延奏：\n被下一角色触发延奏后，全队获得0类通用伤害加深25%",
+        "4128_core": 2.5,
+        "4129_core": 3,
+        "4132_core": 9,
+        "4133_core": 9,
+        "4144_4147_core": [
+          15,
+          15,
+          15,
+          15
+        ],
+        "4135_core": -100,
+        "4136_note": "脱手后延迟12F生效,命中后赋予目标30秒【观测标记】"
+      }
+    },
+    {
+      "id": "mornye_baseline_rest_mass",
+      "title": "Mornye Baseline Rest Mass Energy",
+      "status": "REVIEW_REQUIRED",
+      "source_rows": [],
+      "checks": [
+        {
+          "name": "Basic 1/2/3 Rest Mass route",
+          "expected": [
+            20,
+            43,
+            37
+          ],
+          "actual": [
+            20,
+            43,
+            37
+          ],
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Basic 1/2/3 reaches 100",
+          "expected": 100,
+          "actual": 100,
+          "source": null,
+          "ok": true
+        }
+      ],
+      "mismatches": [],
+      "review_required": [
+        "mornye_basic_stage_1 has current resource value but no explicit source_rows metadata in data/actions.json.",
+        "mornye_basic_stage_2 has current resource value but no explicit source_rows metadata in data/actions.json.",
+        "mornye_basic_stage_3 has current resource value but no explicit source_rows metadata in data/actions.json.",
+        "mornye_basic_stage_4 has current resource value but no explicit source_rows metadata in data/actions.json."
+      ]
+    },
+    {
+      "id": "mornye_geopotential_syntony",
+      "title": "Mornye Heavy Geopotential Shift / Syntony Field",
+      "status": "REVIEW_REQUIRED",
+      "source_rows": [],
+      "checks": [
+        {
+          "name": "Consumes Rest Mass",
+          "expected": true,
+          "actual": true,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Wide Field Observation duration",
+          "expected": 30,
+          "actual": 30,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Syntony Field duration",
+          "expected": 25,
+          "actual": 25,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Off-Tune buildup add",
+          "expected": 0.5,
+          "actual": 0.5,
+          "source": null,
+          "ok": true
+        }
+      ],
+      "mismatches": [],
+      "review_required": [
+        "Syntony Field Off-Tune +50% is workbook text confirmed; exact field tick/heal behavior remains simulator interpretation."
+      ]
+    },
+    {
+      "id": "mornye_high_syntony_critical_protocol",
+      "title": "Mornye High Syntony / Critical Protocol",
+      "status": "REVIEW_REQUIRED",
+      "source_rows": [],
+      "checks": [
+        {
+          "name": "Critical Protocol action_time",
+          "expected": 4.9333,
+          "actual": 4.9333,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Critical Protocol combat_time_cost",
+          "expected": 0.0,
+          "actual": 0.0,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "global time stop source flag",
+          "expected": true,
+          "actual": true,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "High Syntony duration",
+          "expected": 25,
+          "actual": 25,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "High Syntony DEF bonus",
+          "expected": 0.2,
+          "actual": 0.2,
+          "source": null,
+          "ok": true
+        }
+      ],
+      "mismatches": [],
+      "review_required": [
+        "High Syntony inherited Off-Tune +50% and healing proxy are documented simulator interpretations where exact separate source timing is not modeled."
+      ]
+    },
+    {
+      "id": "mornye_interfered_marker",
+      "title": "Mornye Interfered Marker",
+      "status": "PASS",
+      "source_rows": [],
+      "checks": [
+        {
+          "name": "party default Interfered Marker mode",
+          "expected": "tune_break_triggered",
+          "actual": "tune_break_triggered",
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Heavy applies Observation Marker",
+          "expected": true,
+          "actual": true,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Heavy does not directly apply Interfered Marker by default",
+          "expected": false,
+          "actual": false,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Tune Break path applies Interfered Marker",
+          "expected": true,
+          "actual": true,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "ER 2.7944 capped amp",
+          "expected": 0.4,
+          "actual": 0.4,
+          "source": null,
+          "ok": true
+        }
+      ],
+      "mismatches": [],
+      "review_required": [],
+      "formula": "min(max(energy_regen - 1.0, 0.0) * 0.25, 0.40)"
+    },
+    {
+      "id": "mornye_tune_break_particle_jet",
+      "title": "Mornye Tune Break / Particle Jet",
+      "status": "PASS",
+      "source_rows": [],
+      "checks": [
+        {
+          "name": "Particle Jet C0 RateLv_10",
+          "expected": 29822,
+          "actual": 29822,
+          "source": "dmg!AQ2532",
+          "ok": true
+        },
+        {
+          "name": "Particle Jet C0 multiplier",
+          "expected": 2.9822,
+          "actual": 2.9822,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Particle Jet C5 multiplier",
+          "expected": 7.7536,
+          "actual": 7.7536,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Particle Jet C5 gate",
+          "expected": 5,
+          "actual": 5,
+          "source": null,
+          "ok": true
+        },
+        {
+          "name": "Mornye Tune Break multipliers",
+          "expected": [
+            1.7334,
+            2.2666,
+            12.0
+          ],
+          "actual": [
+            1.7334,
+            2.2666,
+            12.0
+          ],
+          "source": null,
+          "ok": true
+        }
+      ],
+      "mismatches": [],
+      "review_required": []
+    }
+  ],
+  "source_confirmed_mismatches": [],
+  "non_workbook_sources": [
+    {
+      "id": "aemeath:aemeath_real_manual",
+      "source_type": "user_profile",
+      "source_status": "user_supplied_required",
+      "file": "data/build_profiles.json"
+    },
+    {
+      "id": "aemeath:aemeath_user_real_01",
+      "source_type": "user_profile",
+      "source_status": "user_supplied_required",
+      "file": "data/build_profiles.json"
+    },
+    {
+      "id": "mornye:mornye_real_manual",
+      "source_type": "user_profile",
+      "source_status": "user_supplied_required",
+      "file": "data/build_profiles.json"
+    },
+    {
+      "id": "mornye:mornye_user_real_01",
+      "source_type": "user_profile",
+      "source_status": "user_supplied_required",
+      "file": "data/build_profiles.json"
+    },
+    {
+      "id": "starfield_calibrator",
+      "source_type": "user_supplied_tooltip",
+      "source_status": "user_supplied_weapon_tooltip",
+      "file": "data/weapons.json"
+    },
+    {
+      "id": "discord",
+      "source_type": "user_supplied_tooltip",
+      "source_status": "user_supplied_weapon_tooltip",
+      "file": "data/weapons.json"
+    },
+    {
+      "id": "everbright_polestar",
+      "source_type": "user_supplied_tooltip",
+      "source_status": "user_supplied_weapon_tooltip",
+      "file": "data/weapons.json"
+    },
+    {
+      "id": "mornye_halo_of_starry_radiance_5set",
+      "source_type": "user_supplied_tooltip_or_sim_interpretation",
+      "source_status": "user_supplied_set_tooltip",
+      "file": "data/buffs.json"
+    },
+    {
+      "id": "starfield_calibrator_party_crit_damage",
+      "source_type": "user_supplied_tooltip_or_sim_interpretation",
+      "source_status": "user_supplied_weapon_tooltip",
+      "file": "data/buffs.json"
+    },
+    {
+      "id": "everbright_polestar_liberation_penetration",
+      "source_type": "user_supplied_tooltip_or_sim_interpretation",
+      "source_status": "user_supplied_weapon_tooltip",
+      "file": "data/buffs.json"
+    },
+    {
+      "id": "aemeath_trailblazing_star_5set",
+      "source_type": "user_supplied_tooltip_or_sim_interpretation",
+      "source_status": "user_supplied_set_tooltip",
+      "file": "data/buffs.json"
+    }
+  ],
+  "unresolved_intentionally_not_implemented": [
+    "Aemeath Fusion Burst / Fusion Trail generated damage scaffold remains unresolved.",
+    "Aemeath C6 trail stack granting remains disabled for S0 default runtime.",
+    "Full multi-target trail/Tune tracking remains unresolved.",
+    "Exact Mornye Syntony Field heal tick timing remains unimplemented."
+  ],
+  "workbook_rows_checked": {
+    "aemeath": [
+      "角色-女!2786",
+      "角色-女!2787",
+      "角色-女!2793",
+      "角色-女!2796",
+      "角色-女!2806",
+      "角色-女!2889:2892",
+      "角色-女!2931",
+      "角色-女!2932",
+      "dmg!2578",
+      "dmg!2579",
+      "dmg!2590",
+      "dmg!2628",
+      "dmg!2629"
+    ],
+    "mornye": [
+      "角色-女!4128",
+      "角色-女!4129",
+      "角色-女!4132",
+      "角色-女!4133",
+      "角色-女!4135",
+      "角色-女!4136",
+      "角色-女!4144:4147",
+      "角色-女!4150",
+      "角色-女!4151",
+      "角色-女!4154",
+      "角色-女!4164",
+      "角色-女!4181",
+      "角色-女!4185",
+      "dmg!2532"
+    ]
+  }
+}
