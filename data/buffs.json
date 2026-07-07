@@ -423,5 +423,45 @@
       "trigger": "lynae_outro_within_hyvatia_window",
       "implementation_status": "implemented_v1"
     }
+  },
+  {
+    "id": "lynae_visual_impact_tune_break_boost",
+    "name": "Lynae Visual Impact Party Tune Break Boost",
+    "duration": 30.0,
+    "modifier_type": "boost",
+    "value": 0.0,
+    "target": "party",
+    "target_scope": "party",
+    "source_character_id": "lynae",
+    "stacking_rule": "refresh_duration",
+    "max_stacks": 1,
+    "metadata": {
+      "source_character_id": "lynae",
+      "source_action_id": "lynae_visual_impact",
+      "source_status": "user_supplied_skill_tooltip",
+      "implementation_status": "metadata_only_no_formula_hook",
+      "tune_break_boost_points": 40.0
+    }
+  },
+  {
+    "id": "lynae_intro_spectro_damage_bonus",
+    "name": "Lynae Intro Spectro DMG Bonus",
+    "duration": 9.0,
+    "modifier_type": "damage_bonus",
+    "value": 0.0,
+    "target": "self",
+    "target_scope": "self",
+    "source_character_id": "lynae",
+    "stacking_rule": "refresh_duration",
+    "max_stacks": 1,
+    "damage_bonus_by_element": {
+      "spectro": 0.25
+    },
+    "metadata": {
+      "source_character_id": "lynae",
+      "source_action_id": "lynae_intro_time_to_show_some_colors",
+      "source_status": "user_supplied_skill_tooltip",
+      "implementation_status": "implemented_v2"
+    }
   }
 ]

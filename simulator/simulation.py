@@ -359,6 +359,7 @@ class Simulation:
         if transition_resolution is not None:
             self._apply_transition_resolution(result, transition_resolution)
             self._apply_lynae_transition_buffs(result, transition_resolution)
+            self._apply_lynae_incoming_intro_mechanics(result, transition_resolution)
 
         weapon_action_log = {}
         if not result.truncated_by_combat_limit:
@@ -1212,6 +1213,16 @@ class Simulation:
             result.pact_neonlight_source_status = pact_log.get("pact_neonlight_source_status")
 
         lynae_state = self.state.character_mechanics_state.get("lynae", {})
+        lynae_state["kaleidoscopic_parade_remaining"] = 0.0
+        lynae_state["lumiflow"] = 0.0
+        lynae_state["true_color"] = 0.0
+        lynae_state["kaleidoscopic_combo_stage"] = 1
+        lynae_state["next_basic_forced_stage"] = None
+        lynae_state["optical_sampling_stage_active"] = True
+        result.lynae_kaleidoscopic_parade_remaining = 0.0
+        result.lynae_lumiflow = 0.0
+        result.lynae_true_color = 0.0
+        result.lynae_optical_sampling_stage_active = True
         if float(lynae_state.get("hyvatia_outro_window_remaining", 0.0) or 0.0) > 0.0:
             if self._apply_specific_character_buff(
                 buff_id="hyvatia_incoming_all_attribute_damage_bonus",
@@ -1228,6 +1239,52 @@ class Simulation:
             if buff_id not in result.applied_buffs:
                 result.applied_buffs.append(buff_id)
         result.active_buffs = [buff.buff_id for buff in self.state.active_buffs if buff.remaining_duration > 0.0]
+        if self.state.action_log:
+            self.state.action_log[-1] = result.model_dump(mode="json")
+
+    def _apply_lynae_incoming_intro_mechanics(self, result, transition_resolution) -> None:
+        if transition_resolution.incoming_character_id != "lynae":
+            return
+        if not transition_resolution.incoming_intro_applied:
+            return
+        intro_applied = any(
+            event.get("event_type") == "intro_qte"
+            and event.get("character_id") == "lynae"
+            and event.get("action_id") == "lynae_intro_time_to_show_some_colors"
+            and event.get("applied")
+            for event in transition_resolution.transition_events
+        )
+        if not intro_applied:
+            return
+        lynae_state = self.state.character_mechanics_state.setdefault("lynae", {})
+        overflow_max = float(lynae_state.get("overflow_max", 120.0) or 120.0)
+        lynae_state["overflow"] = min(overflow_max, float(lynae_state.get("overflow", 0.0) or 0.0) + 100.0)
+        lynae_state["photocromic_flux_active"] = True
+        lynae_state["photocromic_flux_remaining"] = 25.0
+        lynae_state["photocromic_flux_source_action_id"] = "lynae_intro_time_to_show_some_colors"
+        mode = str(lynae_state.get("lynae_resonance_mode", "tune_rupture") or "tune_rupture")
+        if mode == "tune_strain":
+            shift_state = "tune_strain_shifting"
+        elif mode == "tune_rupture":
+            shift_state = "tune_rupture_shifting"
+        else:
+            shift_state = None
+            result.lynae_photocromic_flux_unresolved_reason = "lynae_resonance_mode_unresolved_no_shift_state"
+        lynae_state["target_tune_shift_state"] = shift_state
+        lynae_state["target_tune_shift_remaining"] = 25.0 if shift_state else 0.0
+        if shift_state:
+            self.state.target_tune_shift_state = shift_state
+            self.state.target_tune_shift_remaining = 25.0
+            result.target_tune_shift_state = shift_state
+            result.target_tune_shift_remaining = 25.0
+        result.lynae_overflow = float(lynae_state["overflow"])
+        result.lynae_photocromic_flux_active = True
+        result.lynae_photocromic_flux_applied = True
+        result.lynae_photocromic_flux_remaining = 25.0
+        result.lynae_photocromic_flux_mode = mode
+        result.lynae_photocromic_flux_source_status = "user_tooltip_confirmed"
+        result.lynae_target_tune_shift_state = shift_state
+        result.lynae_target_tune_shift_remaining = 25.0 if shift_state else 0.0
         if self.state.action_log:
             self.state.action_log[-1] = result.model_dump(mode="json")
 

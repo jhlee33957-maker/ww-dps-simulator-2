@@ -19,6 +19,65 @@ WORKBOOK_ALIASES = {
     "appendix2_sheet": "附页2",
 }
 PREFERRED_SHEETS = {"角色-女", "dmg", "prop", "weapon"}
+LYNAE_ACTION_ALIGNMENT = [
+    ("lynae_basic_stage_1", "Basic Stage 1", [2577], [2408], "implemented_v2"),
+    ("lynae_basic_stage_2", "Basic Stage 2", [2578, 2579, 2580], [2409, 2410, 2411], "implemented_v2"),
+    ("lynae_basic_stage_3", "Basic Stage 3", [2581], [2412], "implemented_v2"),
+    ("lynae_dodge_counter", "Dodge Counter", [2582], [2413], "implemented_v2"),
+    ("lynae_mid_air_attack", "Mid-air Attack", [2583, 2584], [2414, 2415], "implemented_v2"),
+    ("lynae_spark_collision_lv1", "Spark Collision Lv1", [2586, 2587], [2417, 2418], "implemented_v2"),
+    ("lynae_spark_collision_lv2", "Spark Collision Lv2", [2588, 2589], [2419, 2420], "implemented_v2"),
+    ("lynae_spark_collision_lv3", "Spark Collision Lv3", [2590, 2591], [2421, 2422], "implemented_v2"),
+    ("lynae_kaleidoscopic_basic_stage_1", "KP Basic Stage 1", [2592, 2593, 2594], [2423], "implemented_v2"),
+    ("lynae_kaleidoscopic_dodge_counter", "KP Dodge Counter", [2595], [2424], "implemented_v2"),
+    ("lynae_kaleidoscopic_basic_stage_2", "KP Basic Stage 2", [2596, 2597], [2425, 2426], "implemented_v2"),
+    ("lynae_kaleidoscopic_basic_stage_3", "KP Basic Stage 3", [2598, 2599, 2600], [2427, 2428, 2429], "implemented_v2"),
+    ("lynae_kaleidoscopic_basic_stage_4", "KP Basic Stage 4", [2601, 2602, 2603, 2604, 2605], [2430, 2431, 2432, 2433], "implemented_v2"),
+    ("lynae_kaleidoscopic_basic_stage_5", "KP Basic Stage 5", [2611, 2612, 2613, 2614], [2434, 2435, 2436], "implemented_v2"),
+    ("lynae_kaleidoscopic_mid_air_attack", "KP Mid-air Attack", [2615, 2616], [2437, 2438], "implemented_v2"),
+    ("lynae_kaleidoscopic_ground_heavy_hold", "KP Ground Heavy Hold", [2617, 2618, 2619, 2620, 2621, 2622, 2623], [2439, 2440, 2441, 2442, 2443, 2444, 2445], "implemented_v2_timing_simplified"),
+    ("lynae_kaleidoscopic_graffiti_blast", "KP Graffiti Blast", [2624], [2446], "implemented_v2"),
+    ("lynae_kaleidoscopic_mid_air_heavy", "KP Mid-air Heavy", [2633, 2634, 2635, 2636, 2637, 2638, 2639], [2447, 2448, 2449, 2450, 2451, 2452, 2453], "implemented_v2_timing_simplified"),
+    ("lynae_resonance_skill_palette", "Lynae-Style Palettes", [2662, 2663, 2664, 2665, 2666], [2454, 2455, 2456, 2457], "implemented_v2"),
+    ("lynae_resonance_skill_additive_color", "Additive Color", [2672, 2673, 2674], [2458, 2459], "implemented_v2"),
+    ("lynae_iridescent_splash", "Iridescent Splash C0", [2675, 2676, 2677, 2678], [2460, 2461], "implemented_v2"),
+    ("lynae_visual_impact", "Visual Impact C0", [2679, 2680, 2681, 2682], [2464, 2465], "implemented_v2_periodic_spray_metadata_only"),
+    ("lynae_polychrome_leap_stage_1", "Polychrome Leap Stage 1 C0", [2641, 2642, 2643, 2644, 2645], [2468, 2469, 2470], "implemented_v2"),
+    ("lynae_polychrome_leap_stage_2", "Polychrome Leap Stage 2 C0", [2647, 2648, 2649, 2650, 2651], [2474], "implemented_v2"),
+    ("lynae_polychrome_leap_stage_3", "Polychrome Leap Stage 3 C0", [2653, 2654, 2660, 2661], [2476, 2477], "implemented_v2"),
+    ("lynae_intro_time_to_show_some_colors", "Intro Skill", [2689, 2690, 2691], [2480, 2481], "implemented_v2"),
+    ("lynae_resonance_liberation_prismatic_overblast", "Prismatic Overblast C0", [2692, 2693, 2694, 2695], [2482], "implemented_v2"),
+    ("lynae_to_a_vivid_tomorrow", "To a Vivid Tomorrow", [2696, 2697, 2698], [2484, 2485], "implemented_v2"),
+    ("lynae_outro_lets_hit_the_road", "Outro", [2699, 2700, 2701], [2486, 2487], "implemented_v2_tooltip_damage"),
+    ("lynae_tune_break", "Tune Break", [2702, 2703, 2704], [2488], "metadata_only_zero_workbook_damage"),
+    ("lynae_tune_response_spectral_analysis", "Spectral Analysis C0", [2735], [2489], "implemented_v2"),
+]
+LYNAE_UNRESOLVED_ROWS = [
+    {
+        "topic": "continuous_lumiflow_movement_recovery",
+        "source_rows": ["角色-女!2709"],
+        "implementation_status": "user_tooltip_confirmed_timing_simplified",
+        "reason": "Simulator is action-step based and has no continuous movement/skating state.",
+    },
+    {
+        "topic": "spray_paint_periodic_ticks",
+        "source_rows": ["角色-女!2683:2688"],
+        "implementation_status": "metadata_only_window_recorded",
+        "reason": "Visual Impact records the 5s window and immediate Flux; periodic 2s field scheduling is not added.",
+    },
+    {
+        "topic": "tune_strain_stack_limit_and_per_stack_damage",
+        "source_rows": ["角色-女!2728"],
+        "implementation_status": "metadata_only_no_stack_system_hook",
+        "reason": "Current simulator has interfered state and responses but no target Tune Strain stack model.",
+    },
+    {
+        "topic": "constellation_variants",
+        "source_rows": ["dmg!2462:2463", "dmg!2466:2467", "dmg!2471:2473", "dmg!2475", "dmg!2478:2479", "dmg!2483", "dmg!2490"],
+        "implementation_status": "constellation_gated_disabled_by_default",
+        "reason": "Non-S0 variants are retained as source-aligned records but not selected by default.",
+    },
+]
 
 
 def workbook_sheet_names(workbook_path: Path) -> set[str]:
@@ -222,7 +281,35 @@ def write_outputs(audit: dict[str, Any]) -> None:
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     json_path = EXTRACTED_DIR / "lynae_source_audit.json"
     report_path = REPORTS_DIR / "lynae_source_audit.md"
+    action_map_path = EXTRACTED_DIR / "lynae_excel_action_map.json"
+    unresolved_path = EXTRACTED_DIR / "lynae_excel_unresolved_rows.json"
+    alignment_report_path = REPORTS_DIR / "lynae_excel_source_alignment.md"
     json_path.write_text(json.dumps(audit, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    damage_by_row = {row["row"]: row for row in audit["damage_region"]["damage_rows"]}
+    action_map = []
+    for action_id, label, action_rows, damage_rows, implementation_status in LYNAE_ACTION_ALIGNMENT:
+        multipliers = [float(damage_by_row[row]["derived_multiplier"]) for row in damage_rows if row in damage_by_row]
+        action_map.append(
+            {
+                "action_id": action_id,
+                "label": label,
+                "workbook_sheet": "角色-女",
+                "action_rows": action_rows,
+                "damage_sheet": "dmg",
+                "damage_rows": damage_rows,
+                "multiplier": round(sum(multipliers), 10),
+                "damage_row_multipliers": {
+                    str(row): damage_by_row[row]["derived_multiplier"] for row in damage_rows if row in damage_by_row
+                },
+                "timing_resource_evidence": [
+                    row for row in audit["action_region"]["action_rows"] if row["row"] in set(action_rows)
+                ],
+                "source_status": "workbook_confirmed",
+                "implementation_status": implementation_status,
+            }
+        )
+    action_map_path.write_text(json.dumps(action_map, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    unresolved_path.write_text(json.dumps(LYNAE_UNRESOLVED_ROWS, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     lines = [
         "# Lynae Source Audit",
         "",
@@ -248,6 +335,26 @@ def write_outputs(audit: dict[str, Any]) -> None:
         ]
     )
     report_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    alignment_lines = [
+        "# Lynae Excel Source Alignment",
+        "",
+        f"Workbook: `{audit['workbook']}`",
+        f"Source name: {audit['source_name']}",
+        "",
+        "## Implemented Action Map",
+    ]
+    for item in action_map:
+        alignment_lines.append(
+            "- `{action_id}`: {label}; action rows {action_rows}; damage rows {damage_rows}; "
+            "multiplier {multiplier}; status {implementation_status}".format(**item)
+        )
+    alignment_lines.extend(["", "## Unresolved / Metadata-Only Rows"])
+    for item in LYNAE_UNRESOLVED_ROWS:
+        alignment_lines.append(
+            f"- {item['topic']}: {item['implementation_status']} ({', '.join(item['source_rows'])}) - {item['reason']}"
+        )
+    alignment_report_path.write_text("\n".join(alignment_lines) + "\n", encoding="utf-8")
 
 
 def main() -> None:

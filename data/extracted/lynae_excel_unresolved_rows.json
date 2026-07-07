@@ -1,0 +1,40 @@
+[
+  {
+    "topic": "continuous_lumiflow_movement_recovery",
+    "source_rows": [
+      "角色-女!2709"
+    ],
+    "implementation_status": "user_tooltip_confirmed_timing_simplified",
+    "reason": "Simulator is action-step based and has no continuous movement/skating state."
+  },
+  {
+    "topic": "spray_paint_periodic_ticks",
+    "source_rows": [
+      "角色-女!2683:2688"
+    ],
+    "implementation_status": "metadata_only_window_recorded",
+    "reason": "Visual Impact records the 5s window and immediate Flux; periodic 2s field scheduling is not added."
+  },
+  {
+    "topic": "tune_strain_stack_limit_and_per_stack_damage",
+    "source_rows": [
+      "角色-女!2728"
+    ],
+    "implementation_status": "metadata_only_no_stack_system_hook",
+    "reason": "Current simulator has interfered state and responses but no target Tune Strain stack model."
+  },
+  {
+    "topic": "constellation_variants",
+    "source_rows": [
+      "dmg!2462:2463",
+      "dmg!2466:2467",
+      "dmg!2471:2473",
+      "dmg!2475",
+      "dmg!2478:2479",
+      "dmg!2483",
+      "dmg!2490"
+    ],
+    "implementation_status": "constellation_gated_disabled_by_default",
+    "reason": "Non-S0 variants are retained as source-aligned records but not selected by default."
+  }
+]

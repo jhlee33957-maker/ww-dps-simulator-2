@@ -7,82 +7,126 @@
     "buffer",
     "Tune Response support"
   ],
-  "implemented": {
-    "user_real_profile": {
-      "profile_id": "lynae_user_real_01",
-      "source_status": "user_profile",
-      "notes": "Static Mist base ATK, crit rate, Energy Regen, Pact 2pc Spectro, and user-entered damage bonuses are already reflected in the profile."
-    },
-    "static_mist": {
-      "runtime_effect": "Lynae Outro grants incoming character ATK +10% for 14s.",
-      "static_stats_runtime": false,
-      "source_status": "user_supplied_weapon_tooltip"
-    },
-    "pact_of_neonlight_leap_5pc": {
-      "runtime_effect": "Lynae Outro grants incoming character ATK +15% plus min(incoming Tune Break Boost * 0.3%, 15%), capped at +30%, for 15s.",
-      "two_piece_runtime": false,
-      "source_status": "user_supplied_echo_set_tooltip"
-    },
-    "hyvatia": {
-      "echo_action": "lynae_echo_hyvatia",
-      "damage": "10 hits at 0.2736 Spectro ATK-scaling damage each; total multiplier 2.736.",
-      "runtime_effect": "After Hyvatia, Lynae Outro within 15s grants incoming character All-Attribute DMG Bonus +10% for 15s.",
-      "source_status": "user_supplied_echo_tooltip"
-    },
-    "liberation": {
-      "action": "lynae_resonance_liberation_prismatic_overblast",
-      "runtime_effect": "Party damage dealt +24% for 30s.",
-      "source_status": "user_supplied_skill_tooltip"
-    },
-    "outro": {
-      "action": "lynae_outro_lets_hit_the_road",
-      "runtime_effects": [
-        "Incoming All DMG Amplification +15% for 14s.",
-        "Incoming Resonance Liberation DMG Amplification +25% for 14s.",
-        "Static Mist, Pact 5pc, and Hyvatia incoming effects are triggered from this handoff when their conditions are met."
+  "implemented_v2": {
+    "resource_state": {
+      "overflow_max": 120,
+      "lumiflow_max": 120,
+      "true_color_max": 3,
+      "source_refs": [
+        "角色-女!2709",
+        "user tooltip"
       ],
-      "source_status": "user_supplied_skill_tooltip"
+      "source_status": "workbook_confirmed_and_user_tooltip"
+    },
+    "spark_collision": {
+      "selector": "lynae_spark_collision",
+      "default_full_overflow_resolution": "lynae_spark_collision_lv3",
+      "source_rows": [
+        2585,
+        2586,
+        2587,
+        2588,
+        2589,
+        2590,
+        2591,
+        2417,
+        2418,
+        2419,
+        2420,
+        2421,
+        2422
+      ],
+      "source_status": "workbook_confirmed_damage_user_tooltip_condition"
+    },
+    "kaleidoscopic_parade": {
+      "basic_stages": [
+        "lynae_kaleidoscopic_basic_stage_1",
+        "lynae_kaleidoscopic_basic_stage_2",
+        "lynae_kaleidoscopic_basic_stage_3",
+        "lynae_kaleidoscopic_basic_stage_4",
+        "lynae_kaleidoscopic_basic_stage_5"
+      ],
+      "heavy_and_air_actions": [
+        "lynae_kaleidoscopic_ground_heavy_hold",
+        "lynae_kaleidoscopic_graffiti_blast",
+        "lynae_kaleidoscopic_mid_air_heavy",
+        "lynae_kaleidoscopic_mid_air_attack"
+      ],
+      "source_status": "workbook_confirmed_damage_movement_simplified"
+    },
+    "photocromic_flux": {
+      "duration_seconds": 25,
+      "modes": [
+        "tune_rupture",
+        "tune_strain",
+        "unresolved"
+      ],
+      "implemented_actions": [
+        "lynae_polychrome_leap_stage_1",
+        "lynae_polychrome_leap_stage_2",
+        "lynae_polychrome_leap_stage_3",
+        "lynae_iridescent_splash",
+        "lynae_visual_impact",
+        "lynae_intro_time_to_show_some_colors"
+      ],
+      "source_status": "user_tooltip_confirmed"
+    },
+    "visual_impact": {
+      "action": "lynae_visual_impact",
+      "party_tune_break_boost_points": 40,
+      "spray_paint_window_seconds": 5,
+      "cooldown_seconds": 25,
+      "source_rows": [
+        2679,
+        2680,
+        2681,
+        2682,
+        2464,
+        2465
+      ],
+      "source_status": "workbook_confirmed_and_user_tooltip"
+    },
+    "intro": {
+      "action": "lynae_intro_time_to_show_some_colors",
+      "overflow_gain": 100,
+      "spectro_damage_bonus": 0.25,
+      "spectro_damage_bonus_seconds": 9,
+      "source_status": "workbook_confirmed_and_user_tooltip"
     },
     "spectral_analysis": {
       "id": "lynae_spectral_analysis",
-      "source_label": "震谐响应",
       "formula_type": "tune_response",
       "multiplier": 18.8075,
       "same_target_cooldown_seconds": 8.0,
-      "policy_selectable": false,
-      "source_status": "workbook_confirmed",
-      "source_ref": "dmg!2489"
-    },
-    "action_skeleton": {
-      "status": "implemented_v1",
-      "notes": "Basic, selected skill, Liberation, Outro, Hyvatia, Tune Break skeleton, and metadata-only Visual Impact action are present."
+      "supported_interfered_states": [
+        "tune_rupture_interfered",
+        "tune_strain_interfered"
+      ],
+      "c2_multiplier": 31.9727,
+      "c2_implementation_status": "disabled_by_default_constellation",
+      "source_refs": [
+        "dmg!2489",
+        "dmg!2490"
+      ],
+      "source_status": "workbook_confirmed"
     }
   },
-  "simplified": {
-    "lumiflow_movement_recovery": "metadata_only",
-    "skating_movement_speed": "ignored",
-    "stamina_consumption": "ignored",
+  "metadata_only_or_simplified": {
+    "lumiflow_continuous_movement_recovery": "user_tooltip_confirmed_timing_simplified",
+    "skating_movement_speed": "metadata_only",
+    "stamina_consumption": "metadata_only",
     "air_ground_exact_branches": "simplified",
-    "spray_paint_periodic_field": "metadata_only",
-    "tune_strain": "scaffold only unless current simulator state reaches tune_strain_interfered",
-    "c2_spectral_analysis": "disabled by default unless constellation support is intentionally enabled later",
-    "visual_impact": "metadata-only action row; party Tune Break Boost +40 is not active until the action behavior is fully source-confirmed"
+    "spray_paint_periodic_ticks": "metadata_only_window_recorded",
+    "optic_camo": "metadata_only_non_dps_environmental",
+    "tune_strain_stack_limit_and_per_stack_damage": "metadata_only_no_stack_system_hook",
+    "c1_c3_c5_damage_variants": "constellation_gated_disabled_by_default"
   },
   "source_references": {
     "workbook": "data/source/鸣潮动作数据汇总.xlsx",
     "actions": "角色-女!2577:2738",
     "damage": "dmg!2408:2490",
-    "spectral_analysis": "dmg!2489",
-    "spectral_analysis_c2": "dmg!2490",
     "passive_candidates": "角色技能类型!772:784",
     "base_stats": "prop!51",
-    "weapon_candidate": "weapon!65",
-    "user_supplied": [
-      "Lynae profile stat panel",
-      "Static Mist tooltip",
-      "Pact of Neonlight Leap tooltip",
-      "Hyvatia tooltip",
-      "Lynae Liberation and Outro tooltip"
-    ]
+    "weapon_candidate": "weapon!65"
   }
 }
