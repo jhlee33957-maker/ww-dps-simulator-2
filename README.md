@@ -304,7 +304,7 @@ Not implemented yet:
 
 - Starflux utility behavior and natural recovery
 - Tune Break
-- Tune Rupture damage and follow-up mechanics
+- Tune Rupture damage beyond the source-confirmed Seraphic Duet follow-up
 - Fusion Burst damage and follow-up mechanics
 - Fusion Trail / Rupturous Trail damage
 - Trailblazing Star follow-up damage or mechanics beyond the implemented Aemeath 5-set runtime stat buff
@@ -323,7 +323,7 @@ Aemeath has a configurable `aemeath_resonance_mode` under `mechanics.aemeath` wi
 
 In `fusion_burst` mode, source-backed trigger actions emit the `fusion_burst` event tag. In `tune_rupture` mode, they emit `tune_rupture_shifting`. The same skill can trigger once every 3 seconds, keyed by character, action, and trigger id. Multi-hit actions emit at most one event per action execution.
 
-These event tags do not add Fusion Burst damage, Tune Rupture damage, Fusion/Rupturous Trail damage, Seraphic Duet follow-up damage, coefficients, timings, resources, cooldowns, or reward shaping. PPO reward remains `damage_this_action / 10000.0`.
+These event tags do not add Fusion Burst damage, generic Tune Rupture damage, Fusion/Rupturous Trail damage, coefficients, timings, resources, cooldowns, or reward shaping. Source-confirmed Tune Rupture-mode Seraphic Duet follow-up damage is handled separately by generated mechanic damage. PPO reward remains `damage_this_action / 10000.0`.
 
 ## Aemeath Trailblazing Star Echo Set
 
@@ -333,7 +333,7 @@ The implemented 5-set runtime buff is triggered by emitted `fusion_burst` or `tu
 
 The current simulator uses action-level aggregate damage for these trigger actions, so the whole triggering action is treated as receiving the buff as `same_action_aggregate_approximation`. This corrects the obsolete earlier rule where only later damage received the first activation.
 
-Full Fusion Burst explosion damage, Tune Rupture damage, Fusion Trail, Rupturous Trail, Seraphic Duet extra damage, and Stardust Resonance extra effects remain unsupported.
+Full Fusion Burst explosion damage, generic Tune Rupture damage, Fusion Trail, Rupturous Trail, Fusion Burst follow-up damage, and Stardust Resonance extra effects remain unsupported. Tune Rupture-mode Seraphic Duet follow-up damage is implemented as workbook-confirmed tune_response generated mechanic damage: normal `强化E-震谐` uses `1.0935 x 5` hits and enhanced `强化E-震谐增幅` uses `1.0935 x 10` hits.
 
 Source-confirmed trigger metadata is currently stored from the user-supplied skill screenshot, not embedded workbook evidence. The source audit lives at `reports/aemeath_resonance_mode_mechanic_source_audit.md` and `data/extracted/aemeath_resonance_mode_mechanic_source_audit.json`.
 

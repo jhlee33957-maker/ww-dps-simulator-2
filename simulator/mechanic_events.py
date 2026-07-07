@@ -25,7 +25,6 @@ UNSUPPORTED_AEMEATH_FOLLOWUP_MECHANICS = [
     "fusion_burst_explosion_runtime_damage_without_source_confirmed_formula",
     "fusion_trail_source_confirmed_stack_mutation",
     "rupturous_trail_source_confirmed_stack_mutation",
-    "seraphic_duet_extra_tune_rupture_runtime_damage_without_source_confirmed_formula",
     "seraphic_duet_fusion_burst_multiplier",
     "stardust_resonance_extra_effects",
 ]

@@ -37,6 +37,7 @@ from simulator.transition_config import (
     mechanics_mode_summary,
     transition_mode_summary,
 )
+from rl.evaluation_report import build_generated_damage_summary
 from ui.mechanics_reference import render_mechanics_reference
 
 
@@ -670,8 +671,9 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
                 event_cols[1].metric("Fusion Burst events", summary.fusion_burst_event_count)
                 event_cols[2].metric("Tune Rupture - Shifting events", summary.tune_rupture_shifting_event_count)
                 st.caption(
-                    "These are source-backed mechanic event emissions only. Fusion Burst, Tune Rupture, "
-                    "Trail damage, and set follow-up damage are not added to DPS."
+                    "These are source-backed mechanic event emissions. Fusion Burst and Trail damage remain omitted; "
+                    "source-confirmed Tune Rupture Seraphic Duet follow-up damage is reported separately as generated "
+                    "mechanic damage."
                 )
                 st.write("Source:", summary.aemeath_resonance_mode_source)
                 st.caption(
@@ -752,6 +754,10 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
 
     timeline_rows = [entry.model_dump() for entry in summary.timeline]
     timeline_df = pd.DataFrame(timeline_rows)
+    generated_damage_summary = build_generated_damage_summary(
+        summary.timeline,
+        total_damage=summary.total_damage,
+    )
     preferred_columns = [
         "action_id",
         "selected_action_id",
@@ -982,6 +988,14 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         "hit_count",
         "normal_damage",
         "tune_break_damage",
+        "generated_mechanic_damage",
+        "generated_mechanic_hit_count",
+        "aemeath_forte_generated_damage",
+        "aemeath_seraphic_duet_followup_triggered",
+        "aemeath_seraphic_duet_followup_variant",
+        "aemeath_seraphic_duet_followup_repeat_count",
+        "aemeath_seraphic_duet_followup_multiplier",
+        "aemeath_seraphic_duet_followup_damage",
         "anomaly_tick_damage",
         "total_action_damage",
         "active_anomalies_after",
@@ -1062,6 +1076,82 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         )
 
     if not timeline_df.empty:
+        st.subheader("Generated Mechanic Damage")
+        st.caption(
+            "Generated mechanic damage is attached to its source action for timing, but it is separated here from "
+            "policy-selectable direct action damage. Source-confirmed Aemeath Forte follow-up damage uses "
+            "tune_response and is not basic attack damage."
+        )
+        generated_cols = st.columns(4)
+        generated_cols[0].metric(
+            "Generated total",
+            f"{generated_damage_summary['generated_mechanic_damage_total']:,.0f}",
+            f"{generated_damage_summary['generated_mechanic_damage_share_of_total'] * 100:.1f}%",
+        )
+        generated_cols[1].metric(
+            "Aemeath Forte",
+            f"{generated_damage_summary['aemeath_forte_generated_damage_total']:,.0f}",
+            f"{generated_damage_summary['aemeath_forte_generated_damage_share_of_total'] * 100:.1f}%",
+        )
+        generated_cols[2].metric(
+            "Seraphic Duet follow-up",
+            f"{generated_damage_summary['aemeath_seraphic_duet_followup_damage_total']:,.0f}",
+            f"{generated_damage_summary['aemeath_seraphic_duet_followup_damage_share_of_total'] * 100:.1f}%",
+        )
+        generated_cols[3].metric(
+            "Follow-up hits",
+            generated_damage_summary.get("aemeath_seraphic_duet_followup_total_repeat_count", 0),
+        )
+        st.dataframe(
+            pd.DataFrame(
+                [
+                    {
+                        "variant": "normal",
+                        "count": generated_damage_summary["aemeath_seraphic_duet_followup_normal_count"],
+                        "damage": generated_damage_summary[
+                            "aemeath_seraphic_duet_followup_normal_damage_total"
+                        ],
+                    },
+                    {
+                        "variant": "enhanced",
+                        "count": generated_damage_summary["aemeath_seraphic_duet_followup_enhanced_count"],
+                        "damage": generated_damage_summary[
+                            "aemeath_seraphic_duet_followup_enhanced_damage_total"
+                        ],
+                    },
+                ]
+            ),
+            use_container_width=True,
+            hide_index=True,
+        )
+        st.write(
+            {
+                "source_multipliers": generated_damage_summary[
+                    "aemeath_seraphic_duet_followup_source_multipliers"
+                ],
+                "average_followup_damage": generated_damage_summary[
+                    "aemeath_seraphic_duet_followup_average_damage"
+                ],
+                "average_damage_per_hit": generated_damage_summary.get(
+                    "aemeath_seraphic_duet_followup_average_damage_per_hit", 0.0
+                ),
+                "interfered_amp_damage_events": generated_damage_summary[
+                    "aemeath_forte_interfered_amp_damage_events"
+                ],
+                "interfered_amp_damage_total": generated_damage_summary[
+                    "aemeath_forte_interfered_amp_damage_total"
+                ],
+                "interfered_amp_applied_count": generated_damage_summary[
+                    "aemeath_forte_interfered_amp_applied_count"
+                ],
+                "interfered_amp_missing_count": generated_damage_summary[
+                    "aemeath_forte_interfered_amp_missing_count"
+                ],
+            }
+        )
+        st.caption(generated_damage_summary["aemeath_seraphic_duet_followup_source_multiplier_note"])
+        st.caption(generated_damage_summary["aemeath_forte_interfered_amp_note"])
+
         st.subheader("Damage Category Breakdown")
         st.caption(
             "Selected policy action is the high-level action chosen by the player/PPO. "
@@ -1088,13 +1178,44 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
                 fig = px.bar(bonus_damage, x="damage_bonus_category", y="total_action_damage", text_auto=".2s")
                 fig.update_layout(xaxis_title="Damage bonus category", yaxis_title="Total damage")
                 st.plotly_chart(fig, use_container_width=True)
+        generated_breakdown_cols = st.columns(3)
+        with generated_breakdown_cols[0]:
+            st.write("Hit formula type")
+            st.dataframe(
+                pd.DataFrame(
+                    sorted(generated_damage_summary["damage_by_hit_formula_type"].items()),
+                    columns=["formula_type", "damage"],
+                ),
+                use_container_width=True,
+                hide_index=True,
+            )
+        with generated_breakdown_cols[1]:
+            st.write("Generated mechanic source")
+            st.dataframe(
+                pd.DataFrame(
+                    sorted(generated_damage_summary["damage_by_generated_mechanic_source"].items()),
+                    columns=["source", "damage"],
+                ),
+                use_container_width=True,
+                hide_index=True,
+            )
+        with generated_breakdown_cols[2]:
+            st.write("Character and source")
+            st.dataframe(
+                pd.DataFrame(
+                    sorted(generated_damage_summary["damage_by_character_and_source"].items()),
+                    columns=["character_source", "damage"],
+                ),
+                use_container_width=True,
+                hide_index=True,
+            )
 
     chart_col, resource_col = st.columns([2, 1])
 
     with chart_col:
         st.subheader("Damage breakdown by resolved action")
         if not timeline_df.empty:
-            category_columns = ["normal_damage", "tune_break_damage", "anomaly_tick_damage"]
+            category_columns = ["normal_damage", "tune_break_damage", "generated_mechanic_damage", "anomaly_tick_damage"]
             damage_df = timeline_df[["action_name", *category_columns]].melt(
                 id_vars="action_name",
                 var_name="damage_type",

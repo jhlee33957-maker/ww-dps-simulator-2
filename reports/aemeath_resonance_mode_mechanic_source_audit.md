@@ -4,7 +4,7 @@ Status: `user_supplied_skill_screenshot_not_embedded`
 
 Implementation: `event_trigger_only`
 
-This audit records the current source status for Aemeath Resonance Mode mechanic events. The simulator emits event tags only; it does not add Fusion Burst damage, Tune Rupture damage, Fusion/Rupturous Trail damage, Trailblazing Star set effects, Seraphic Duet follow-up damage, stat bonuses, coefficients, timings, resources, cooldowns, or PPO reward shaping.
+This audit records the current source status for Aemeath Resonance Mode mechanic events. The simulator emits event tags for resonance mode triggers; it does not add Fusion Burst damage, generic Tune Rupture damage, Fusion/Rupturous Trail damage, Trailblazing Star follow-up damage, stat bonuses, coefficients, timings, resources, cooldowns, or PPO reward shaping from these event tags. Source-confirmed Tune Rupture-mode Seraphic Duet follow-up damage is handled separately by generated mechanic damage.
 
 ## Source Review
 
@@ -51,6 +51,5 @@ Cooldown behavior: the same skill can trigger once every 3 seconds. The cooldown
 - `fusion_burst_explosion_damage`
 - `fusion_trail`
 - `rupturous_trail`
-- `seraphic_duet_extra_tune_rupture_damage`
 - `seraphic_duet_fusion_burst_multiplier`
 - `stardust_resonance_extra_effects`

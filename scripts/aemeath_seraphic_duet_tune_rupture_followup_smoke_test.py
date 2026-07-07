@@ -70,6 +70,12 @@ def test_normal_followup_generates_five_tune_response_hits() -> float:
     state, result = run_seraphic(enhancement_stacks=0)
     hits = generated_hits(result)
     assert result.generated_mechanic_damage > 0.0
+    assert result.generated_mechanic_damage_total == result.generated_mechanic_damage
+    assert result.generated_mechanic_hit_count == 5
+    assert result.aemeath_forte_generated_damage == result.generated_mechanic_damage
+    assert result.aemeath_forte_generated_damage_total == result.generated_mechanic_damage
+    assert result.aemeath_seraphic_duet_followup_triggered is True
+    assert result.aemeath_seraphic_duet_followup_damage == result.generated_mechanic_damage
     assert result.aemeath_seraphic_duet_followup_variant == "normal"
     assert result.aemeath_seraphic_duet_followup_repeat_count == 5
     assert result.aemeath_seraphic_duet_followup_multiplier == 1.0935
@@ -89,6 +95,12 @@ def test_enhanced_followup_generates_ten_hits_and_consumes_stack(normal_damage: 
     state, result = run_seraphic(enhancement_stacks=2)
     hits = generated_hits(result)
     assert result.generated_mechanic_damage > normal_damage
+    assert result.generated_mechanic_damage_total == result.generated_mechanic_damage
+    assert result.generated_mechanic_hit_count == 10
+    assert result.aemeath_forte_generated_damage == result.generated_mechanic_damage
+    assert result.aemeath_forte_generated_damage_total == result.generated_mechanic_damage
+    assert result.aemeath_seraphic_duet_followup_triggered is True
+    assert result.aemeath_seraphic_duet_followup_damage == result.generated_mechanic_damage
     assert result.aemeath_seraphic_duet_followup_variant == "enhanced"
     assert result.aemeath_seraphic_duet_followup_repeat_count == 10
     assert result.aemeath_seraphic_duet_followup_multiplier == 1.0935

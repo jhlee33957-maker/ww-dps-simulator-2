@@ -55,6 +55,8 @@ def main() -> None:
     assert "external simulator websites" in _text(aemeath["source_gated_implementation"])
     assert "fusion burst" in _text(aemeath["remaining_unresolved_mechanics"])
     assert "c6" in _text(aemeath["remaining_unresolved_mechanics"])
+    assert "seraphic_duet_extra_tune_rupture_damage" not in aemeath_text
+    assert "seraphic duet tune rupture follow-up damage is implemented" in aemeath_text
 
     mornye_text = _text(mornye)
     for phrase in (

@@ -25,6 +25,7 @@ from simulator.transition_config import (
     transition_event_counts,
     transition_mode_summary,
 )
+from rl.evaluation_report import build_generated_damage_summary
 
 
 OBSERVATION_METADATA_KEYS = (
@@ -209,6 +210,10 @@ def main() -> None:
         damage_by_category[row.damage_category] += row.total_action_damage
         damage_by_action_type[row.action_type or "other"] += row.total_action_damage
         damage_by_damage_bonus_category[row.damage_bonus_category or row.damage_category] += row.total_action_damage
+    generated_damage_summary = build_generated_damage_summary(
+        summary.timeline,
+        total_damage=summary.total_damage,
+    )
 
     print("Selected party:", env.get_selected_party_character_ids())
     print("Initial active character:", env.get_initial_active_character())
@@ -226,6 +231,17 @@ def main() -> None:
     print("Damage by category:", dict(damage_by_category))
     print("Damage by action type:", dict(damage_by_action_type))
     print("Damage by damage bonus category:", dict(damage_by_damage_bonus_category))
+    print(
+        "Generated mechanic damage:",
+        {
+            "total": generated_damage_summary["generated_mechanic_damage_total"],
+            "share": generated_damage_summary["generated_mechanic_damage_share_of_total"],
+            "aemeath_forte": generated_damage_summary["aemeath_forte_generated_damage_total"],
+            "seraphic_duet_followup": generated_damage_summary[
+                "aemeath_seraphic_duet_followup_damage_total"
+            ],
+        },
+    )
     print("Aemeath Resonance Mode:", summary.aemeath_resonance_mode)
     print("Mechanic event emitted counts:", summary.mechanic_event_emitted_counts)
     print("Resource summary:", summary.resources)
@@ -385,6 +401,7 @@ def main() -> None:
         "damage_by_category": dict(damage_by_category),
         "damage_by_action_type": dict(damage_by_action_type),
         "damage_by_damage_bonus_category": dict(damage_by_damage_bonus_category),
+        **generated_damage_summary,
         "damage_bonus_breakdown_sample": [
             {
                 "selected_action_id": row.selected_action_id,
