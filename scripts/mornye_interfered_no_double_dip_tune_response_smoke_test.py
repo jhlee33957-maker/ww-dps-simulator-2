@@ -56,30 +56,29 @@ def run_with_amp(amp: float):
         weapon_definitions={},
     )
     generated_hits = [hit for hit in result.hit_details if hit.get("is_generated_mechanic_damage")]
+    direct_hits = [hit for hit in result.hit_details if not hit.get("is_generated_mechanic_damage")]
     assert generated_hits
-    return result, generated_hits
+    return result, generated_hits, direct_hits
 
 
 def main() -> None:
-    with (ROOT / "data" / "character_mechanic_effects" / "aemeath_forte_circuit.json").open(
-        "r", encoding="utf-8-sig"
-    ) as file:
-        config_text = json.dumps(json.load(file), ensure_ascii=False)
-    assert "1.0935" in config_text
-    assert "1.531" not in config_text
-    assert "1.5309" not in config_text
+    base_result, base_hits, _ = run_with_amp(0.0)
+    amp_result, amp_hits, direct_hits = run_with_amp(0.4)
 
-    base_result, base_hits = run_with_amp(0.0)
-    amp_result, amp_hits = run_with_amp(0.4)
-    assert base_result.aemeath_seraphic_duet_followup_multiplier == 1.0935
+    ratio = amp_result.generated_mechanic_damage / base_result.generated_mechanic_damage
+    assert 1.399 < ratio < 1.401
+    assert ratio < 1.5, "Generated tune_response damage should not receive a 1.4x amp twice"
     assert amp_result.aemeath_seraphic_duet_followup_multiplier == 1.0935
-    assert amp_result.generated_mechanic_damage > base_result.generated_mechanic_damage * 1.39
-    assert amp_result.generated_mechanic_damage < base_result.generated_mechanic_damage * 1.41
+    assert all(hit["formula_type"] == "tune_response" for hit in amp_hits)
     assert all(hit["source_multiplier"] == 1.0935 for hit in amp_hits)
     assert all(hit["applied_damage_taken_amp"] == 0.4 for hit in amp_hits)
     assert all(hit["effective_damage_taken_amp"] == 0.4 for hit in amp_hits)
+    assert all(hit.get("interfered_marker_amp_applied_to_direct_damage", False) is False for hit in amp_hits)
+    assert all(hit.get("target_damage_taken_amp", 0.0) == 0.0 for hit in amp_hits)
+    assert any(hit.get("interfered_marker_amp_applied_to_direct_damage") is True for hit in direct_hits)
     assert all(hit["applied_damage_taken_amp"] == 0.0 for hit in base_hits)
-    print("aemeath_forte_interfered_amp_separation_smoke_test ok")
+
+    print("mornye_interfered_no_double_dip_tune_response_smoke_test ok")
 
 
 if __name__ == "__main__":

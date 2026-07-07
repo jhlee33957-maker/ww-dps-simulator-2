@@ -5,7 +5,11 @@ from typing import Any, Literal
 
 from simulator.buff_system import buffed_combat_stats
 from simulator.models import ActionData, CharacterData, CombatState
-from simulator.tune_break import calculate_tune_break_damage_detail, calculate_tune_response_damage_detail
+from simulator.tune_break import (
+    calculate_tune_break_damage_detail,
+    calculate_tune_response_damage_detail,
+    current_interfered_damage_taken_amp,
+)
 
 
 FormulaType = Literal["normal", "tune_break", "tune_response"]
@@ -128,7 +132,7 @@ def _calculate_single_generated_hit(
     character: CharacterData,
 ) -> tuple[float, dict[str, Any]]:
     applied_amp = (
-        float(getattr(state, "interfered_marker_damage_taken_amp", 0.0) or 0.0)
+        current_interfered_damage_taken_amp(state)
         if packet.applied_damage_taken_amp_mode == "current_target_marker"
         else 0.0
     )

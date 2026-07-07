@@ -23,7 +23,7 @@ SOURCE_DIR = DATA_DIR / "source"
 OUTPUT_PATH = DATA_DIR / "extracted" / "pretrain_aemeath_mornye_source_lock_audit.json"
 REPORT_PATH = PROJECT_ROOT / "reports" / "pretrain_aemeath_mornye_source_lock_audit.md"
 
-ACTION_SHEET_CANDIDATES = {"角色-女", "鰲믦돯-也?"}
+ACTION_SHEET_CANDIDATES = {"角色-女"}
 ATTACH_SHEET_CANDIDATES = {"附页2", "?꾦〉2"}
 REQUIRED_SHEET_GROUPS = [ACTION_SHEET_CANDIDATES, {"dmg"}, ATTACH_SHEET_CANDIDATES]
 ACTION_SOURCE_ROWS = {

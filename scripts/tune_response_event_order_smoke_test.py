@@ -54,6 +54,8 @@ def main() -> None:
     assert row.tune_response_event_order_source_status == "excel_event_order_derived"
 
     existing = Simulation.from_json(ROOT / "data", selected_character_ids="aemeath_mornye_test_party")
+    existing.state.target_interfered_state = "tune_rupture_interfered"
+    existing.state.target_interfered_remaining = 8.0
     existing.state.interfered_marker_remaining = 8.0
     existing.state.interfered_marker_damage_taken_amp = 0.4
     ready(existing)

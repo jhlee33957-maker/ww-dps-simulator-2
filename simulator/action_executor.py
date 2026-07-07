@@ -33,8 +33,17 @@ from simulator.generated_damage import calculate_generated_damage_packet
 from simulator.mechanic_events import preview_mechanic_event_trigger, process_mechanic_event_triggers
 from simulator.models import ActionData, ActionResult, BuffData, CharacterData, CombatState, HitData, TimelineEntry
 from simulator.resource_system import apply_resource_changes, can_pay_resources
-from simulator.tune_break import calculate_tune_break_damage_detail
+from simulator.tune_break import (
+    INTERFERED_MARKER_AMP_SOURCE,
+    INTERFERED_MARKER_AMP_SOURCE_REF,
+    INTERFERED_MARKER_AMP_SOURCE_STATUS,
+    calculate_tune_break_damage_detail,
+    current_interfered_damage_taken_amp,
+)
 from simulator.weapon_effects import weapon_runtime_damage_effects
+
+
+INTERFERED_MARKER_BUFF_ID = "mornye_interfered_marker_damage_amp"
 
 
 def is_action_valid(action: ActionData, state: CombatState) -> tuple[bool, str | None]:
@@ -63,6 +72,24 @@ def is_action_valid(action: ActionData, state: CombatState) -> tuple[bool, str |
 
 def cooldown_key(action: ActionData) -> str:
     return action.cooldown_group or action.id
+
+
+def _active_interfered_marker_buff_damage_amp(
+    state: CombatState,
+    buffs: dict[str, BuffData],
+    *,
+    time_offset: float,
+) -> float:
+    for active in state.active_buffs:
+        if active.buff_id != INTERFERED_MARKER_BUFF_ID:
+            continue
+        if active.remaining_duration <= time_offset:
+            continue
+        buff = buffs.get(active.buff_id)
+        if buff is None or buff.modifier_type != "damage_amp":
+            continue
+        return float(active.metadata.get("dynamic_value", buff.value) or 0.0)
+    return 0.0
 
 
 def reduce_cooldowns(state: CombatState, elapsed: float) -> None:
@@ -173,6 +200,10 @@ def _calculate_hit_damage(
         time_offset=hit.time,
         force_active_buff_ids=force_active_buff_ids,
     )
+    target_damage_taken_amp = current_interfered_damage_taken_amp(state)
+    if target_damage_taken_amp > 0.0:
+        damage_amp -= _active_interfered_marker_buff_damage_amp(state, buffs, time_offset=hit.time)
+    target_damage_taken_multiplier = 1.0 + target_damage_taken_amp
     damage_element = action_damage_element(action, character)
     runtime_weapon_effects = weapon_runtime_damage_effects(
         character=character,
@@ -296,6 +327,19 @@ def _calculate_hit_damage(
         if hit.damage_category == "tune_break" and tune_break_detail:
             tune_break_detail["tune_break_damage_before_damage_taken_amp"] = tune_break_detail["tune_break_damage"]
             tune_break_detail["tune_break_damage"] = damage
+    damage_before_target_amp = damage
+    target_amp_applied_to_direct_damage = (
+        damage > 0.0
+        and target_damage_taken_amp > 0.0
+        and hit.damage_category in {"normal", "tune_break"}
+    )
+    if target_amp_applied_to_direct_damage:
+        damage *= target_damage_taken_multiplier
+        if hit.damage_category == "tune_break" and tune_break_detail:
+            tune_break_detail["tune_break_damage_before_target_amp"] = damage_before_target_amp
+            tune_break_detail["tune_break_damage_after_target_amp"] = damage
+            tune_break_detail["tune_break_damage"] = damage
+    target_damage_taken_amp_bonus_damage = damage - damage_before_target_amp
 
     detail = {
         "hit_time": hit.time,
@@ -385,6 +429,31 @@ def _calculate_hit_damage(
             stats.get("starfield_calibrator_party_crit_damage_bonus", 0.0) or 0.0
         ),
         "applied_damage_amp": damage_amp,
+        "target_damage_taken_amp": target_damage_taken_amp if target_amp_applied_to_direct_damage else 0.0,
+        "target_damage_taken_multiplier": target_damage_taken_multiplier if target_amp_applied_to_direct_damage else 1.0,
+        "target_damage_taken_amp_source": (
+            INTERFERED_MARKER_AMP_SOURCE if target_amp_applied_to_direct_damage else None
+        ),
+        "target_damage_taken_amp_source_status": (
+            INTERFERED_MARKER_AMP_SOURCE_STATUS if target_amp_applied_to_direct_damage else None
+        ),
+        "target_damage_taken_amp_source_ref": (
+            INTERFERED_MARKER_AMP_SOURCE_REF if target_amp_applied_to_direct_damage else None
+        ),
+        "target_damage_taken_amp_bonus_damage": target_damage_taken_amp_bonus_damage,
+        "normal_damage_before_target_amp": damage_before_target_amp if hit.damage_category == "normal" else 0.0,
+        "normal_damage_after_target_amp": damage if hit.damage_category == "normal" else 0.0,
+        "interfered_marker_amp_applied_to_direct_damage": (
+            target_amp_applied_to_direct_damage and hit.damage_category == "normal"
+        ),
+        "tune_break_damage_receives_existing_interfered_marker_amp": (
+            target_amp_applied_to_direct_damage and hit.damage_category == "tune_break"
+        ),
+        "tune_break_damage_receives_newly_applied_interfered_marker_amp": False,
+        "tune_break_damage_before_target_amp": (
+            damage_before_target_amp if hit.damage_category == "tune_break" else 0.0
+        ),
+        "tune_break_damage_after_target_amp": damage if hit.damage_category == "tune_break" else 0.0,
         "name": hit.name,
         **tune_break_detail,
     }
@@ -406,13 +475,19 @@ def _calculate_hit_damage_totals(
     temporary_stat_modifiers: dict[str, float] | None = None,
     force_active_buff_ids: set[str] | None = None,
     weapon_definitions: dict[str, Any] | None = None,
-) -> tuple[float, float, list[dict], dict[str, float], float, dict[str, Any]]:
+) -> tuple[float, float, list[dict], dict[str, float], float, dict[str, Any], dict[str, Any]]:
     normal_damage = 0.0
     tune_break_damage = 0.0
     damage_after_cutoff_excluded = 0.0
     hit_details: list[dict] = []
     damage_by_category: dict[str, float] = {}
     action_damage_bonus_context: dict[str, Any] = {}
+    direct_damage_taken_amp_total_bonus_damage = 0.0
+    interfered_marker_direct_damage_amp_applied_count = 0
+    tune_break_damage_receives_existing_interfered_marker_amp = False
+    tune_break_damage_receives_newly_applied_interfered_marker_amp = False
+    tune_break_damage_before_target_amp = 0.0
+    tune_break_damage_after_target_amp = 0.0
     has_explicit_hit_timing = bool(action.hits)
 
     for hit in sorted(action.effective_hits(), key=lambda item: item.time):
@@ -432,6 +507,16 @@ def _calculate_hit_damage_totals(
             damage *= action_damage_multiplier
             detail["damage"] = damage
             detail["mechanic_damage_multiplier"] = action_damage_multiplier
+            for key in (
+                "target_damage_taken_amp_bonus_damage",
+                "normal_damage_before_target_amp",
+                "normal_damage_after_target_amp",
+                "tune_break_damage_before_target_amp",
+                "tune_break_damage_after_target_amp",
+                "tune_break_damage",
+            ):
+                if key in detail:
+                    detail[key] = float(detail.get(key, 0.0) or 0.0) * action_damage_multiplier
         hit_combat_offset = _hit_combat_offset(
             hit,
             action_time=action_time,
@@ -453,6 +538,17 @@ def _calculate_hit_damage_totals(
             continue
         if detail:
             hit_details.append(detail)
+            amp_bonus_damage = float(detail.get("target_damage_taken_amp_bonus_damage", 0.0) or 0.0)
+            direct_damage_taken_amp_total_bonus_damage += amp_bonus_damage
+            if detail.get("interfered_marker_amp_applied_to_direct_damage"):
+                interfered_marker_direct_damage_amp_applied_count += 1
+            if detail.get("tune_break_damage_receives_existing_interfered_marker_amp"):
+                interfered_marker_direct_damage_amp_applied_count += 1
+                tune_break_damage_receives_existing_interfered_marker_amp = True
+            if detail.get("tune_break_damage_receives_newly_applied_interfered_marker_amp"):
+                tune_break_damage_receives_newly_applied_interfered_marker_amp = True
+            tune_break_damage_before_target_amp += float(detail.get("tune_break_damage_before_target_amp", 0.0) or 0.0)
+            tune_break_damage_after_target_amp += float(detail.get("tune_break_damage_after_target_amp", 0.0) or 0.0)
             if not action_damage_bonus_context and "effective_damage_bonus" in detail:
                 action_damage_bonus_context = {
                     key: detail.get(key)
@@ -531,6 +627,23 @@ def _calculate_hit_damage_totals(
         elif hit.damage_category == "tune_break":
             tune_break_damage += damage
 
+    direct_amp_summary = {
+        "direct_damage_taken_amp_total_bonus_damage": direct_damage_taken_amp_total_bonus_damage,
+        "interfered_marker_direct_damage_amp_applied_count": interfered_marker_direct_damage_amp_applied_count,
+        "interfered_marker_direct_damage_amp_bonus_damage": direct_damage_taken_amp_total_bonus_damage,
+        "interfered_marker_direct_damage_amp_source_ref": (
+            INTERFERED_MARKER_AMP_SOURCE_REF if interfered_marker_direct_damage_amp_applied_count else None
+        ),
+        "tune_break_damage_receives_existing_interfered_marker_amp": (
+            tune_break_damage_receives_existing_interfered_marker_amp
+        ),
+        "tune_break_damage_receives_newly_applied_interfered_marker_amp": (
+            tune_break_damage_receives_newly_applied_interfered_marker_amp
+        ),
+        "tune_break_damage_before_target_amp": tune_break_damage_before_target_amp,
+        "tune_break_damage_after_target_amp": tune_break_damage_after_target_amp,
+    }
+
     return (
         normal_damage,
         tune_break_damage,
@@ -538,6 +651,7 @@ def _calculate_hit_damage_totals(
         damage_by_category,
         damage_after_cutoff_excluded,
         action_damage_bonus_context,
+        direct_amp_summary,
     )
 
 
@@ -775,6 +889,7 @@ def execute_action(
         hit_damage_by_category,
         damage_after_cutoff_excluded,
         action_damage_bonus_context,
+        direct_amp_summary,
     ) = _calculate_hit_damage_totals(
         action,
         state,
@@ -1063,6 +1178,30 @@ def execute_action(
         damage=total_action_damage,
         normal_damage=normal_damage,
         tune_break_damage=tune_break_damage,
+        direct_damage_taken_amp_total_bonus_damage=float(
+            direct_amp_summary.get("direct_damage_taken_amp_total_bonus_damage", 0.0) or 0.0
+        ),
+        interfered_marker_direct_damage_amp_applied_count=int(
+            direct_amp_summary.get("interfered_marker_direct_damage_amp_applied_count", 0) or 0
+        ),
+        interfered_marker_direct_damage_amp_bonus_damage=float(
+            direct_amp_summary.get("interfered_marker_direct_damage_amp_bonus_damage", 0.0) or 0.0
+        ),
+        interfered_marker_direct_damage_amp_source_ref=direct_amp_summary.get(
+            "interfered_marker_direct_damage_amp_source_ref"
+        ),
+        tune_break_damage_receives_existing_interfered_marker_amp=bool(
+            direct_amp_summary.get("tune_break_damage_receives_existing_interfered_marker_amp", False)
+        ),
+        tune_break_damage_receives_newly_applied_interfered_marker_amp=bool(
+            direct_amp_summary.get("tune_break_damage_receives_newly_applied_interfered_marker_amp", False)
+        ),
+        tune_break_damage_before_target_amp=float(
+            direct_amp_summary.get("tune_break_damage_before_target_amp", 0.0) or 0.0
+        ),
+        tune_break_damage_after_target_amp=float(
+            direct_amp_summary.get("tune_break_damage_after_target_amp", 0.0) or 0.0
+        ),
         generated_mechanic_damage=generated_mechanic_damage,
         generated_mechanic_damage_total=generated_mechanic_damage,
         generated_mechanic_hit_count=generated_mechanic_hit_count,
@@ -1324,6 +1463,18 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         damage=result.damage,
         normal_damage=result.normal_damage,
         tune_break_damage=result.tune_break_damage,
+        direct_damage_taken_amp_total_bonus_damage=result.direct_damage_taken_amp_total_bonus_damage,
+        interfered_marker_direct_damage_amp_applied_count=result.interfered_marker_direct_damage_amp_applied_count,
+        interfered_marker_direct_damage_amp_bonus_damage=result.interfered_marker_direct_damage_amp_bonus_damage,
+        interfered_marker_direct_damage_amp_source_ref=result.interfered_marker_direct_damage_amp_source_ref,
+        tune_break_damage_receives_existing_interfered_marker_amp=(
+            result.tune_break_damage_receives_existing_interfered_marker_amp
+        ),
+        tune_break_damage_receives_newly_applied_interfered_marker_amp=(
+            result.tune_break_damage_receives_newly_applied_interfered_marker_amp
+        ),
+        tune_break_damage_before_target_amp=result.tune_break_damage_before_target_amp,
+        tune_break_damage_after_target_amp=result.tune_break_damage_after_target_amp,
         generated_mechanic_damage=result.generated_mechanic_damage,
         generated_mechanic_damage_total=result.generated_mechanic_damage_total,
         generated_mechanic_hit_count=result.generated_mechanic_hit_count,

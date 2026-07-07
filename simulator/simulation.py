@@ -56,7 +56,7 @@ from simulator.roster import (
 )
 from simulator.state import create_initial_state
 from simulator.transition_config import build_effective_transition_config, load_transition_config, mechanics_mode_summary
-from simulator.tune_break import calculate_tune_response_damage_detail
+from simulator.tune_break import calculate_tune_response_damage_detail, current_interfered_damage_taken_amp
 from simulator.weapon_effects import (
     STARFIELD_CALIBRATOR_BUFF_ID,
     active_weapons_for_characters,
@@ -388,6 +388,11 @@ class Simulation:
         if action.action_type == "tune_break":
             self._apply_tune_break_after_effects(action, result)
         self._sync_tune_break_result_fields(result)
+        if result.interfered_marker_direct_damage_amp_applied_count > 0:
+            self.state.interfered_marker_direct_damage_amp_applied_action_count += 1
+            self.state.interfered_marker_direct_damage_amp_bonus_damage_total += (
+                result.interfered_marker_direct_damage_amp_bonus_damage
+            )
 
         for mechanic in self.character_mechanics.values():
             mechanic.advance_time(self.state, result.action_time)
@@ -829,11 +834,7 @@ class Simulation:
                 constellation_variant = "c5"
             result.mornye_particle_jet_multiplier_used = multiplier
             result.mornye_particle_jet_constellation_variant = constellation_variant
-        applied_amp = (
-            float(self.state.interfered_marker_damage_taken_amp or 0.0)
-            if self.state.interfered_marker_remaining > 0.0
-            else 0.0
-        )
+        applied_amp = current_interfered_damage_taken_amp(self.state)
         receives_marker_amp = applied_amp > 0.0
         receives_new_marker_amp = receives_marker_amp and bool(result.interfered_marker_newly_applied_this_action)
         receives_existing_marker_amp = (
@@ -1668,6 +1669,12 @@ class Simulation:
             tune_break_action_available_ids=self._available_tune_break_action_ids(),
             tune_break_action_used_count=self.state.tune_break_action_used_count,
             tune_break_damage_total=self.state.tune_break_damage_total,
+            interfered_marker_direct_damage_amp_bonus_damage_total=(
+                self.state.interfered_marker_direct_damage_amp_bonus_damage_total
+            ),
+            interfered_marker_direct_damage_amp_applied_action_count=(
+                self.state.interfered_marker_direct_damage_amp_applied_action_count
+            ),
             target_tune_shift_state=self.state.target_tune_shift_state,
             target_interfered_state=self.state.target_interfered_state,
             observation_marker_remaining=self._mornye_observation_marker_remaining(),

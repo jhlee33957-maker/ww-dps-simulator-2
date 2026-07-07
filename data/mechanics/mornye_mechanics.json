@@ -425,7 +425,7 @@
       "simplified_on_inversion",
       "tune_break_triggered"
     ],
-    "damage_amp_formula": "damage_taken_amp = min(ER excess percent * 0.0025, 0.40)",
+    "damage_amp_formula": "amp = min(max(energy_regen - 1.0, 0) * 0.25, 0.40)",
     "at_260_percent_er": {
       "damage_taken_amp": 0.4
     },
@@ -437,7 +437,10 @@
     "implemented_flow": [
       "Heavy Inversion applies Observation Marker.",
       "Observation Marker + Mornye Tune Break applies Interfered Marker.",
-      "The damage taken amp is enemy-scoped, non-stacking, and refreshes value/duration.",
+      "Observation Marker target + Mornye Tune Break / Tune damage path applies Interfered Marker.",
+      "The damage taken amp is target-scoped, applies to attacks against the marked target, is non-stacking, and refreshes value/duration.",
+      "With current user profile ER 2.7944, max((2.7944 - 1.0), 0) * 0.25 reaches the 0.40 cap.",
+      "This amp is a target damage-taken amp, not a damage bonus stat, and it is not baked into skill coefficients.",
       "Interfered Marker modes are optional runtime configuration modes unless a party preset selects one.",
       "simplified_on_inversion is retained only as an explicit legacy diagnostic mode."
     ],

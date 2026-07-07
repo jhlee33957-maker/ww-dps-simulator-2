@@ -383,6 +383,8 @@ class CombatState(BaseModel):
     mornye_particle_jet_cooldown_blocked_count: int = 0
     tune_break_action_used_count: int = 0
     tune_break_damage_total: float = 0.0
+    interfered_marker_direct_damage_amp_bonus_damage_total: float = 0.0
+    interfered_marker_direct_damage_amp_applied_action_count: int = 0
     tune_response_damage_total: float = 0.0
     aemeath_starburst_damage_total: float = 0.0
     mornye_particle_jet_damage_total: float = 0.0
@@ -427,6 +429,14 @@ class ActionResult(BaseModel):
     damage: float
     normal_damage: float = 0.0
     tune_break_damage: float = 0.0
+    direct_damage_taken_amp_total_bonus_damage: float = 0.0
+    interfered_marker_direct_damage_amp_applied_count: int = 0
+    interfered_marker_direct_damage_amp_bonus_damage: float = 0.0
+    interfered_marker_direct_damage_amp_source_ref: str | None = None
+    tune_break_damage_receives_existing_interfered_marker_amp: bool = False
+    tune_break_damage_receives_newly_applied_interfered_marker_amp: bool = False
+    tune_break_damage_before_target_amp: float = 0.0
+    tune_break_damage_after_target_amp: float = 0.0
     generated_mechanic_damage: float = 0.0
     generated_mechanic_damage_total: float = 0.0
     generated_mechanic_hit_count: int = 0
@@ -588,6 +598,8 @@ class ActionResult(BaseModel):
     tune_break_action_available_ids: list[str] = Field(default_factory=list)
     tune_break_action_used_count: int = 0
     tune_break_damage_total: float = 0.0
+    interfered_marker_direct_damage_amp_bonus_damage_total: float = 0.0
+    interfered_marker_direct_damage_amp_applied_action_count: int = 0
     target_tune_shift_state: str | None = None
     target_tune_shift_remaining: float = 0.0
     target_interfered_state: str | None = None
@@ -794,6 +806,14 @@ class TimelineEntry(BaseModel):
     damage: float
     normal_damage: float = 0.0
     tune_break_damage: float = 0.0
+    direct_damage_taken_amp_total_bonus_damage: float = 0.0
+    interfered_marker_direct_damage_amp_applied_count: int = 0
+    interfered_marker_direct_damage_amp_bonus_damage: float = 0.0
+    interfered_marker_direct_damage_amp_source_ref: str | None = None
+    tune_break_damage_receives_existing_interfered_marker_amp: bool = False
+    tune_break_damage_receives_newly_applied_interfered_marker_amp: bool = False
+    tune_break_damage_before_target_amp: float = 0.0
+    tune_break_damage_after_target_amp: float = 0.0
     generated_mechanic_damage: float = 0.0
     generated_mechanic_damage_total: float = 0.0
     generated_mechanic_hit_count: int = 0
