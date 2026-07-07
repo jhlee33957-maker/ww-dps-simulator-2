@@ -52,7 +52,7 @@ def test_mornye_internal_resources_do_not_scale_with_energy_regen() -> None:
     state["relative_momentum"] = 0.0
     state["wfo_combo_stage"] = 1
     assert sim.execute_action("mornye_basic_attack"), "Mornye WFO basic should execute"
-    assert_close(state["relative_momentum"], 2.5, "Relative Momentum should not scale with ER")
+    assert_close(state["relative_momentum"], 10.0, "Relative Momentum should not scale with ER")
 
 
 if __name__ == "__main__":

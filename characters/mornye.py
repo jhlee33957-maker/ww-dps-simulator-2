@@ -198,7 +198,23 @@ class MornyeMechanic(CharacterMechanic):
                 "final_concerto_gain": 10.0,
                 "relative_momentum_gain": 60.0,
                 "relative_momentum_gain_source_rows": [4144, 4145, 4146, 4147],
-                "source_status": "source_confirmed_action_data_resource_gain",
+                "source_status": "workbook_confirmed",
+            }
+        if action_id == "mornye_wfo_basic_stage_1":
+            return {
+                "source_sheet": "角色-女",
+                "source_rows": [4128],
+                "relative_momentum_gain": 10.0,
+                "relative_momentum_gain_source_rows": [4128],
+                "source_status": "workbook_confirmed_repeat_aware",
+            }
+        if action_id == "mornye_wfo_basic_stage_2":
+            return {
+                "source_sheet": "角色-女",
+                "source_rows": [4129],
+                "relative_momentum_gain": 12.0,
+                "relative_momentum_gain_source_rows": [4129],
+                "source_status": "workbook_confirmed_repeat_aware",
             }
         if action_id == "mornye_wfo_basic_stage_3":
             return {
@@ -210,7 +226,7 @@ class MornyeMechanic(CharacterMechanic):
                 "passive_concerto_source": "角色-女!4164 passive text: 施放QTE、观测A3后，获得20点协奏能量",
                 "relative_momentum_gain": 18.0,
                 "relative_momentum_gain_source_rows": [4132, 4133],
-                "source_status": "source_confirmed_passive_concerto",
+                "source_status": "workbook_confirmed",
             }
         if transition_action_id == "mornye_intro_convergence" or action_id == "transition:mornye_intro_convergence":
             return {

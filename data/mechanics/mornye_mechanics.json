@@ -61,7 +61,7 @@
       "cap": 100,
       "starts": 0,
       "implemented": true,
-      "notes": "Wide Field Observation actions add source-aligned core values where clear."
+      "notes": "Wide Field Observation actions add repeat-aware source-aligned core values where clear."
     },
     {
       "name": "Concerto Energy",
@@ -147,6 +147,72 @@
       "implemented": true
     }
   ],
+  "relative_momentum_flow": {
+    "implementation_status": "workbook_confirmed_repeat_aware_resource_patch",
+    "notes": [
+      "Relative Momentum is a Wide Field Observation resource capped at 100.",
+      "WFO Basic Stage 1 uses row 4128 repeat-aware core recovery: 2.5 x 4 = 10.0.",
+      "WFO Basic Stage 2 uses row 4129 repeat-aware core recovery: 3 x 4 = 12.0.",
+      "WFO Basic Stage 3 remains 18.0 from rows 4132 and 4133.",
+      "Distributed Array remains 60.0 from rows 4144, 4145, 4146, and 4147.",
+      "Distributed Array + WFO Basic Stage 1 + Stage 2 + Stage 3 reaches 100 Relative Momentum in 3.8667s of simulator combat time.",
+      "Heavy Inversion remains available at 100 Relative Momentum, consumes 100 Relative Momentum, and applies Observation Marker.",
+      "Heavy Inversion after that route ends at 5.1667s of simulator combat time."
+    ],
+    "actions": [
+      {
+        "action_id": "mornye_skill_distributed_array",
+        "relative_momentum_delta": 60.0,
+        "source_rows": [
+          4144,
+          4145,
+          4146,
+          4147
+        ],
+        "source_status": "workbook_confirmed"
+      },
+      {
+        "action_id": "mornye_wfo_basic_stage_1",
+        "relative_momentum_delta": 10.0,
+        "source_rows": [
+          4128
+        ],
+        "source_status": "workbook_confirmed_repeat_aware",
+        "calculation": "2.5 x 4"
+      },
+      {
+        "action_id": "mornye_wfo_basic_stage_2",
+        "relative_momentum_delta": 12.0,
+        "source_rows": [
+          4129
+        ],
+        "source_status": "workbook_confirmed_repeat_aware",
+        "calculation": "3 x 4"
+      },
+      {
+        "action_id": "mornye_wfo_basic_stage_3",
+        "relative_momentum_delta": 18.0,
+        "source_rows": [
+          4132,
+          4133
+        ],
+        "source_status": "workbook_confirmed"
+      },
+      {
+        "action_id": "mornye_heavy_inversion",
+        "relative_momentum_delta": -100.0,
+        "source_rows": [
+          4135,
+          4136
+        ],
+        "resource_status": "workbook_confirmed",
+        "source_status": "not_source_confirmed_direct_interfered",
+        "applies": [
+          "Observation Marker"
+        ]
+      }
+    ]
+  },
   "timing_model": [
     {
       "name": "action_time",

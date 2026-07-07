@@ -95,7 +95,7 @@ ACTION_SPECS: tuple[ActionSpec, ...] = (
         ("观测A1",),
         (("观测A1", 4),),
         ("观测A1",),
-        {"mechanic_effects.relative_momentum_delta": 2.5},
+        {"mechanic_effects.relative_momentum_delta": 10.0},
     ),
     ActionSpec(
         "mornye_wfo_basic_stage_2",
@@ -105,7 +105,7 @@ ACTION_SPECS: tuple[ActionSpec, ...] = (
         ("观测A2",),
         (("观测A2", 4),),
         ("观测A2",),
-        {"mechanic_effects.relative_momentum_delta": 3},
+        {"mechanic_effects.relative_momentum_delta": 12.0},
     ),
     ActionSpec(
         "mornye_wfo_basic_stage_3",

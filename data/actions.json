@@ -447,9 +447,18 @@
     ],
     "policy_selectable": false,
     "mechanic_effects": {
-      "relative_momentum_delta": 2.5,
+      "relative_momentum_delta": 10.0,
       "set_wfo_combo_stage": 2,
-      "source_character_name": "莫宁"
+      "source_character_name": "莫宁",
+      "source_sheet": "角色-女",
+      "source_rows": [
+        4128
+      ],
+      "relative_momentum_gain_source_rows": [
+        4128
+      ],
+      "source_status": "workbook_confirmed_repeat_aware",
+      "relative_momentum_repeat_calculation": "2.5 x 4"
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame row 4128 and skill row 2657. Timing uses action end frame 43/60.",
@@ -520,9 +529,18 @@
     ],
     "policy_selectable": false,
     "mechanic_effects": {
-      "relative_momentum_delta": 3,
+      "relative_momentum_delta": 12.0,
       "set_wfo_combo_stage": 3,
-      "source_character_name": "莫宁"
+      "source_character_name": "莫宁",
+      "source_sheet": "角色-女",
+      "source_rows": [
+        4129
+      ],
+      "relative_momentum_gain_source_rows": [
+        4129
+      ],
+      "source_status": "workbook_confirmed_repeat_aware",
+      "relative_momentum_repeat_calculation": "3 x 4"
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame row 4129 and skill row 2658. Timing uses action end frame 68/60.",
@@ -619,7 +637,8 @@
       "relative_momentum_gain_source_rows": [
         4132,
         4133
-      ]
+      ],
+      "source_status": "workbook_confirmed"
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame rows 4131-4134 and skill rows 2660-2663. Passive note grants 20 Concerto after QTE/Observation A3.",
@@ -973,7 +992,8 @@
         4145,
         4146,
         4147
-      ]
+      ],
+      "source_status": "workbook_confirmed"
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame rows 4143-4147 and skill rows 2666-2669. Concerto regen 10.",
