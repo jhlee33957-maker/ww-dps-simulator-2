@@ -32,6 +32,17 @@ NEW_SUMMARY_KEYS = (
     "damage_by_hit_formula_type",
     "damage_by_generated_mechanic_source",
     "damage_by_character_and_source",
+    "report_generation_version",
+    "timeline_schema_has_generated_damage_fields",
+    "summary_schema_has_generated_damage_fields",
+    "generated_damage_reporting_status",
+    "legacy_damage_by_source_action_category",
+    "direct_damage_by_category",
+    "direct_damage_by_damage_bonus_category",
+    "generated_damage_by_source_action_category",
+    "effective_damage_role_breakdown",
+    "basic_attack_direct_damage_share_of_total",
+    "resonance_liberation_direct_damage_share_of_total",
 )
 
 
@@ -73,6 +84,14 @@ def main() -> None:
     assert generated_payload["generated_mechanic_damage_share_of_total"] == 0.4
     assert generated_payload["aemeath_seraphic_duet_followup_normal_count"] == 1
     assert generated_payload["aemeath_seraphic_duet_followup_enhanced_count"] == 0
+    assert generated_payload["report_generation_version"] == "generated_damage_reporting_v2"
+    assert generated_payload["timeline_schema_has_generated_damage_fields"] is True
+    assert generated_payload["summary_schema_has_generated_damage_fields"] is True
+    assert generated_payload["generated_damage_reporting_status"] == "ok"
+    assert generated_payload["direct_damage_by_category"]["resonance_skill"] == 600.0
+    assert generated_payload["legacy_damage_by_source_action_category"]["resonance_skill"] == 1000.0
+    assert generated_payload["generated_damage_by_source_action_category"]["resonance_skill"] == 400.0
+    assert generated_payload["effective_damage_role_breakdown"]["total_damage_check"] == 1000.0
 
     with tempfile.TemporaryDirectory() as tmpdir:
         summary_path = Path(tmpdir) / "ppo_evaluation_summary.json"
@@ -88,6 +107,7 @@ def main() -> None:
     assert missing_field_payload["generated_mechanic_damage_total"] == 0.0
     assert missing_field_payload["aemeath_forte_generated_damage_total"] == 0.0
     assert missing_field_payload["generated_mechanic_damage_share_of_total"] == 0.0
+    assert missing_field_payload["generated_damage_reporting_status"] == "no_generated_damage_fields_in_timeline"
     assert missing_field_payload["damage_by_generated_mechanic_source"]["aemeath_forte"] == 0.0
     print("evaluation_report_schema_smoke_test ok")
 

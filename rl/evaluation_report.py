@@ -4,8 +4,32 @@ from collections import Counter
 from typing import Any, Iterable
 
 
-NORMAL_VARIANTS = {"normal", "强化E-震谐", "Seraphic Duet Tune Rupture Follow-up"}
-ENHANCED_VARIANTS = {"enhanced", "强化E-震谐增幅", "Seraphic Duet Tune Rupture Enhanced Follow-up"}
+REPORT_GENERATION_VERSION = "generated_damage_reporting_v2"
+GENERATED_DAMAGE_FIELDS = (
+    "generated_mechanic_damage",
+    "aemeath_forte_generated_damage",
+    "aemeath_seraphic_duet_followup_damage",
+    "aemeath_seraphic_duet_followup_variant",
+    "aemeath_seraphic_duet_followup_repeat_count",
+)
+GENERATED_DAMAGE_SUMMARY_KEYS = (
+    "generated_mechanic_damage_total",
+    "generated_mechanic_damage_action_count",
+    "generated_mechanic_damage_share_of_total",
+    "aemeath_forte_generated_damage_total",
+    "aemeath_seraphic_duet_followup_damage_total",
+    "aemeath_seraphic_duet_followup_normal_count",
+    "aemeath_seraphic_duet_followup_enhanced_count",
+    "damage_by_hit_formula_type",
+    "damage_by_generated_mechanic_source",
+    "damage_by_character_and_source",
+)
+NORMAL_VARIANTS = {"normal", "\u5f3a\u5316E-\u9707\u8c10", "Seraphic Duet Tune Rupture Follow-up"}
+ENHANCED_VARIANTS = {
+    "enhanced",
+    "\u5f3a\u5316E-\u9707\u8c10\u589e\u5e45",
+    "Seraphic Duet Tune Rupture Enhanced Follow-up",
+}
 
 
 def build_generated_damage_summary(
@@ -18,9 +42,11 @@ def build_generated_damage_summary(
     if resolved_total_damage <= 0.0:
         resolved_total_damage = sum(_float(row, "total_action_damage") for row in rows)
 
+    timeline_has_generated_fields = _timeline_has_generated_damage_fields(rows)
     generated_total = sum(_float(row, "generated_mechanic_damage") for row in rows)
     generated_action_count = sum(1 for row in rows if _float(row, "generated_mechanic_damage") > 0.0)
     generated_hit_count = sum(_generated_hit_count(row) for row in rows)
+    direct_damage_total = sum(_direct_damage(row) for row in rows)
 
     aemeath_forte_total = sum(_float(row, "aemeath_forte_generated_damage") for row in rows)
     followup_rows = [row for row in rows if _is_followup_row(row)]
@@ -42,16 +68,20 @@ def build_generated_damage_summary(
     interfered_rows = [row for row in followup_rows if _row_has_generated_interfered_amp(row)]
     interfered_hit_count = sum(_generated_interfered_hit_count(row) for row in followup_rows)
     interfered_missing_count = sum(1 for row in followup_rows if not _row_has_generated_interfered_amp(row))
-
-    damage_by_formula = _damage_by_hit_formula_type(rows)
-    damage_by_generated_source = _damage_by_generated_mechanic_source(rows)
-    damage_by_character_source = _damage_by_character_and_source(rows)
-    damage_by_action_damage_category = _damage_by_action_damage_category(rows)
+    direct_damage_by_category = _direct_damage_by_category(rows)
 
     summary = {
+        "report_generation_version": REPORT_GENERATION_VERSION,
+        "timeline_schema_has_generated_damage_fields": timeline_has_generated_fields,
+        "summary_schema_has_generated_damage_fields": True,
+        "generated_damage_reporting_status": _generated_damage_reporting_status(
+            timeline_has_generated_fields,
+            generated_total,
+        ),
         "generated_mechanic_damage_total": generated_total,
         "generated_mechanic_damage_action_count": generated_action_count,
         "generated_mechanic_damage_share_of_total": _share(generated_total, resolved_total_damage),
+        "direct_damage_share_of_total": _share(direct_damage_total, resolved_total_damage),
         "aemeath_forte_generated_damage_total": aemeath_forte_total,
         "aemeath_forte_generated_damage_share_of_total": _share(aemeath_forte_total, resolved_total_damage),
         "aemeath_seraphic_duet_followup_count": followup_count,
@@ -79,10 +109,27 @@ def build_generated_damage_summary(
         "aemeath_forte_interfered_amp_note": (
             "Interfered Marker is reported as damage-taken amp and is not part of the 1.0935 source multiplier."
         ),
-        "damage_by_action_damage_category": damage_by_action_damage_category,
-        "damage_by_hit_formula_type": damage_by_formula,
-        "damage_by_generated_mechanic_source": damage_by_generated_source,
-        "damage_by_character_and_source": damage_by_character_source,
+        "damage_by_action_damage_category": _damage_by_action_damage_category(rows),
+        "damage_by_hit_formula_type": _damage_by_hit_formula_type(rows),
+        "damage_by_generated_mechanic_source": _damage_by_generated_mechanic_source(rows),
+        "damage_by_character_and_source": _damage_by_character_and_source(rows),
+        "legacy_damage_by_source_action_category": _legacy_damage_by_source_action_category(rows),
+        "legacy_damage_by_source_action_category_note": (
+            "Backward-compatible source action category totals include generated mechanic damage attached to "
+            "the source action."
+        ),
+        "direct_damage_by_category": direct_damage_by_category,
+        "direct_damage_by_damage_bonus_category": _direct_damage_by_damage_bonus_category(rows),
+        "generated_damage_by_source_action_category": _generated_damage_by_source_action_category(rows),
+        "effective_damage_role_breakdown": _effective_damage_role_breakdown(rows, resolved_total_damage),
+        "basic_attack_direct_damage_share_of_total": _share(
+            direct_damage_by_category.get("basic_attack", 0.0),
+            resolved_total_damage,
+        ),
+        "resonance_liberation_direct_damage_share_of_total": _share(
+            direct_damage_by_category.get("resonance_liberation", 0.0),
+            resolved_total_damage,
+        ),
     }
     if generated_hit_count > 0:
         summary["generated_mechanic_damage_hit_count"] = generated_hit_count
@@ -110,6 +157,20 @@ def _row_mapping(row: Any) -> dict[str, Any]:
     return dict(getattr(row, "__dict__", {}))
 
 
+def _timeline_has_generated_damage_fields(rows: list[dict[str, Any]]) -> bool:
+    if not rows:
+        return True
+    return any(any(field in row for field in GENERATED_DAMAGE_FIELDS) for row in rows)
+
+
+def _generated_damage_reporting_status(timeline_has_generated_fields: bool, generated_total: float) -> str:
+    if not timeline_has_generated_fields:
+        return "no_generated_damage_fields_in_timeline"
+    if generated_total <= 0.0:
+        return "zero_generated_damage"
+    return "ok"
+
+
 def _float(row: dict[str, Any], key: str) -> float:
     try:
         return float(row.get(key, 0.0) or 0.0)
@@ -119,9 +180,18 @@ def _float(row: dict[str, Any], key: str) -> float:
 
 def _int(row: dict[str, Any], key: str) -> int:
     try:
-        return int(row.get(key, 0) or 0)
+        return int(float(row.get(key, 0) or 0))
     except (TypeError, ValueError):
         return 0
+
+
+def _bool(row: dict[str, Any], key: str) -> bool:
+    value = row.get(key)
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.strip().lower() in {"1", "true", "yes", "y"}
+    return bool(value)
 
 
 def _share(amount: float, total: float) -> float:
@@ -143,7 +213,7 @@ def _generated_hit_count(row: dict[str, Any]) -> int:
 
 
 def _is_followup_row(row: dict[str, Any]) -> bool:
-    return bool(row.get("aemeath_seraphic_duet_followup_triggered")) or (
+    return _bool(row, "aemeath_seraphic_duet_followup_triggered") or (
         _float(row, "aemeath_seraphic_duet_followup_damage") > 0.0
     )
 
@@ -225,9 +295,7 @@ def _damage_by_character_and_source(rows: list[dict[str, Any]]) -> dict[str, flo
         character_id = str(row.get("actor_character_id") or row.get("character_id") or "unknown")
         character_label = _character_label(character_id)
         generated_total = _float(row, "generated_mechanic_damage")
-        total = _float(row, "total_action_damage")
-        direct_total = max(0.0, total - generated_total)
-        damage_by_character_source[f"{character_label} direct action damage"] += direct_total
+        damage_by_character_source[f"{character_label} direct action damage"] += _direct_damage(row)
         damage_by_character_source[f"{character_label} generated mechanic damage"] += generated_total
     return dict(damage_by_character_source)
 
@@ -238,6 +306,74 @@ def _damage_by_action_damage_category(rows: list[dict[str, Any]]) -> dict[str, f
         category = str(row.get("damage_bonus_category") or row.get("damage_category") or "other")
         damage_by_category[category] += _float(row, "total_action_damage")
     return dict(damage_by_category)
+
+
+def _legacy_damage_by_source_action_category(rows: list[dict[str, Any]]) -> dict[str, float]:
+    damage_by_category: Counter[str] = Counter()
+    for row in rows:
+        damage_by_category[_source_action_category(row)] += _float(row, "total_action_damage")
+    return dict(damage_by_category)
+
+
+def _direct_damage_by_category(rows: list[dict[str, Any]]) -> dict[str, float]:
+    damage_by_category: Counter[str] = Counter()
+    for row in rows:
+        damage_by_category[_source_action_category(row)] += _direct_damage(row)
+    return dict(damage_by_category)
+
+
+def _direct_damage_by_damage_bonus_category(rows: list[dict[str, Any]]) -> dict[str, float]:
+    damage_by_category: Counter[str] = Counter()
+    for row in rows:
+        category = str(row.get("damage_bonus_category") or row.get("damage_category") or "other")
+        damage_by_category[category] += _direct_damage(row)
+    return dict(damage_by_category)
+
+
+def _generated_damage_by_source_action_category(rows: list[dict[str, Any]]) -> dict[str, float]:
+    damage_by_category: Counter[str] = Counter()
+    for row in rows:
+        damage = _float(row, "generated_mechanic_damage")
+        if damage > 0.0:
+            damage_by_category[_source_action_category(row)] += damage
+    return dict(damage_by_category)
+
+
+def _effective_damage_role_breakdown(rows: list[dict[str, Any]], total_damage: float) -> dict[str, float]:
+    generated_total = sum(_float(row, "generated_mechanic_damage") for row in rows)
+    aemeath_forte_total = sum(_float(row, "aemeath_forte_generated_damage") for row in rows)
+    tune_break_total = sum(_float(row, "tune_break_damage") for row in rows)
+    tune_response_total = sum(_float(row, "tune_response_damage") for row in rows)
+    normal_total = 0.0
+    for row in rows:
+        explicit_normal = _float(row, "normal_damage")
+        if explicit_normal > 0.0:
+            normal_total += explicit_normal
+        else:
+            normal_total += max(
+                0.0,
+                _direct_damage(row) - _float(row, "tune_break_damage") - _float(row, "tune_response_damage"),
+            )
+    role_total = normal_total + tune_break_total + tune_response_total + generated_total
+    return {
+        "direct_normal_action_damage": normal_total,
+        "direct_tune_break_damage": tune_break_total,
+        "direct_tune_response_damage": tune_response_total,
+        "generated_mechanic_damage": generated_total,
+        "aemeath_forte_generated_damage": aemeath_forte_total,
+        "other_generated_mechanic_damage": max(0.0, generated_total - aemeath_forte_total),
+        "total_damage_check": role_total,
+        "reported_total_damage": total_damage,
+        "total_damage_delta": role_total - total_damage,
+    }
+
+
+def _source_action_category(row: dict[str, Any]) -> str:
+    return str(row.get("damage_category") or "other")
+
+
+def _direct_damage(row: dict[str, Any]) -> float:
+    return max(0.0, _float(row, "total_action_damage") - _float(row, "generated_mechanic_damage"))
 
 
 def _character_label(character_id: str) -> str:

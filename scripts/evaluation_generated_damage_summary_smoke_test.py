@@ -93,6 +93,26 @@ def main() -> None:
     assert "basic_attack" not in summary["damage_by_generated_mechanic_source"]
     assert summary["damage_by_character_and_source"]["Aemeath direct action damage"] == 1700.0
     assert summary["damage_by_character_and_source"]["Aemeath generated mechanic damage"] == 1300.0
+    assert summary["report_generation_version"] == "generated_damage_reporting_v2"
+    assert summary["timeline_schema_has_generated_damage_fields"] is True
+    assert summary["summary_schema_has_generated_damage_fields"] is True
+    assert summary["generated_damage_reporting_status"] == "ok"
+    assert summary["legacy_damage_by_source_action_category"]["basic_attack"] == 3500.0
+    assert summary["direct_damage_by_category"]["basic_attack"] == 2200.0
+    assert summary["direct_damage_by_damage_bonus_category"]["basic_attack"] == 2200.0
+    assert summary["generated_damage_by_source_action_category"]["basic_attack"] == 1300.0
+    assert summary["direct_damage_share_of_total"] == 2200.0 / 3500.0
+    assert summary["basic_attack_direct_damage_share_of_total"] == 2200.0 / 3500.0
+    assert "resonance_liberation_direct_damage_share_of_total" in summary
+    role = summary["effective_damage_role_breakdown"]
+    assert role["direct_normal_action_damage"] == 2200.0
+    assert role["direct_tune_break_damage"] == 0.0
+    assert role["direct_tune_response_damage"] == 0.0
+    assert role["generated_mechanic_damage"] == 1300.0
+    assert role["aemeath_forte_generated_damage"] == 1300.0
+    assert role["other_generated_mechanic_damage"] == 0.0
+    assert role["total_damage_check"] == 3500.0
+    assert abs(role["total_damage_delta"]) < 1e-9
 
     payload = add_generated_damage_summary(
         {"damage_by_category": {"basic_attack": 3500.0}},

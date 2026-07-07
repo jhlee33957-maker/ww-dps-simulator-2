@@ -1156,7 +1156,12 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
         st.caption(
             "Selected policy action is the high-level action chosen by the player/PPO. "
             "Resolved action is the internal action after character mechanics. "
-            "Damage bonus category is the additive DMG Bonus bucket, such as Resonance Liberation DMG Bonus."
+            "Legacy source action category tables group total action damage by the source action and include "
+            "attached generated mechanic damage for compatibility."
+        )
+        st.warning(
+            "Legacy source action category includes attached generated damage. Generated mechanic damage attached "
+            "to Seraphic Duet should not be interpreted as direct action damage."
         )
         breakdown_cols = st.columns(3)
         if {"selected_action_id", "total_action_damage"}.issubset(timeline_df.columns):
@@ -1169,15 +1174,46 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
             with breakdown_cols[1]:
                 st.write("Resolved action")
                 st.dataframe(resolved_damage, use_container_width=True, hide_index=True)
-        if {"damage_bonus_category", "total_action_damage"}.issubset(timeline_df.columns):
-            bonus_damage = timeline_df.groupby("damage_bonus_category", as_index=False)["total_action_damage"].sum()
-            with breakdown_cols[2]:
-                st.write("Damage bonus category")
-                st.dataframe(bonus_damage, use_container_width=True, hide_index=True)
-            if not bonus_damage.empty:
-                fig = px.bar(bonus_damage, x="damage_bonus_category", y="total_action_damage", text_auto=".2s")
-                fig.update_layout(xaxis_title="Damage bonus category", yaxis_title="Total damage")
-                st.plotly_chart(fig, use_container_width=True)
+        legacy_source_damage = pd.DataFrame(
+            sorted(generated_damage_summary["legacy_damage_by_source_action_category"].items()),
+            columns=["source_action_category", "total_action_damage"],
+        )
+        with breakdown_cols[2]:
+            st.write("Legacy source action category, includes attached generated damage")
+            st.dataframe(legacy_source_damage, use_container_width=True, hide_index=True)
+        if not legacy_source_damage.empty:
+            fig = px.bar(
+                legacy_source_damage,
+                x="source_action_category",
+                y="total_action_damage",
+                text_auto=".2s",
+            )
+            fig.update_layout(
+                xaxis_title="Legacy source action category, includes attached generated damage",
+                yaxis_title="Total damage",
+            )
+            st.plotly_chart(fig, use_container_width=True)
+        direct_breakdown_cols = st.columns(2)
+        with direct_breakdown_cols[0]:
+            st.write("Direct damage by category, generated damage excluded")
+            st.dataframe(
+                pd.DataFrame(
+                    sorted(generated_damage_summary["direct_damage_by_category"].items()),
+                    columns=["category", "direct_damage"],
+                ),
+                use_container_width=True,
+                hide_index=True,
+            )
+        with direct_breakdown_cols[1]:
+            st.write("Effective damage role breakdown")
+            st.dataframe(
+                pd.DataFrame(
+                    sorted(generated_damage_summary["effective_damage_role_breakdown"].items()),
+                    columns=["role", "damage"],
+                ),
+                use_container_width=True,
+                hide_index=True,
+            )
         generated_breakdown_cols = st.columns(3)
         with generated_breakdown_cols[0]:
             st.write("Hit formula type")
