@@ -24,10 +24,20 @@ def main() -> None:
     assert by_id["lynae_spark_collision_lv3"]["damage_rows"] == [2421, 2422]
     assert abs(by_id["lynae_spark_collision_lv3"]["multiplier"] - 5.5556) < 1e-9
     assert by_id["lynae_visual_impact"]["damage_rows"] == [2464, 2465]
+    assert abs(by_id["lynae_visual_impact"]["multiplier"] - 12.1672) < 1e-9
+    assert by_id["lynae_visual_impact"]["calculation_type"] == "mutually_exclusive_mode_variants_same_multiplier"
+    assert abs(by_id["lynae_iridescent_splash"]["multiplier"] - 3.0418) < 1e-9
+    assert by_id["lynae_iridescent_splash"]["calculation_type"] == "mutually_exclusive_mode_variants_same_multiplier"
+    assert abs(by_id["lynae_intro_time_to_show_some_colors"]["multiplier"] - 2.2480) < 1e-9
+    assert abs(by_id["lynae_resonance_liberation_prismatic_overblast"]["multiplier"] - 8.7480) < 1e-9
     assert abs(by_id["lynae_tune_response_spectral_analysis"]["multiplier"] - 18.8075) < 1e-9
 
     unresolved = json.loads(unresolved_path.read_text(encoding="utf-8"))
     assert any(item["topic"] == "spray_paint_periodic_ticks" for item in unresolved)
+    assert any(item["topic"] == "skill_type_reference_region" for item in unresolved)
+    report = report_path.read_text(encoding="utf-8")
+    assert "角色技能类型!2553:2635" in report
+    assert "角色技能类型!772:784" not in report
     actions = json.loads((ROOT / "data/actions.json").read_text(encoding="utf-8"))
     missing = [
         item["id"]

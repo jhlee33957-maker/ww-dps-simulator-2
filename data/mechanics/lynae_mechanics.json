@@ -125,7 +125,7 @@
     "workbook": "data/source/鸣潮动作数据汇总.xlsx",
     "actions": "角色-女!2577:2738",
     "damage": "dmg!2408:2490",
-    "passive_candidates": "角色技能类型!772:784",
+    "skill_type_references": "角色技能类型!2553:2635",
     "base_stats": "prop!51",
     "weapon_candidate": "weapon!65"
   }

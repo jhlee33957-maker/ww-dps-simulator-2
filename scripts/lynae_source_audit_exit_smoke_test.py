@@ -28,6 +28,7 @@ def main() -> None:
 
     data = json.loads(json_path.read_text(encoding="utf-8"))
     assert data["source_name"] == "琳奈", output
+    assert data["passive_buff_candidates"]["row_range"] == "2553:2635", output
     assert abs(data["spectral_analysis"]["derived_multiplier"] - 18.8075) < 1e-9, output
     assert data["spectral_analysis_c2"]["implementation_status"] == (
         "constellation_gated_disabled_by_default"

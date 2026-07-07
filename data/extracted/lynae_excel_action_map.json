@@ -14,6 +14,10 @@
     "damage_row_multipliers": {
       "2408": 0.8619
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2408": 0.4335
+    },
+    "calculation_type": "single_damage_row",
     "timing_resource_evidence": [
       {
         "row": 2577,
@@ -71,6 +75,12 @@
       "2410": 0.5239,
       "2411": 0.5239
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2409": 0.2635,
+      "2410": 0.2635,
+      "2411": 0.2635
+    },
+    "calculation_type": "additive_hits",
     "timing_resource_evidence": [
       {
         "row": 2578,
@@ -184,6 +194,10 @@
     "damage_row_multipliers": {
       "2412": 1.2337
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2412": 0.6205
+    },
+    "calculation_type": "single_damage_row",
     "timing_resource_evidence": [
       {
         "row": 2581,
@@ -235,6 +249,10 @@
     "damage_row_multipliers": {
       "2413": 2.3997
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2413": 1.207
+    },
+    "calculation_type": "single_damage_row",
     "timing_resource_evidence": [
       {
         "row": 2582,
@@ -289,6 +307,11 @@
       "2414": 0.1437,
       "2415": 1.2928
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2414": 0.0723,
+      "2415": 0.6503
+    },
+    "calculation_type": "additive_hits",
     "timing_resource_evidence": [
       {
         "row": 2583,
@@ -374,6 +397,11 @@
       "2417": 0.5556,
       "2418": 0.5556
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2417": 0.2795,
+      "2418": 0.2795
+    },
+    "calculation_type": "additive_hits",
     "timing_resource_evidence": [
       {
         "row": 2586,
@@ -459,6 +487,11 @@
       "2419": 1.6667,
       "2420": 1.6667
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2419": 0.8384,
+      "2420": 0.8384
+    },
+    "calculation_type": "additive_hits",
     "timing_resource_evidence": [
       {
         "row": 2588,
@@ -544,6 +577,11 @@
       "2421": 2.7778,
       "2422": 2.7778
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2421": 1.3972,
+      "2422": 1.3972
+    },
+    "calculation_type": "additive_hits",
     "timing_resource_evidence": [
       {
         "row": 2590,
@@ -628,6 +666,10 @@
     "damage_row_multipliers": {
       "2423": 0.8281
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2423": 0.4165
+    },
+    "calculation_type": "single_damage_row",
     "timing_resource_evidence": [
       {
         "row": 2592,
@@ -741,6 +783,10 @@
     "damage_row_multipliers": {
       "2424": 1.842
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2424": 0.9265
+    },
+    "calculation_type": "single_damage_row",
     "timing_resource_evidence": [
       {
         "row": 2595,
@@ -795,6 +841,11 @@
       "2425": 0.3887,
       "2426": 0.3887
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2425": 0.1955,
+      "2426": 0.1955
+    },
+    "calculation_type": "additive_hits",
     "timing_resource_evidence": [
       {
         "row": 2596,
@@ -883,6 +934,12 @@
       "2428": 0.3775,
       "2429": 0.3775
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2427": 0.1899,
+      "2428": 0.1899,
+      "2429": 0.1899
+    },
+    "calculation_type": "additive_hits",
     "timing_resource_evidence": [
       {
         "row": 2598,
@@ -1006,6 +1063,13 @@
       "2432": 0.4462,
       "2433": 0.4462
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2430": 0.1496,
+      "2431": 0.1496,
+      "2432": 0.2244,
+      "2433": 0.2244
+    },
+    "calculation_type": "additive_hits",
     "timing_resource_evidence": [
       {
         "row": 2601,
@@ -1182,12 +1246,29 @@
       2435,
       2436
     ],
-    "multiplier": 1.9137,
+    "multiplier": 2.5181,
     "damage_row_multipliers": {
       "2434": 0.7554,
       "2435": 0.1511,
       "2436": 1.0072
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2434": 0.38,
+      "2435": 0.076,
+      "2436": 0.5066
+    },
+    "calculation_type": "additive_hits_with_repeated_tick",
+    "additive_rows": [
+      2434,
+      2436
+    ],
+    "repeated_tick_rows": [
+      {
+        "damage_row": 2435,
+        "action_row": 2613,
+        "max_hits": 5
+      }
+    ],
     "timing_resource_evidence": [
       {
         "row": 2611,
@@ -1335,6 +1416,11 @@
       "2437": 0.1437,
       "2438": 1.2928
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2437": 0.0723,
+      "2438": 0.6503
+    },
+    "calculation_type": "additive_hits",
     "timing_resource_evidence": [
       {
         "row": 2615,
@@ -1435,6 +1521,16 @@
       "2444": 0.1763,
       "2445": 0.1763
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2439": 0.0887,
+      "2440": 0.0887,
+      "2441": 0.0887,
+      "2442": 0.0887,
+      "2443": 0.0887,
+      "2444": 0.0887,
+      "2445": 0.0887
+    },
+    "calculation_type": "additive_hits",
     "timing_resource_evidence": [
       {
         "row": 2617,
@@ -1672,6 +1768,10 @@
     "damage_row_multipliers": {
       "2446": 1.0478
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2446": 0.527
+    },
+    "calculation_type": "single_damage_row",
     "timing_resource_evidence": [
       {
         "row": 2624,
@@ -1741,6 +1841,16 @@
       "2452": 0.3477,
       "2453": 0.3477
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2447": 0.1749,
+      "2448": 0.1749,
+      "2449": 0.1749,
+      "2450": 0.1749,
+      "2451": 0.1749,
+      "2452": 0.1749,
+      "2453": 0.1749
+    },
+    "calculation_type": "additive_hits",
     "timing_resource_evidence": [
       {
         "row": 2633,
@@ -1988,6 +2098,13 @@
       "2456": 0.4644,
       "2457": 0.4644
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2454": 0.7008,
+      "2455": 0.2336,
+      "2456": 0.2336,
+      "2457": 0.2336
+    },
+    "calculation_type": "additive_hits",
     "timing_resource_evidence": [
       {
         "row": 2662,
@@ -2167,6 +2284,11 @@
       "2458": 1.1631,
       "2459": 1.1631
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2458": 0.585,
+      "2459": 0.585
+    },
+    "calculation_type": "additive_hits",
     "timing_resource_evidence": [
       {
         "row": 2672,
@@ -2280,11 +2402,20 @@
       2460,
       2461
     ],
-    "multiplier": 6.0836,
+    "multiplier": 3.0418,
     "damage_row_multipliers": {
       "2460": 3.0418,
       "2461": 3.0418
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2460": 1.53,
+      "2461": 1.53
+    },
+    "calculation_type": "mutually_exclusive_mode_variants_same_multiplier",
+    "mode_variant_rows": [
+      2460,
+      2461
+    ],
     "timing_resource_evidence": [
       {
         "row": 2675,
@@ -2429,11 +2560,20 @@
       2464,
       2465
     ],
-    "multiplier": 24.3344,
+    "multiplier": 12.1672,
     "damage_row_multipliers": {
       "2464": 12.1672,
       "2465": 12.1672
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2464": 6.12,
+      "2465": 6.12
+    },
+    "calculation_type": "mutually_exclusive_mode_variants_same_multiplier",
+    "mode_variant_rows": [
+      2464,
+      2465
+    ],
     "timing_resource_evidence": [
       {
         "row": 2679,
@@ -2586,6 +2726,12 @@
       "2469": 0.338,
       "2470": 0.338
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2468": 0.17,
+      "2469": 0.17,
+      "2470": 0.17
+    },
+    "calculation_type": "additive_hits",
     "timing_resource_evidence": [
       {
         "row": 2641,
@@ -2761,10 +2907,28 @@
     "damage_rows": [
       2474
     ],
-    "multiplier": 0.169,
+    "multiplier": 1.014,
     "damage_row_multipliers": {
       "2474": 0.169
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2474": 0.085
+    },
+    "calculation_type": "repeated_tick_mode_variants_same_multiplier",
+    "repeated_tick_rows": [
+      {
+        "damage_row": 2474,
+        "action_rows": [
+          2649,
+          2650
+        ],
+        "max_hits": 6
+      }
+    ],
+    "mode_variant_action_rows": [
+      2649,
+      2650
+    ],
     "timing_resource_evidence": [
       {
         "row": 2647,
@@ -2940,11 +3104,26 @@
       2476,
       2477
     ],
-    "multiplier": 0.262,
+    "multiplier": 0.655,
     "damage_row_multipliers": {
       "2476": 0.131,
       "2477": 0.131
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2476": 0.0659,
+      "2477": 0.0659
+    },
+    "calculation_type": "additive_hits_with_repeated_tick",
+    "additive_rows": [
+      2477
+    ],
+    "repeated_tick_rows": [
+      {
+        "damage_row": 2476,
+        "action_row": 2660,
+        "max_hits": 4
+      }
+    ],
     "timing_resource_evidence": [
       {
         "row": 2653,
@@ -3088,11 +3267,30 @@
       2480,
       2481
     ],
-    "multiplier": 0.4496,
+    "multiplier": 2.248,
     "damage_row_multipliers": {
       "2480": 0.2248,
       "2481": 0.2248
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2480": 0.1131,
+      "2481": 0.1131
+    },
+    "calculation_type": "repeated_tick_mutually_exclusive_mode_variants_same_multiplier",
+    "mode_variant_rows": [
+      2480,
+      2481
+    ],
+    "repeated_tick_rows": [
+      {
+        "damage_rows": [
+          2480,
+          2481
+        ],
+        "action_row": 2689,
+        "max_hits": 10
+      }
+    ],
     "timing_resource_evidence": [
       {
         "row": 2689,
@@ -3205,10 +3403,21 @@
     "damage_rows": [
       2482
     ],
-    "multiplier": 0.8748,
+    "multiplier": 8.748,
     "damage_row_multipliers": {
       "2482": 0.8748
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2482": 0.44
+    },
+    "calculation_type": "repeated_tick",
+    "repeated_tick_rows": [
+      {
+        "damage_row": 2482,
+        "action_row": 2695,
+        "max_hits": 10
+      }
+    ],
     "timing_resource_evidence": [
       {
         "row": 2692,
@@ -3352,11 +3561,28 @@
       2484,
       2485
     ],
-    "multiplier": 0.1843,
+    "multiplier": 2.0106,
     "damage_row_multipliers": {
       "2484": 0.0838,
       "2485": 0.1005
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2484": 0.0422,
+      "2485": 0.0506
+    },
+    "calculation_type": "additive_repeated_ticks",
+    "repeated_tick_rows": [
+      {
+        "damage_row": 2484,
+        "action_row": 2697,
+        "max_hits": 12
+      },
+      {
+        "damage_row": 2485,
+        "action_row": 2698,
+        "max_hits": 10
+      }
+    ],
     "timing_resource_evidence": [
       {
         "row": 2696,
@@ -3469,11 +3695,31 @@
       2486,
       2487
     ],
-    "multiplier": 0.0,
+    "multiplier": 1.0,
     "damage_row_multipliers": {
       "2486": 0.0,
       "2487": 0.0
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2486": 0.0455,
+      "2487": 0.0455
+    },
+    "calculation_type": "excel_tick_sum_and_tooltip_confirmed",
+    "derived_tick_sum": 1.001,
+    "repeated_tick_rows": [
+      {
+        "damage_row": 2486,
+        "rate_column": "Damage.RateLv_1",
+        "action_row": 2700,
+        "max_hits": 12
+      },
+      {
+        "damage_row": 2487,
+        "rate_column": "Damage.RateLv_1",
+        "action_row": 2701,
+        "max_hits": 10
+      }
+    ],
     "timing_resource_evidence": [
       {
         "row": 2699,
@@ -3589,6 +3835,10 @@
     "damage_row_multipliers": {
       "2488": 0.0
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2488": 16.0
+    },
+    "calculation_type": "single_damage_row",
     "timing_resource_evidence": [
       {
         "row": 2702,
@@ -3702,6 +3952,10 @@
     "damage_row_multipliers": {
       "2489": 18.8075
     },
+    "damage_row_rate_lv_1_multipliers": {
+      "2489": 9.46
+    },
+    "calculation_type": "tune_response_executable_source",
     "timing_resource_evidence": [
       {
         "row": 2735,

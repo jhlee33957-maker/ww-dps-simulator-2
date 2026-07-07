@@ -36,5 +36,13 @@
     ],
     "implementation_status": "constellation_gated_disabled_by_default",
     "reason": "Non-S0 variants are retained as source-aligned records but not selected by default."
+  },
+  {
+    "topic": "skill_type_reference_region",
+    "source_rows": [
+      "角色技能类型!2553:2635"
+    ],
+    "implementation_status": "workbook_reference_corrected",
+    "reason": "Rows 772:784 are not the Lynae skill type region and are no longer used for Lynae."
   }
 ]

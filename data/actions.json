@@ -4569,7 +4569,7 @@
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
     "damage_element": "spectro",
-    "damage_multiplier": 1.9137,
+    "damage_multiplier": 2.5181,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "off_tune_value": 0.0,
@@ -4577,7 +4577,7 @@
     "off_tune_value_source_ref": null,
     "hits": [
       {
-        "time": 0.25,
+        "time": 0.1571,
         "damage_category": "normal",
         "damage_multiplier": 0.7554,
         "tags": [
@@ -4587,7 +4587,7 @@
         "name": "Lynae Kaleidoscopic Basic Stage 5 hit 1"
       },
       {
-        "time": 0.55,
+        "time": 0.3143,
         "damage_category": "normal",
         "damage_multiplier": 0.1511,
         "tags": [
@@ -4597,14 +4597,54 @@
         "name": "Lynae Kaleidoscopic Basic Stage 5 hit 2"
       },
       {
-        "time": 1.0,
+        "time": 0.4714,
+        "damage_category": "normal",
+        "damage_multiplier": 0.1511,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Kaleidoscopic Basic Stage 5 hit 3"
+      },
+      {
+        "time": 0.6286,
+        "damage_category": "normal",
+        "damage_multiplier": 0.1511,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Kaleidoscopic Basic Stage 5 hit 4"
+      },
+      {
+        "time": 0.7857,
+        "damage_category": "normal",
+        "damage_multiplier": 0.1511,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Kaleidoscopic Basic Stage 5 hit 5"
+      },
+      {
+        "time": 0.9429,
+        "damage_category": "normal",
+        "damage_multiplier": 0.1511,
+        "tags": [
+          "spectro",
+          "basic_attack"
+        ],
+        "name": "Lynae Kaleidoscopic Basic Stage 5 hit 6"
+      },
+      {
+        "time": 1.1,
         "damage_category": "normal",
         "damage_multiplier": 1.0072,
         "tags": [
           "spectro",
           "basic_attack"
         ],
-        "name": "Lynae Kaleidoscopic Basic Stage 5 hit 3"
+        "name": "Lynae Kaleidoscopic Basic Stage 5 hit 7"
       }
     ],
     "resonance_energy_gain": 0,
@@ -4619,15 +4659,28 @@
     ],
     "policy_selectable": false,
     "mechanic_effects": {},
-    "data_status": "workbook_confirmed",
-    "source_status": "workbook_confirmed",
+    "data_status": "workbook_confirmed_repeated_tick",
+    "source_status": "workbook_confirmed_repeated_tick",
     "source_rows": [
+      2611,
+      2612,
+      2613,
+      2614,
       2434,
       2435,
       2436
     ],
     "scaling_stat": "atk",
-    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled.",
+    "metadata": {
+      "repeated_tick_rows": [
+        {
+          "damage_row": 2435,
+          "action_row": 2613,
+          "max_hits": 5
+        }
+      ]
+    }
   },
   {
     "id": "lynae_resonance_skill",
@@ -4861,7 +4914,7 @@
     "damage_category": "normal",
     "damage_bonus_category": "resonance_liberation",
     "damage_element": "spectro",
-    "damage_multiplier": 0.8748,
+    "damage_multiplier": 8.748,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "off_tune_value": 0.0,
@@ -4869,7 +4922,7 @@
     "off_tune_value_source_ref": null,
     "hits": [
       {
-        "time": 1.95,
+        "time": 0.2,
         "damage_category": "normal",
         "damage_multiplier": 0.8748,
         "tags": [
@@ -4877,7 +4930,106 @@
           "resonance_liberation",
           "lynae"
         ],
-        "name": "Lynae Prismatic Overblast"
+        "name": "Lynae Prismatic Overblast hit 1"
+      },
+      {
+        "time": 0.4,
+        "damage_category": "normal",
+        "damage_multiplier": 0.8748,
+        "tags": [
+          "spectro",
+          "resonance_liberation",
+          "lynae"
+        ],
+        "name": "Lynae Prismatic Overblast hit 2"
+      },
+      {
+        "time": 0.6,
+        "damage_category": "normal",
+        "damage_multiplier": 0.8748,
+        "tags": [
+          "spectro",
+          "resonance_liberation",
+          "lynae"
+        ],
+        "name": "Lynae Prismatic Overblast hit 3"
+      },
+      {
+        "time": 0.8,
+        "damage_category": "normal",
+        "damage_multiplier": 0.8748,
+        "tags": [
+          "spectro",
+          "resonance_liberation",
+          "lynae"
+        ],
+        "name": "Lynae Prismatic Overblast hit 4"
+      },
+      {
+        "time": 1.0,
+        "damage_category": "normal",
+        "damage_multiplier": 0.8748,
+        "tags": [
+          "spectro",
+          "resonance_liberation",
+          "lynae"
+        ],
+        "name": "Lynae Prismatic Overblast hit 5"
+      },
+      {
+        "time": 1.2,
+        "damage_category": "normal",
+        "damage_multiplier": 0.8748,
+        "tags": [
+          "spectro",
+          "resonance_liberation",
+          "lynae"
+        ],
+        "name": "Lynae Prismatic Overblast hit 6"
+      },
+      {
+        "time": 1.4,
+        "damage_category": "normal",
+        "damage_multiplier": 0.8748,
+        "tags": [
+          "spectro",
+          "resonance_liberation",
+          "lynae"
+        ],
+        "name": "Lynae Prismatic Overblast hit 7"
+      },
+      {
+        "time": 1.6,
+        "damage_category": "normal",
+        "damage_multiplier": 0.8748,
+        "tags": [
+          "spectro",
+          "resonance_liberation",
+          "lynae"
+        ],
+        "name": "Lynae Prismatic Overblast hit 8"
+      },
+      {
+        "time": 1.8,
+        "damage_category": "normal",
+        "damage_multiplier": 0.8748,
+        "tags": [
+          "spectro",
+          "resonance_liberation",
+          "lynae"
+        ],
+        "name": "Lynae Prismatic Overblast hit 9"
+      },
+      {
+        "time": 2.0,
+        "damage_category": "normal",
+        "damage_multiplier": 0.8748,
+        "tags": [
+          "spectro",
+          "resonance_liberation",
+          "lynae"
+        ],
+        "name": "Lynae Prismatic Overblast hit 10"
       }
     ],
     "resonance_energy_gain": 0,
@@ -4897,13 +5049,26 @@
       "starts_to_a_vivid_tomorrow_window": true,
       "window_seconds": 8.0
     },
-    "data_status": "workbook_confirmed_and_user_tooltip",
-    "source_status": "workbook_confirmed_and_user_tooltip",
+    "data_status": "workbook_confirmed_repeated_tick_and_user_tooltip",
+    "source_status": "workbook_confirmed_repeated_tick_and_user_tooltip",
     "source_rows": [
+      2692,
+      2693,
+      2694,
+      2695,
       2482
     ],
     "scaling_stat": "atk",
-    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled.",
+    "metadata": {
+      "repeated_tick_rows": [
+        {
+          "damage_row": 2482,
+          "action_row": 2695,
+          "max_hits": 10
+        }
+      ]
+    }
   },
   {
     "id": "lynae_intro_time_to_show_some_colors",
@@ -4917,7 +5082,7 @@
     "damage_category": "normal",
     "damage_bonus_category": "intro",
     "damage_element": "spectro",
-    "damage_multiplier": 0.2248,
+    "damage_multiplier": 2.248,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "off_tune_value": 0.0,
@@ -4925,7 +5090,7 @@
     "off_tune_value_source_ref": null,
     "hits": [
       {
-        "time": 0.95,
+        "time": 0.1,
         "damage_category": "normal",
         "damage_multiplier": 0.2248,
         "tags": [
@@ -4934,7 +5099,115 @@
           "transition",
           "lynae"
         ],
-        "name": "Lynae Intro Time to Show Some Colors"
+        "name": "Lynae Intro Time to Show Some Colors hit 1"
+      },
+      {
+        "time": 0.2,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2248,
+        "tags": [
+          "spectro",
+          "intro",
+          "transition",
+          "lynae"
+        ],
+        "name": "Lynae Intro Time to Show Some Colors hit 2"
+      },
+      {
+        "time": 0.3,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2248,
+        "tags": [
+          "spectro",
+          "intro",
+          "transition",
+          "lynae"
+        ],
+        "name": "Lynae Intro Time to Show Some Colors hit 3"
+      },
+      {
+        "time": 0.4,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2248,
+        "tags": [
+          "spectro",
+          "intro",
+          "transition",
+          "lynae"
+        ],
+        "name": "Lynae Intro Time to Show Some Colors hit 4"
+      },
+      {
+        "time": 0.5,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2248,
+        "tags": [
+          "spectro",
+          "intro",
+          "transition",
+          "lynae"
+        ],
+        "name": "Lynae Intro Time to Show Some Colors hit 5"
+      },
+      {
+        "time": 0.6,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2248,
+        "tags": [
+          "spectro",
+          "intro",
+          "transition",
+          "lynae"
+        ],
+        "name": "Lynae Intro Time to Show Some Colors hit 6"
+      },
+      {
+        "time": 0.7,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2248,
+        "tags": [
+          "spectro",
+          "intro",
+          "transition",
+          "lynae"
+        ],
+        "name": "Lynae Intro Time to Show Some Colors hit 7"
+      },
+      {
+        "time": 0.8,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2248,
+        "tags": [
+          "spectro",
+          "intro",
+          "transition",
+          "lynae"
+        ],
+        "name": "Lynae Intro Time to Show Some Colors hit 8"
+      },
+      {
+        "time": 0.9,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2248,
+        "tags": [
+          "spectro",
+          "intro",
+          "transition",
+          "lynae"
+        ],
+        "name": "Lynae Intro Time to Show Some Colors hit 9"
+      },
+      {
+        "time": 1.0,
+        "damage_category": "normal",
+        "damage_multiplier": 0.2248,
+        "tags": [
+          "spectro",
+          "intro",
+          "transition",
+          "lynae"
+        ],
+        "name": "Lynae Intro Time to Show Some Colors hit 10"
       }
     ],
     "resonance_energy_gain": 0,
@@ -4957,14 +5230,33 @@
       "applies_photocromic_flux": true,
       "overflow_gain": 100.0
     },
-    "data_status": "workbook_confirmed_and_user_tooltip",
-    "source_status": "workbook_confirmed_and_user_tooltip",
+    "data_status": "workbook_confirmed_repeated_tick_mode_variant_and_user_tooltip",
+    "source_status": "workbook_confirmed_repeated_tick_mode_variant_and_user_tooltip",
     "source_rows": [
+      2689,
+      2690,
+      2691,
       2480,
       2481
     ],
     "scaling_stat": "atk",
-    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled.",
+    "metadata": {
+      "mode_variant_rows": [
+        2480,
+        2481
+      ],
+      "repeated_tick_rows": [
+        {
+          "damage_rows": [
+            2480,
+            2481
+          ],
+          "action_row": 2689,
+          "max_hits": 10
+        }
+      ]
+    }
   },
   {
     "id": "lynae_outro_lets_hit_the_road",
@@ -5016,14 +5308,37 @@
       "outro_incoming_liberation_damage_amp": 0.25,
       "exits_kaleidoscopic_parade": true
     },
-    "data_status": "user_supplied_skill_tooltip",
-    "source_status": "user_supplied_skill_tooltip",
+    "data_status": "excel_tick_sum_and_tooltip_confirmed",
+    "source_status": "excel_tick_sum_and_tooltip_confirmed",
     "source_rows": [
+      2699,
+      2700,
+      2701,
       2486,
       2487
     ],
     "scaling_stat": "atk",
-    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled.",
+    "metadata": {
+      "derived_tick_sum": 1.001,
+      "executable_multiplier": 1.0,
+      "rate_lv_1_rows": [
+        2486,
+        2487
+      ],
+      "repeated_tick_rows": [
+        {
+          "damage_row": 2486,
+          "action_row": 2700,
+          "max_hits": 12
+        },
+        {
+          "damage_row": 2487,
+          "action_row": 2701,
+          "max_hits": 10
+        }
+      ]
+    }
   },
   {
     "id": "lynae_echo_hyvatia",
@@ -5282,9 +5597,16 @@
       2464,
       2465
     ],
-    "source_status": "workbook_confirmed_and_user_tooltip",
-    "data_status": "workbook_confirmed_and_user_tooltip",
-    "timing_source_status": "unresolved_timing"
+    "source_status": "workbook_confirmed_mutually_exclusive_mode_variants_and_user_tooltip",
+    "data_status": "workbook_confirmed_mutually_exclusive_mode_variants_and_user_tooltip",
+    "timing_source_status": "unresolved_timing",
+    "metadata": {
+      "mode_variant_rows": [
+        2464,
+        2465
+      ],
+      "calculation_type": "mutually_exclusive_mode_variants_same_multiplier"
+    }
   },
   {
     "id": "lynae_dodge_counter",
@@ -5694,9 +6016,16 @@
       2460,
       2461
     ],
-    "source_status": "workbook_confirmed",
-    "data_status": "workbook_confirmed",
-    "timing_source_status": "unresolved_timing"
+    "source_status": "workbook_confirmed_mutually_exclusive_mode_variants",
+    "data_status": "workbook_confirmed_mutually_exclusive_mode_variants",
+    "timing_source_status": "unresolved_timing",
+    "metadata": {
+      "mode_variant_rows": [
+        2460,
+        2461
+      ],
+      "calculation_type": "mutually_exclusive_mode_variants_same_multiplier"
+    }
   },
   {
     "id": "lynae_iridescent_splash_c3",
@@ -5819,7 +6148,7 @@
     "damage_bonus_category": "basic_attack",
     "damage_element": "spectro",
     "scaling_stat": "atk",
-    "damage_multiplier": 0.169,
+    "damage_multiplier": 1.014,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "resonance_energy_gain": 0.0,
@@ -5840,9 +6169,87 @@
       2651,
       2474
     ],
-    "source_status": "workbook_confirmed",
-    "data_status": "workbook_confirmed",
-    "timing_source_status": "unresolved_timing"
+    "source_status": "workbook_confirmed_repeated_tick_mode_variant",
+    "data_status": "workbook_confirmed_repeated_tick_mode_variant",
+    "timing_source_status": "unresolved_timing",
+    "hits": [
+      {
+        "time": 0.1444,
+        "damage_category": "normal",
+        "damage_multiplier": 0.169,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Polychrome Leap Stage 2 hit 1"
+      },
+      {
+        "time": 0.2889,
+        "damage_category": "normal",
+        "damage_multiplier": 0.169,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Polychrome Leap Stage 2 hit 2"
+      },
+      {
+        "time": 0.4334,
+        "damage_category": "normal",
+        "damage_multiplier": 0.169,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Polychrome Leap Stage 2 hit 3"
+      },
+      {
+        "time": 0.5778,
+        "damage_category": "normal",
+        "damage_multiplier": 0.169,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Polychrome Leap Stage 2 hit 4"
+      },
+      {
+        "time": 0.7222,
+        "damage_category": "normal",
+        "damage_multiplier": 0.169,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Polychrome Leap Stage 2 hit 5"
+      },
+      {
+        "time": 0.8667,
+        "damage_category": "normal",
+        "damage_multiplier": 0.169,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Polychrome Leap Stage 2 hit 6"
+      }
+    ],
+    "metadata": {
+      "repeated_tick_rows": [
+        {
+          "damage_row": 2474,
+          "action_rows": [
+            2649,
+            2650
+          ],
+          "max_hits": 6
+        }
+      ],
+      "mode_variant_action_rows": [
+        2649,
+        2650
+      ]
+    }
   },
   {
     "id": "lynae_polychrome_leap_stage_3",
@@ -5857,7 +6264,7 @@
     "damage_bonus_category": "basic_attack",
     "damage_element": "spectro",
     "scaling_stat": "atk",
-    "damage_multiplier": 0.262,
+    "damage_multiplier": 0.655,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "resonance_energy_gain": 0.0,
@@ -5878,9 +6285,73 @@
       2476,
       2477
     ],
-    "source_status": "workbook_confirmed",
-    "data_status": "workbook_confirmed",
-    "timing_source_status": "unresolved_timing"
+    "source_status": "workbook_confirmed_repeated_tick",
+    "data_status": "workbook_confirmed_repeated_tick",
+    "timing_source_status": "unresolved_timing",
+    "hits": [
+      {
+        "time": 0.39,
+        "damage_category": "normal",
+        "damage_multiplier": 0.131,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Polychrome Leap Stage 3 hit 1"
+      },
+      {
+        "time": 0.78,
+        "damage_category": "normal",
+        "damage_multiplier": 0.131,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Polychrome Leap Stage 3 hit 2"
+      },
+      {
+        "time": 1.17,
+        "damage_category": "normal",
+        "damage_multiplier": 0.131,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Polychrome Leap Stage 3 hit 3"
+      },
+      {
+        "time": 1.56,
+        "damage_category": "normal",
+        "damage_multiplier": 0.131,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Polychrome Leap Stage 3 hit 4"
+      },
+      {
+        "time": 1.95,
+        "damage_category": "normal",
+        "damage_multiplier": 0.131,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Polychrome Leap Stage 3 hit 5"
+      }
+    ],
+    "metadata": {
+      "repeated_tick_rows": [
+        {
+          "damage_row": 2476,
+          "action_row": 2660,
+          "max_hits": 4
+        }
+      ],
+      "additive_rows": [
+        2477
+      ]
+    }
   },
   {
     "id": "lynae_polychrome_leap_stage_1_c1",
@@ -5930,7 +6401,7 @@
     "damage_bonus_category": "basic_attack",
     "damage_element": "spectro",
     "scaling_stat": "atk",
-    "damage_multiplier": 0.3718,
+    "damage_multiplier": 2.2308,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "resonance_energy_gain": 0.0,
@@ -5948,7 +6419,16 @@
     ],
     "source_status": "constellation_gated_disabled_by_default",
     "data_status": "constellation_gated_disabled_by_default",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "metadata": {
+      "repeated_tick_rows": [
+        {
+          "damage_row": 2475,
+          "action_row": 2649,
+          "max_hits": 6
+        }
+      ]
+    }
   },
   {
     "id": "lynae_polychrome_leap_stage_3_c1",
@@ -5963,7 +6443,7 @@
     "damage_bonus_category": "basic_attack",
     "damage_element": "spectro",
     "scaling_stat": "atk",
-    "damage_multiplier": 0.5764,
+    "damage_multiplier": 1.441,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "resonance_energy_gain": 0.0,
@@ -5982,7 +6462,19 @@
     ],
     "source_status": "constellation_gated_disabled_by_default",
     "data_status": "constellation_gated_disabled_by_default",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "metadata": {
+      "repeated_tick_rows": [
+        {
+          "damage_row": 2478,
+          "action_row": 2660,
+          "max_hits": 4
+        }
+      ],
+      "additive_rows": [
+        2479
+      ]
+    }
   },
   {
     "id": "lynae_to_a_vivid_tomorrow",
@@ -5997,7 +6489,7 @@
     "damage_bonus_category": "basic_attack",
     "damage_element": "spectro",
     "scaling_stat": "atk",
-    "damage_multiplier": 0.1843,
+    "damage_multiplier": 2.0106,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "resonance_energy_gain": 0.0,
@@ -6017,9 +6509,245 @@
       2484,
       2485
     ],
-    "source_status": "workbook_confirmed",
-    "data_status": "workbook_confirmed",
-    "timing_source_status": "unresolved_timing"
+    "source_status": "workbook_confirmed_repeated_tick",
+    "data_status": "workbook_confirmed_repeated_tick",
+    "timing_source_status": "unresolved_timing",
+    "hits": [
+      {
+        "time": 0.1371,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0838,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 1"
+      },
+      {
+        "time": 0.2742,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0838,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 2"
+      },
+      {
+        "time": 0.4114,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0838,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 3"
+      },
+      {
+        "time": 0.5485,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0838,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 4"
+      },
+      {
+        "time": 0.6856,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0838,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 5"
+      },
+      {
+        "time": 0.8227,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0838,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 6"
+      },
+      {
+        "time": 0.9599,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0838,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 7"
+      },
+      {
+        "time": 1.097,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0838,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 8"
+      },
+      {
+        "time": 1.2341,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0838,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 9"
+      },
+      {
+        "time": 1.3712,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0838,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 10"
+      },
+      {
+        "time": 1.5084,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0838,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 11"
+      },
+      {
+        "time": 1.6455,
+        "damage_category": "normal",
+        "damage_multiplier": 0.0838,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 12"
+      },
+      {
+        "time": 1.7826,
+        "damage_category": "normal",
+        "damage_multiplier": 0.1005,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 13"
+      },
+      {
+        "time": 1.9197,
+        "damage_category": "normal",
+        "damage_multiplier": 0.1005,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 14"
+      },
+      {
+        "time": 2.0568,
+        "damage_category": "normal",
+        "damage_multiplier": 0.1005,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 15"
+      },
+      {
+        "time": 2.194,
+        "damage_category": "normal",
+        "damage_multiplier": 0.1005,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 16"
+      },
+      {
+        "time": 2.3311,
+        "damage_category": "normal",
+        "damage_multiplier": 0.1005,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 17"
+      },
+      {
+        "time": 2.4682,
+        "damage_category": "normal",
+        "damage_multiplier": 0.1005,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 18"
+      },
+      {
+        "time": 2.6053,
+        "damage_category": "normal",
+        "damage_multiplier": 0.1005,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 19"
+      },
+      {
+        "time": 2.7425,
+        "damage_category": "normal",
+        "damage_multiplier": 0.1005,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 20"
+      },
+      {
+        "time": 2.8796,
+        "damage_category": "normal",
+        "damage_multiplier": 0.1005,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 21"
+      },
+      {
+        "time": 3.0167,
+        "damage_category": "normal",
+        "damage_multiplier": 0.1005,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae To a Vivid Tomorrow hit 22"
+      }
+    ],
+    "metadata": {
+      "repeated_tick_rows": [
+        {
+          "damage_row": 2484,
+          "action_row": 2697,
+          "max_hits": 12
+        },
+        {
+          "damage_row": 2485,
+          "action_row": 2698,
+          "max_hits": 10
+        }
+      ]
+    }
   },
   {
     "id": "lynae_resonance_liberation_prismatic_overblast_c5",
@@ -6034,7 +6762,7 @@
     "damage_bonus_category": "resonance_liberation",
     "damage_element": "spectro",
     "scaling_stat": "atk",
-    "damage_multiplier": 1.4871,
+    "damage_multiplier": 14.871,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "resonance_energy_gain": 0.0,
@@ -6052,6 +6780,15 @@
     ],
     "source_status": "constellation_gated_disabled_by_default",
     "data_status": "constellation_gated_disabled_by_default",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "metadata": {
+      "repeated_tick_rows": [
+        {
+          "damage_row": 2483,
+          "action_row": 2695,
+          "max_hits": 10
+        }
+      ]
+    }
   }
 ]

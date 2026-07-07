@@ -52,6 +52,120 @@ LYNAE_ACTION_ALIGNMENT = [
     ("lynae_tune_break", "Tune Break", [2702, 2703, 2704], [2488], "metadata_only_zero_workbook_damage"),
     ("lynae_tune_response_spectral_analysis", "Spectral Analysis C0", [2735], [2489], "implemented_v2"),
 ]
+LYNAE_ACTION_CALCULATIONS = {
+    "lynae_kaleidoscopic_basic_stage_5": {
+        "multiplier": 2.5181,
+        "calculation_type": "additive_hits_with_repeated_tick",
+        "additive_rows": [2434, 2436],
+        "repeated_tick_rows": [{"damage_row": 2435, "action_row": 2613, "max_hits": 5}],
+    },
+    "lynae_iridescent_splash": {
+        "multiplier": 3.0418,
+        "calculation_type": "mutually_exclusive_mode_variants_same_multiplier",
+        "mode_variant_rows": [2460, 2461],
+    },
+    "lynae_visual_impact": {
+        "multiplier": 12.1672,
+        "calculation_type": "mutually_exclusive_mode_variants_same_multiplier",
+        "mode_variant_rows": [2464, 2465],
+    },
+    "lynae_polychrome_leap_stage_2": {
+        "multiplier": 1.0140,
+        "calculation_type": "repeated_tick_mode_variants_same_multiplier",
+        "repeated_tick_rows": [{"damage_row": 2474, "action_rows": [2649, 2650], "max_hits": 6}],
+        "mode_variant_action_rows": [2649, 2650],
+    },
+    "lynae_polychrome_leap_stage_3": {
+        "multiplier": 0.6550,
+        "calculation_type": "additive_hits_with_repeated_tick",
+        "additive_rows": [2477],
+        "repeated_tick_rows": [{"damage_row": 2476, "action_row": 2660, "max_hits": 4}],
+    },
+    "lynae_intro_time_to_show_some_colors": {
+        "multiplier": 2.2480,
+        "calculation_type": "repeated_tick_mutually_exclusive_mode_variants_same_multiplier",
+        "mode_variant_rows": [2480, 2481],
+        "repeated_tick_rows": [{"damage_rows": [2480, 2481], "action_row": 2689, "max_hits": 10}],
+    },
+    "lynae_resonance_liberation_prismatic_overblast": {
+        "multiplier": 8.7480,
+        "calculation_type": "repeated_tick",
+        "repeated_tick_rows": [{"damage_row": 2482, "action_row": 2695, "max_hits": 10}],
+    },
+    "lynae_to_a_vivid_tomorrow": {
+        "multiplier": 2.0106,
+        "calculation_type": "additive_repeated_ticks",
+        "repeated_tick_rows": [
+            {"damage_row": 2484, "action_row": 2697, "max_hits": 12},
+            {"damage_row": 2485, "action_row": 2698, "max_hits": 10},
+        ],
+    },
+    "lynae_outro_lets_hit_the_road": {
+        "multiplier": 1.0,
+        "derived_tick_sum": 1.001,
+        "calculation_type": "excel_tick_sum_and_tooltip_confirmed",
+        "repeated_tick_rows": [
+            {"damage_row": 2486, "rate_column": "Damage.RateLv_1", "action_row": 2700, "max_hits": 12},
+            {"damage_row": 2487, "rate_column": "Damage.RateLv_1", "action_row": 2701, "max_hits": 10},
+        ],
+    },
+    "lynae_tune_response_spectral_analysis": {
+        "multiplier": 18.8075,
+        "calculation_type": "tune_response_executable_source",
+    },
+}
+LYNAE_CONSTELLATION_GATED_ACTIONS = {
+    "lynae_iridescent_splash_c3": {
+        "multiplier": 5.7795,
+        "source_rows": ["dmg!2462", "dmg!2463"],
+        "mode_variant_rows": [2462, 2463],
+    },
+    "lynae_visual_impact_c3": {
+        "multiplier": 23.1177,
+        "source_rows": ["dmg!2466", "dmg!2467"],
+        "mode_variant_rows": [2466, 2467],
+    },
+    "lynae_polychrome_leap_stage_1_c1": {
+        "multiplier": 2.2308,
+        "source_rows": ["dmg!2471:2473"],
+        "additive_rows": [2471, 2472, 2473],
+    },
+    "lynae_polychrome_leap_stage_2_c1": {
+        "multiplier": 2.2308,
+        "source_rows": ["dmg!2475"],
+        "repeated_tick_rows": [{"damage_row": 2475, "action_row": 2649, "max_hits": 6}],
+    },
+    "lynae_polychrome_leap_stage_3_c1": {
+        "multiplier": 1.4410,
+        "source_rows": ["dmg!2478:2479"],
+        "additive_rows": [2479],
+        "repeated_tick_rows": [{"damage_row": 2478, "action_row": 2660, "max_hits": 4}],
+    },
+    "lynae_resonance_liberation_prismatic_overblast_c5": {
+        "multiplier": 14.8710,
+        "source_rows": ["dmg!2483"],
+        "repeated_tick_rows": [{"damage_row": 2483, "action_row": 2695, "max_hits": 10}],
+    },
+    "lynae_tune_response_spectral_analysis_c2": {
+        "multiplier": 31.9727,
+        "source_rows": ["dmg!2490"],
+    },
+}
+LYNAE_ADDITIVE_HIT_GROUPS = {
+    "lynae_basic_stage_2": [2409, 2410, 2411],
+    "lynae_mid_air_attack": [2414, 2415],
+    "lynae_spark_collision_lv1": [2417, 2418],
+    "lynae_spark_collision_lv2": [2419, 2420],
+    "lynae_spark_collision_lv3": [2421, 2422],
+    "lynae_kaleidoscopic_basic_stage_2": [2425, 2426],
+    "lynae_kaleidoscopic_basic_stage_3": [2427, 2428, 2429],
+    "lynae_kaleidoscopic_basic_stage_4": [2430, 2431, 2432, 2433],
+    "lynae_kaleidoscopic_ground_heavy_hold": [2439, 2440, 2441, 2442, 2443, 2444, 2445],
+    "lynae_kaleidoscopic_mid_air_heavy": [2447, 2448, 2449, 2450, 2451, 2452, 2453],
+    "lynae_resonance_skill_palette": [2454, 2455, 2456, 2457],
+    "lynae_resonance_skill_additive_color": [2458, 2459],
+    "lynae_polychrome_leap_stage_1": [2468, 2469, 2470],
+}
 LYNAE_UNRESOLVED_ROWS = [
     {
         "topic": "continuous_lumiflow_movement_recovery",
@@ -76,6 +190,12 @@ LYNAE_UNRESOLVED_ROWS = [
         "source_rows": ["dmg!2462:2463", "dmg!2466:2467", "dmg!2471:2473", "dmg!2475", "dmg!2478:2479", "dmg!2483", "dmg!2490"],
         "implementation_status": "constellation_gated_disabled_by_default",
         "reason": "Non-S0 variants are retained as source-aligned records but not selected by default.",
+    },
+    {
+        "topic": "skill_type_reference_region",
+        "source_rows": ["角色技能类型!2553:2635"],
+        "implementation_status": "workbook_reference_corrected",
+        "reason": "Rows 772:784 are not the Lynae skill type region and are no longer used for Lynae.",
     },
 ]
 
@@ -141,6 +261,7 @@ def row_values(row_cache: dict[int, list[Any]], start: int, end: int) -> list[di
 
 def damage_row_from_cache(row_cache: dict[int, list[Any]], row_number: int) -> dict[str, Any]:
     row = row_cache[row_number]
+    rate_lv_1 = float(row[33] or 0.0)
     rate_lv_10 = float(row[42] or 0.0)
     return {
         "row": row_number,
@@ -150,8 +271,10 @@ def damage_row_from_cache(row_cache: dict[int, list[Any]], row_number: int) -> d
         "damage_element": row[8],
         "damage_type": row[9],
         "damage_related_property": row[32],
+        "rate_lv_1": rate_lv_1,
         "rate_lv_10": rate_lv_10,
         "derived_multiplier": rate_lv_10 / 10000.0,
+        "derived_multiplier_rate_lv_1": rate_lv_1 / 10000.0,
         "source_status": "workbook_confirmed",
         "values": list(row),
     }
@@ -178,7 +301,7 @@ def build_audit() -> dict[str, Any]:
 
         action_cache = cached_row_values(action_sheet, 2577, 2738, max_col=24)
         dmg_cache = cached_row_values(dmg_sheet, 2408, 2490, max_col=80)
-        passive_cache = cached_row_values(skill_type_sheet, 772, 784, max_col=24)
+        passive_cache = cached_row_values(skill_type_sheet, 2553, 2635, max_col=24)
         weapon_cache = cached_row_values(weapon_sheet, 65, 65, max_col=24)
         prop_cache = cached_row_values(prop_sheet, 51, 51, max_col=24)
 
@@ -193,7 +316,7 @@ def build_audit() -> dict[str, Any]:
         c2["source_status"] = "disabled_by_default_constellation"
         c2["implementation_status"] = "constellation_gated_disabled_by_default"
 
-        passive_rows = row_values(passive_cache, 772, 784)
+        passive_rows = row_values(passive_cache, 2553, 2635)
         weapon_row = row_values(weapon_cache, 65, 65)
         prop_row = row_values(prop_cache, 51, 51)
     finally:
@@ -255,7 +378,7 @@ def build_audit() -> dict[str, Any]:
         "spectral_analysis_c2": c2,
         "passive_buff_candidates": {
             "sheet": "角色技能类型",
-            "rows": "772:784",
+            "row_range": "2553:2635",
             "rows_found": len(passive_rows),
             "classification": "review_required",
             "rows": passive_rows,
@@ -289,6 +412,9 @@ def write_outputs(audit: dict[str, Any]) -> None:
     action_map = []
     for action_id, label, action_rows, damage_rows, implementation_status in LYNAE_ACTION_ALIGNMENT:
         multipliers = [float(damage_by_row[row]["derived_multiplier"]) for row in damage_rows if row in damage_by_row]
+        calculation = dict(LYNAE_ACTION_CALCULATIONS.get(action_id, {}))
+        multiplier = calculation.pop("multiplier", round(sum(multipliers), 10))
+        calculation_type = calculation.pop("calculation_type", "additive_hits" if len(damage_rows) > 1 else "single_damage_row")
         action_map.append(
             {
                 "action_id": action_id,
@@ -297,10 +423,17 @@ def write_outputs(audit: dict[str, Any]) -> None:
                 "action_rows": action_rows,
                 "damage_sheet": "dmg",
                 "damage_rows": damage_rows,
-                "multiplier": round(sum(multipliers), 10),
+                "multiplier": round(float(multiplier), 10),
                 "damage_row_multipliers": {
                     str(row): damage_by_row[row]["derived_multiplier"] for row in damage_rows if row in damage_by_row
                 },
+                "damage_row_rate_lv_1_multipliers": {
+                    str(row): damage_by_row[row]["derived_multiplier_rate_lv_1"]
+                    for row in damage_rows
+                    if row in damage_by_row and damage_by_row[row]["derived_multiplier_rate_lv_1"]
+                },
+                "calculation_type": calculation_type,
+                **calculation,
                 "timing_resource_evidence": [
                     row for row in audit["action_region"]["action_rows"] if row["row"] in set(action_rows)
                 ],
@@ -342,12 +475,44 @@ def write_outputs(audit: dict[str, Any]) -> None:
         f"Workbook: `{audit['workbook']}`",
         f"Source name: {audit['source_name']}",
         "",
+        "## Source Regions",
+        "- Damage coefficients: `dmg!2408:2490`",
+        "- Action/timing/resources: `角色-女!2577:2738`",
+        "- Skill type references: `角色技能类型!2553:2635`",
+        "- Base stat reference: `prop!51`",
+        "- Weapon reference only: `weapon!65`",
+        "",
         "## Implemented Action Map",
     ]
     for item in action_map:
         alignment_lines.append(
             "- `{action_id}`: {label}; action rows {action_rows}; damage rows {damage_rows}; "
-            "multiplier {multiplier}; status {implementation_status}".format(**item)
+            "multiplier {multiplier}; calculation {calculation_type}; status {implementation_status}".format(**item)
+        )
+    alignment_lines.extend(["", "## Additive Hit Rows"])
+    for action_id, rows in LYNAE_ADDITIVE_HIT_GROUPS.items():
+        alignment_lines.append(f"- `{action_id}`: dmg!{', dmg!'.join(str(row) for row in rows)} are additive hits.")
+    alignment_lines.extend(["", "## Repeated-Hit / Tick Rows"])
+    for item in action_map:
+        for rule in item.get("repeated_tick_rows", []):
+            damage_rows = rule.get("damage_rows", [rule.get("damage_row")])
+            damage_rows_text = ", ".join(f"dmg!{row}" for row in damage_rows if row is not None)
+            action_rows_value = rule.get("action_rows", [rule.get("action_row")])
+            action_rows_text = ", ".join(f"角色-女!{row}" for row in action_rows_value if row is not None)
+            alignment_lines.append(
+                f"- `{item['action_id']}`: {damage_rows_text} repeats max {rule['max_hits']} from {action_rows_text}."
+            )
+    alignment_lines.extend(["", "## Mutually Exclusive Mode Variants"])
+    for item in action_map:
+        rows = item.get("mode_variant_rows")
+        if rows:
+            alignment_lines.append(
+                f"- `{item['action_id']}`: {', '.join(f'dmg!{row}' for row in rows)} are mode variants and are not additive."
+            )
+    alignment_lines.extend(["", "## Constellation-Gated Disabled By Default"])
+    for action_id, item in LYNAE_CONSTELLATION_GATED_ACTIONS.items():
+        alignment_lines.append(
+            f"- `{action_id}`: multiplier {item['multiplier']}; rows {', '.join(item['source_rows'])}; disabled by default."
         )
     alignment_lines.extend(["", "## Unresolved / Metadata-Only Rows"])
     for item in LYNAE_UNRESOLVED_ROWS:
