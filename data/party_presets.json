@@ -139,6 +139,84 @@
     }
   },
   {
+    "party_id": "aemeath_mornye_lynae_enabled_test_party",
+    "display_name": "Aemeath + Mornye + Lynae Enabled Transition Test Party",
+    "members": [
+      "mornye",
+      "aemeath",
+      "lynae"
+    ],
+    "initial_active": "mornye",
+    "note": "Real 3-character Lynae RL training/evaluation preset cloned from aemeath_mornye_enabled_test_party with dummy_sub_dps replaced by Lynae.",
+    "build_profiles": {
+      "mornye": "mornye_user_real_01",
+      "aemeath": "aemeath_user_real_01",
+      "lynae": "lynae_user_real_01"
+    },
+    "transition_overrides": {
+      "characters": {
+        "aemeath": {
+          "intro_qte": {
+            "mode": "enabled",
+            "enabled": true
+          }
+        },
+        "mornye": {
+          "intro_qte": {
+            "mode": "enabled",
+            "enabled": true
+          },
+          "outro": {
+            "enabled": true,
+            "requires_concerto": true
+          }
+        },
+        "lynae": {
+          "intro_qte": {
+            "mode": "enabled",
+            "enabled": true
+          },
+          "outro": {
+            "enabled": true,
+            "requires_concerto": true
+          }
+        }
+      }
+    },
+    "mechanic_overrides": {
+      "aemeath": {
+        "aemeath_resonance_mode": "tune_rupture",
+        "aemeath_resonance_mode_source": "party_preset"
+      },
+      "mornye": {
+        "mornye_heal_event_mode": "simplified_syntony_field_uptime",
+        "mornye_heal_event_mode_source": "party_preset",
+        "interfered_marker": {
+          "mode": "tune_break_triggered"
+        }
+      },
+      "lynae": {
+        "lynae_resonance_mode": "tune_rupture",
+        "lynae_constellation": 0,
+        "spectral_analysis_enabled": true
+      },
+      "tune_break_system": {
+        "mode": "excel_off_tune_mistune_action",
+        "enemy_off_tune_max": 3920,
+        "enemy_tune_break_cooldown_seconds": 3.0,
+        "enemy_tune_break_cooldown_source_status": "workbook_confirmed_cost4_red_name_boss_default",
+        "enemy_tune_break_cooldown_source_ref": "?꾦〉2!B227"
+      }
+    },
+    "generic_swap": {
+      "action_time": 0.5,
+      "combat_time_cost": 0.5,
+      "is_placeholder": true,
+      "source": "party_presets.aemeath_mornye_enabled_test_party.generic_swap",
+      "warning": "Generic swap timing is a placeholder for party-structure testing. It is not sourced from Excel/client data. Real party DPS requires QTE/Intro/Outro transition modeling."
+    }
+  },
+  {
     "party_id": "aemeath_mornye_optimistic_gp_test_party",
     "display_name": "Aemeath + Mornye Optimistic GP Test Party",
     "members": [
@@ -244,7 +322,7 @@
         "enemy_off_tune_max": 3920,
         "enemy_tune_break_cooldown_seconds": 3.0,
         "enemy_tune_break_cooldown_source_status": "workbook_confirmed_cost4_red_name_boss_default",
-        "enemy_tune_break_cooldown_source_ref": "??2!B227"
+        "enemy_tune_break_cooldown_source_ref": "?꾦〉2!B227"
       }
     },
     "generic_swap": {

@@ -5562,6 +5562,38 @@
     "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
   },
   {
+    "id": "lynae_polychrome_leap",
+    "name": "Lynae Polychrome Leap Selector",
+    "character_id": "lynae",
+    "action_type": "basic_attack",
+    "duration": 0.001,
+    "action_time": 0.001,
+    "combat_time_cost": 0.0,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "basic_attack",
+    "damage_element": "spectro",
+    "scaling_stat": "atk",
+    "damage_multiplier": 0.0,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 0.0,
+    "resonance_energy_cost": 0.0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "lynae",
+      "basic_attack",
+      "selector"
+    ],
+    "policy_selectable": true,
+    "mechanic_effects": {},
+    "source_status": "selector_runtime_routes_to_workbook_confirmed_stage",
+    "data_status": "selector_runtime_routes_to_workbook_confirmed_stage",
+    "notes": "Policy selector resolved by Lynae mechanic to the current Polychrome Leap stage; stage coefficients and timings remain on the resolved actions."
+  },
+  {
     "id": "lynae_visual_impact",
     "name": "Lynae Visual Impact",
     "character_id": "lynae",
@@ -5587,7 +5619,7 @@
       "lynae",
       "basic_attack"
     ],
-    "policy_selectable": false,
+    "policy_selectable": true,
     "mechanic_effects": {},
     "source_rows": [
       2679,

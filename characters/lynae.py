@@ -12,6 +12,7 @@ LYNAE_OUTRO_ACTION_ID = "lynae_outro_lets_hit_the_road"
 LYNAE_POLICY_BASIC_ACTION_ID = "lynae_basic_attack"
 LYNAE_POLICY_SKILL_ACTION_ID = "lynae_resonance_skill"
 LYNAE_SPARK_SELECTOR_ACTION_ID = "lynae_spark_collision"
+LYNAE_POLYCHROME_LEAP_SELECTOR_ACTION_ID = "lynae_polychrome_leap"
 LYNAE_VIVID_TOMORROW_ACTION_ID = "lynae_to_a_vivid_tomorrow"
 LYNAE_VISUAL_IMPACT_ACTION_ID = "lynae_visual_impact"
 LYNAE_IRIDESCENT_SPLASH_ACTION_ID = "lynae_iridescent_splash"
@@ -65,6 +66,11 @@ class LynaeMechanic(CharacterMechanic):
         3: "lynae_kaleidoscopic_basic_stage_3",
         4: "lynae_kaleidoscopic_basic_stage_4",
         5: "lynae_kaleidoscopic_basic_stage_5",
+    }
+    _POLYCHROME_LEAP_BY_STAGE = {
+        1: "lynae_polychrome_leap_stage_1",
+        2: "lynae_polychrome_leap_stage_2",
+        3: "lynae_polychrome_leap_stage_3",
     }
     _OPTICAL_OVERFLOW_GAINS = {
         "lynae_basic_stage_1": 12.0,
@@ -120,6 +126,9 @@ class LynaeMechanic(CharacterMechanic):
             resolved_id = LYNAE_LIBERATION_ACTION_ID
         elif selected_action.id == LYNAE_SPARK_SELECTOR_ACTION_ID and self._overflow_full(data):
             resolved_id = "lynae_spark_collision_lv3"
+        elif selected_action.id == LYNAE_POLYCHROME_LEAP_SELECTOR_ACTION_ID:
+            stage = int(float(data.get("true_color", 0.0) or 0.0)) + 1
+            resolved_id = self._POLYCHROME_LEAP_BY_STAGE.get(max(1, min(3, stage)), "lynae_polychrome_leap_stage_1")
 
         try:
             return actions_by_id[resolved_id]
@@ -132,6 +141,8 @@ class LynaeMechanic(CharacterMechanic):
             LYNAE_POLICY_SKILL_ACTION_ID,
             "lynae_resonance_liberation",
             LYNAE_SPARK_SELECTOR_ACTION_ID,
+            LYNAE_POLYCHROME_LEAP_SELECTOR_ACTION_ID,
+            LYNAE_VISUAL_IMPACT_ACTION_ID,
             LYNAE_ECHO_HYVATIA_ACTION_ID,
             "lynae_tune_break",
         ]
@@ -141,6 +152,8 @@ class LynaeMechanic(CharacterMechanic):
         action_id = action.id
         if action_id == LYNAE_SPARK_SELECTOR_ACTION_ID:
             return bool(data.get("optical_sampling_stage_active", True)) and self._overflow_full(data)
+        if action_id == LYNAE_POLYCHROME_LEAP_SELECTOR_ACTION_ID:
+            return self._in_kaleidoscopic_parade(data) and float(data.get("lumiflow", 0.0) or 0.0) >= 40.0
         if action_id.startswith("lynae_spark_collision_lv"):
             return True
         if action_id == "lynae_resonance_skill_additive_color":

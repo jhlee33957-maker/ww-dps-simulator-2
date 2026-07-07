@@ -30,6 +30,7 @@ from simulator.echo_sets import (
     merge_echo_set_logs,
 )
 from simulator.generated_damage import calculate_generated_damage_packet
+from simulator.lynae_tune_strain import apply_lynae_tune_strain_damage_amp
 from simulator.mechanic_events import preview_mechanic_event_trigger, process_mechanic_event_triggers
 from simulator.models import ActionData, ActionResult, BuffData, CharacterData, CombatState, HitData, TimelineEntry
 from simulator.resource_system import apply_resource_changes, can_pay_resources
@@ -340,6 +341,23 @@ def _calculate_hit_damage(
             tune_break_detail["tune_break_damage_after_target_amp"] = damage
             tune_break_detail["tune_break_damage"] = damage
     target_damage_taken_amp_bonus_damage = damage - damage_before_target_amp
+    damage_before_lynae_tune_strain_amp = damage
+    damage, lynae_tune_strain_log = apply_lynae_tune_strain_damage_amp(
+        damage,
+        source_character_id=action.character_id if hit.damage_category in {"normal", "tune_break"} else None,
+        state=state,
+        characters=characters,
+        buffs=buffs,
+        time_offset=hit.time,
+        force_active_buff_ids=force_active_buff_ids,
+    )
+    lynae_tune_strain_bonus_damage = float(
+        lynae_tune_strain_log.get("lynae_tune_strain_damage_amp_bonus_damage", 0.0) or 0.0
+    )
+    if lynae_tune_strain_bonus_damage > 0.0 and hit.damage_category == "tune_break" and tune_break_detail:
+        tune_break_detail["tune_break_damage_before_lynae_tune_strain_amp"] = damage_before_lynae_tune_strain_amp
+        tune_break_detail["tune_break_damage_after_lynae_tune_strain_amp"] = damage
+        tune_break_detail["tune_break_damage"] = damage
 
     detail = {
         "hit_time": hit.time,
@@ -455,6 +473,9 @@ def _calculate_hit_damage(
             INTERFERED_MARKER_AMP_SOURCE_REF if target_amp_applied_to_direct_damage else None
         ),
         "target_damage_taken_amp_bonus_damage": target_damage_taken_amp_bonus_damage,
+        **lynae_tune_strain_log,
+        "damage_before_lynae_tune_strain_amp": damage_before_lynae_tune_strain_amp,
+        "damage_after_lynae_tune_strain_amp": damage,
         "normal_damage_before_target_amp": damage_before_target_amp if hit.damage_category == "normal" else 0.0,
         "normal_damage_after_target_amp": damage if hit.damage_category == "normal" else 0.0,
         "interfered_marker_amp_applied_to_direct_damage": (
@@ -497,6 +518,11 @@ def _calculate_hit_damage_totals(
     damage_by_category: dict[str, float] = {}
     action_damage_bonus_context: dict[str, Any] = {}
     direct_damage_taken_amp_total_bonus_damage = 0.0
+    lynae_tune_strain_damage_amp_bonus_damage = 0.0
+    lynae_tune_strain_damage_amp = 0.0
+    lynae_tune_strain_damage_multiplier = 1.0
+    lynae_tune_strain_source_status: str | None = None
+    lynae_tune_strain_source_ref: str | None = None
     interfered_marker_direct_damage_amp_applied_count = 0
     tune_break_damage_receives_existing_interfered_marker_amp = False
     tune_break_damage_receives_newly_applied_interfered_marker_amp = False
@@ -523,6 +549,11 @@ def _calculate_hit_damage_totals(
             detail["mechanic_damage_multiplier"] = action_damage_multiplier
             for key in (
                 "target_damage_taken_amp_bonus_damage",
+                "lynae_tune_strain_damage_amp_bonus_damage",
+                "damage_before_lynae_tune_strain_amp",
+                "damage_after_lynae_tune_strain_amp",
+                "tune_break_damage_before_lynae_tune_strain_amp",
+                "tune_break_damage_after_lynae_tune_strain_amp",
                 "normal_damage_before_target_amp",
                 "normal_damage_after_target_amp",
                 "tune_break_damage_before_target_amp",
@@ -554,6 +585,15 @@ def _calculate_hit_damage_totals(
             hit_details.append(detail)
             amp_bonus_damage = float(detail.get("target_damage_taken_amp_bonus_damage", 0.0) or 0.0)
             direct_damage_taken_amp_total_bonus_damage += amp_bonus_damage
+            lynae_bonus_damage = float(detail.get("lynae_tune_strain_damage_amp_bonus_damage", 0.0) or 0.0)
+            lynae_tune_strain_damage_amp_bonus_damage += lynae_bonus_damage
+            if lynae_bonus_damage > 0.0:
+                lynae_tune_strain_damage_amp = float(detail.get("lynae_tune_strain_damage_amp", 0.0) or 0.0)
+                lynae_tune_strain_damage_multiplier = float(
+                    detail.get("lynae_tune_strain_damage_multiplier", 1.0) or 1.0
+                )
+                lynae_tune_strain_source_status = detail.get("lynae_tune_strain_source_status")
+                lynae_tune_strain_source_ref = detail.get("lynae_tune_strain_source_ref")
             if detail.get("interfered_marker_amp_applied_to_direct_damage"):
                 interfered_marker_direct_damage_amp_applied_count += 1
             if detail.get("tune_break_damage_receives_existing_interfered_marker_amp"):
@@ -656,6 +696,11 @@ def _calculate_hit_damage_totals(
         ),
         "tune_break_damage_before_target_amp": tune_break_damage_before_target_amp,
         "tune_break_damage_after_target_amp": tune_break_damage_after_target_amp,
+        "lynae_tune_strain_damage_amp_bonus_damage": lynae_tune_strain_damage_amp_bonus_damage,
+        "lynae_tune_strain_damage_amp": lynae_tune_strain_damage_amp,
+        "lynae_tune_strain_damage_multiplier": lynae_tune_strain_damage_multiplier,
+        "lynae_tune_strain_source_status": lynae_tune_strain_source_status,
+        "lynae_tune_strain_source_ref": lynae_tune_strain_source_ref,
     }
 
     return (
@@ -948,6 +993,7 @@ def execute_action(
     generated_mechanic_damage = 0.0
     generated_mechanic_events: list[dict[str, Any]] = []
     generated_mechanic_hit_count = 0
+    generated_lynae_tune_strain_damage_amp_bonus_damage = 0.0
     for packet in generated_packets:
         packet_damage, packet_details = calculate_generated_damage_packet(
             packet,
@@ -975,6 +1021,33 @@ def execute_action(
             "damage": packet_damage,
             "notes": packet.notes,
         }
+        packet_lynae_tune_strain_bonus = sum(
+            float(detail.get("lynae_tune_strain_damage_amp_bonus_damage", 0.0) or 0.0)
+            for detail in packet_details
+        )
+        if packet_lynae_tune_strain_bonus > 0.0:
+            first_amp_detail = next(
+                (
+                    detail
+                    for detail in packet_details
+                    if float(detail.get("lynae_tune_strain_damage_amp_bonus_damage", 0.0) or 0.0) > 0.0
+                ),
+                {},
+            )
+            event.update(
+                {
+                    "lynae_tune_strain_damage_amp_bonus_damage": packet_lynae_tune_strain_bonus,
+                    "lynae_tune_strain_damage_amp": float(
+                        first_amp_detail.get("lynae_tune_strain_damage_amp", 0.0) or 0.0
+                    ),
+                    "lynae_tune_strain_damage_multiplier": float(
+                        first_amp_detail.get("lynae_tune_strain_damage_multiplier", 1.0) or 1.0
+                    ),
+                    "lynae_tune_strain_source_status": first_amp_detail.get("lynae_tune_strain_source_status"),
+                    "lynae_tune_strain_source_ref": first_amp_detail.get("lynae_tune_strain_source_ref"),
+                }
+            )
+            generated_lynae_tune_strain_damage_amp_bonus_damage += packet_lynae_tune_strain_bonus
         generated_mechanic_events.append(event)
         if packet_damage <= 0.0:
             continue
@@ -986,6 +1059,14 @@ def execute_action(
             hit_damage_by_category[category] = hit_damage_by_category.get(category, 0.0) + float(
                 detail.get("damage", 0.0) or 0.0
             )
+    if generated_lynae_tune_strain_damage_amp_bonus_damage > 0.0:
+        direct_amp_summary["lynae_tune_strain_damage_amp_bonus_damage"] = float(
+            direct_amp_summary.get("lynae_tune_strain_damage_amp_bonus_damage", 0.0) or 0.0
+        ) + generated_lynae_tune_strain_damage_amp_bonus_damage
+        direct_amp_summary["lynae_tune_strain_damage_amp"] = state.lynae_tune_strain_damage_amp
+        direct_amp_summary["lynae_tune_strain_damage_multiplier"] = state.lynae_tune_strain_damage_multiplier
+        direct_amp_summary["lynae_tune_strain_source_status"] = state.lynae_tune_strain_source_status
+        direct_amp_summary["lynae_tune_strain_source_ref"] = state.lynae_tune_strain_source_ref
     if generated_mechanic_events:
         mechanic_log_fields.update(
             {
@@ -1215,6 +1296,25 @@ def execute_action(
         ),
         tune_break_damage_after_target_amp=float(
             direct_amp_summary.get("tune_break_damage_after_target_amp", 0.0) or 0.0
+        ),
+        target_tune_strain_interfered_stacks=state.target_tune_strain_interfered_stacks,
+        target_tune_strain_interfered_max_stacks=state.target_tune_strain_interfered_max_stacks,
+        target_tune_strain_interfered_remaining=state.target_tune_strain_interfered_remaining,
+        lynae_tune_strain_damage_amp=float(
+            direct_amp_summary.get("lynae_tune_strain_damage_amp", state.lynae_tune_strain_damage_amp) or 0.0
+        ),
+        lynae_tune_strain_damage_multiplier=float(
+            direct_amp_summary.get("lynae_tune_strain_damage_multiplier", state.lynae_tune_strain_damage_multiplier)
+            or 1.0
+        ),
+        lynae_tune_strain_damage_amp_bonus_damage=float(
+            direct_amp_summary.get("lynae_tune_strain_damage_amp_bonus_damage", 0.0) or 0.0
+        ),
+        lynae_tune_strain_source_status=(
+            direct_amp_summary.get("lynae_tune_strain_source_status") or state.lynae_tune_strain_source_status
+        ),
+        lynae_tune_strain_source_ref=(
+            direct_amp_summary.get("lynae_tune_strain_source_ref") or state.lynae_tune_strain_source_ref
         ),
         generated_mechanic_damage=generated_mechanic_damage,
         generated_mechanic_damage_total=generated_mechanic_damage,
@@ -1489,6 +1589,14 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         ),
         tune_break_damage_before_target_amp=result.tune_break_damage_before_target_amp,
         tune_break_damage_after_target_amp=result.tune_break_damage_after_target_amp,
+        target_tune_strain_interfered_stacks=result.target_tune_strain_interfered_stacks,
+        target_tune_strain_interfered_max_stacks=result.target_tune_strain_interfered_max_stacks,
+        target_tune_strain_interfered_remaining=result.target_tune_strain_interfered_remaining,
+        lynae_tune_strain_damage_amp=result.lynae_tune_strain_damage_amp,
+        lynae_tune_strain_damage_multiplier=result.lynae_tune_strain_damage_multiplier,
+        lynae_tune_strain_damage_amp_bonus_damage=result.lynae_tune_strain_damage_amp_bonus_damage,
+        lynae_tune_strain_source_status=result.lynae_tune_strain_source_status,
+        lynae_tune_strain_source_ref=result.lynae_tune_strain_source_ref,
         generated_mechanic_damage=result.generated_mechanic_damage,
         generated_mechanic_damage_total=result.generated_mechanic_damage_total,
         generated_mechanic_hit_count=result.generated_mechanic_hit_count,
@@ -1605,6 +1713,9 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         base_off_tune_buildup_rate=result.base_off_tune_buildup_rate,
         runtime_off_tune_buildup_rate_bonus=result.runtime_off_tune_buildup_rate_bonus,
         current_off_tune_buildup_rate=result.current_off_tune_buildup_rate,
+        base_tune_break_boost_points=result.base_tune_break_boost_points,
+        runtime_tune_break_boost_points_bonus=result.runtime_tune_break_boost_points_bonus,
+        current_tune_break_boost_points=result.current_tune_break_boost_points,
         syntony_field_off_tune_bonus_active=result.syntony_field_off_tune_bonus_active,
         syntony_field_off_tune_bonus_value=result.syntony_field_off_tune_bonus_value,
         c2_off_tune_bonus_active=result.c2_off_tune_bonus_active,

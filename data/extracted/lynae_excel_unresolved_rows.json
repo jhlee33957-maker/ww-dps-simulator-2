@@ -16,14 +16,6 @@
     "reason": "Visual Impact records the 5s window and immediate Flux; periodic 2s field scheduling is not added."
   },
   {
-    "topic": "tune_strain_stack_limit_and_per_stack_damage",
-    "source_rows": [
-      "角色-女!2728"
-    ],
-    "implementation_status": "metadata_only_no_stack_system_hook",
-    "reason": "Current simulator has interfered state and responses but no target Tune Strain stack model."
-  },
-  {
     "topic": "constellation_variants",
     "source_rows": [
       "dmg!2462:2463",

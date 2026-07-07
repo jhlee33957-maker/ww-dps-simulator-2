@@ -180,12 +180,6 @@ LYNAE_UNRESOLVED_ROWS = [
         "reason": "Visual Impact records the 5s window and immediate Flux; periodic 2s field scheduling is not added.",
     },
     {
-        "topic": "tune_strain_stack_limit_and_per_stack_damage",
-        "source_rows": ["角色-女!2728"],
-        "implementation_status": "metadata_only_no_stack_system_hook",
-        "reason": "Current simulator has interfered state and responses but no target Tune Strain stack model.",
-    },
-    {
         "topic": "constellation_variants",
         "source_rows": ["dmg!2462:2463", "dmg!2466:2467", "dmg!2471:2473", "dmg!2475", "dmg!2478:2479", "dmg!2483", "dmg!2490"],
         "implementation_status": "constellation_gated_disabled_by_default",
@@ -198,6 +192,26 @@ LYNAE_UNRESOLVED_ROWS = [
         "reason": "Rows 772:784 are not the Lynae skill type region and are no longer used for Lynae.",
     },
 ]
+LYNAE_IMPLEMENTED_SINGLE_TARGET_ROWS = [
+    {
+        "topic": "tune_strain_stack_limit_and_per_stack_damage",
+        "source_rows": ["角色-女!2728"],
+        "implementation_status": "implemented_single_target",
+        "notes": (
+            "Current single-target Endgame Matrix model increments Tune Strain Interfered stacks on Tune Break, "
+            "caps at 1 stack for C0 and 2 stacks for C2+, lasts 30s, and applies only to Lynae damage. "
+            "This is not a multi-target implementation claim."
+        ),
+    }
+]
+
+
+def lynae_unresolved_rows() -> list[dict[str, Any]]:
+    return [
+        item
+        for item in LYNAE_UNRESOLVED_ROWS
+        if not str(item.get("topic", "")).endswith("_implemented_single_target")
+    ]
 
 
 def workbook_sheet_names(workbook_path: Path) -> set[str]:
@@ -442,7 +456,7 @@ def write_outputs(audit: dict[str, Any]) -> None:
             }
         )
     action_map_path.write_text(json.dumps(action_map, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    unresolved_path.write_text(json.dumps(LYNAE_UNRESOLVED_ROWS, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    unresolved_path.write_text(json.dumps(lynae_unresolved_rows(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     lines = [
         "# Lynae Source Audit",
         "",
@@ -464,6 +478,7 @@ def write_outputs(audit: dict[str, Any]) -> None:
             "",
             "## Scope Notes",
             "- Static Mist, Pact of Neonlight Leap, Hyvatia, Liberation, and Outro buff values are user-supplied tooltip sources.",
+            "- Tune Strain stack limit and per-stack damage are implemented for the current single-target Endgame Matrix model only; no multi-target behavior is claimed.",
             "- Complex Lumiflow movement recovery, skating movement speed, stamina, and air/ground branch exactness remain metadata-only/review-required in v1.",
         ]
     )
@@ -514,8 +529,13 @@ def write_outputs(audit: dict[str, Any]) -> None:
         alignment_lines.append(
             f"- `{action_id}`: multiplier {item['multiplier']}; rows {', '.join(item['source_rows'])}; disabled by default."
         )
+    alignment_lines.extend(["", "## Implemented Single-Target Mechanics"])
+    for item in LYNAE_IMPLEMENTED_SINGLE_TARGET_ROWS:
+        alignment_lines.append(
+            f"- {item['topic']}: {item['implementation_status']} ({', '.join(item['source_rows'])}) - {item['notes']}"
+        )
     alignment_lines.extend(["", "## Unresolved / Metadata-Only Rows"])
-    for item in LYNAE_UNRESOLVED_ROWS:
+    for item in lynae_unresolved_rows():
         alignment_lines.append(
             f"- {item['topic']}: {item['implementation_status']} ({', '.join(item['source_rows'])}) - {item['reason']}"
         )

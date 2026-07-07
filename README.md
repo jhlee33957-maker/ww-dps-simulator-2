@@ -262,7 +262,7 @@ Mode behavior:
 - `dry_run`: logs reviewed transition candidates without affecting DPS.
 - `enabled`: applies reviewed QTE/Intro transition events through the generic transition pipeline.
 
-The `aemeath_mornye_enabled_test_party` preset enables Aemeath QTE, Mornye Intro, and Mornye Outro for deterministic transition-route testing. Generic swap timing in party presets remains placeholder metadata, not real gameplay timing.
+The `aemeath_mornye_enabled_test_party` preset is the existing Aemeath + Mornye + `dummy_sub_dps` enabled-transition baseline. The `aemeath_lynae_enabled_test_party` preset is a 2-character Lynae diagnostic party. The `aemeath_mornye_lynae_enabled_test_party` preset is the intended real 3-character party for Lynae RL training/evaluation, preserving the Aemeath + Mornye enabled baseline and replacing `dummy_sub_dps` with Lynae. Generic swap timing in party presets remains placeholder metadata, not real gameplay timing.
 
 CLI examples:
 

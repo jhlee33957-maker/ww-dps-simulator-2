@@ -212,7 +212,9 @@ def support_stat_context(
 ) -> dict[str, Any]:
     support_stats = normalize_support_stats(character.support_stats)
     base_off_tune = float(support_stats.get("off_tune_buildup_rate", 1.0) or 1.0)
+    base_tune_break_boost = float(support_stats.get("tune_break_boost", 0.0) or 0.0)
     runtime_bonus = 0.0
+    tune_break_boost_bonus = 0.0
     syntony_bonus = 0.0
     c2_bonus_active = False
     active_support_buffs: list[str] = []
@@ -227,23 +229,27 @@ def support_stat_context(
         if not _buff_applies(buff, active, character, state):
             continue
         for stat_name, stat_value in buff.support_stat_modifiers.items():
-            if stat_name != "off_tune_buildup_rate_add":
-                continue
             active_support_buffs.append(buff.id)
             value = float(active.metadata.get("dynamic_support_value", stat_value))
-            runtime_bonus += value
-            if buff.id in {
-                "mornye_syntony_field_off_tune_buildup_rate",
-                "mornye_high_syntony_field_off_tune_buildup_rate",
-            }:
-                syntony_bonus += value
-                c2_bonus_active = c2_bonus_active or bool(active.metadata.get("c2_off_tune_bonus_active", False))
+            if stat_name == "off_tune_buildup_rate_add":
+                runtime_bonus += value
+                if buff.id in {
+                    "mornye_syntony_field_off_tune_buildup_rate",
+                    "mornye_high_syntony_field_off_tune_buildup_rate",
+                }:
+                    syntony_bonus += value
+                    c2_bonus_active = c2_bonus_active or bool(active.metadata.get("c2_off_tune_bonus_active", False))
+            elif stat_name == "tune_break_boost_points_add":
+                tune_break_boost_bonus += value
 
     return {
         "support_stats": support_stats,
         "base_off_tune_buildup_rate": base_off_tune,
         "runtime_off_tune_buildup_rate_bonus": runtime_bonus,
         "current_off_tune_buildup_rate": base_off_tune + runtime_bonus,
+        "base_tune_break_boost_points": base_tune_break_boost,
+        "runtime_tune_break_boost_points_bonus": tune_break_boost_bonus,
+        "current_tune_break_boost_points": base_tune_break_boost + tune_break_boost_bonus,
         "syntony_field_off_tune_bonus_active": syntony_bonus > 0.0,
         "syntony_field_off_tune_bonus_value": syntony_bonus,
         "c2_off_tune_bonus_active": c2_bonus_active,

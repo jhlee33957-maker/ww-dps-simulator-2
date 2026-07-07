@@ -109,6 +109,33 @@
         "dmg!2490"
       ],
       "source_status": "workbook_confirmed"
+    },
+    "tune_strain_interfered_stack_damage_amp": {
+      "target_model": "single_target_endgame_matrix",
+      "trigger": "Tune Break while target_tune_shift_state is tune_strain_shifting",
+      "duration_seconds": 30,
+      "c0_max_stacks": 1,
+      "c2_plus_max_stacks": 2,
+      "per_stack_per_tune_break_boost_point_amp": 0.0012,
+      "damage_multiplier_formula": "1 + stacks * current_lynae_tune_break_boost_points * 0.0012",
+      "applies_to": [
+        "Lynae direct normal damage",
+        "Lynae direct tune_break damage",
+        "Lynae tune_response damage",
+        "Lynae generated tune damage packets"
+      ],
+      "does_not_apply_to": [
+        "Aemeath tune responses",
+        "Mornye tune responses",
+        "non-Lynae direct damage",
+        "global target_damage_taken_amp"
+      ],
+      "c2_damage_variant_status": "disabled_by_default_constellation",
+      "source_refs": [
+        "角色-女!2728"
+      ],
+      "source_status": "user_tooltip_confirmed_single_target",
+      "implementation_status": "implemented_single_target"
     }
   },
   "metadata_only_or_simplified": {
@@ -118,7 +145,6 @@
     "air_ground_exact_branches": "simplified",
     "spray_paint_periodic_ticks": "metadata_only_window_recorded",
     "optic_camo": "metadata_only_non_dps_environmental",
-    "tune_strain_stack_limit_and_per_stack_damage": "metadata_only_no_stack_system_hook",
     "c1_c3_c5_damage_variants": "constellation_gated_disabled_by_default"
   },
   "source_references": {

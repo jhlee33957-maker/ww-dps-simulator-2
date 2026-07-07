@@ -38,6 +38,12 @@ from simulator.echo_sets import (
     trailblazing_star_enabled,
     trailblazing_star_uptime_seconds,
 )
+from simulator.lynae_tune_strain import (
+    apply_lynae_tune_strain_damage_amp,
+    clear_lynae_tune_strain_state,
+    lynae_tune_strain_max_stacks,
+    refresh_lynae_tune_strain_amp,
+)
 from simulator.mechanic_events import mechanic_event_metadata_for_config
 from simulator.models import ActionData, BuffData, CharacterData, CombatState, EnemyData, PartyState, SimulationSummary, TimelineEntry
 from simulator.party_transition import (
@@ -555,6 +561,21 @@ class Simulation:
         self.state.target_interfered_remaining = max(0.0, self.state.target_interfered_remaining - elapsed)
         if self.state.target_interfered_remaining <= 0.0:
             self.state.target_interfered_state = None
+        self.state.target_tune_strain_interfered_remaining = max(
+            0.0,
+            self.state.target_tune_strain_interfered_remaining - elapsed,
+        )
+        if self.state.target_interfered_state != "tune_strain_interfered":
+            clear_lynae_tune_strain_state(self.state)
+            self.state.target_tune_strain_interfered_max_stacks = lynae_tune_strain_max_stacks(
+                self.state.mechanics_config
+            )
+        elif self.state.target_tune_strain_interfered_remaining <= 0.0:
+            self.state.target_interfered_state = None
+            clear_lynae_tune_strain_state(self.state)
+            self.state.target_tune_strain_interfered_max_stacks = lynae_tune_strain_max_stacks(
+                self.state.mechanics_config
+            )
         self.state.interfered_marker_remaining = max(0.0, self.state.interfered_marker_remaining - elapsed)
         if self.state.interfered_marker_remaining <= 0.0:
             self.state.interfered_marker_damage_taken_amp = 0.0
@@ -645,10 +666,22 @@ class Simulation:
             interfered_state = "tune_rupture_interfered"
             self.state.target_interfered_state = interfered_state
             self.state.target_interfered_remaining = 8.0
+            clear_lynae_tune_strain_state(self.state)
+            self.state.target_tune_strain_interfered_max_stacks = lynae_tune_strain_max_stacks(
+                self.state.mechanics_config
+            )
         elif prior_shift_state == "tune_strain_shifting":
             interfered_state = "tune_strain_interfered"
             self.state.target_interfered_state = interfered_state
             self.state.target_interfered_remaining = 30.0
+            max_stacks = lynae_tune_strain_max_stacks(self.state.mechanics_config)
+            self.state.target_tune_strain_interfered_max_stacks = max_stacks
+            self.state.target_tune_strain_interfered_stacks = min(
+                max_stacks,
+                int(self.state.target_tune_strain_interfered_stacks or 0) + 1,
+            )
+            self.state.target_tune_strain_interfered_remaining = 30.0
+            refresh_lynae_tune_strain_amp(self.state, self.characters, self.buffs)
         else:
             result.interfered_unavailable_reason = "missing_target_shift_state"
 
@@ -664,6 +697,7 @@ class Simulation:
         result.enemy_tune_break_cooldown_seconds = cooldown
         result.enemy_tune_break_cooldown_source_status = self.state.enemy_tune_break_cooldown_source_status
         result.enemy_tune_break_cooldown_source_ref = self.state.enemy_tune_break_cooldown_source_ref
+        self._sync_lynae_tune_strain_result_fields(result)
 
         if interfered_state is not None:
             result.previous_interfered_marker_active_before_response = (
@@ -927,6 +961,21 @@ class Simulation:
             detail["lynae_spectral_analysis_constellation_variant"] = constellation_variant
             detail["lynae_spectral_analysis_c2_disabled_by_default"] = result.lynae_spectral_analysis_c2_disabled_by_default
         damage = float(detail["tune_response_damage"])
+        damage, lynae_tune_strain_log = apply_lynae_tune_strain_damage_amp(
+            damage,
+            source_character_id=source_character_id,
+            state=self.state,
+            characters=self.characters,
+            buffs=self.buffs,
+        )
+        detail.update(lynae_tune_strain_log)
+        detail["damage"] = damage
+        detail["tune_response_damage"] = damage
+        if lynae_tune_strain_log["lynae_tune_strain_damage_amp_bonus_damage"] > 0.0:
+            detail["tune_response_damage_before_lynae_tune_strain_amp"] = (
+                damage - lynae_tune_strain_log["lynae_tune_strain_damage_amp_bonus_damage"]
+            )
+            detail["tune_response_damage_after_lynae_tune_strain_amp"] = damage
         cooldown = float(response_def.get("cooldown_seconds", 8.0) or 8.0)
 
         setattr(self.state, trigger_count_attr, int(getattr(self.state, trigger_count_attr, 0) or 0) + 1)
@@ -936,6 +985,10 @@ class Simulation:
         setattr(result, response_damage_field, damage)
         setattr(result, damage_total_field, float(getattr(self.state, damage_total_attr, 0.0) or 0.0) + damage)
         setattr(result, f"{cooldown_attr}", cooldown)
+        result.lynae_tune_strain_damage_amp_bonus_damage += float(
+            lynae_tune_strain_log.get("lynae_tune_strain_damage_amp_bonus_damage", 0.0) or 0.0
+        )
+        self._sync_lynae_tune_strain_result_fields(result)
         result.tune_response_damage += damage
         result.tune_response_damage_total = self.state.tune_response_damage_total + damage
         result.damage += damage
@@ -973,6 +1026,7 @@ class Simulation:
             "response_damage_receives_new_interfered_marker_amp": receives_new_marker_amp,
             "response_amp_timing_source_status": "excel_event_order_derived",
             "source_status": detail["source_status"],
+            **lynae_tune_strain_log,
         }
         result.tune_response_events.append(event)
         self.state.tune_response_events.append(event)
@@ -986,6 +1040,15 @@ class Simulation:
             for action_id, action in self.policy_actions.items()
             if action.action_type == "tune_break" and self.is_resolved_action_available(action)
         ]
+
+    def _sync_lynae_tune_strain_result_fields(self, result: Any) -> None:
+        result.target_tune_strain_interfered_stacks = self.state.target_tune_strain_interfered_stacks
+        result.target_tune_strain_interfered_max_stacks = self.state.target_tune_strain_interfered_max_stacks
+        result.target_tune_strain_interfered_remaining = self.state.target_tune_strain_interfered_remaining
+        result.lynae_tune_strain_damage_amp = self.state.lynae_tune_strain_damage_amp
+        result.lynae_tune_strain_damage_multiplier = self.state.lynae_tune_strain_damage_multiplier
+        result.lynae_tune_strain_source_status = self.state.lynae_tune_strain_source_status
+        result.lynae_tune_strain_source_ref = self.state.lynae_tune_strain_source_ref
 
     def _sync_tune_break_result_fields(self, result: Any) -> None:
         result.enemy_off_tune_current_after = self.state.enemy_off_tune_current
@@ -1029,6 +1092,7 @@ class Simulation:
         result.target_tune_shift_remaining = self.state.target_tune_shift_remaining
         result.target_interfered_state = self.state.target_interfered_state
         result.target_interfered_remaining = self.state.target_interfered_remaining
+        self._sync_lynae_tune_strain_result_fields(result)
         result.observation_marker_remaining = self._mornye_observation_marker_remaining()
         result.observation_marker_active = result.observation_marker_remaining > 0.0
         result.interfered_marker_remaining = self.state.interfered_marker_remaining
@@ -1805,11 +1869,18 @@ class Simulation:
         base_off_tune = 1.0
         runtime_off_tune_bonus = 0.0
         current_off_tune = 1.0
+        base_tune_break_boost = 0.0
+        runtime_tune_break_boost_bonus = 0.0
+        current_tune_break_boost = 0.0
         c2_active = False
         syntony_bonus_value = 0.0
+        lynae_character = self.characters.get("lynae")
+        if lynae_character is not None:
+            lynae_support_context = support_stat_context(lynae_character, self.state, self.buffs)
+            base_tune_break_boost = float(lynae_support_context["base_tune_break_boost_points"])
+            runtime_tune_break_boost_bonus = float(lynae_support_context["runtime_tune_break_boost_points_bonus"])
+            current_tune_break_boost = float(lynae_support_context["current_tune_break_boost_points"])
         if mornye_character is not None:
-            from simulator.buff_system import support_stat_context
-
             support_context = support_stat_context(mornye_character, self.state, self.buffs)
             base_off_tune = float(support_context["base_off_tune_buildup_rate"])
             runtime_off_tune_bonus = float(support_context["runtime_off_tune_buildup_rate_bonus"])
@@ -1911,6 +1982,14 @@ class Simulation:
             ),
             target_tune_shift_state=self.state.target_tune_shift_state,
             target_interfered_state=self.state.target_interfered_state,
+            target_tune_strain_interfered_stacks=self.state.target_tune_strain_interfered_stacks,
+            target_tune_strain_interfered_max_stacks=self.state.target_tune_strain_interfered_max_stacks,
+            target_tune_strain_interfered_remaining=self.state.target_tune_strain_interfered_remaining,
+            lynae_tune_strain_damage_amp=self.state.lynae_tune_strain_damage_amp,
+            lynae_tune_strain_damage_multiplier=self.state.lynae_tune_strain_damage_multiplier,
+            lynae_tune_strain_damage_amp_bonus_damage=self.state.lynae_tune_strain_damage_amp_bonus_damage,
+            lynae_tune_strain_source_status=self.state.lynae_tune_strain_source_status,
+            lynae_tune_strain_source_ref=self.state.lynae_tune_strain_source_ref,
             observation_marker_remaining=self._mornye_observation_marker_remaining(),
             interfered_marker_remaining=self.state.interfered_marker_remaining,
             interfered_marker_damage_taken_amp=self.state.interfered_marker_damage_taken_amp,
@@ -2047,6 +2126,9 @@ class Simulation:
             base_off_tune_buildup_rate=base_off_tune,
             runtime_off_tune_buildup_rate_bonus=runtime_off_tune_bonus,
             current_off_tune_buildup_rate=current_off_tune,
+            base_tune_break_boost_points=base_tune_break_boost,
+            runtime_tune_break_boost_points_bonus=runtime_tune_break_boost_bonus,
+            current_tune_break_boost_points=current_tune_break_boost,
             syntony_field_off_tune_bonus_active=syntony_active and syntony_bonus_value > 0.0,
             syntony_field_off_tune_bonus_value=syntony_bonus_value,
             c2_off_tune_bonus_active=c2_active,

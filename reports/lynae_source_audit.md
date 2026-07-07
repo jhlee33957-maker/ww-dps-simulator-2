@@ -16,4 +16,5 @@ Source name: 琳奈
 
 ## Scope Notes
 - Static Mist, Pact of Neonlight Leap, Hyvatia, Liberation, and Outro buff values are user-supplied tooltip sources.
+- Tune Strain stack limit and per-stack damage are implemented for the current single-target Endgame Matrix model only; no multi-target behavior is claimed.
 - Complex Lumiflow movement recovery, skating movement speed, stamina, and air/ground branch exactness remain metadata-only/review-required in v1.

@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any, Literal
 
 from simulator.buff_system import buffed_combat_stats
+from simulator.lynae_tune_strain import apply_lynae_tune_strain_damage_amp
 from simulator.models import ActionData, CharacterData, CombatState
 from simulator.tune_break import (
     calculate_tune_break_damage_detail,
@@ -114,8 +115,11 @@ def calculate_generated_damage_packet(
             hit_index=hit_index,
             source_action=source_action,
             state=state,
+            characters=characters,
+            buffs=buffs,
             stats=stats,
             character=character,
+            force_active_buff_ids=force_active_buff_ids,
         )
         total_damage += damage
         details.append(detail)
@@ -128,8 +132,11 @@ def _calculate_single_generated_hit(
     hit_index: int,
     source_action: ActionData,
     state: CombatState,
+    characters: dict[str, CharacterData],
+    buffs: dict[str, Any],
     stats: dict[str, Any],
     character: CharacterData,
+    force_active_buff_ids: set[str] | None = None,
 ) -> tuple[float, dict[str, Any]]:
     applied_amp = (
         current_interfered_damage_taken_amp(state)
@@ -189,8 +196,24 @@ def _calculate_single_generated_hit(
             hit_id=packet.id,
         )
         damage = float(tune_detail["tune_break_damage"])
+        damage, lynae_tune_strain_log = apply_lynae_tune_strain_damage_amp(
+            damage,
+            source_character_id=packet.source_character_id,
+            state=state,
+            characters=characters,
+            buffs=buffs,
+            time_offset=packet.time_offset,
+            force_active_buff_ids=force_active_buff_ids,
+        )
         detail.update(tune_detail)
+        detail.update(lynae_tune_strain_log)
         detail.update({"damage": damage, "hit_damage_category": "tune_break", "damage_category": "tune_break"})
+        if lynae_tune_strain_log["lynae_tune_strain_damage_amp_bonus_damage"] > 0.0:
+            detail["tune_break_damage_before_lynae_tune_strain_amp"] = (
+                damage - lynae_tune_strain_log["lynae_tune_strain_damage_amp_bonus_damage"]
+            )
+            detail["tune_break_damage_after_lynae_tune_strain_amp"] = damage
+            detail["tune_break_damage"] = damage
         return damage, detail
 
     response_detail = calculate_tune_response_damage_detail(
@@ -211,16 +234,32 @@ def _calculate_single_generated_hit(
         source_status=packet.source_status,
     )
     damage = float(response_detail["tune_response_damage"])
+    damage, lynae_tune_strain_log = apply_lynae_tune_strain_damage_amp(
+        damage,
+        source_character_id=packet.source_character_id,
+        state=state,
+        characters=characters,
+        buffs=buffs,
+        time_offset=packet.time_offset,
+        force_active_buff_ids=force_active_buff_ids,
+    )
     detail.update(response_detail)
+    detail.update(lynae_tune_strain_log)
     detail.update(
         {
             "damage": damage,
+            "tune_response_damage": damage,
             "hit_damage_category": "tune_response",
             "damage_category": "tune_response",
             "source_multiplier": packet.source_multiplier if packet.source_multiplier is not None else packet.tune_multiplier,
             "effective_damage_taken_amp": applied_amp,
         }
     )
+    if lynae_tune_strain_log["lynae_tune_strain_damage_amp_bonus_damage"] > 0.0:
+        detail["tune_response_damage_before_lynae_tune_strain_amp"] = (
+            damage - lynae_tune_strain_log["lynae_tune_strain_damage_amp_bonus_damage"]
+        )
+        detail["tune_response_damage_after_lynae_tune_strain_amp"] = damage
     return damage, detail
 
 

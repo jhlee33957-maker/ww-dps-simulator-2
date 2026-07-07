@@ -23,6 +23,7 @@ SCALING_STATS = {"atk", "def", "hp", "none", "unresolved"}
 COMPONENT_STATS = ("atk", "def", "hp")
 DEFAULT_SUPPORT_STATS = {
     "off_tune_buildup_rate": 1.0,
+    "tune_break_boost": 0.0,
 }
 LEGACY_CATEGORY_ALIASES = {
     "basic_attack_dmg_bonus": "basic_attack",
@@ -111,17 +112,26 @@ def normalize_support_stats(support_stats: dict[str, Any] | None = None) -> dict
     for key, value in (support_stats or {}).items():
         if key == "off_tune_buildup_rate":
             normalized[key] = 1.0 if value is None else float(value)
+        elif key == "tune_break_boost":
+            normalized[key] = 0.0 if value is None else float(value)
         else:
             normalized[str(key)] = value
     if normalized.get("off_tune_buildup_rate") is None:
         normalized["off_tune_buildup_rate"] = 1.0
+    if normalized.get("tune_break_boost") is None:
+        normalized["tune_break_boost"] = 0.0
     return normalized
 
 
 def merge_support_stats(base: dict[str, Any] | None, overlay: dict[str, Any] | None) -> dict[str, Any]:
     merged = normalize_support_stats(base)
     for key, value in (overlay or {}).items():
-        merged[str(key)] = 1.0 if key == "off_tune_buildup_rate" and value is None else value
+        if key == "off_tune_buildup_rate" and value is None:
+            merged[str(key)] = 1.0
+        elif key == "tune_break_boost" and value is None:
+            merged[str(key)] = 0.0
+        else:
+            merged[str(key)] = value
     return normalize_support_stats(merged)
 
 
@@ -694,10 +704,20 @@ def support_stat_log_fields(source: CharacterData | dict[str, Any]) -> dict[str,
     current = get("current_off_tune_buildup_rate", None)
     if current is None:
         current = float(base_off_tune or 1.0) + runtime_bonus
+    base_tune_break_boost = get("base_tune_break_boost_points", None)
+    if base_tune_break_boost is None:
+        base_tune_break_boost = support_stats.get("tune_break_boost", 0.0)
+    tune_break_boost_bonus = float(get("runtime_tune_break_boost_points_bonus", 0.0) or 0.0)
+    current_tune_break_boost = get("current_tune_break_boost_points", None)
+    if current_tune_break_boost is None:
+        current_tune_break_boost = float(base_tune_break_boost or 0.0) + tune_break_boost_bonus
     return {
         "base_off_tune_buildup_rate": float(base_off_tune or 1.0),
         "runtime_off_tune_buildup_rate_bonus": runtime_bonus,
         "current_off_tune_buildup_rate": float(current or 1.0),
+        "base_tune_break_boost_points": float(base_tune_break_boost or 0.0),
+        "runtime_tune_break_boost_points_bonus": tune_break_boost_bonus,
+        "current_tune_break_boost_points": float(current_tune_break_boost or 0.0),
         "syntony_field_off_tune_bonus_active": bool(get("syntony_field_off_tune_bonus_active", False)),
         "syntony_field_off_tune_bonus_value": float(get("syntony_field_off_tune_bonus_value", 0.0) or 0.0),
         "c2_off_tune_bonus_active": bool(get("c2_off_tune_bonus_active", False)),

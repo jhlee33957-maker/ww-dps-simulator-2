@@ -83,9 +83,11 @@ Source name: 琳奈
 - `lynae_resonance_liberation_prismatic_overblast_c5`: multiplier 14.871; rows dmg!2483; disabled by default.
 - `lynae_tune_response_spectral_analysis_c2`: multiplier 31.9727; rows dmg!2490; disabled by default.
 
+## Implemented Single-Target Mechanics
+- tune_strain_stack_limit_and_per_stack_damage: implemented_single_target (角色-女!2728) - Current single-target Endgame Matrix model increments Tune Strain Interfered stacks on Tune Break, caps at 1 stack for C0 and 2 stacks for C2+, lasts 30s, and applies only to Lynae damage. This is not a multi-target implementation claim.
+
 ## Unresolved / Metadata-Only Rows
 - continuous_lumiflow_movement_recovery: user_tooltip_confirmed_timing_simplified (角色-女!2709) - Simulator is action-step based and has no continuous movement/skating state.
 - spray_paint_periodic_ticks: metadata_only_window_recorded (角色-女!2683:2688) - Visual Impact records the 5s window and immediate Flux; periodic 2s field scheduling is not added.
-- tune_strain_stack_limit_and_per_stack_damage: metadata_only_no_stack_system_hook (角色-女!2728) - Current simulator has interfered state and responses but no target Tune Strain stack model.
 - constellation_variants: constellation_gated_disabled_by_default (dmg!2462:2463, dmg!2466:2467, dmg!2471:2473, dmg!2475, dmg!2478:2479, dmg!2483, dmg!2490) - Non-S0 variants are retained as source-aligned records but not selected by default.
 - skill_type_reference_region: workbook_reference_corrected (角色技能类型!2553:2635) - Rows 772:784 are not the Lynae skill type region and are no longer used for Lynae.

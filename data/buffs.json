@@ -435,11 +435,14 @@
     "source_character_id": "lynae",
     "stacking_rule": "refresh_duration",
     "max_stacks": 1,
+    "support_stat_modifiers": {
+      "tune_break_boost_points_add": 40.0
+    },
     "metadata": {
       "source_character_id": "lynae",
       "source_action_id": "lynae_visual_impact",
       "source_status": "user_supplied_skill_tooltip",
-      "implementation_status": "metadata_only_no_formula_hook",
+      "implementation_status": "implemented_single_target_formula_hook",
       "tune_break_boost_points": 40.0
     }
   },
