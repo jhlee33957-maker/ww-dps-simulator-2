@@ -3838,7 +3838,16 @@
     "damage_row_rate_lv_1_multipliers": {
       "2488": 16.0
     },
-    "calculation_type": "single_damage_row",
+    "calculation_type": "tune_break_rate_lv_1_formula",
+    "normal_damage_multiplier": 0.0,
+    "tune_break_multiplier": 16.0,
+    "tune_break_multiplier_source_row": 2488,
+    "tune_break_multiplier_source_column": "Damage.RateLv_1",
+    "tune_break_hit_frame": 72,
+    "tune_break_hit_time": 1.2,
+    "action_window_frames": 96,
+    "global_time_stop_row": 2703,
+    "notes": "dmg!2488 RateLv1 160000 is used as Tune Break multiplier 16.0. RateLv10 is not used as normal ATK/Spectro damage.",
     "timing_resource_evidence": [
       {
         "row": 2702,
@@ -3934,8 +3943,8 @@
         "classification": "review_required"
       }
     ],
-    "source_status": "workbook_confirmed",
-    "implementation_status": "metadata_only_zero_workbook_damage"
+    "source_status": "workbook_confirmed_global_timestop_tune_break_damage",
+    "implementation_status": "excel_tune_break_single_target_v1"
   },
   {
     "action_id": "lynae_tune_response_spectral_analysis",

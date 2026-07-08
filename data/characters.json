@@ -206,7 +206,7 @@
     "attacker_level": 90,
     "def_ignore": 0.0,
     "final_dmg_bonus": 0.0,
-    "resonance_energy": 0,
+    "resonance_energy": 125,
     "resonance_energy_max": 125,
     "energy_regen": 1.516,
     "concerto_energy": 0,

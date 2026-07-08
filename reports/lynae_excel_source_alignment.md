@@ -40,8 +40,15 @@ Source name: 琳奈
 - `lynae_resonance_liberation_prismatic_overblast`: Prismatic Overblast C0; action rows [2692, 2693, 2694, 2695]; damage rows [2482]; multiplier 8.748; calculation repeated_tick; status implemented_v2
 - `lynae_to_a_vivid_tomorrow`: To a Vivid Tomorrow; action rows [2696, 2697, 2698]; damage rows [2484, 2485]; multiplier 2.0106; calculation additive_repeated_ticks; status implemented_v2
 - `lynae_outro_lets_hit_the_road`: Outro; action rows [2699, 2700, 2701]; damage rows [2486, 2487]; multiplier 1.0; calculation excel_tick_sum_and_tooltip_confirmed; status implemented_v2_tooltip_damage
-- `lynae_tune_break`: Tune Break; action rows [2702, 2703, 2704]; damage rows [2488]; multiplier 0.0; calculation single_damage_row; status metadata_only_zero_workbook_damage
+- `lynae_tune_break`: Tune Break; action rows [2702, 2703, 2704]; damage rows [2488]; multiplier 0.0; calculation tune_break_rate_lv_1_formula; status excel_tune_break_single_target_v1
 - `lynae_tune_response_spectral_analysis`: Spectral Analysis C0; action rows [2735]; damage rows [2489]; multiplier 18.8075; calculation tune_response_executable_source; status implemented_v2
+
+## Tune Break Damage Formula
+- `lynae_tune_break`: dmg!2488 RateLv1 `160000` is implemented as Tune Break multiplier `16.0`.
+- `lynae_tune_break`: dmg!2488 RateLv10 is not used as a normal damage source.
+- `lynae_tune_break`: implemented through the Tune Break damage formula, not normal Spectro ATK damage.
+- `lynae_tune_break`: 角色-女2703 confirms global time stop.
+- `lynae_tune_break`: 角色-女2704 gives hit frame `72F` and action window `96F`.
 
 ## Additive Hit Rows
 - `lynae_basic_stage_2`: dmg!2409, dmg!2410, dmg!2411 are additive hits.

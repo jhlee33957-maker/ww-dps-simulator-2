@@ -355,7 +355,7 @@ class CombatState(BaseModel):
     enemy_tune_break_available: bool = False
     enemy_tune_break_cooldown_seconds: float = 3.0
     enemy_tune_break_cooldown_source_status: str | None = "workbook_confirmed_cost4_red_name_boss_default"
-    enemy_tune_break_cooldown_source_ref: str | None = "附页2!B227"
+    enemy_tune_break_cooldown_source_ref: str | None = "\u9644\u98752!B227"
     enemy_tune_break_cooldown_remaining: float = 0.0
     off_tune_accumulated_total: float = 0.0
     off_tune_overflow: float = 0.0
@@ -606,7 +606,7 @@ class ActionResult(BaseModel):
     enemy_tune_break_cooldown_started: bool = False
     enemy_tune_break_cooldown_seconds: float = 3.0
     enemy_tune_break_cooldown_source_status: str | None = "workbook_confirmed_cost4_red_name_boss_default"
-    enemy_tune_break_cooldown_source_ref: str | None = "附页2!B227"
+    enemy_tune_break_cooldown_source_ref: str | None = "\u9644\u98752!B227"
     enemy_tune_break_cooldown_remaining: float = 0.0
     enemy_mistune_entered_this_action: bool = False
     off_tune_accumulation_log: dict[str, Any] = Field(default_factory=dict)
@@ -1037,7 +1037,7 @@ class TimelineEntry(BaseModel):
     enemy_tune_break_cooldown_started: bool = False
     enemy_tune_break_cooldown_seconds: float = 3.0
     enemy_tune_break_cooldown_source_status: str | None = "workbook_confirmed_cost4_red_name_boss_default"
-    enemy_tune_break_cooldown_source_ref: str | None = "附页2!B227"
+    enemy_tune_break_cooldown_source_ref: str | None = "\u9644\u98752!B227"
     enemy_tune_break_cooldown_remaining: float = 0.0
     enemy_mistune_entered_this_action: bool = False
     off_tune_accumulation_log: dict[str, Any] = Field(default_factory=dict)
@@ -1306,7 +1306,7 @@ class SimulationSummary(BaseModel):
     enemy_tune_break_available: bool = False
     enemy_tune_break_cooldown_seconds: float = 3.0
     enemy_tune_break_cooldown_source_status: str | None = "workbook_confirmed_cost4_red_name_boss_default"
-    enemy_tune_break_cooldown_source_ref: str | None = "附页2!B227"
+    enemy_tune_break_cooldown_source_ref: str | None = "\u9644\u98752!B227"
     enemy_tune_break_cooldown_remaining: float = 0.0
     off_tune_accumulated_total: float = 0.0
     off_tune_overflow: float = 0.0

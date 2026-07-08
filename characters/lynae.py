@@ -142,6 +142,7 @@ class LynaeMechanic(CharacterMechanic):
             "lynae_resonance_liberation",
             LYNAE_SPARK_SELECTOR_ACTION_ID,
             LYNAE_POLYCHROME_LEAP_SELECTOR_ACTION_ID,
+            LYNAE_IRIDESCENT_SPLASH_ACTION_ID,
             LYNAE_VISUAL_IMPACT_ACTION_ID,
             LYNAE_ECHO_HYVATIA_ACTION_ID,
             "lynae_tune_break",
@@ -169,7 +170,7 @@ class LynaeMechanic(CharacterMechanic):
                 return False
             if action_id == LYNAE_VISUAL_IMPACT_ACTION_ID:
                 return float(data.get("visual_impact_cooldown_remaining", 0.0) or 0.0) <= 0.0
-            return True
+            return float(data.get("visual_impact_cooldown_remaining", 0.0) or 0.0) > 0.0
         return True
 
     def get_action_log_fields(self, state: Any, action: Any, characters: dict[str, Any] | None = None) -> dict[str, Any]:

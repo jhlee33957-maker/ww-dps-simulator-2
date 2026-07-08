@@ -42,13 +42,24 @@ Workbook: `data\source\鸣潮动作数据汇总.xlsx`
 - `aemeath:aemeath_user_real_01`: user_profile (user_supplied_required) in data/build_profiles.json
 - `mornye:mornye_real_manual`: user_profile (user_supplied_required) in data/build_profiles.json
 - `mornye:mornye_user_real_01`: user_profile (user_supplied_required) in data/build_profiles.json
+- `lynae:default`: user_profile (user_supplied_required) in data/build_profiles.json
+- `lynae:lynae_user_real_01`: user_profile (user_supplied_required) in data/build_profiles.json
 - `starfield_calibrator`: user_supplied_tooltip (user_supplied_weapon_tooltip) in data/weapons.json
 - `discord`: user_supplied_tooltip (user_supplied_weapon_tooltip) in data/weapons.json
 - `everbright_polestar`: user_supplied_tooltip (user_supplied_weapon_tooltip) in data/weapons.json
+- `static_mist`: user_supplied_tooltip (user_supplied_weapon_tooltip) in data/weapons.json
 - `mornye_halo_of_starry_radiance_5set`: user_supplied_tooltip_or_sim_interpretation (user_supplied_set_tooltip) in data/buffs.json
 - `starfield_calibrator_party_crit_damage`: user_supplied_tooltip_or_sim_interpretation (user_supplied_weapon_tooltip) in data/buffs.json
 - `everbright_polestar_liberation_penetration`: user_supplied_tooltip_or_sim_interpretation (user_supplied_weapon_tooltip) in data/buffs.json
 - `aemeath_trailblazing_star_5set`: user_supplied_tooltip_or_sim_interpretation (user_supplied_set_tooltip) in data/buffs.json
+- `lynae_liberation_party_damage_amp`: user_supplied_tooltip_or_sim_interpretation (user_supplied_skill_tooltip) in data/buffs.json
+- `lynae_outro_all_damage_amp`: user_supplied_tooltip_or_sim_interpretation (user_supplied_skill_tooltip) in data/buffs.json
+- `lynae_outro_liberation_damage_amp`: user_supplied_tooltip_or_sim_interpretation (user_supplied_skill_tooltip) in data/buffs.json
+- `static_mist_incoming_atk`: user_supplied_tooltip_or_sim_interpretation (user_supplied_weapon_tooltip) in data/buffs.json
+- `pact_neonlight_incoming_atk`: user_supplied_tooltip_or_sim_interpretation (user_supplied_echo_set_tooltip) in data/buffs.json
+- `hyvatia_incoming_all_attribute_damage_bonus`: user_supplied_tooltip_or_sim_interpretation (user_supplied_echo_tooltip) in data/buffs.json
+- `lynae_visual_impact_tune_break_boost`: user_supplied_tooltip_or_sim_interpretation (user_supplied_skill_tooltip) in data/buffs.json
+- `lynae_intro_spectro_damage_bonus`: user_supplied_tooltip_or_sim_interpretation (user_supplied_skill_tooltip) in data/buffs.json
 
 ## Intentionally Unresolved / Scaffolded
 

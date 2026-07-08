@@ -1268,6 +1268,18 @@
       "file": "data/build_profiles.json"
     },
     {
+      "id": "lynae:default",
+      "source_type": "user_profile",
+      "source_status": "user_supplied_required",
+      "file": "data/build_profiles.json"
+    },
+    {
+      "id": "lynae:lynae_user_real_01",
+      "source_type": "user_profile",
+      "source_status": "user_supplied_required",
+      "file": "data/build_profiles.json"
+    },
+    {
       "id": "starfield_calibrator",
       "source_type": "user_supplied_tooltip",
       "source_status": "user_supplied_weapon_tooltip",
@@ -1281,6 +1293,12 @@
     },
     {
       "id": "everbright_polestar",
+      "source_type": "user_supplied_tooltip",
+      "source_status": "user_supplied_weapon_tooltip",
+      "file": "data/weapons.json"
+    },
+    {
+      "id": "static_mist",
       "source_type": "user_supplied_tooltip",
       "source_status": "user_supplied_weapon_tooltip",
       "file": "data/weapons.json"
@@ -1307,6 +1325,54 @@
       "id": "aemeath_trailblazing_star_5set",
       "source_type": "user_supplied_tooltip_or_sim_interpretation",
       "source_status": "user_supplied_set_tooltip",
+      "file": "data/buffs.json"
+    },
+    {
+      "id": "lynae_liberation_party_damage_amp",
+      "source_type": "user_supplied_tooltip_or_sim_interpretation",
+      "source_status": "user_supplied_skill_tooltip",
+      "file": "data/buffs.json"
+    },
+    {
+      "id": "lynae_outro_all_damage_amp",
+      "source_type": "user_supplied_tooltip_or_sim_interpretation",
+      "source_status": "user_supplied_skill_tooltip",
+      "file": "data/buffs.json"
+    },
+    {
+      "id": "lynae_outro_liberation_damage_amp",
+      "source_type": "user_supplied_tooltip_or_sim_interpretation",
+      "source_status": "user_supplied_skill_tooltip",
+      "file": "data/buffs.json"
+    },
+    {
+      "id": "static_mist_incoming_atk",
+      "source_type": "user_supplied_tooltip_or_sim_interpretation",
+      "source_status": "user_supplied_weapon_tooltip",
+      "file": "data/buffs.json"
+    },
+    {
+      "id": "pact_neonlight_incoming_atk",
+      "source_type": "user_supplied_tooltip_or_sim_interpretation",
+      "source_status": "user_supplied_echo_set_tooltip",
+      "file": "data/buffs.json"
+    },
+    {
+      "id": "hyvatia_incoming_all_attribute_damage_bonus",
+      "source_type": "user_supplied_tooltip_or_sim_interpretation",
+      "source_status": "user_supplied_echo_tooltip",
+      "file": "data/buffs.json"
+    },
+    {
+      "id": "lynae_visual_impact_tune_break_boost",
+      "source_type": "user_supplied_tooltip_or_sim_interpretation",
+      "source_status": "user_supplied_skill_tooltip",
+      "file": "data/buffs.json"
+    },
+    {
+      "id": "lynae_intro_spectro_damage_bonus",
+      "source_type": "user_supplied_tooltip_or_sim_interpretation",
+      "source_status": "user_supplied_skill_tooltip",
       "file": "data/buffs.json"
     }
   ],

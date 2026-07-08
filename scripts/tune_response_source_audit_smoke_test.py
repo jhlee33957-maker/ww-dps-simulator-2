@@ -32,7 +32,7 @@ def main() -> None:
     assert audit["unresolved"].get("tune_break_cooldown") != "not_found_uses_explicit_default_8s"
     assert audit["enemy_tune_break_cooldown_seconds"] == 3.0
     assert audit["enemy_tune_break_cooldown_source_status"] == "workbook_confirmed_cost4_red_name_boss_default"
-    assert audit["enemy_tune_break_cooldown_source_ref"] in {"附页2!B227", "?꾦〉2!B227"}
+    assert audit["enemy_tune_break_cooldown_source_ref"] == "附页2!B227"
 
     runtime = json.loads(
         (ROOT / "data" / "extracted" / "tune_break_system_runtime_note.json").read_text(encoding="utf-8")

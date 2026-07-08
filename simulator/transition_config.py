@@ -200,7 +200,7 @@ def mechanics_mode_summary(config: dict[str, Any]) -> dict[str, Any]:
             ),
             "enemy_tune_break_cooldown_source_ref": tune_break_config.get(
                 "enemy_tune_break_cooldown_source_ref",
-                "附页2!B227",
+                "\u9644\u98752!B227",
             ),
         },
     }

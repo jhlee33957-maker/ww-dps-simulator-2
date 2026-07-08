@@ -4058,8 +4058,8 @@
     "off_tune_value_source_status": "unresolved_missing_excel_mapping",
     "off_tune_value_source_ref": null,
     "hits": [],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 10,
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 0.0,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -4106,8 +4106,8 @@
         "name": "Lynae Basic Stage 1"
       }
     ],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 10,
+    "resonance_energy_gain": 1.28,
+    "concerto_energy_gain": 4.59,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -4177,8 +4177,8 @@
         "name": "Lynae Basic Stage 2 hit 3"
       }
     ],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 10,
+    "resonance_energy_gain": 2.34,
+    "concerto_energy_gain": 8.37,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -4232,8 +4232,8 @@
         "name": "Lynae Basic Stage 3"
       }
     ],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 10,
+    "resonance_energy_gain": 1.83,
+    "concerto_energy_gain": 6.57,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -4321,8 +4321,8 @@
         "name": "Lynae Kaleidoscopic Basic Stage 1"
       }
     ],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 10,
+    "resonance_energy_gain": 1.23,
+    "concerto_energy_gain": 4.41,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -4381,8 +4381,8 @@
         "name": "Lynae Kaleidoscopic Basic Stage 2 hit 2"
       }
     ],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 10,
+    "resonance_energy_gain": 1.16,
+    "concerto_energy_gain": 4.14,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -4407,9 +4407,9 @@
     "name": "Lynae Kaleidoscopic Basic Stage 3",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 0.9,
-    "action_time": 0.9,
-    "combat_time_cost": 0.9,
+    "duration": 0.9167,
+    "action_time": 0.9167,
+    "combat_time_cost": 0.9167,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -4452,8 +4452,8 @@
         "name": "Lynae Kaleidoscopic Basic Stage 3 hit 3"
       }
     ],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 10,
+    "resonance_energy_gain": 1.68,
+    "concerto_energy_gain": 6.03,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -4534,8 +4534,8 @@
         "name": "Lynae Kaleidoscopic Basic Stage 4 hit 4"
       }
     ],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 10,
+    "resonance_energy_gain": 2.2,
+    "concerto_energy_gain": 7.94,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -4647,8 +4647,8 @@
         "name": "Lynae Kaleidoscopic Basic Stage 5 hit 7"
       }
     ],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 10,
+    "resonance_energy_gain": 2.84,
+    "concerto_energy_gain": 10.21,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -4690,7 +4690,7 @@
     "duration": 0.1,
     "action_time": 0.1,
     "combat_time_cost": 0.1,
-    "cooldown": 0.0,
+    "cooldown": 6.0,
     "damage_category": "normal",
     "damage_bonus_category": "resonance_skill",
     "damage_element": "spectro",
@@ -4701,8 +4701,8 @@
     "off_tune_value_source_status": "unresolved_missing_excel_mapping",
     "off_tune_value_source_ref": null,
     "hits": [],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 10,
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 0.0,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -4714,10 +4714,11 @@
     "policy_selectable": true,
     "mechanic_effects": {},
     "data_status": "non_damaging_selector",
-    "source_status": "non_damaging_selector",
+    "source_status": "non_damaging_selector_resolved_shared_cooldown",
     "source_rows": [],
     "scaling_stat": "atk",
-    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+    "notes": "Non-damaging policy selector; runtime resolves to Palette/Additive Color concrete actions that share the lynae_resonance_skill 6.0s cooldown.",
+    "cooldown_group": "lynae_resonance_skill"
   },
   {
     "id": "lynae_resonance_skill_palette",
@@ -4727,7 +4728,7 @@
     "duration": 1.1,
     "action_time": 1.1,
     "combat_time_cost": 1.1,
-    "cooldown": 0.0,
+    "cooldown": 6.0,
     "damage_category": "normal",
     "damage_bonus_category": "resonance_skill",
     "damage_element": "spectro",
@@ -4779,8 +4780,8 @@
         "name": "Palette hit 4"
       }
     ],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 10,
+    "resonance_energy_gain": 8.75,
+    "concerto_energy_gain": 9.83,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -4792,8 +4793,14 @@
     "policy_selectable": false,
     "mechanic_effects": {},
     "data_status": "workbook_confirmed",
-    "source_status": "workbook_confirmed",
+    "source_status": "user_confirmed_numeric_cooldown",
+    "source_ref": "action rows 角色-女2662:2666; skill type rows 角色技能类型2612:2617; dmg!2454:2457; user confirmation: resonance skill cooldown 6.0s",
     "source_rows": [
+      2662,
+      2663,
+      2664,
+      2665,
+      2666,
       2454,
       2455,
       2456,
@@ -4808,10 +4815,10 @@
     "name": "Lynae Resonance Skill Additive Color",
     "character_id": "lynae",
     "action_type": "resonance_skill",
-    "duration": 0.9,
-    "action_time": 0.9,
-    "combat_time_cost": 0.9,
-    "cooldown": 0.0,
+    "duration": 0.9167,
+    "action_time": 0.9167,
+    "combat_time_cost": 0.9167,
+    "cooldown": 6.0,
     "damage_category": "normal",
     "damage_bonus_category": "resonance_skill",
     "damage_element": "spectro",
@@ -4843,8 +4850,8 @@
         "name": "Additive Color hit 2"
       }
     ],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 10,
+    "resonance_energy_gain": 6.92,
+    "concerto_energy_gain": 8.2,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -4856,8 +4863,12 @@
     "policy_selectable": false,
     "mechanic_effects": {},
     "data_status": "workbook_confirmed",
-    "source_status": "workbook_confirmed",
+    "source_status": "user_confirmed_numeric_cooldown",
+    "source_ref": "action rows 角色-女2672:2674; skill type rows 角色技能类型2612:2617; dmg!2458:2459; user confirmation: resonance skill cooldown 6.0s",
     "source_rows": [
+      2672,
+      2673,
+      2674,
       2458,
       2459
     ],
@@ -4873,7 +4884,7 @@
     "duration": 0.1,
     "action_time": 0.1,
     "combat_time_cost": 0.1,
-    "cooldown": 0.0,
+    "cooldown": 25,
     "damage_category": "normal",
     "damage_bonus_category": "resonance_liberation",
     "damage_element": "spectro",
@@ -4886,7 +4897,7 @@
     "hits": [],
     "resonance_energy_gain": 0,
     "concerto_energy_gain": 0,
-    "resonance_energy_cost": 0,
+    "resonance_energy_cost": 125,
     "applies_buffs": [],
     "required_buffs": [],
     "tags": [
@@ -4900,17 +4911,18 @@
     "source_status": "non_damaging_selector",
     "source_rows": [],
     "scaling_stat": "atk",
-    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled.",
+    "cooldown_group": "lynae_resonance_liberation"
   },
   {
     "id": "lynae_resonance_liberation_prismatic_overblast",
     "name": "Lynae Prismatic Overblast",
     "character_id": "lynae",
     "action_type": "resonance_liberation",
-    "duration": 2.0,
-    "action_time": 2.0,
-    "combat_time_cost": 2.0,
-    "cooldown": 0.0,
+    "duration": 4.0,
+    "action_time": 4.0,
+    "combat_time_cost": 0.0,
+    "cooldown": 25,
     "damage_category": "normal",
     "damage_bonus_category": "resonance_liberation",
     "damage_element": "spectro",
@@ -4922,7 +4934,7 @@
     "off_tune_value_source_ref": null,
     "hits": [
       {
-        "time": 0.2,
+        "time": 2.6167,
         "damage_category": "normal",
         "damage_multiplier": 0.8748,
         "tags": [
@@ -4933,7 +4945,7 @@
         "name": "Lynae Prismatic Overblast hit 1"
       },
       {
-        "time": 0.4,
+        "time": 2.7167,
         "damage_category": "normal",
         "damage_multiplier": 0.8748,
         "tags": [
@@ -4944,7 +4956,7 @@
         "name": "Lynae Prismatic Overblast hit 2"
       },
       {
-        "time": 0.6,
+        "time": 2.8167,
         "damage_category": "normal",
         "damage_multiplier": 0.8748,
         "tags": [
@@ -4955,7 +4967,7 @@
         "name": "Lynae Prismatic Overblast hit 3"
       },
       {
-        "time": 0.8,
+        "time": 2.9167,
         "damage_category": "normal",
         "damage_multiplier": 0.8748,
         "tags": [
@@ -4966,7 +4978,7 @@
         "name": "Lynae Prismatic Overblast hit 4"
       },
       {
-        "time": 1.0,
+        "time": 3.0167,
         "damage_category": "normal",
         "damage_multiplier": 0.8748,
         "tags": [
@@ -4977,7 +4989,7 @@
         "name": "Lynae Prismatic Overblast hit 5"
       },
       {
-        "time": 1.2,
+        "time": 3.1167,
         "damage_category": "normal",
         "damage_multiplier": 0.8748,
         "tags": [
@@ -4988,7 +5000,7 @@
         "name": "Lynae Prismatic Overblast hit 6"
       },
       {
-        "time": 1.4,
+        "time": 3.2167,
         "damage_category": "normal",
         "damage_multiplier": 0.8748,
         "tags": [
@@ -4999,7 +5011,7 @@
         "name": "Lynae Prismatic Overblast hit 7"
       },
       {
-        "time": 1.6,
+        "time": 3.3167,
         "damage_category": "normal",
         "damage_multiplier": 0.8748,
         "tags": [
@@ -5010,7 +5022,7 @@
         "name": "Lynae Prismatic Overblast hit 8"
       },
       {
-        "time": 1.8,
+        "time": 3.4167,
         "damage_category": "normal",
         "damage_multiplier": 0.8748,
         "tags": [
@@ -5021,7 +5033,7 @@
         "name": "Lynae Prismatic Overblast hit 9"
       },
       {
-        "time": 2.0,
+        "time": 3.5167,
         "damage_category": "normal",
         "damage_multiplier": 0.8748,
         "tags": [
@@ -5032,9 +5044,9 @@
         "name": "Lynae Prismatic Overblast hit 10"
       }
     ],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
-    "resonance_energy_cost": 0,
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 20.0,
+    "resonance_energy_cost": 125,
     "applies_buffs": [
       "lynae_liberation_party_damage_amp"
     ],
@@ -5050,7 +5062,7 @@
       "window_seconds": 8.0
     },
     "data_status": "workbook_confirmed_repeated_tick_and_user_tooltip",
-    "source_status": "workbook_confirmed_repeated_tick_and_user_tooltip",
+    "source_status": "workbook_confirmed_global_timestop_decision_frame_240F_damage_repeat_from_2695",
     "source_rows": [
       2692,
       2693,
@@ -5059,7 +5071,7 @@
       2482
     ],
     "scaling_stat": "atk",
-    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled.",
+    "notes": "Prismatic Overblast uses the 238F/240F input/switch decision-lock window as action_time. Row 2693 confirms global time stop coverage for the 240F cinematic lock, so combat_time_cost is 0.0. Row 2695 supplies damage repeat timing from first hit 157F, every 6F, max 10 hits; 299F is a late damage/action endpoint, not the timed-combat duration.",
     "metadata": {
       "repeated_tick_rows": [
         {
@@ -5068,7 +5080,15 @@
           "max_hits": 10
         }
       ]
-    }
+    },
+    "cooldown_group": "lynae_resonance_liberation",
+    "timing_source_status": "workbook_confirmed_global_timestop_decision_frame_240F_damage_repeat_from_2695",
+    "timing_source_rows": [
+      2692,
+      2693,
+      2694,
+      2695
+    ]
   },
   {
     "id": "lynae_intro_time_to_show_some_colors",
@@ -5210,8 +5230,8 @@
         "name": "Lynae Intro Time to Show Some Colors hit 10"
       }
     ],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
+    "resonance_energy_gain": 1.34,
+    "concerto_energy_gain": 1.2,
     "resonance_energy_cost": 0,
     "applies_buffs": [
       "lynae_intro_spectro_damage_bonus"
@@ -5290,8 +5310,8 @@
         "name": "Lynae Outro Let Us Hit the Road"
       }
     ],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 0.0,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -5500,8 +5520,8 @@
     "off_tune_value_source_status": "unresolved_missing_excel_mapping",
     "off_tune_value_source_ref": null,
     "hits": [],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 10,
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 0.0,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -5527,22 +5547,33 @@
     "name": "Lynae Tune Break",
     "character_id": "lynae",
     "action_type": "tune_break",
-    "duration": 1.5,
-    "action_time": 1.5,
-    "combat_time_cost": 1.5,
+    "duration": 1.6,
+    "action_time": 1.6,
+    "combat_time_cost": 0.0,
     "cooldown": 0.0,
-    "damage_category": "normal",
+    "damage_category": "tune_break",
     "damage_bonus_category": "tune_break",
-    "damage_element": "spectro",
+    "damage_element": null,
     "damage_multiplier": 0.0,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "off_tune_value": 0.0,
     "off_tune_value_source_status": "unresolved_missing_excel_mapping",
     "off_tune_value_source_ref": null,
-    "hits": [],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
+    "hits": [
+      {
+        "time": 1.2,
+        "damage_category": "tune_break",
+        "damage_multiplier": 0.0,
+        "tune_break_multiplier": 16.0,
+        "tags": [
+          "tune_break"
+        ],
+        "name": "lynae_tune_break_1"
+      }
+    ],
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 0.0,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -5553,13 +5584,22 @@
     ],
     "policy_selectable": true,
     "mechanic_effects": {},
-    "data_status": "metadata_only_review_required",
-    "source_status": "metadata_only_review_required",
+    "data_status": "excel_tune_break_single_target_v1",
+    "source_status": "workbook_confirmed_global_timestop_tune_break_damage",
     "source_rows": [
+      2702,
+      2703,
+      2704,
       2488
     ],
     "scaling_stat": "atk",
-    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+    "timing_source_status": "workbook_confirmed_global_timestop",
+    "timing_source_rows": [
+      2702,
+      2703,
+      2704
+    ],
+    "notes": "Tune Break action_time uses 96F / 60 = 1.6s from rows 2702:2704. Row 2703 confirms global time stop coverage, so combat_time_cost is 0.0. Row 2704 gives the 72F hit frame. dmg!2488 RateLv1 160000 is used as Tune Break multiplier 16.0; RateLv10 is not used as normal ATK/Spectro damage."
   },
   {
     "id": "lynae_polychrome_leap",
@@ -5609,8 +5649,8 @@
     "damage_multiplier": 12.1672,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 14.05,
+    "concerto_energy_gain": 14.58,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [
       "lynae_visual_impact_tune_break_boost"
@@ -5656,8 +5696,8 @@
     "damage_multiplier": 2.3997,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 2.05,
+    "concerto_energy_gain": 7.38,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -5690,8 +5730,8 @@
     "damage_multiplier": 1.4365,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 2.14,
+    "concerto_energy_gain": 7.66,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -5726,8 +5766,8 @@
     "damage_multiplier": 1.1112,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 1.66,
+    "concerto_energy_gain": 5.92,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -5762,8 +5802,8 @@
     "damage_multiplier": 3.3334,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 4.94,
+    "concerto_energy_gain": 17.76,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -5798,8 +5838,8 @@
     "damage_multiplier": 5.5556,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 8.22,
+    "concerto_energy_gain": 29.6,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -5834,8 +5874,8 @@
     "damage_multiplier": 1.842,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 1.23,
+    "concerto_energy_gain": 4.41,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -5868,8 +5908,8 @@
     "damage_multiplier": 1.4365,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 2.14,
+    "concerto_energy_gain": 7.66,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -5904,8 +5944,8 @@
     "damage_multiplier": 1.2341,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 2.94,
+    "concerto_energy_gain": 6.58,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -5950,8 +5990,8 @@
     "damage_multiplier": 1.0478,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 1.55,
+    "concerto_energy_gain": 5.58,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -5984,8 +6024,8 @@
     "damage_multiplier": 2.4339,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 5.81,
+    "concerto_energy_gain": 13.02,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -6030,15 +6070,15 @@
     "damage_multiplier": 3.0418,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 8.13,
+    "concerto_energy_gain": 7.65,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
       "lynae",
       "basic_attack"
     ],
-    "policy_selectable": false,
+    "policy_selectable": true,
     "mechanic_effects": {},
     "source_rows": [
       2675,
@@ -6143,8 +6183,8 @@
     "damage_multiplier": 1.014,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 2.25,
+    "concerto_energy_gain": 5.4,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -6183,8 +6223,8 @@
     "damage_multiplier": 1.014,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 0.38,
+    "concerto_energy_gain": 0.9,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -6299,8 +6339,8 @@
     "damage_multiplier": 0.655,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 0.6,
+    "concerto_energy_gain": 1.4,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -6524,8 +6564,8 @@
     "damage_multiplier": 2.0106,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 0.5,
+    "concerto_energy_gain": 1.78,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -6786,10 +6826,10 @@
     "name": "Lynae Prismatic Overblast C5",
     "character_id": "lynae",
     "action_type": "resonance_liberation",
-    "duration": 2.0,
-    "action_time": 2.0,
-    "combat_time_cost": 2.0,
-    "cooldown": 0.0,
+    "duration": 4.0,
+    "action_time": 4.0,
+    "combat_time_cost": 0.0,
+    "cooldown": 25,
     "damage_category": "normal",
     "damage_bonus_category": "resonance_liberation",
     "damage_element": "spectro",
@@ -6799,7 +6839,7 @@
     "tune_break_boost_points": 0.0,
     "resonance_energy_gain": 0.0,
     "concerto_energy_gain": 0.0,
-    "resonance_energy_cost": 0.0,
+    "resonance_energy_cost": 125,
     "applies_buffs": [],
     "tags": [
       "lynae",
@@ -6808,11 +6848,15 @@
     "policy_selectable": false,
     "mechanic_effects": {},
     "source_rows": [
+      2692,
+      2693,
+      2694,
+      2695,
       2483
     ],
-    "source_status": "constellation_gated_disabled_by_default",
+    "source_status": "constellation_gated_disabled_by_default_workbook_confirmed_global_timestop_decision_frame_240F_damage_repeat_from_2695",
     "data_status": "constellation_gated_disabled_by_default",
-    "timing_source_status": "unresolved_timing",
+    "timing_source_status": "workbook_confirmed_global_timestop_decision_frame_240F_damage_repeat_from_2695",
     "metadata": {
       "repeated_tick_rows": [
         {
@@ -6821,6 +6865,14 @@
           "max_hits": 10
         }
       ]
-    }
+    },
+    "cooldown_group": "lynae_resonance_liberation",
+    "timing_source_rows": [
+      2692,
+      2693,
+      2694,
+      2695
+    ],
+    "notes": "Disabled-by-default C5 variant keeps the same Resonance Liberation cost/cooldown guard and global-time-stop decision timing as C0. The 299F row endpoint is not used as timed-combat duration."
   }
 ]

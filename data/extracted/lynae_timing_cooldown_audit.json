@@ -1,0 +1,1917 @@
+{
+  "workbook": "data\\source\\鸣潮动作数据汇总.xlsx",
+  "source_region": "角色-女2577:2738",
+  "skill_type_region": "角色技能类型2612:2617",
+  "records": [
+    {
+      "action_id": "lynae_basic_attack",
+      "policy_selector_id": "lynae_basic_attack",
+      "resolved_concrete_id": [
+        "lynae_basic_stage_1",
+        "lynae_basic_stage_2",
+        "lynae_basic_stage_3",
+        "lynae_kaleidoscopic_basic_stage_1",
+        "lynae_kaleidoscopic_basic_stage_2",
+        "lynae_kaleidoscopic_basic_stage_3",
+        "lynae_kaleidoscopic_basic_stage_4",
+        "lynae_kaleidoscopic_basic_stage_5",
+        "lynae_to_a_vivid_tomorrow"
+      ],
+      "source_action_rows": [],
+      "source_damage_rows": [],
+      "damage_multiplier": 0.0,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.1,
+      "combat_time_cost": 0.1,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0,
+      "resonance_energy_gain": 0.0,
+      "concerto_energy_gain": 0.0,
+      "special_resource_gate": {},
+      "state_resource_gates": "repeatable only if policy path and mechanic gates permit it",
+      "immediate_repeat_possible": true,
+      "immediate_repeat_allowed": true,
+      "immediate_repeat_reason": "repeatable only if policy path and mechanic gates permit it",
+      "policy_selectable": true,
+      "action_type": "basic_attack",
+      "source_status": "non_damaging_selector"
+    },
+    {
+      "action_id": "lynae_basic_stage_1",
+      "policy_selector_id": "lynae_basic_attack",
+      "resolved_concrete_id": [
+        "lynae_basic_stage_1"
+      ],
+      "source_action_rows": [
+        2577
+      ],
+      "source_damage_rows": [
+        2408
+      ],
+      "damage_multiplier": 0.8619,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
+      "hit_repeat_rule": [],
+      "hit_offsets": [
+        0.6
+      ],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.65,
+      "combat_time_cost": 0.65,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0,
+      "resonance_energy_gain": 1.28,
+      "concerto_energy_gain": 4.59,
+      "special_resource_gate": {
+        "overflow_gain": 12.0
+      },
+      "state_resource_gates": "basic combo: repeatable and allowed",
+      "immediate_repeat_possible": true,
+      "immediate_repeat_allowed": true,
+      "immediate_repeat_reason": "basic combo: repeatable and allowed",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_basic_stage_2",
+      "policy_selector_id": "lynae_basic_attack",
+      "resolved_concrete_id": [
+        "lynae_basic_stage_2"
+      ],
+      "source_action_rows": [
+        2578,
+        2579,
+        2580
+      ],
+      "source_damage_rows": [
+        2409,
+        2410,
+        2411
+      ],
+      "damage_multiplier": 1.5717,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 3,
+      "hit_repeat_rule": [],
+      "hit_offsets": [
+        0.25,
+        0.55,
+        0.9
+      ],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.95,
+      "combat_time_cost": 0.95,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0,
+      "resonance_energy_gain": 2.34,
+      "concerto_energy_gain": 8.37,
+      "special_resource_gate": {
+        "overflow_gain": 21.0
+      },
+      "state_resource_gates": "basic combo: repeatable and allowed",
+      "immediate_repeat_possible": true,
+      "immediate_repeat_allowed": true,
+      "immediate_repeat_reason": "basic combo: repeatable and allowed",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_basic_stage_3",
+      "policy_selector_id": "lynae_basic_attack",
+      "resolved_concrete_id": [
+        "lynae_basic_stage_3"
+      ],
+      "source_action_rows": [
+        2581
+      ],
+      "source_damage_rows": [
+        2412
+      ],
+      "damage_multiplier": 1.2337,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
+      "hit_repeat_rule": [],
+      "hit_offsets": [
+        0.95
+      ],
+      "decision_cancel_frame_source": {},
+      "action_time": 1.0,
+      "combat_time_cost": 1.0,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0,
+      "resonance_energy_gain": 1.83,
+      "concerto_energy_gain": 6.57,
+      "special_resource_gate": {
+        "overflow_gain": 17.0
+      },
+      "state_resource_gates": "basic combo: repeatable and allowed",
+      "immediate_repeat_possible": true,
+      "immediate_repeat_allowed": true,
+      "immediate_repeat_reason": "basic combo: repeatable and allowed",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_dodge_counter",
+      "policy_selector_id": null,
+      "resolved_concrete_id": [
+        "lynae_dodge_counter"
+      ],
+      "source_action_rows": [
+        2582
+      ],
+      "source_damage_rows": [
+        2413
+      ],
+      "damage_multiplier": 2.3997,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 1.1167,
+      "combat_time_cost": 1.1167,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 2.05,
+      "concerto_energy_gain": 7.38,
+      "special_resource_gate": {
+        "overflow_gain": 19.0
+      },
+      "state_resource_gates": "non_policy_concrete_not_direct_policy_spammable",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "non_policy_concrete_not_direct_policy_spammable",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_echo_hyvatia",
+      "policy_selector_id": "lynae_echo_hyvatia",
+      "resolved_concrete_id": [
+        "lynae_echo_hyvatia"
+      ],
+      "source_action_rows": [],
+      "source_damage_rows": [],
+      "damage_multiplier": 0.0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 10,
+      "hit_repeat_rule": [],
+      "hit_offsets": [
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+        0.7,
+        0.8,
+        0.9,
+        1.0
+      ],
+      "decision_cancel_frame_source": {},
+      "action_time": 1.2,
+      "combat_time_cost": 1.2,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 20.0,
+      "cooldown_group": null,
+      "resource_cost": 0,
+      "resonance_energy_gain": 0,
+      "concerto_energy_gain": 0,
+      "special_resource_gate": {},
+      "state_resource_gates": "Echo Hyvatia has 20s cooldown",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "Echo Hyvatia has 20s cooldown",
+      "policy_selectable": true,
+      "action_type": "echo_skill",
+      "source_status": "user_supplied_echo_tooltip"
+    },
+    {
+      "action_id": "lynae_intro_time_to_show_some_colors",
+      "policy_selector_id": null,
+      "resolved_concrete_id": [
+        "lynae_intro_time_to_show_some_colors"
+      ],
+      "source_action_rows": [
+        2689,
+        2690,
+        2691
+      ],
+      "source_damage_rows": [
+        2480,
+        2481
+      ],
+      "damage_multiplier": 2.248,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 10,
+      "hit_repeat_rule": [
+        {
+          "damage_rows": [
+            2480,
+            2481
+          ],
+          "action_row": 2689,
+          "max_hits": 10
+        }
+      ],
+      "hit_offsets": [
+        0.1,
+        0.2,
+        0.3,
+        0.4,
+        0.5,
+        0.6,
+        0.7,
+        0.8,
+        0.9,
+        1.0
+      ],
+      "decision_cancel_frame_source": {},
+      "action_time": 1.0,
+      "combat_time_cost": 1.0,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0,
+      "resonance_energy_gain": 1.34,
+      "concerto_energy_gain": 1.2,
+      "special_resource_gate": {
+        "overflow_gain": 100.0
+      },
+      "state_resource_gates": "transition_or_wait_not_direct_damage_policy_spam",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "transition_or_wait_not_direct_damage_policy_spam",
+      "policy_selectable": false,
+      "action_type": "swap",
+      "source_status": "workbook_confirmed_repeated_tick_mode_variant_and_user_tooltip"
+    },
+    {
+      "action_id": "lynae_iridescent_splash",
+      "policy_selector_id": "lynae_iridescent_splash",
+      "resolved_concrete_id": [
+        "lynae_iridescent_splash"
+      ],
+      "source_action_rows": [
+        2675,
+        2676,
+        2677,
+        2678
+      ],
+      "source_damage_rows": [
+        2460,
+        2461
+      ],
+      "damage_multiplier": 3.0418,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.6667,
+      "combat_time_cost": 0.6667,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 8.13,
+      "concerto_energy_gain": 7.65,
+      "special_resource_gate": {},
+      "state_resource_gates": "True Color gate is consumed",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "True Color gate is consumed",
+      "policy_selectable": true,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed_mutually_exclusive_mode_variants"
+    },
+    {
+      "action_id": "lynae_iridescent_splash_c3",
+      "policy_selector_id": null,
+      "resolved_concrete_id": [
+        "lynae_iridescent_splash_c3"
+      ],
+      "source_action_rows": [],
+      "source_damage_rows": [
+        2462,
+        2463
+      ],
+      "damage_multiplier": 5.7795,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.6667,
+      "combat_time_cost": 0.6667,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 0.0,
+      "concerto_energy_gain": 0.0,
+      "special_resource_gate": {},
+      "state_resource_gates": "non_policy_concrete_not_direct_policy_spammable",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "non_policy_concrete_not_direct_policy_spammable",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "constellation_gated_disabled_by_default"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_basic_stage_1",
+      "policy_selector_id": "lynae_basic_attack",
+      "resolved_concrete_id": [
+        "lynae_kaleidoscopic_basic_stage_1"
+      ],
+      "source_action_rows": [
+        2592,
+        2593,
+        2594
+      ],
+      "source_damage_rows": [
+        2423
+      ],
+      "damage_multiplier": 0.8281,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
+      "hit_repeat_rule": [],
+      "hit_offsets": [
+        0.5499999999999999
+      ],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.6,
+      "combat_time_cost": 0.6,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0,
+      "resonance_energy_gain": 1.23,
+      "concerto_energy_gain": 4.41,
+      "special_resource_gate": {},
+      "state_resource_gates": "KP basic combo: repeatable only while Kaleidoscopic Parade is active",
+      "immediate_repeat_possible": true,
+      "immediate_repeat_allowed": true,
+      "immediate_repeat_reason": "KP basic combo: repeatable only while Kaleidoscopic Parade is active",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_basic_stage_2",
+      "policy_selector_id": "lynae_basic_attack",
+      "resolved_concrete_id": [
+        "lynae_kaleidoscopic_basic_stage_2"
+      ],
+      "source_action_rows": [
+        2596,
+        2597
+      ],
+      "source_damage_rows": [
+        2425,
+        2426
+      ],
+      "damage_multiplier": 0.7774,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 2,
+      "hit_repeat_rule": [],
+      "hit_offsets": [
+        0.3,
+        0.65
+      ],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.8,
+      "combat_time_cost": 0.8,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0,
+      "resonance_energy_gain": 1.16,
+      "concerto_energy_gain": 4.14,
+      "special_resource_gate": {},
+      "state_resource_gates": "KP basic combo: repeatable only while Kaleidoscopic Parade is active",
+      "immediate_repeat_possible": true,
+      "immediate_repeat_allowed": true,
+      "immediate_repeat_reason": "KP basic combo: repeatable only while Kaleidoscopic Parade is active",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_basic_stage_3",
+      "policy_selector_id": "lynae_basic_attack",
+      "resolved_concrete_id": [
+        "lynae_kaleidoscopic_basic_stage_3"
+      ],
+      "source_action_rows": [
+        2598,
+        2599,
+        2600
+      ],
+      "source_damage_rows": [
+        2427,
+        2428,
+        2429
+      ],
+      "damage_multiplier": 1.1325,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 3,
+      "hit_repeat_rule": [],
+      "hit_offsets": [
+        0.25,
+        0.5,
+        0.8
+      ],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.9167,
+      "combat_time_cost": 0.9167,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0,
+      "resonance_energy_gain": 1.68,
+      "concerto_energy_gain": 6.03,
+      "special_resource_gate": {},
+      "state_resource_gates": "KP basic combo: repeatable only while Kaleidoscopic Parade is active",
+      "immediate_repeat_possible": true,
+      "immediate_repeat_allowed": true,
+      "immediate_repeat_reason": "KP basic combo: repeatable only while Kaleidoscopic Parade is active",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_basic_stage_4",
+      "policy_selector_id": "lynae_basic_attack",
+      "resolved_concrete_id": [
+        "lynae_kaleidoscopic_basic_stage_4"
+      ],
+      "source_action_rows": [
+        2601,
+        2602,
+        2603,
+        2604,
+        2605
+      ],
+      "source_damage_rows": [
+        2430,
+        2431,
+        2432,
+        2433
+      ],
+      "damage_multiplier": 1.4874,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 4,
+      "hit_repeat_rule": [],
+      "hit_offsets": [
+        0.25,
+        0.5,
+        0.75,
+        0.95
+      ],
+      "decision_cancel_frame_source": {},
+      "action_time": 1.0,
+      "combat_time_cost": 1.0,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0,
+      "resonance_energy_gain": 2.2,
+      "concerto_energy_gain": 7.94,
+      "special_resource_gate": {},
+      "state_resource_gates": "KP basic combo: repeatable only while Kaleidoscopic Parade is active",
+      "immediate_repeat_possible": true,
+      "immediate_repeat_allowed": true,
+      "immediate_repeat_reason": "KP basic combo: repeatable only while Kaleidoscopic Parade is active",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_basic_stage_5",
+      "policy_selector_id": "lynae_basic_attack",
+      "resolved_concrete_id": [
+        "lynae_kaleidoscopic_basic_stage_5"
+      ],
+      "source_action_rows": [
+        2611,
+        2612,
+        2613,
+        2614
+      ],
+      "source_damage_rows": [
+        2434,
+        2435,
+        2436
+      ],
+      "damage_multiplier": 2.5181,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 7,
+      "hit_repeat_rule": [
+        {
+          "damage_row": 2435,
+          "action_row": 2613,
+          "max_hits": 5
+        }
+      ],
+      "hit_offsets": [
+        0.1571,
+        0.3143,
+        0.4714,
+        0.6286,
+        0.7857,
+        0.9429,
+        1.1
+      ],
+      "decision_cancel_frame_source": {},
+      "action_time": 1.1,
+      "combat_time_cost": 1.1,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0,
+      "resonance_energy_gain": 2.84,
+      "concerto_energy_gain": 10.21,
+      "special_resource_gate": {},
+      "state_resource_gates": "KP basic combo: repeatable only while Kaleidoscopic Parade is active",
+      "immediate_repeat_possible": true,
+      "immediate_repeat_allowed": true,
+      "immediate_repeat_reason": "KP basic combo: repeatable only while Kaleidoscopic Parade is active",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed_repeated_tick"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_dodge_counter",
+      "policy_selector_id": null,
+      "resolved_concrete_id": [
+        "lynae_kaleidoscopic_dodge_counter"
+      ],
+      "source_action_rows": [
+        2595
+      ],
+      "source_damage_rows": [
+        2424
+      ],
+      "damage_multiplier": 1.842,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.9,
+      "combat_time_cost": 0.9,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 1.23,
+      "concerto_energy_gain": 4.41,
+      "special_resource_gate": {},
+      "state_resource_gates": "non_policy_concrete_not_direct_policy_spammable",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "non_policy_concrete_not_direct_policy_spammable",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_graffiti_blast",
+      "policy_selector_id": null,
+      "resolved_concrete_id": [
+        "lynae_kaleidoscopic_graffiti_blast"
+      ],
+      "source_action_rows": [
+        2624
+      ],
+      "source_damage_rows": [
+        2446
+      ],
+      "damage_multiplier": 1.0478,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.6167,
+      "combat_time_cost": 0.6167,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 1.55,
+      "concerto_energy_gain": 5.58,
+      "special_resource_gate": {},
+      "state_resource_gates": "non_policy_concrete_not_direct_policy_spammable",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "non_policy_concrete_not_direct_policy_spammable",
+      "policy_selectable": false,
+      "action_type": "heavy_attack",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_ground_heavy_hold",
+      "policy_selector_id": null,
+      "resolved_concrete_id": [
+        "lynae_kaleidoscopic_ground_heavy_hold"
+      ],
+      "source_action_rows": [
+        2617,
+        2618,
+        2619,
+        2620,
+        2621,
+        2622,
+        2623
+      ],
+      "source_damage_rows": [
+        2439,
+        2440,
+        2441,
+        2442,
+        2443,
+        2444,
+        2445
+      ],
+      "damage_multiplier": 1.2341,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.8333,
+      "combat_time_cost": 0.8333,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 2.94,
+      "concerto_energy_gain": 6.58,
+      "special_resource_gate": {},
+      "state_resource_gates": "non_policy_concrete_not_direct_policy_spammable",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "non_policy_concrete_not_direct_policy_spammable",
+      "policy_selectable": false,
+      "action_type": "heavy_attack",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_mid_air_attack",
+      "policy_selector_id": null,
+      "resolved_concrete_id": [
+        "lynae_kaleidoscopic_mid_air_attack"
+      ],
+      "source_action_rows": [
+        2615,
+        2616
+      ],
+      "source_damage_rows": [
+        2437,
+        2438
+      ],
+      "damage_multiplier": 1.4365,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 1.0,
+      "combat_time_cost": 1.0,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 2.14,
+      "concerto_energy_gain": 7.66,
+      "special_resource_gate": {},
+      "state_resource_gates": "non_policy_concrete_not_direct_policy_spammable",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "non_policy_concrete_not_direct_policy_spammable",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_mid_air_heavy",
+      "policy_selector_id": null,
+      "resolved_concrete_id": [
+        "lynae_kaleidoscopic_mid_air_heavy"
+      ],
+      "source_action_rows": [
+        2633,
+        2634,
+        2635,
+        2636,
+        2637,
+        2638,
+        2639
+      ],
+      "source_damage_rows": [
+        2447,
+        2448,
+        2449,
+        2450,
+        2451,
+        2452,
+        2453
+      ],
+      "damage_multiplier": 2.4339,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 2.6667,
+      "combat_time_cost": 2.6667,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 5.81,
+      "concerto_energy_gain": 13.02,
+      "special_resource_gate": {},
+      "state_resource_gates": "non_policy_concrete_not_direct_policy_spammable",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "non_policy_concrete_not_direct_policy_spammable",
+      "policy_selectable": false,
+      "action_type": "heavy_attack",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_mid_air_attack",
+      "policy_selector_id": null,
+      "resolved_concrete_id": [
+        "lynae_mid_air_attack"
+      ],
+      "source_action_rows": [
+        2583,
+        2584
+      ],
+      "source_damage_rows": [
+        2414,
+        2415
+      ],
+      "damage_multiplier": 1.4365,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 1.0,
+      "combat_time_cost": 1.0,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 2.14,
+      "concerto_energy_gain": 7.66,
+      "special_resource_gate": {
+        "overflow_gain": 20.0
+      },
+      "state_resource_gates": "non_policy_concrete_not_direct_policy_spammable",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "non_policy_concrete_not_direct_policy_spammable",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_outro_lets_hit_the_road",
+      "policy_selector_id": null,
+      "resolved_concrete_id": [
+        "lynae_outro_lets_hit_the_road"
+      ],
+      "source_action_rows": [
+        2699,
+        2700,
+        2701
+      ],
+      "source_damage_rows": [
+        2486,
+        2487
+      ],
+      "damage_multiplier": 1.0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
+      "hit_repeat_rule": [
+        {
+          "damage_row": 2486,
+          "rate_column": "Damage.RateLv_1",
+          "action_row": 2700,
+          "max_hits": 12
+        },
+        {
+          "damage_row": 2487,
+          "rate_column": "Damage.RateLv_1",
+          "action_row": 2701,
+          "max_hits": 10
+        }
+      ],
+      "hit_offsets": [
+        0.0
+      ],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.001,
+      "combat_time_cost": 0.001,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0,
+      "resonance_energy_gain": 0.0,
+      "concerto_energy_gain": 0.0,
+      "special_resource_gate": {},
+      "state_resource_gates": "transition_or_wait_not_direct_damage_policy_spam",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "transition_or_wait_not_direct_damage_policy_spam",
+      "policy_selectable": false,
+      "action_type": "swap",
+      "source_status": "excel_tick_sum_and_tooltip_confirmed"
+    },
+    {
+      "action_id": "lynae_polychrome_leap",
+      "policy_selector_id": "lynae_polychrome_leap",
+      "resolved_concrete_id": [
+        "lynae_polychrome_leap_stage_1",
+        "lynae_polychrome_leap_stage_2",
+        "lynae_polychrome_leap_stage_3"
+      ],
+      "source_action_rows": [],
+      "source_damage_rows": [],
+      "damage_multiplier": 0.0,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.001,
+      "combat_time_cost": 0.0,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 0.0,
+      "concerto_energy_gain": 0.0,
+      "special_resource_gate": {},
+      "state_resource_gates": "repeatable only if policy path and mechanic gates permit it",
+      "immediate_repeat_possible": true,
+      "immediate_repeat_allowed": true,
+      "immediate_repeat_reason": "repeatable only if policy path and mechanic gates permit it",
+      "policy_selectable": true,
+      "action_type": "basic_attack",
+      "source_status": "selector_runtime_routes_to_workbook_confirmed_stage"
+    },
+    {
+      "action_id": "lynae_polychrome_leap_stage_1",
+      "policy_selector_id": "lynae_polychrome_leap",
+      "resolved_concrete_id": [
+        "lynae_polychrome_leap_stage_1"
+      ],
+      "source_action_rows": [
+        2641,
+        2642,
+        2643,
+        2644,
+        2645
+      ],
+      "source_damage_rows": [
+        2468,
+        2469,
+        2470
+      ],
+      "damage_multiplier": 1.014,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.8667,
+      "combat_time_cost": 0.8667,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 2.25,
+      "concerto_energy_gain": 5.4,
+      "special_resource_gate": {
+        "true_color_gain": 1.0,
+        "lumiflow_cost": 40.0
+      },
+      "state_resource_gates": "Polychrome Leap has no cooldown because KP + Lumiflow >= 40 gate is consumed",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "Polychrome Leap has no cooldown because KP + Lumiflow >= 40 gate is consumed",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_polychrome_leap_stage_1_c1",
+      "policy_selector_id": null,
+      "resolved_concrete_id": [
+        "lynae_polychrome_leap_stage_1_c1"
+      ],
+      "source_action_rows": [],
+      "source_damage_rows": [
+        2471,
+        2472,
+        2473
+      ],
+      "damage_multiplier": 2.2308,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.8667,
+      "combat_time_cost": 0.8667,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 0.0,
+      "concerto_energy_gain": 0.0,
+      "special_resource_gate": {},
+      "state_resource_gates": "Polychrome Leap has no cooldown because KP + Lumiflow >= 40 gate is consumed",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "Polychrome Leap has no cooldown because KP + Lumiflow >= 40 gate is consumed",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "constellation_gated_disabled_by_default"
+    },
+    {
+      "action_id": "lynae_polychrome_leap_stage_2",
+      "policy_selector_id": "lynae_polychrome_leap",
+      "resolved_concrete_id": [
+        "lynae_polychrome_leap_stage_2"
+      ],
+      "source_action_rows": [
+        2647,
+        2648,
+        2649,
+        2650,
+        2651
+      ],
+      "source_damage_rows": [
+        2474
+      ],
+      "damage_multiplier": 1.014,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 6,
+      "hit_repeat_rule": [
+        {
+          "damage_row": 2474,
+          "action_rows": [
+            2649,
+            2650
+          ],
+          "max_hits": 6
+        }
+      ],
+      "hit_offsets": [
+        0.1444,
+        0.2889,
+        0.4334,
+        0.5778,
+        0.7222,
+        0.8667
+      ],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.8667,
+      "combat_time_cost": 0.8667,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 0.38,
+      "concerto_energy_gain": 0.9,
+      "special_resource_gate": {
+        "true_color_gain": 1.0,
+        "lumiflow_cost": 40.0
+      },
+      "state_resource_gates": "Polychrome Leap has no cooldown because KP + Lumiflow >= 40 gate is consumed",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "Polychrome Leap has no cooldown because KP + Lumiflow >= 40 gate is consumed",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed_repeated_tick_mode_variant"
+    },
+    {
+      "action_id": "lynae_polychrome_leap_stage_2_c1",
+      "policy_selector_id": null,
+      "resolved_concrete_id": [
+        "lynae_polychrome_leap_stage_2_c1"
+      ],
+      "source_action_rows": [],
+      "source_damage_rows": [
+        2475
+      ],
+      "damage_multiplier": 2.2308,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [
+        {
+          "damage_row": 2475,
+          "action_row": 2649,
+          "max_hits": 6
+        }
+      ],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.8667,
+      "combat_time_cost": 0.8667,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 0.0,
+      "concerto_energy_gain": 0.0,
+      "special_resource_gate": {},
+      "state_resource_gates": "Polychrome Leap has no cooldown because KP + Lumiflow >= 40 gate is consumed",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "Polychrome Leap has no cooldown because KP + Lumiflow >= 40 gate is consumed",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "constellation_gated_disabled_by_default"
+    },
+    {
+      "action_id": "lynae_polychrome_leap_stage_3",
+      "policy_selector_id": "lynae_polychrome_leap",
+      "resolved_concrete_id": [
+        "lynae_polychrome_leap_stage_3"
+      ],
+      "source_action_rows": [
+        2653,
+        2654,
+        2660,
+        2661
+      ],
+      "source_damage_rows": [
+        2476,
+        2477
+      ],
+      "damage_multiplier": 0.655,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 5,
+      "hit_repeat_rule": [
+        {
+          "damage_row": 2476,
+          "action_row": 2660,
+          "max_hits": 4
+        }
+      ],
+      "hit_offsets": [
+        0.39,
+        0.78,
+        1.17,
+        1.56,
+        1.95
+      ],
+      "decision_cancel_frame_source": {},
+      "action_time": 1.95,
+      "combat_time_cost": 1.95,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 0.6,
+      "concerto_energy_gain": 1.4,
+      "special_resource_gate": {
+        "true_color_gain": 1.0,
+        "lumiflow_cost": 40.0
+      },
+      "state_resource_gates": "Polychrome Leap has no cooldown because KP + Lumiflow >= 40 gate is consumed",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "Polychrome Leap has no cooldown because KP + Lumiflow >= 40 gate is consumed",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed_repeated_tick"
+    },
+    {
+      "action_id": "lynae_polychrome_leap_stage_3_c1",
+      "policy_selector_id": null,
+      "resolved_concrete_id": [
+        "lynae_polychrome_leap_stage_3_c1"
+      ],
+      "source_action_rows": [],
+      "source_damage_rows": [
+        2478,
+        2479
+      ],
+      "damage_multiplier": 1.441,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [
+        {
+          "damage_row": 2478,
+          "action_row": 2660,
+          "max_hits": 4
+        }
+      ],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 1.95,
+      "combat_time_cost": 1.95,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 0.0,
+      "concerto_energy_gain": 0.0,
+      "special_resource_gate": {},
+      "state_resource_gates": "Polychrome Leap has no cooldown because KP + Lumiflow >= 40 gate is consumed",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "Polychrome Leap has no cooldown because KP + Lumiflow >= 40 gate is consumed",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "constellation_gated_disabled_by_default"
+    },
+    {
+      "action_id": "lynae_resonance_liberation",
+      "policy_selector_id": "lynae_resonance_liberation",
+      "resolved_concrete_id": [
+        "lynae_resonance_liberation_prismatic_overblast"
+      ],
+      "source_action_rows": [],
+      "source_damage_rows": [],
+      "damage_multiplier": 0.0,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.1,
+      "combat_time_cost": 0.1,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 25,
+      "cooldown_group": "lynae_resonance_liberation",
+      "resource_cost": 125,
+      "resonance_energy_gain": 0,
+      "concerto_energy_gain": 0,
+      "special_resource_gate": {},
+      "state_resource_gates": "Resonance Liberation cost 125 and 25s cooldown prevent immediate repeat",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "Resonance Liberation cost 125 and 25s cooldown prevent immediate repeat",
+      "policy_selectable": true,
+      "action_type": "resonance_liberation",
+      "source_status": "non_damaging_selector"
+    },
+    {
+      "action_id": "lynae_resonance_liberation_prismatic_overblast",
+      "policy_selector_id": "lynae_resonance_liberation",
+      "resolved_concrete_id": [
+        "lynae_resonance_liberation_prismatic_overblast"
+      ],
+      "source_action_rows": [
+        2692,
+        2693,
+        2694,
+        2695
+      ],
+      "source_damage_rows": [
+        2482
+      ],
+      "damage_multiplier": 8.748,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 10,
+      "hit_repeat_rule": [
+        {
+          "damage_row": 2482,
+          "action_row": 2695,
+          "max_hits": 10
+        }
+      ],
+      "hit_offsets": [
+        2.6167,
+        2.7167,
+        2.8167,
+        2.9167,
+        3.0167,
+        3.1167,
+        3.2167,
+        3.3167,
+        3.4167,
+        3.5167
+      ],
+      "decision_cancel_frame_source": {
+        "rows": [
+          2692,
+          2695
+        ],
+        "frames": [
+          238,
+          240
+        ]
+      },
+      "action_time": 4.0,
+      "combat_time_cost": 0.0,
+      "global_time_stop_rows": [
+        2693
+      ],
+      "global_time_stop_frames": 240,
+      "cooldown": 25,
+      "cooldown_group": "lynae_resonance_liberation",
+      "resource_cost": 125,
+      "resonance_energy_gain": 0.0,
+      "concerto_energy_gain": 20.0,
+      "special_resource_gate": {},
+      "state_resource_gates": "Resonance Liberation cost 125 and 25s cooldown prevent immediate repeat",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "Resonance Liberation cost 125 and 25s cooldown prevent immediate repeat",
+      "policy_selectable": false,
+      "action_type": "resonance_liberation",
+      "source_status": "workbook_confirmed_global_timestop_decision_frame_240F_damage_repeat_from_2695"
+    },
+    {
+      "action_id": "lynae_resonance_liberation_prismatic_overblast_c5",
+      "policy_selector_id": null,
+      "resolved_concrete_id": [
+        "lynae_resonance_liberation_prismatic_overblast_c5"
+      ],
+      "source_action_rows": [
+        2692,
+        2693,
+        2694,
+        2695
+      ],
+      "source_damage_rows": [
+        2483
+      ],
+      "damage_multiplier": 14.871,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [
+        {
+          "damage_row": 2483,
+          "action_row": 2695,
+          "max_hits": 10
+        }
+      ],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {
+        "rows": [
+          2692,
+          2695
+        ],
+        "frames": [
+          238,
+          240
+        ]
+      },
+      "action_time": 4.0,
+      "combat_time_cost": 0.0,
+      "global_time_stop_rows": [
+        2693
+      ],
+      "global_time_stop_frames": 240,
+      "cooldown": 25,
+      "cooldown_group": "lynae_resonance_liberation",
+      "resource_cost": 125,
+      "resonance_energy_gain": 0.0,
+      "concerto_energy_gain": 0.0,
+      "special_resource_gate": {},
+      "state_resource_gates": "non_policy_concrete_not_direct_policy_spammable",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "non_policy_concrete_not_direct_policy_spammable",
+      "policy_selectable": false,
+      "action_type": "resonance_liberation",
+      "source_status": "constellation_gated_disabled_by_default_workbook_confirmed_global_timestop_decision_frame_240F_damage_repeat_from_2695"
+    },
+    {
+      "action_id": "lynae_resonance_skill",
+      "policy_selector_id": "lynae_resonance_skill",
+      "resolved_concrete_id": [
+        "lynae_resonance_skill_palette",
+        "lynae_resonance_skill_additive_color"
+      ],
+      "source_action_rows": [],
+      "source_damage_rows": [],
+      "damage_multiplier": 0.0,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.1,
+      "combat_time_cost": 0.1,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 6.0,
+      "cooldown_group": "lynae_resonance_skill",
+      "resource_cost": 0,
+      "resonance_energy_gain": 0.0,
+      "concerto_energy_gain": 0.0,
+      "special_resource_gate": {},
+      "state_resource_gates": "cooldown prevents immediate repeat",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "cooldown prevents immediate repeat",
+      "policy_selectable": true,
+      "action_type": "resonance_skill",
+      "source_status": "non_damaging_selector_resolved_shared_cooldown"
+    },
+    {
+      "action_id": "lynae_resonance_skill_additive_color",
+      "policy_selector_id": "lynae_resonance_skill",
+      "resolved_concrete_id": [
+        "lynae_resonance_skill_additive_color"
+      ],
+      "source_action_rows": [
+        2672,
+        2673,
+        2674
+      ],
+      "source_damage_rows": [
+        2458,
+        2459
+      ],
+      "damage_multiplier": 2.3262,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 2,
+      "hit_repeat_rule": [],
+      "hit_offsets": [
+        0.35,
+        0.75
+      ],
+      "decision_cancel_frame_source": {
+        "rows": [
+          2674
+        ],
+        "frames": [
+          55
+        ]
+      },
+      "action_time": 0.9167,
+      "combat_time_cost": 0.9167,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 6.0,
+      "cooldown_group": "lynae_resonance_skill",
+      "resource_cost": 0,
+      "resonance_energy_gain": 6.92,
+      "concerto_energy_gain": 8.2,
+      "special_resource_gate": {},
+      "state_resource_gates": "Resonance Skill shared 6.0s cooldown prevents immediate repeat",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "Resonance Skill shared 6.0s cooldown prevents immediate repeat",
+      "policy_selectable": false,
+      "action_type": "resonance_skill",
+      "source_status": "user_confirmed_numeric_cooldown"
+    },
+    {
+      "action_id": "lynae_resonance_skill_palette",
+      "policy_selector_id": "lynae_resonance_skill",
+      "resolved_concrete_id": [
+        "lynae_resonance_skill_palette"
+      ],
+      "source_action_rows": [
+        2662,
+        2663,
+        2664,
+        2665,
+        2666
+      ],
+      "source_damage_rows": [
+        2454,
+        2455,
+        2456,
+        2457
+      ],
+      "damage_multiplier": 2.7863,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 4,
+      "hit_repeat_rule": [],
+      "hit_offsets": [
+        0.25,
+        0.5,
+        0.75,
+        1.0
+      ],
+      "decision_cancel_frame_source": {
+        "rows": [
+          2666
+        ],
+        "frames": [
+          66
+        ]
+      },
+      "action_time": 1.1,
+      "combat_time_cost": 1.1,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 6.0,
+      "cooldown_group": "lynae_resonance_skill",
+      "resource_cost": 0,
+      "resonance_energy_gain": 8.75,
+      "concerto_energy_gain": 9.83,
+      "special_resource_gate": {
+        "overflow_gain": 25.0
+      },
+      "state_resource_gates": "Resonance Skill shared 6.0s cooldown prevents immediate repeat",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "Resonance Skill shared 6.0s cooldown prevents immediate repeat",
+      "policy_selectable": false,
+      "action_type": "resonance_skill",
+      "source_status": "user_confirmed_numeric_cooldown"
+    },
+    {
+      "action_id": "lynae_spark_collision",
+      "policy_selector_id": "lynae_spark_collision",
+      "resolved_concrete_id": [
+        "lynae_spark_collision_lv1",
+        "lynae_spark_collision_lv2",
+        "lynae_spark_collision_lv3"
+      ],
+      "source_action_rows": [
+        2585
+      ],
+      "source_damage_rows": [
+        2416
+      ],
+      "damage_multiplier": 0.0,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 1.0,
+      "combat_time_cost": 1.0,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 0.0,
+      "concerto_energy_gain": 0.0,
+      "special_resource_gate": {
+        "overflow_cost": 120.0
+      },
+      "state_resource_gates": "repeatable only if policy path and mechanic gates permit it",
+      "immediate_repeat_possible": true,
+      "immediate_repeat_allowed": true,
+      "immediate_repeat_reason": "repeatable only if policy path and mechanic gates permit it",
+      "policy_selectable": true,
+      "action_type": "heavy_attack",
+      "source_status": "user_tooltip_confirmed_timing_simplified"
+    },
+    {
+      "action_id": "lynae_spark_collision_lv1",
+      "policy_selector_id": "lynae_spark_collision",
+      "resolved_concrete_id": [
+        "lynae_spark_collision_lv1"
+      ],
+      "source_action_rows": [
+        2586,
+        2587
+      ],
+      "source_damage_rows": [
+        2417,
+        2418
+      ],
+      "damage_multiplier": 1.1112,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 1.5,
+      "combat_time_cost": 1.5,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 1.66,
+      "concerto_energy_gain": 5.92,
+      "special_resource_gate": {},
+      "state_resource_gates": "Spark Collision has no cooldown because full Overflow gate is consumed",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "Spark Collision has no cooldown because full Overflow gate is consumed",
+      "policy_selectable": false,
+      "action_type": "heavy_attack",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_spark_collision_lv2",
+      "policy_selector_id": "lynae_spark_collision",
+      "resolved_concrete_id": [
+        "lynae_spark_collision_lv2"
+      ],
+      "source_action_rows": [
+        2588,
+        2589
+      ],
+      "source_damage_rows": [
+        2419,
+        2420
+      ],
+      "damage_multiplier": 3.3334,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 1.5,
+      "combat_time_cost": 1.5,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 4.94,
+      "concerto_energy_gain": 17.76,
+      "special_resource_gate": {},
+      "state_resource_gates": "Spark Collision has no cooldown because full Overflow gate is consumed",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "Spark Collision has no cooldown because full Overflow gate is consumed",
+      "policy_selectable": false,
+      "action_type": "heavy_attack",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_spark_collision_lv3",
+      "policy_selector_id": "lynae_spark_collision",
+      "resolved_concrete_id": [
+        "lynae_spark_collision_lv3"
+      ],
+      "source_action_rows": [
+        2590,
+        2591
+      ],
+      "source_damage_rows": [
+        2421,
+        2422
+      ],
+      "damage_multiplier": 5.5556,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 1.5,
+      "combat_time_cost": 1.5,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 8.22,
+      "concerto_energy_gain": 29.6,
+      "special_resource_gate": {},
+      "state_resource_gates": "Spark Collision has no cooldown because full Overflow gate is consumed",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "Spark Collision has no cooldown because full Overflow gate is consumed",
+      "policy_selectable": false,
+      "action_type": "heavy_attack",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_to_a_vivid_tomorrow",
+      "policy_selector_id": "lynae_basic_attack",
+      "resolved_concrete_id": [
+        "lynae_to_a_vivid_tomorrow"
+      ],
+      "source_action_rows": [
+        2696,
+        2697,
+        2698
+      ],
+      "source_damage_rows": [
+        2484,
+        2485
+      ],
+      "damage_multiplier": 2.0106,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 22,
+      "hit_repeat_rule": [
+        {
+          "damage_row": 2484,
+          "action_row": 2697,
+          "max_hits": 12
+        },
+        {
+          "damage_row": 2485,
+          "action_row": 2698,
+          "max_hits": 10
+        }
+      ],
+      "hit_offsets": [
+        0.1371,
+        0.2742,
+        0.4114,
+        0.5485,
+        0.6856,
+        0.8227,
+        0.9599,
+        1.097,
+        1.2341,
+        1.3712,
+        1.5084,
+        1.6455,
+        1.7826,
+        1.9197,
+        2.0568,
+        2.194,
+        2.3311,
+        2.4682,
+        2.6053,
+        2.7425,
+        2.8796,
+        3.0167
+      ],
+      "decision_cancel_frame_source": {},
+      "action_time": 3.0167,
+      "combat_time_cost": 3.0167,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 0.5,
+      "concerto_energy_gain": 1.78,
+      "special_resource_gate": {},
+      "state_resource_gates": "repeatable only if policy path and mechanic gates permit it",
+      "immediate_repeat_possible": true,
+      "immediate_repeat_allowed": true,
+      "immediate_repeat_reason": "repeatable only if policy path and mechanic gates permit it",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed_repeated_tick"
+    },
+    {
+      "action_id": "lynae_tune_break",
+      "policy_selector_id": "lynae_tune_break",
+      "resolved_concrete_id": [
+        "lynae_tune_break"
+      ],
+      "source_action_rows": [
+        2702,
+        2703,
+        2704
+      ],
+      "source_damage_rows": [
+        2488
+      ],
+      "damage_multiplier": 0.0,
+      "tune_break_multiplier": 16.0,
+      "hit_count": 1,
+      "hit_repeat_rule": [],
+      "hit_offsets": [
+        1.2
+      ],
+      "decision_cancel_frame_source": {
+        "rows": [
+          2704
+        ],
+        "frames": [
+          96
+        ]
+      },
+      "action_time": 1.6,
+      "combat_time_cost": 0.0,
+      "global_time_stop_rows": [
+        2703
+      ],
+      "global_time_stop_frames": 96,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0,
+      "resonance_energy_gain": 0.0,
+      "concerto_energy_gain": 0.0,
+      "special_resource_gate": {},
+      "state_resource_gates": "Tune Break is gated by enemy Tune Break availability",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "Tune Break is gated by enemy Tune Break availability",
+      "policy_selectable": true,
+      "action_type": "tune_break",
+      "source_status": "workbook_confirmed_global_timestop_tune_break_damage"
+    },
+    {
+      "action_id": "lynae_tune_response_spectral_analysis",
+      "policy_selector_id": null,
+      "resolved_concrete_id": [
+        "lynae_tune_response_spectral_analysis"
+      ],
+      "source_action_rows": [
+        2735
+      ],
+      "source_damage_rows": [
+        2489
+      ],
+      "damage_multiplier": 0.0,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.001,
+      "combat_time_cost": 0.001,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0,
+      "resonance_energy_gain": 0.0,
+      "concerto_energy_gain": 0.0,
+      "special_resource_gate": {},
+      "state_resource_gates": "non_policy_concrete_not_direct_policy_spammable",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "non_policy_concrete_not_direct_policy_spammable",
+      "policy_selectable": false,
+      "action_type": "resonance_skill",
+      "source_status": "workbook_confirmed"
+    },
+    {
+      "action_id": "lynae_visual_impact",
+      "policy_selector_id": "lynae_visual_impact",
+      "resolved_concrete_id": [
+        "lynae_visual_impact"
+      ],
+      "source_action_rows": [
+        2679,
+        2680,
+        2681,
+        2682
+      ],
+      "source_damage_rows": [
+        2464,
+        2465
+      ],
+      "damage_multiplier": 12.1672,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 1.5,
+      "combat_time_cost": 1.5,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 25.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 14.05,
+      "concerto_energy_gain": 14.58,
+      "special_resource_gate": {},
+      "state_resource_gates": "True Color gate is consumed and 25s state/action cooldown applies",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "True Color gate is consumed and 25s state/action cooldown applies",
+      "policy_selectable": true,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed_mutually_exclusive_mode_variants_and_user_tooltip"
+    },
+    {
+      "action_id": "lynae_visual_impact_c3",
+      "policy_selector_id": null,
+      "resolved_concrete_id": [
+        "lynae_visual_impact_c3"
+      ],
+      "source_action_rows": [],
+      "source_damage_rows": [
+        2466,
+        2467
+      ],
+      "damage_multiplier": 23.1177,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 1.5,
+      "combat_time_cost": 1.5,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 0.0,
+      "concerto_energy_gain": 0.0,
+      "special_resource_gate": {},
+      "state_resource_gates": "non_policy_concrete_not_direct_policy_spammable",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "non_policy_concrete_not_direct_policy_spammable",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "constellation_gated_disabled_by_default"
+    }
+  ],
+  "notes": [
+    "Prismatic Overblast action_time is the 240F decision-lock window: 4.0s.",
+    "Prismatic Overblast combat_time_cost is 0.0 because row 2693 confirms global time stop coverage.",
+    "Row 2695 supplies hit timing/repeat evidence; its late endpoint is not used as timed combat duration.",
+    "Lynae Tune Break uses dmg!2488 RateLv1 160000 as Tune Break multiplier 16.0, not as normal ATK/Spectro damage.",
+    "Lynae Tune Break uses row 2703 for global time stop and row 2704 for the 72F hit frame / 96F action window.",
+    "Lynae Outro remains transition-only handling, not source-confirmed standalone action timing."
+  ]
+}

@@ -141,7 +141,7 @@ class Simulation:
             )
         )
         self.state.enemy_tune_break_cooldown_source_ref = str(
-            tune_break_config.get("enemy_tune_break_cooldown_source_ref", "附页2!B227")
+            tune_break_config.get("enemy_tune_break_cooldown_source_ref", "\u9644\u98752!B227")
         )
         self.state.off_tune_value_mapping_source_report = "reports/off_tune_value_mapping_audit.md"
         self._refresh_off_tune_mapping_metadata()

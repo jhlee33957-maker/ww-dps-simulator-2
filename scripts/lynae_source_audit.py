@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -8,6 +9,14 @@ from openpyxl import load_workbook
 
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from scripts.source_ref_canonicalization import (
+    CANONICAL_LYNAE_ACTION_SHEET,
+    CANONICAL_LYNAE_SKILL_TYPE_SHEET,
+)
+
 DATA_DIR = ROOT / "data"
 SOURCE_DIR = DATA_DIR / "source"
 EXTRACTED_DIR = DATA_DIR / "extracted"
@@ -49,7 +58,7 @@ LYNAE_ACTION_ALIGNMENT = [
     ("lynae_resonance_liberation_prismatic_overblast", "Prismatic Overblast C0", [2692, 2693, 2694, 2695], [2482], "implemented_v2"),
     ("lynae_to_a_vivid_tomorrow", "To a Vivid Tomorrow", [2696, 2697, 2698], [2484, 2485], "implemented_v2"),
     ("lynae_outro_lets_hit_the_road", "Outro", [2699, 2700, 2701], [2486, 2487], "implemented_v2_tooltip_damage"),
-    ("lynae_tune_break", "Tune Break", [2702, 2703, 2704], [2488], "metadata_only_zero_workbook_damage"),
+    ("lynae_tune_break", "Tune Break", [2702, 2703, 2704], [2488], "excel_tune_break_single_target_v1"),
     ("lynae_tune_response_spectral_analysis", "Spectral Analysis C0", [2735], [2489], "implemented_v2"),
 ]
 LYNAE_ACTION_CALCULATIONS = {
@@ -108,6 +117,23 @@ LYNAE_ACTION_CALCULATIONS = {
             {"damage_row": 2486, "rate_column": "Damage.RateLv_1", "action_row": 2700, "max_hits": 12},
             {"damage_row": 2487, "rate_column": "Damage.RateLv_1", "action_row": 2701, "max_hits": 10},
         ],
+    },
+    "lynae_tune_break": {
+        "multiplier": 0.0,
+        "normal_damage_multiplier": 0.0,
+        "tune_break_multiplier": 16.0,
+        "tune_break_multiplier_source_row": 2488,
+        "tune_break_multiplier_source_column": "Damage.RateLv_1",
+        "tune_break_hit_frame": 72,
+        "tune_break_hit_time": 1.2,
+        "action_window_frames": 96,
+        "global_time_stop_row": 2703,
+        "calculation_type": "tune_break_rate_lv_1_formula",
+        "source_status": "workbook_confirmed_global_timestop_tune_break_damage",
+        "notes": (
+            "dmg!2488 RateLv1 160000 is used as Tune Break multiplier 16.0. "
+            "RateLv10 is not used as normal ATK/Spectro damage."
+        ),
     },
     "lynae_tune_response_spectral_analysis": {
         "multiplier": 18.8075,
@@ -204,6 +230,35 @@ LYNAE_IMPLEMENTED_SINGLE_TARGET_ROWS = [
         ),
     }
 ]
+
+
+RESOURCE_COLUMNS = {
+    "resonance_energy_gain": 20,
+    "concerto_energy_gain": 21,
+    "core_gain_1": 22,
+    "core_gain_2": 23,
+    "core_gain_3": 24,
+}
+RESOURCE_VARIANT_MAX_ACTIONS = {
+    "lynae_kaleidoscopic_basic_stage_1",
+    "lynae_iridescent_splash",
+    "lynae_visual_impact",
+    "lynae_polychrome_leap_stage_2",
+    "lynae_intro_time_to_show_some_colors",
+}
+LYNAE_SPECIAL_RESOURCE_NOTES = {
+    "lynae_basic_stage_1": {"overflow_gain": 12.0},
+    "lynae_basic_stage_2": {"overflow_gain": 21.0},
+    "lynae_basic_stage_3": {"overflow_gain": 17.0},
+    "lynae_dodge_counter": {"overflow_gain": 19.0},
+    "lynae_mid_air_attack": {"overflow_gain": 20.0},
+    "lynae_resonance_skill_palette": {"overflow_gain": 25.0},
+    "lynae_intro_time_to_show_some_colors": {"overflow_gain": 100.0},
+    "lynae_spark_collision": {"overflow_cost": 120.0},
+    "lynae_polychrome_leap_stage_1": {"true_color_gain": 1.0, "lumiflow_cost": 40.0},
+    "lynae_polychrome_leap_stage_2": {"true_color_gain": 1.0, "lumiflow_cost": 40.0},
+    "lynae_polychrome_leap_stage_3": {"true_color_gain": 1.0, "lumiflow_cost": 40.0},
+}
 
 
 def lynae_unresolved_rows() -> list[dict[str, Any]]:
@@ -413,6 +468,331 @@ def build_audit() -> dict[str, Any]:
     }
 
 
+def _resource_value(row: dict[str, Any], column: int) -> float:
+    values = row.get("values") or []
+    if len(values) < column:
+        return 0.0
+    value = values[column - 1]
+    return float(value) if isinstance(value, (int, float)) else 0.0
+
+
+def _aggregate_resource_rows(rows: list[dict[str, Any]], *, use_max: bool) -> dict[str, float]:
+    fields = {field: [_resource_value(row, column) for row in rows] for field, column in RESOURCE_COLUMNS.items()}
+    if use_max:
+        return {
+            field: round(max(values, key=lambda value: abs(value)) if values else 0.0, 4)
+            for field, values in fields.items()
+        }
+    return {field: round(sum(values), 4) for field, values in fields.items()}
+
+
+def build_resource_cooldown_alignment(audit: dict[str, Any], action_map: list[dict[str, Any]]) -> dict[str, Any]:
+    actions_by_id = {
+        action["id"]: action
+        for action in json.loads((DATA_DIR / "actions.json").read_text(encoding="utf-8"))
+        if action.get("character_id") == "lynae"
+    }
+    action_rows_by_number = {row["row"]: row for row in audit["action_region"]["action_rows"]}
+    records = []
+    for item in action_map:
+        action_id = item["action_id"]
+        current = actions_by_id.get(action_id, {})
+        action_rows = [action_rows_by_number[row] for row in item["action_rows"] if row in action_rows_by_number]
+        use_max = action_id in RESOURCE_VARIANT_MAX_ACTIONS
+        source_values = _aggregate_resource_rows(action_rows, use_max=use_max)
+        source_status = "source_confirmed" if action_rows else "unresolved_no_action_resource_rows"
+        unresolved_reason = None if action_rows else "No action resource rows were mapped for this action."
+        records.append(
+            {
+                "action_id": action_id,
+                "action_rows": item["action_rows"],
+                "resource_aggregation": "max_variant_row" if use_max else "sum_action_rows",
+                "resonance_energy_gain": current.get("resonance_energy_gain"),
+                "source_resonance_energy_gain": source_values["resonance_energy_gain"],
+                "concerto_energy_gain": current.get("concerto_energy_gain"),
+                "source_concerto_energy_gain": source_values["concerto_energy_gain"],
+                "special_resource_gain": {
+                    "source_core_gain_1": source_values["core_gain_1"],
+                    "source_core_gain_2": source_values["core_gain_2"],
+                    "source_core_gain_3": source_values["core_gain_3"],
+                    **LYNAE_SPECIAL_RESOURCE_NOTES.get(action_id, {}),
+                },
+                "resonance_energy_cost": current.get("resonance_energy_cost"),
+                "cooldown": current.get("cooldown"),
+                "cooldown_group": current.get("cooldown_group"),
+                "source_status": source_status,
+                "unresolved_reason": unresolved_reason,
+            }
+        )
+
+    for action_id in ("lynae_resonance_liberation", "lynae_resonance_liberation_prismatic_overblast_c5"):
+        current = actions_by_id.get(action_id)
+        if current is None:
+            continue
+        records.append(
+            {
+                "action_id": action_id,
+                "action_rows": current.get("source_rows") or [],
+                "resource_aggregation": "selector_or_constellation_guard",
+                "resonance_energy_gain": current.get("resonance_energy_gain"),
+                "source_resonance_energy_gain": None,
+                "concerto_energy_gain": current.get("concerto_energy_gain"),
+                "source_concerto_energy_gain": None,
+                "special_resource_gain": LYNAE_SPECIAL_RESOURCE_NOTES.get(action_id, {}),
+                "resonance_energy_cost": current.get("resonance_energy_cost"),
+                "cooldown": current.get("cooldown"),
+                "cooldown_group": current.get("cooldown_group"),
+                "source_status": current.get("source_status") or current.get("data_status"),
+                "unresolved_reason": None,
+            }
+        )
+
+    return {
+        "workbook": audit["workbook"],
+        "source_region": "角色-女!2577:2738",
+        "resource_columns": RESOURCE_COLUMNS,
+        "liberation_gating": {
+            "resonance_energy_cost": 125,
+            "cooldown": 25,
+            "cooldown_group": "lynae_resonance_liberation",
+        },
+        "records": records,
+    }
+
+
+def resource_cooldown_alignment_markdown(alignment: dict[str, Any]) -> str:
+    lines = [
+        "# Lynae Resource/Cooldown Alignment",
+        "",
+        f"Workbook: `{alignment['workbook']}`",
+        f"Source action/resource rows: `{alignment['source_region']}`",
+        "",
+        "## Liberation Gating",
+        "- Lynae Prismatic Overblast (`lynae_resonance_liberation_prismatic_overblast`): Resonance Energy cost 125, cooldown 25s, cooldown group `lynae_resonance_liberation`.",
+        "- `lynae_resonance_liberation`: non-damaging policy selector with the same cost/cooldown metadata for guard visibility.",
+        "- `lynae_resonance_liberation_prismatic_overblast_c5`: disabled-by-default constellation variant with the same cost/cooldown guard.",
+        "",
+        "## Resonance Skill Shared Cooldown",
+        "- `lynae_resonance_skill_palette` and `lynae_resonance_skill_additive_color` share cooldown group `lynae_resonance_skill` with user-confirmed cooldown 6.0s.",
+        "",
+        "## Action Rows",
+        "| action_id | action rows | resonance gain | concerto gain | special resource | cost | cooldown | source_status | unresolved reason |",
+        "| --- | --- | ---: | ---: | --- | ---: | ---: | --- | --- |",
+    ]
+    for record in alignment["records"]:
+        special = {key: value for key, value in record["special_resource_gain"].items() if value not in (None, 0, 0.0)}
+        lines.append(
+            "| `{action_id}` | `{rows}` | `{res}` | `{conc}` | `{special}` | `{cost}` | `{cooldown}` | {status} | {reason} |".format(
+                action_id=record["action_id"],
+                rows=record["action_rows"],
+                res=record["resonance_energy_gain"],
+                conc=record["concerto_energy_gain"],
+                special=json.dumps(special, ensure_ascii=False) if special else "{}",
+                cost=record["resonance_energy_cost"],
+                cooldown=record["cooldown"],
+                status=record["source_status"],
+                reason=record["unresolved_reason"] or "",
+            )
+        )
+    return "\n".join(lines) + "\n"
+
+
+POLICY_SELECTOR_RESOLUTION = {
+    "lynae_basic_attack": [
+        "lynae_basic_stage_1",
+        "lynae_basic_stage_2",
+        "lynae_basic_stage_3",
+        "lynae_kaleidoscopic_basic_stage_1",
+        "lynae_kaleidoscopic_basic_stage_2",
+        "lynae_kaleidoscopic_basic_stage_3",
+        "lynae_kaleidoscopic_basic_stage_4",
+        "lynae_kaleidoscopic_basic_stage_5",
+        "lynae_to_a_vivid_tomorrow",
+    ],
+    "lynae_resonance_skill": [
+        "lynae_resonance_skill_palette",
+        "lynae_resonance_skill_additive_color",
+    ],
+    "lynae_resonance_liberation": ["lynae_resonance_liberation_prismatic_overblast"],
+    "lynae_spark_collision": [
+        "lynae_spark_collision_lv1",
+        "lynae_spark_collision_lv2",
+        "lynae_spark_collision_lv3",
+    ],
+    "lynae_polychrome_leap": [
+        "lynae_polychrome_leap_stage_1",
+        "lynae_polychrome_leap_stage_2",
+        "lynae_polychrome_leap_stage_3",
+    ],
+}
+CONCRETE_TO_POLICY_SELECTOR = {
+    concrete_id: selector_id
+    for selector_id, concrete_ids in POLICY_SELECTOR_RESOLUTION.items()
+    for concrete_id in concrete_ids
+}
+GLOBAL_TIME_STOP = {
+    "lynae_resonance_liberation_prismatic_overblast": {"rows": [2693], "frames": 240},
+    "lynae_resonance_liberation_prismatic_overblast_c5": {"rows": [2693], "frames": 240},
+    "lynae_tune_break": {"rows": [2703], "frames": 96},
+}
+DECISION_FRAME_SOURCE = {
+    "lynae_resonance_liberation_prismatic_overblast": {"rows": [2692, 2695], "frames": [238, 240]},
+    "lynae_resonance_liberation_prismatic_overblast_c5": {"rows": [2692, 2695], "frames": [238, 240]},
+    "lynae_resonance_skill_palette": {"rows": [2666], "frames": [66]},
+    "lynae_resonance_skill_additive_color": {"rows": [2674], "frames": [55]},
+    "lynae_tune_break": {"rows": [2704], "frames": [96]},
+}
+
+
+def _timing_gate_classification(action: dict[str, Any]) -> tuple[bool, bool, str]:
+    action_id = action["id"]
+    cooldown = float(action.get("cooldown", 0.0) or 0.0)
+    resource_cost = float(action.get("resonance_energy_cost", 0.0) or 0.0)
+    if action.get("action_type") in {"swap", "wait"}:
+        return False, False, "transition_or_wait_not_direct_damage_policy_spam"
+    if action_id == "lynae_iridescent_splash":
+        return False, False, "True Color gate is consumed"
+    if action_id.startswith("lynae_basic_stage_"):
+        return True, True, "basic combo: repeatable and allowed"
+    if action_id.startswith("lynae_kaleidoscopic_basic_stage_"):
+        return True, True, "KP basic combo: repeatable only while Kaleidoscopic Parade is active"
+    if action_id.startswith("lynae_spark_collision") and action_id != "lynae_spark_collision":
+        return False, False, "Spark Collision has no cooldown because full Overflow gate is consumed"
+    if action_id.startswith("lynae_polychrome_leap_stage_"):
+        return False, False, "Polychrome Leap has no cooldown because KP + Lumiflow >= 40 gate is consumed"
+    if action_id == "lynae_visual_impact":
+        return False, False, "True Color gate is consumed and 25s state/action cooldown applies"
+    if action_id in {"lynae_resonance_skill_palette", "lynae_resonance_skill_additive_color"}:
+        return False, False, "Resonance Skill shared 6.0s cooldown prevents immediate repeat"
+    if action.get("policy_selectable") is False and action_id not in CONCRETE_TO_POLICY_SELECTOR:
+        return False, False, "non_policy_concrete_not_direct_policy_spammable"
+    if action.get("action_type") == "resonance_liberation":
+        return False, False, "Resonance Liberation cost 125 and 25s cooldown prevent immediate repeat"
+    if action.get("action_type") == "tune_break":
+        return False, False, "Tune Break is gated by enemy Tune Break availability"
+    if action_id == "lynae_echo_hyvatia":
+        return False, False, "Echo Hyvatia has 20s cooldown"
+    if action_id == "lynae_tune_response_spectral_analysis":
+        return False, False, "Spectral Analysis is a tune response; executable source is data/tune_responses.json"
+    if cooldown > 0.0:
+        return False, False, "cooldown prevents immediate repeat"
+    if resource_cost > 0.0:
+        return False, False, "resource cost prevents immediate repeat"
+    return True, action_id in CONCRETE_TO_POLICY_SELECTOR or bool(action.get("policy_selectable")), "repeatable only if policy path and mechanic gates permit it"
+
+
+def build_timing_cooldown_audit(audit: dict[str, Any], action_map: list[dict[str, Any]]) -> dict[str, Any]:
+    actions = json.loads((DATA_DIR / "actions.json").read_text(encoding="utf-8"))
+    actions_by_id = {action["id"]: action for action in actions if action.get("character_id") == "lynae"}
+    map_by_action = {item["action_id"]: item for item in action_map}
+    records = []
+    for action_id in sorted(actions_by_id):
+        action = actions_by_id[action_id]
+        mapped = map_by_action.get(action_id, {})
+        hits = action.get("hits") or []
+        repeat_rule = mapped.get("repeated_tick_rows") or (action.get("metadata") or {}).get("repeated_tick_rows") or []
+        immediate_repeat_possible, immediate_repeat_allowed, repeat_reason = _timing_gate_classification(action)
+        records.append(
+            {
+                "action_id": action_id,
+                "policy_selector_id": CONCRETE_TO_POLICY_SELECTOR.get(action_id) or action_id if action.get("policy_selectable") else CONCRETE_TO_POLICY_SELECTOR.get(action_id),
+                "resolved_concrete_id": POLICY_SELECTOR_RESOLUTION.get(action_id, [action_id]),
+                "source_action_rows": mapped.get("action_rows") or [
+                    row for row in action.get("source_rows", []) if isinstance(row, int) and row >= 2500
+                ],
+                "source_damage_rows": mapped.get("damage_rows") or [
+                    row for row in action.get("source_rows", []) if isinstance(row, int) and row < 2500
+                ],
+                "damage_multiplier": action.get("damage_multiplier", 0.0),
+                "tune_break_multiplier": round(
+                    sum(float(hit.get("tune_break_multiplier", 0.0) or 0.0) for hit in hits),
+                    10,
+                ),
+                "hit_count": len(hits),
+                "hit_repeat_rule": repeat_rule,
+                "hit_offsets": [hit.get("time") for hit in hits],
+                "decision_cancel_frame_source": DECISION_FRAME_SOURCE.get(action_id, {}),
+                "action_time": action.get("action_time") if action.get("action_time") is not None else action.get("duration"),
+                "combat_time_cost": action.get("combat_time_cost") if action.get("combat_time_cost") is not None else action.get("action_time", action.get("duration")),
+                "global_time_stop_rows": GLOBAL_TIME_STOP.get(action_id, {}).get("rows", []),
+                "global_time_stop_frames": GLOBAL_TIME_STOP.get(action_id, {}).get("frames", 0),
+                "cooldown": action.get("cooldown", 0.0),
+                "cooldown_group": action.get("cooldown_group"),
+                "resource_cost": action.get("resonance_energy_cost", 0.0),
+                "resonance_energy_gain": action.get("resonance_energy_gain", 0.0),
+                "concerto_energy_gain": action.get("concerto_energy_gain", 0.0),
+                "special_resource_gate": LYNAE_SPECIAL_RESOURCE_NOTES.get(action_id, {}),
+                "state_resource_gates": repeat_reason,
+                "immediate_repeat_possible": immediate_repeat_possible,
+                "immediate_repeat_allowed": immediate_repeat_allowed,
+                "immediate_repeat_reason": repeat_reason,
+                "policy_selectable": action.get("policy_selectable", True),
+                "action_type": action.get("action_type"),
+                "source_status": action.get("source_status") or action.get("data_status"),
+            }
+        )
+
+    return {
+        "workbook": audit["workbook"],
+        "source_region": f"{CANONICAL_LYNAE_ACTION_SHEET}2577:2738",
+        "skill_type_region": f"{CANONICAL_LYNAE_SKILL_TYPE_SHEET}2612:2617",
+        "records": records,
+        "notes": [
+            "Prismatic Overblast action_time is the 240F decision-lock window: 4.0s.",
+            "Prismatic Overblast combat_time_cost is 0.0 because row 2693 confirms global time stop coverage.",
+            "Row 2695 supplies hit timing/repeat evidence; its late endpoint is not used as timed combat duration.",
+            "Lynae Tune Break uses dmg!2488 RateLv1 160000 as Tune Break multiplier 16.0, not as normal ATK/Spectro damage.",
+            "Lynae Tune Break uses row 2703 for global time stop and row 2704 for the 72F hit frame / 96F action window.",
+            "Lynae Outro remains transition-only handling, not source-confirmed standalone action timing.",
+        ],
+    }
+
+
+def timing_cooldown_audit_markdown(timing: dict[str, Any]) -> str:
+    lines = [
+        "# Lynae Timing/Cooldown Audit",
+        "",
+        f"Workbook: `{timing['workbook']}`",
+        f"Action rows: `{timing['source_region']}`",
+        f"Skill type rows: `{timing['skill_type_region']}`",
+        "",
+        "## Key Corrections",
+        "- Prismatic Overblast: action_time `4.0`, combat_time_cost `0.0`, global time stop row `2693`, decision frame `240F`, damage repeat row `2695`.",
+        "- Lynae Tune Break: action_time `1.6`, combat_time_cost `0.0`, global time stop row `2703`, hit frame `72F`, Tune Break multiplier `16.0` from dmg!2488 RateLv1 `160000`.",
+        "- Lynae Tune Break: dmg!2488 RateLv10 is not used as normal ATK/Spectro damage; runtime uses the Tune Break damage formula.",
+        "- Resonance Skill Palette/Additive Color: shared cooldown group `lynae_resonance_skill`, cooldown `6.0s`, user-confirmed numeric cooldown.",
+        "- Lynae Outro remains transition-mode handling, not a direct policy-spammable standalone damage action.",
+        "",
+        "## Repeat Classification",
+        "| action_id | selector | resolved | action rows | damage rows | action_time | combat_time_cost | global stop | cooldown | group | cost | gain RE/Concerto | repeat | reason |",
+        "| --- | --- | --- | --- | --- | ---: | ---: | --- | ---: | --- | ---: | --- | --- | --- |",
+    ]
+    for record in timing["records"]:
+        lines.append(
+            "| `{action_id}` | `{selector}` | `{resolved}` | `{action_rows}` | `{damage_rows}` | `{action_time}` | `{combat_time_cost}` | `{global_rows}`/{global_frames}F | `{cooldown}` | `{group}` | `{cost}` | `{re}/{conc}` | `{repeat}` | {reason} |".format(
+                action_id=record["action_id"],
+                selector=record["policy_selector_id"],
+                resolved=record["resolved_concrete_id"],
+                action_rows=record["source_action_rows"],
+                damage_rows=record["source_damage_rows"],
+                action_time=record["action_time"],
+                combat_time_cost=record["combat_time_cost"],
+                global_rows=record["global_time_stop_rows"],
+                global_frames=record["global_time_stop_frames"],
+                cooldown=record["cooldown"],
+                group=record["cooldown_group"],
+                cost=record["resource_cost"],
+                re=record["resonance_energy_gain"],
+                conc=record["concerto_energy_gain"],
+                repeat=record["immediate_repeat_allowed"],
+                reason=record["immediate_repeat_reason"],
+            )
+        )
+    lines.extend(["", "## Notes"])
+    lines.extend(f"- {note}" for note in timing["notes"])
+    return "\n".join(lines) + "\n"
+
+
 def write_outputs(audit: dict[str, Any]) -> None:
     EXTRACTED_DIR.mkdir(parents=True, exist_ok=True)
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -429,6 +809,7 @@ def write_outputs(audit: dict[str, Any]) -> None:
         calculation = dict(LYNAE_ACTION_CALCULATIONS.get(action_id, {}))
         multiplier = calculation.pop("multiplier", round(sum(multipliers), 10))
         calculation_type = calculation.pop("calculation_type", "additive_hits" if len(damage_rows) > 1 else "single_damage_row")
+        source_status = calculation.pop("source_status", "workbook_confirmed")
         action_map.append(
             {
                 "action_id": action_id,
@@ -451,11 +832,29 @@ def write_outputs(audit: dict[str, Any]) -> None:
                 "timing_resource_evidence": [
                     row for row in audit["action_region"]["action_rows"] if row["row"] in set(action_rows)
                 ],
-                "source_status": "workbook_confirmed",
+                "source_status": source_status,
                 "implementation_status": implementation_status,
             }
         )
     action_map_path.write_text(json.dumps(action_map, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    resource_alignment = build_resource_cooldown_alignment(audit, action_map)
+    (EXTRACTED_DIR / "lynae_resource_cooldown_alignment.json").write_text(
+        json.dumps(resource_alignment, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / "lynae_resource_cooldown_alignment.md").write_text(
+        resource_cooldown_alignment_markdown(resource_alignment),
+        encoding="utf-8",
+    )
+    timing_audit = build_timing_cooldown_audit(audit, action_map)
+    (EXTRACTED_DIR / "lynae_timing_cooldown_audit.json").write_text(
+        json.dumps(timing_audit, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / "lynae_timing_cooldown_audit.md").write_text(
+        timing_cooldown_audit_markdown(timing_audit),
+        encoding="utf-8",
+    )
     unresolved_path.write_text(json.dumps(lynae_unresolved_rows(), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     lines = [
         "# Lynae Source Audit",
@@ -504,6 +903,17 @@ def write_outputs(audit: dict[str, Any]) -> None:
             "- `{action_id}`: {label}; action rows {action_rows}; damage rows {damage_rows}; "
             "multiplier {multiplier}; calculation {calculation_type}; status {implementation_status}".format(**item)
         )
+    alignment_lines.extend(
+        [
+            "",
+            "## Tune Break Damage Formula",
+            "- `lynae_tune_break`: dmg!2488 RateLv1 `160000` is implemented as Tune Break multiplier `16.0`.",
+            "- `lynae_tune_break`: dmg!2488 RateLv10 is not used as a normal damage source.",
+            "- `lynae_tune_break`: implemented through the Tune Break damage formula, not normal Spectro ATK damage.",
+            f"- `lynae_tune_break`: {CANONICAL_LYNAE_ACTION_SHEET}2703 confirms global time stop.",
+            f"- `lynae_tune_break`: {CANONICAL_LYNAE_ACTION_SHEET}2704 gives hit frame `72F` and action window `96F`.",
+        ]
+    )
     alignment_lines.extend(["", "## Additive Hit Rows"])
     for action_id, rows in LYNAE_ADDITIVE_HIT_GROUPS.items():
         alignment_lines.append(f"- `{action_id}`: dmg!{', dmg!'.join(str(row) for row in rows)} are additive hits.")
