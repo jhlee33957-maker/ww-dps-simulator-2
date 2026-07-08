@@ -167,6 +167,25 @@ def build_observation_channel_mapping(simulation: Any, max_party_slots: int = MA
                     f"slot_{slot_index}.tune_response_0": "mornye_particle_jet",
                 }
             )
+        elif character_id == "lynae":
+            mapping.update(
+                {
+                    f"slot_{slot_index}.primary_resource_ratio": "lynae_overflow",
+                    f"slot_{slot_index}.secondary_resource_ratio": "lynae_lumiflow",
+                    f"slot_{slot_index}.tertiary_resource_ratio": "lynae_true_color",
+                    f"slot_{slot_index}.mechanic_state_0": "lynae_kaleidoscopic_parade",
+                    f"slot_{slot_index}.mechanic_state_1": "lynae_optical_sampling_stage",
+                    f"slot_{slot_index}.mechanic_state_2": "lynae_photocromic_flux",
+                    f"slot_{slot_index}.mechanic_state_3": "lynae_resonance_mode",
+                    f"slot_{slot_index}.mechanic_state_4": "lynae_visual_impact_cooldown",
+                    f"slot_{slot_index}.mechanic_state_5": "lynae_spray_paint",
+                    f"slot_{slot_index}.mechanic_state_6": "lynae_to_vivid_tomorrow_window",
+                    f"slot_{slot_index}.mechanic_state_7": "lynae_spectral_analysis_cooldown_or_available",
+                    f"slot_{slot_index}.echo_effect_0": "lynae_pact_neonlight_or_static_mist_handoff",
+                    f"slot_{slot_index}.echo_effect_1": "lynae_hyvatia_handoff",
+                    f"slot_{slot_index}.tune_response_0": "lynae_spectral_analysis",
+                }
+            )
     return mapping
 
 
@@ -302,6 +321,12 @@ def _resource_values(character_id: str, character_state: dict[str, Any]) -> list
             _ratio(float(character_state.get("relative_momentum", 0.0) or 0.0), float(character_state.get("relative_momentum_cap", 100.0) or 100.0)),
             _bool(character_state.get("mode") == "wide_field_observation"),
         ]
+    if character_id == "lynae":
+        return [
+            _ratio(float(character_state.get("overflow", 0.0) or 0.0), float(character_state.get("overflow_max", 120.0) or 120.0)),
+            _ratio(float(character_state.get("lumiflow", 0.0) or 0.0), float(character_state.get("lumiflow_max", 120.0) or 120.0)),
+            _ratio(float(character_state.get("true_color", 0.0) or 0.0), float(character_state.get("true_color_max", 3.0) or 3.0)),
+        ]
     return [0.0, 0.0, 0.0]
 
 
@@ -382,6 +407,53 @@ def _mechanic_channel_values(
             0.0,
             0.0,
         ]
+    if character_id == "lynae":
+        overflow = float(character_state.get("overflow", 0.0) or 0.0)
+        overflow_max = float(character_state.get("overflow_max", 120.0) or 120.0)
+        lumiflow = float(character_state.get("lumiflow", 0.0) or 0.0)
+        lumiflow_max = float(character_state.get("lumiflow_max", 120.0) or 120.0)
+        true_color = float(character_state.get("true_color", 0.0) or 0.0)
+        true_color_max = float(character_state.get("true_color_max", 3.0) or 3.0)
+        kaleidoscopic_remaining = float(character_state.get("kaleidoscopic_parade_remaining", 0.0) or 0.0)
+        flux_remaining = float(character_state.get("photocromic_flux_remaining", 0.0) or 0.0)
+        visual_impact_cooldown = float(character_state.get("visual_impact_cooldown_remaining", 0.0) or 0.0)
+        spray_paint_remaining = float(character_state.get("spray_paint_window_remaining", 0.0) or 0.0)
+        vivid_tomorrow_remaining = float(character_state.get("to_vivid_tomorrow_window_remaining", 0.0) or 0.0)
+        spectral_cooldown = _lynae_spectral_analysis_cooldown(simulation, character_state)
+        mode = str(character_state.get("lynae_resonance_mode", "unresolved") or "unresolved")
+        mode_value = _lynae_resonance_mode_value(mode)
+        spectral_enabled = bool(
+            ((getattr(simulation.state, "mechanics_config", {}) or {}).get("lynae") or {}).get(
+                "spectral_analysis_enabled",
+                True,
+            )
+        )
+        return [
+            _bool(kaleidoscopic_remaining > 0.0),
+            _ratio(kaleidoscopic_remaining, 15.0),
+            _ratio(lumiflow, lumiflow_max),
+            _bool(character_state.get("optical_sampling_stage_active", True)),
+            0.0,
+            _ratio(overflow, overflow_max),
+            _bool(character_state.get("photocromic_flux_active", False) or flux_remaining > 0.0),
+            _ratio(flux_remaining, 25.0),
+            mode_value,
+            _bool(mode != "unresolved"),
+            0.0,
+            mode_value,
+            _bool(visual_impact_cooldown > 0.0),
+            _ratio(visual_impact_cooldown, 25.0),
+            _ratio(true_color, true_color_max),
+            _bool(spray_paint_remaining > 0.0),
+            _ratio(spray_paint_remaining, 5.0),
+            _bool(spray_paint_remaining > 0.0),
+            _bool(vivid_tomorrow_remaining > 0.0),
+            _ratio(vivid_tomorrow_remaining, 8.0),
+            _bool(vivid_tomorrow_remaining > 0.0),
+            _bool(spectral_cooldown <= 0.0),
+            _ratio(spectral_cooldown, 8.0),
+            _bool(spectral_enabled),
+        ]
     return [0.0 for _ in range(24)]
 
 
@@ -405,6 +477,19 @@ def _echo_channel_values(simulation: Any, character_id: str) -> list[float]:
             0.0,
             0.0,
             0.0,
+        ]
+    if character_id == "lynae":
+        pact = _active_buff(simulation.state, "pact_neonlight_incoming_atk")
+        static_mist = _active_buff(simulation.state, "static_mist_incoming_atk")
+        atk_handoff = pact if pact is not None else static_mist
+        hyvatia = _active_buff(simulation.state, "hyvatia_incoming_all_attribute_damage_bonus")
+        return [
+            _bool(atk_handoff is not None),
+            _ratio(_remaining(atk_handoff), 15.0 if pact is not None else 14.0),
+            _ratio(_handoff_buff_value(atk_handoff, simulation.buffs), 0.30),
+            _bool(hyvatia is not None),
+            _ratio(_remaining(hyvatia), 15.0),
+            _ratio(_handoff_buff_value(hyvatia, simulation.buffs), 0.20),
         ]
     return [0.0 for _ in range(6)]
 
@@ -436,6 +521,10 @@ def _tune_response_channel_values(simulation: Any, character_id: str) -> list[fl
         return [_ratio(cooldown, 8.0), _bool(cooldown <= 0.0), 0.0, 0.0]
     if character_id == "mornye":
         cooldown = float(getattr(state, "mornye_particle_jet_response_cooldown_remaining", 0.0) or 0.0)
+        return [_ratio(cooldown, 8.0), _bool(cooldown <= 0.0), 0.0, 0.0]
+    if character_id == "lynae":
+        character_state = getattr(state, "character_mechanics_state", {}).get("lynae", {})
+        cooldown = _lynae_spectral_analysis_cooldown(simulation, character_state)
         return [_ratio(cooldown, 8.0), _bool(cooldown <= 0.0), 0.0, 0.0]
     return [0.0, 0.0, 0.0, 0.0]
 
@@ -478,6 +567,37 @@ def _dynamic_value(active_buff: Any | None) -> float:
         return 0.0
     metadata = getattr(active_buff, "metadata", {}) or {}
     return float(metadata.get("dynamic_value", 0.0) or 0.0)
+
+
+def _handoff_buff_value(active_buff: Any | None, buffs: dict[str, Any]) -> float:
+    if active_buff is None:
+        return 0.0
+    metadata = getattr(active_buff, "metadata", {}) or {}
+    buff = buffs.get(active_buff.buff_id)
+    if buff is None:
+        return float(metadata.get("dynamic_value", 0.0) or 0.0)
+    dynamic_value = metadata.get("dynamic_value")
+    if dynamic_value is not None:
+        return float(dynamic_value or 0.0)
+    stat_values = [float(value or 0.0) for value in getattr(buff, "stat_modifiers", {}).values()]
+    damage_bonus_values = [float(value or 0.0) for value in getattr(buff, "damage_bonus_by_element", {}).values()]
+    return max([float(getattr(buff, "value", 0.0) or 0.0), *stat_values, *damage_bonus_values], default=0.0)
+
+
+def _lynae_resonance_mode_value(mode: str) -> float:
+    if mode == "tune_rupture":
+        return 1.0
+    if mode == "tune_strain":
+        return 0.5
+    return 0.0
+
+
+def _lynae_spectral_analysis_cooldown(simulation: Any, character_state: dict[str, Any]) -> float:
+    state_cooldown = float(
+        getattr(simulation.state, "lynae_spectral_analysis_response_cooldown_remaining", 0.0) or 0.0
+    )
+    character_cooldown = float(character_state.get("spectral_analysis_cooldown_remaining", 0.0) or 0.0)
+    return max(state_cooldown, character_cooldown)
 
 
 def _trailblazing_value(active_buff: Any | None, buffs: dict[str, Any]) -> float:
