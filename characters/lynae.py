@@ -203,6 +203,20 @@ class LynaeMechanic(CharacterMechanic):
             "lynae_visual_impact_tune_break_boost_value": 40.0 if action.id == LYNAE_VISUAL_IMPACT_ACTION_ID else 0.0,
         }
 
+    def resolve_incoming_qte_transition_action(
+        self,
+        character_state: Any,
+        transition_config: dict[str, Any],
+    ) -> tuple[str | None, list[str]]:
+        intro_config = (
+            (transition_config.get("characters") or {})
+            .get(self.character_id, {})
+            .get("intro_qte", {})
+        )
+        transition_actions = intro_config.get("transition_actions") or {}
+        action_id = transition_actions.get("default") or intro_config.get("action_id")
+        return action_id, [] if action_id else ["lynae_intro_transition_action_missing"]
+
     def after_action(self, state: Any, action: Any, result: Any) -> None:
         data = self._state(state)
         data["last_resolved_action_id"] = action.id

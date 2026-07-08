@@ -121,6 +121,8 @@ class WuwaDpsEnv(gym.Env):
                     self.simulation.execute_action("short_wait")
 
         damage_this_action = self.simulation.state.total_damage - before_damage
+        if valid and not invalid_action and self.simulation.timeline:
+            resolved_action_id = self.simulation.timeline[-1].resolved_action_id or resolved_action_id
         terminated = self.simulation.state.combat_time >= self.simulation.combat_duration
         truncated = False
         reward = calculate_reward(damage_this_action) if not invalid_action else -1.0

@@ -197,6 +197,13 @@ def main() -> None:
     summary = env.simulation.summary()
     counts = action_count_breakdown(action_sequence)
     resolved_counts = action_count_breakdown(resolved_action_sequence)
+    selected_counts_by_character_prefix = _action_counts_by_character_prefix(action_sequence)
+    resolved_counts_by_character_prefix = _action_counts_by_character_prefix(resolved_action_sequence)
+    policy_action_exposed_by_character = _policy_actions_exposed_by_character(
+        env.get_policy_action_ids(),
+        env.simulation.actions,
+        env.get_selected_party_character_ids(),
+    )
     damage_by_action: Counter[str] = Counter()
     damage_by_resolved: Counter[str] = Counter()
     damage_by_character: Counter[str] = Counter()
@@ -214,6 +221,17 @@ def main() -> None:
         summary.timeline,
         total_damage=summary.total_damage,
     )
+    unused_party_members = [
+        character_id
+        for character_id in env.get_selected_party_character_ids()
+        if selected_counts_by_character_prefix.get(character_id, 0) == 0
+        and resolved_counts_by_character_prefix.get(character_id, 0) == 0
+        and damage_by_character.get(character_id, 0.0) == 0.0
+    ]
+    valid_action_exposure_note = (
+        "Transition actions are not policy actions. PPO selects policy-visible actions such as "
+        "swap_to_lynae; full-Concerto transition execution is visible in resolved_action_counts."
+    )
 
     print("Selected party:", env.get_selected_party_character_ids())
     print("Initial active character:", env.get_initial_active_character())
@@ -225,6 +243,13 @@ def main() -> None:
     print("Selected action sequence:", ", ".join(action_sequence))
     print("Action count breakdown:", counts)
     print("Resolved action count breakdown:", resolved_counts)
+    print("Selected action counts:", counts)
+    print("Resolved action counts:", resolved_counts)
+    print("Selected action counts by character prefix:", selected_counts_by_character_prefix)
+    print("Resolved action counts by character prefix:", resolved_counts_by_character_prefix)
+    print("Policy action exposed by character:", policy_action_exposed_by_character)
+    print("Unused party members:", unused_party_members)
+    print("Valid action exposure note:", valid_action_exposure_note)
     print("Damage by selected action:", dict(damage_by_action))
     print("Damage by resolved action:", dict(damage_by_resolved))
     print("Damage by character:", dict(damage_by_character))
@@ -393,7 +418,13 @@ def main() -> None:
         "action_sequence": action_sequence,
         "resolved_action_sequence": resolved_action_sequence,
         "action_counts": counts,
+        "selected_action_counts": counts,
         "resolved_action_counts": resolved_counts,
+        "selected_action_counts_by_character_prefix": selected_counts_by_character_prefix,
+        "resolved_action_counts_by_character_prefix": resolved_counts_by_character_prefix,
+        "policy_action_exposed_by_character": policy_action_exposed_by_character,
+        "unused_party_members": unused_party_members,
+        "valid_action_exposure_note": valid_action_exposure_note,
         "damage_by_selected_action": dict(damage_by_action),
         "damage_by_policy_action": dict(damage_by_action),
         "damage_by_resolved_action": dict(damage_by_resolved),
@@ -518,6 +549,34 @@ def _deep_update(target: dict[str, Any], updates: dict[str, Any]) -> dict[str, A
         else:
             target[key] = value
     return target
+
+
+def _action_character_prefix(action_id: str) -> str:
+    if action_id.startswith("transition:"):
+        action_id = action_id.split(":", 1)[1]
+    if action_id.startswith("swap_to_"):
+        return action_id.removeprefix("swap_to_")
+    return action_id.split("_", 1)[0] if "_" in action_id else action_id
+
+
+def _action_counts_by_character_prefix(action_sequence: list[str]) -> dict[str, int]:
+    return dict(Counter(_action_character_prefix(action_id) for action_id in action_sequence))
+
+
+def _policy_actions_exposed_by_character(
+    policy_action_ids: list[str],
+    actions_by_id: dict[str, Any],
+    party_members: list[str],
+) -> dict[str, list[str]]:
+    exposed = {character_id: [] for character_id in party_members}
+    for action_id in policy_action_ids:
+        action = actions_by_id.get(action_id)
+        character_id = getattr(action, "character_id", None) if action is not None else None
+        if action_id.startswith("swap_to_"):
+            character_id = action_id.removeprefix("swap_to_")
+        if character_id in exposed:
+            exposed[character_id].append(action_id)
+    return {character_id: sorted(action_ids) for character_id, action_ids in exposed.items()}
 
 
 if __name__ == "__main__":

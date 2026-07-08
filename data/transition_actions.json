@@ -181,5 +181,88 @@
     "off_tune_value": 136.0,
     "off_tune_value_source_status": "workbook_confirmed",
     "off_tune_value_source_ref": "角色-女!S4149"
+  },
+  {
+    "id": "lynae_intro_time_to_show_some_colors",
+    "name": "Lynae Intro Time to Show Some Colors",
+    "character_id": "lynae",
+    "transition_event_type": "incoming_intro_qte",
+    "transition_only": true,
+    "policy_selectable": false,
+    "exclude_from_policy_action_space": true,
+    "review_source": "reports/lynae_excel_source_alignment.md",
+    "trigger_classification": "intro",
+    "source_damage_label": "intro_skill_damage",
+    "damage_bonus_category": "intro",
+    "element": "spectro",
+    "action_time": 1.0,
+    "combat_time_cost": 1.0,
+    "previous_outro_trigger_frame": null,
+    "resonance_energy_gain": 1.34,
+    "concerto_energy_gain": 1.2,
+    "hits": [
+      0.2248,
+      0.2248,
+      0.2248,
+      0.2248,
+      0.2248,
+      0.2248,
+      0.2248,
+      0.2248,
+      0.2248,
+      0.2248
+    ],
+    "apply_character_mechanics": false,
+    "mechanic_event_tags": [],
+    "mechanic_effects": {
+      "applies_photocromic_flux": true,
+      "overflow_gain": 100.0,
+      "source_rows": [
+        2689,
+        2690,
+        2691,
+        2480,
+        2481
+      ],
+      "implementation_note": "Metadata only. Lynae incoming intro Overflow and Photocromic Flux are applied by Simulation._apply_lynae_incoming_intro_mechanics to avoid double application."
+    },
+    "metadata": {
+      "source_action_data": "data/actions.json",
+      "source_alignment_report": "reports/lynae_excel_source_alignment.md",
+      "source_action_map": "data/extracted/lynae_excel_action_map.json",
+      "implementation_status": "implemented_v1_transition_action",
+      "source_rows": [
+        2689,
+        2690,
+        2691,
+        2480,
+        2481
+      ],
+      "mode_variant_rows": [
+        2480,
+        2481
+      ],
+      "repeated_tick_rows": [
+        {
+          "damage_rows": [
+            2480,
+            2481
+          ],
+          "action_row": 2689,
+          "max_hits": 10
+        }
+      ],
+      "notes": [
+        "Rows 2480 and 2481 are mutually exclusive mode variants; the executable transition uses row 2689 as ten repeated 0.2248 ATK hits for a total 2.248 multiplier.",
+        "Overflow +100 and Photocromic Flux are intentionally not applied through generic character mechanics because the simulator has a dedicated incoming intro hook."
+      ]
+    },
+    "scaling_stat": "atk",
+    "scaling_stat_source": "data/actions.json",
+    "scaling_stat_source_status": "workbook_confirmed_repeated_tick_mode_variant_and_user_tooltip",
+    "scaling_stat_note": "Lynae Intro uses ATK scaling in the canonical action data; source rows 2480/2481 are mode variants and 2689 supplies ten repeated ticks.",
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_ref": null
   }
 ]
