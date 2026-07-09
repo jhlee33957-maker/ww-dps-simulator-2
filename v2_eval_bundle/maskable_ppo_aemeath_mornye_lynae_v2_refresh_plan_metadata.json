@@ -1,0 +1,101 @@
+{
+  "algorithm": "MaskablePPO_BC_Refresh_Plan",
+  "party": "aemeath_mornye_lynae_enabled_test_party",
+  "demo_path": "data\\generated\\route_demonstrations_aemeath_mornye_lynae_v2.npz",
+  "initial_model": "models\\maskable_ppo_aemeath_mornye_lynae_bc_v2_init.zip",
+  "output_prefix": "models\\maskable_ppo_aemeath_mornye_lynae_v2_refresh",
+  "cycles": 4,
+  "stages": [
+    {
+      "stage": "ppo_cycle_1",
+      "kind": "PPO cycle",
+      "load_model": "models\\maskable_ppo_aemeath_mornye_lynae_bc_v2_init.zip",
+      "model_path": "models\\maskable_ppo_aemeath_mornye_lynae_v2_refresh_cycle1_ppo.zip",
+      "timesteps": 50000,
+      "curriculum_reset_mode": "mixed_lynae_route_curriculum",
+      "ent_coef": 0.02,
+      "learning_rate": 0.0003
+    },
+    {
+      "stage": "bc_refresh_1",
+      "kind": "BC refresh",
+      "load_model": "models\\maskable_ppo_aemeath_mornye_lynae_v2_refresh_cycle1_ppo.zip",
+      "model_path": "models\\maskable_ppo_aemeath_mornye_lynae_v2_refresh_cycle1_bc_refresh.zip",
+      "epochs": 3,
+      "learning_rate": 5e-05,
+      "demo_path": "data\\generated\\route_demonstrations_aemeath_mornye_lynae_v2.npz"
+    },
+    {
+      "stage": "ppo_cycle_2",
+      "kind": "PPO cycle",
+      "load_model": "models\\maskable_ppo_aemeath_mornye_lynae_v2_refresh_cycle1_bc_refresh.zip",
+      "model_path": "models\\maskable_ppo_aemeath_mornye_lynae_v2_refresh_cycle2_ppo.zip",
+      "timesteps": 50000,
+      "curriculum_reset_mode": "mixed_lynae_route_curriculum",
+      "ent_coef": 0.02,
+      "learning_rate": 0.0003
+    },
+    {
+      "stage": "bc_refresh_2",
+      "kind": "BC refresh",
+      "load_model": "models\\maskable_ppo_aemeath_mornye_lynae_v2_refresh_cycle2_ppo.zip",
+      "model_path": "models\\maskable_ppo_aemeath_mornye_lynae_v2_refresh_cycle2_bc_refresh.zip",
+      "epochs": 3,
+      "learning_rate": 5e-05,
+      "demo_path": "data\\generated\\route_demonstrations_aemeath_mornye_lynae_v2.npz"
+    },
+    {
+      "stage": "ppo_cycle_3",
+      "kind": "PPO cycle",
+      "load_model": "models\\maskable_ppo_aemeath_mornye_lynae_v2_refresh_cycle2_bc_refresh.zip",
+      "model_path": "models\\maskable_ppo_aemeath_mornye_lynae_v2_refresh_cycle3_ppo.zip",
+      "timesteps": 50000,
+      "curriculum_reset_mode": "mixed_lynae_route_curriculum",
+      "ent_coef": 0.02,
+      "learning_rate": 0.0003
+    },
+    {
+      "stage": "bc_refresh_3",
+      "kind": "BC refresh",
+      "load_model": "models\\maskable_ppo_aemeath_mornye_lynae_v2_refresh_cycle3_ppo.zip",
+      "model_path": "models\\maskable_ppo_aemeath_mornye_lynae_v2_refresh_cycle3_bc_refresh.zip",
+      "epochs": 3,
+      "learning_rate": 5e-05,
+      "demo_path": "data\\generated\\route_demonstrations_aemeath_mornye_lynae_v2.npz"
+    },
+    {
+      "stage": "ppo_cycle_4",
+      "kind": "PPO cycle",
+      "load_model": "models\\maskable_ppo_aemeath_mornye_lynae_v2_refresh_cycle3_bc_refresh.zip",
+      "model_path": "models\\maskable_ppo_aemeath_mornye_lynae_v2_refresh_cycle4_ppo.zip",
+      "timesteps": 50000,
+      "curriculum_reset_mode": "mixed_lynae_route_curriculum",
+      "ent_coef": 0.02,
+      "learning_rate": 0.0003
+    },
+    {
+      "stage": "bc_refresh_4",
+      "kind": "BC refresh",
+      "load_model": "models\\maskable_ppo_aemeath_mornye_lynae_v2_refresh_cycle4_ppo.zip",
+      "model_path": "models\\maskable_ppo_aemeath_mornye_lynae_v2_refresh_cycle4_bc_refresh.zip",
+      "epochs": 3,
+      "learning_rate": 5e-05,
+      "demo_path": "data\\generated\\route_demonstrations_aemeath_mornye_lynae_v2.npz"
+    },
+    {
+      "stage": "final_none_stage",
+      "kind": "final none stage",
+      "load_model": "models\\maskable_ppo_aemeath_mornye_lynae_v2_refresh_cycle4_bc_refresh.zip",
+      "model_path": "models\\maskable_ppo_aemeath_mornye_lynae_v2_refresh_final_none.zip",
+      "timesteps": 50000,
+      "curriculum_reset_mode": "none",
+      "ent_coef": 0.015,
+      "learning_rate": 0.0003
+    }
+  ],
+  "reward_formula_unchanged": true,
+  "reward_formula": "damage_this_action / 10000.0",
+  "no_character_specific_usage_reward_bonus": true,
+  "final_evaluation_reset_mode": "none",
+  "training_only": true
+}

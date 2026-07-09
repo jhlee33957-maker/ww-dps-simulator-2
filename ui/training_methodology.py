@@ -48,6 +48,19 @@ def render_training_methodology(data_dir: Path, results_dir: Path) -> None:
     )
     st.json(methodology.get("curriculum_modes", {}))
 
+    st.subheader("Route Demonstrations / BC Warm Start")
+    st.write(
+        "Route demonstrations and behavior-cloning warm-starts are training aids for long delayed-reward "
+        "branches. They initialize the policy toward valid source-backed action sequences. "
+        "Balanced demonstrations can include both baseline party routes and delayed branch routes, and "
+        "small BC refresh stages can be interleaved between PPO fine-tuning stages. They do not change simulator "
+        "damage formulas, cooldowns, action masks, final evaluation reward, or final evaluation reset. "
+        "They do not add character-specific usage reward bonuses, and the same mechanism can be used for "
+        "future characters or party branches."
+    )
+    if methodology.get("route_demonstration_warm_start"):
+        st.json(methodology["route_demonstration_warm_start"])
+
     st.subheader("What Curriculum Does Not Mean / 커리큘럼이 바꾸지 않는 것")
     st.write(
         "It does not change Lynae damage, cooldowns, resources, transition actions, or action masks. "

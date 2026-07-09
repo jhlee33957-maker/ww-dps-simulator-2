@@ -31,6 +31,7 @@ FOCUS_ACTION_IDS = (
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Inspect Aemeath/Mornye/Lynae action masks and PPO probabilities.")
     parser.add_argument("--model-path", type=Path, default=None)
+    parser.add_argument("--route-demo-path", type=Path, default=None)
     parser.add_argument("--write-json", type=Path, default=None)
     parser.add_argument("--party", type=str, default=PARTY_ID)
     return parser
@@ -47,6 +48,7 @@ def set_full_concerto(env: WuwaDpsEnv, character_id: str) -> None:
 def run_policy_probability_diagnostic(
     model_path: Path | None = None,
     party: str = PARTY_ID,
+    route_demo_path: Path | None = None,
     write_json: Path | None = None,
 ) -> dict[str, Any]:
     env = WuwaDpsEnv(data_dir=ROOT / "data", party=party)
@@ -114,11 +116,76 @@ def run_policy_probability_diagnostic(
         "model_probability_error": model_error,
         "note": "Diagnostic only: no PPO quality pass/fail threshold is applied.",
         "states": states,
+        "route_demo_probability_report": _route_demo_probability_report(route_demo_path, model),
     }
     if write_json is not None:
         write_json.parent.mkdir(parents=True, exist_ok=True)
         write_json.write_text(json.dumps(report, indent=2), encoding="utf-8")
     return report
+
+
+def _route_demo_probability_report(route_demo_path: Path | None, model: Any | None) -> dict[str, Any] | None:
+    if route_demo_path is None:
+        return None
+    if not route_demo_path.exists():
+        return {"status": "route_demo_path_missing", "path": str(route_demo_path)}
+    with np.load(route_demo_path, allow_pickle=False) as data:
+        observations = np.asarray(data["observations"], dtype=np.float32)
+        action_indices = np.asarray(data["action_indices"], dtype=np.int64)
+        action_ids = np.asarray(data["action_ids"], dtype=str)
+        action_masks = np.asarray(data["action_masks"], dtype=bool)
+        route_ids = np.asarray(data["route_ids"], dtype=str)
+        metadata = json.loads(str(data["metadata_json"]))
+    if model is None:
+        return {
+            "status": "model_not_loaded",
+            "path": str(route_demo_path),
+            "sample_count": int(len(action_indices)),
+            "route_set_id": metadata.get("route_set_id"),
+        }
+    probabilities: list[float] = []
+    by_action: dict[str, list[float]] = {}
+    by_route: dict[str, list[float]] = {}
+    for observation, action_index, mask, action_id, route_id in zip(
+        observations,
+        action_indices,
+        action_masks,
+        action_ids,
+        route_ids,
+        strict=True,
+    ):
+        masked_probs, error = _masked_probabilities(model, observation, mask)
+        if masked_probs is None:
+            return {"status": "probability_failed", "path": str(route_demo_path), "error": error}
+        probability = float(masked_probs[int(action_index)])
+        probabilities.append(probability)
+        by_action.setdefault(str(action_id), []).append(probability)
+        by_route.setdefault(str(route_id), []).append(probability)
+    return {
+        "status": "ok",
+        "path": str(route_demo_path),
+        "route_set_id": metadata.get("route_set_id"),
+        "sample_count": int(len(probabilities)),
+        "mean_demonstrated_action_probability": float(np.mean(probabilities)) if probabilities else None,
+        "min_demonstrated_action_probability": float(np.min(probabilities)) if probabilities else None,
+        "action_wise_probabilities": {
+            action_id: _probability_summary(values)
+            for action_id, values in sorted(by_action.items())
+        },
+        "route_wise_probabilities": {
+            route_id: _probability_summary(values)
+            for route_id, values in sorted(by_route.items())
+        },
+    }
+
+
+def _probability_summary(values: list[float]) -> dict[str, Any]:
+    return {
+        "count": len(values),
+        "mean": float(np.mean(values)) if values else None,
+        "min": float(np.min(values)) if values else None,
+        "max": float(np.max(values)) if values else None,
+    }
 
 
 def _env_after_actions(
@@ -255,6 +322,7 @@ def main() -> None:
     report = run_policy_probability_diagnostic(
         model_path=args.model_path,
         party=args.party,
+        route_demo_path=args.route_demo_path,
         write_json=args.write_json,
     )
     print(json.dumps(report, indent=2))

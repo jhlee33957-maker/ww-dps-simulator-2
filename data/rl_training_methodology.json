@@ -18,6 +18,16 @@
     "mixed_lynae_route_curriculum": "Training reset that samples among none, anti-Liberation Lynae route curriculum states, and the earlier Lynae curriculum states with the env RNG/seed."
   },
   "route_specific_curriculum_note": "Character/route-specific curriculum reset modes may exist for delayed-payoff branches. They adjust training start states only.",
+  "route_demonstration_warm_start": {
+    "description": "Route demonstrations and behavior-cloning warm-starts are training aids for long delayed-reward branches. They initialize the policy toward valid source-backed action sequences.",
+    "balanced_demonstrations": "Balanced route demonstrations may include both baseline party routes and delayed branch routes so BC does not overgeneralize toward immediate branch entry.",
+    "bc_refresh": "Small BC refresh stages may be interleaved between PPO fine-tuning stages to reduce catastrophic forgetting of delayed branches.",
+    "training_only": true,
+    "reward_shaping": false,
+    "character_usage_bonus": false,
+    "final_evaluation_reset_mode": "none",
+    "future_character_safe": true
+  },
   "curriculum_training_only_note": "curriculum reset is training-only; it does not modify damage formulas, cooldowns, action masks, final evaluation reward, or default evaluation reset. Final fair evaluation should use curriculum_reset_mode = none unless explicitly studying curriculum starts.",
   "evaluation_default": "none",
   "no_character_specific_usage_reward_bonus": true,
@@ -34,11 +44,9 @@
   ],
   "stale_model_warning": "old PPO models before Lynae fixes are stale; old PPO models before Lynae transition, reward exposure, observation, and source-ref fixes should not be compared with new results.",
   "recommended_training_sequence": [
-    "Stage 1: curriculum_reset_mode=lynae_kaleidoscopic_ready_after_liberation, timesteps=100000, ent_coef=0.04",
-    "Stage 2: curriculum_reset_mode=lynae_after_intro_liberation_used, load Stage 1, timesteps=100000, ent_coef=0.03",
-    "Stage 3: curriculum_reset_mode=aemeath_post_liberation_ready_for_lynae, load Stage 2, timesteps=100000, ent_coef=0.02",
-    "Stage 4: curriculum_reset_mode=mixed_lynae_route_curriculum, load Stage 3, timesteps=200000, ent_coef=0.02",
-    "Stage 5 final: curriculum_reset_mode=none, load Stage 4, timesteps=300000, ent_coef=0.01",
+    "Stage 0: generate balanced route demonstrations with scripts/generate_route_demonstrations.py --route-set aemeath_mornye_lynae_balanced_route_warm_start_v2 and run rl/pretrain_maskable_ppo_bc.py for a BC warm-start checkpoint",
+    "Stage 1: use rl/train_maskable_ppo_bc_refresh_plan.py to alternate mixed_lynae_route_curriculum PPO cycles with small BC refresh stages",
+    "Stage 2: final short curriculum_reset_mode=none PPO fine-tune from the last refreshed checkpoint",
     "Final evaluation: curriculum_reset_mode=none with --diagnose-policy-probs"
   ],
   "old_model_invalidation_note": "Retrain or continue-training from a compatible checkpoint after transition/observation/source fixes; do not treat older local optima as current evidence."

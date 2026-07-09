@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
 import json
 from pathlib import Path
 import sys
+import time
 from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -85,6 +87,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--n-steps", type=int, default=512)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--gamma", type=float, default=0.999)
+    parser.add_argument("--verbose", type=int, default=1)
+    parser.add_argument("--log-interval", type=int, default=1)
+    parser.add_argument("--progress-every-steps", type=int, default=10_000)
+    parser.add_argument("--dry-run-train-config", action="store_true")
     return parser
 
 
@@ -120,11 +126,13 @@ def main() -> None:
     args = parse_args()
     try:
         from stable_baselines3.common.env_checker import check_env
+        from stable_baselines3.common.callbacks import BaseCallback
         from sb3_contrib import MaskablePPO
         from env.wuwa_env import WuwaDpsEnv
-    except ModuleNotFoundError:
+    except ModuleNotFoundError as exc:
+        print(f"dependency-missing: {exc}")
         print("Missing RL dependency. Run: pip install -r requirements.txt")
-        raise SystemExit(1) from None
+        raise SystemExit(3) from None
 
     transition_config, party_preset = build_effective_config_from_args(args)
     try:
@@ -176,6 +184,7 @@ def main() -> None:
             batch_size=args.batch_size,
             ent_coef=args.ent_coef,
         )
+        _set_model_verbose(model, args.verbose)
     else:
         model = MaskablePPO(
             "MlpPolicy",
@@ -185,10 +194,32 @@ def main() -> None:
             n_steps=args.n_steps,
             batch_size=args.batch_size,
             ent_coef=args.ent_coef,
-            verbose=1,
+            verbose=args.verbose,
             seed=args.seed,
         )
-    model.learn(total_timesteps=args.timesteps)
+    compatibility = _model_space_mismatches(model, env)
+    startup_diagnostics = _build_startup_diagnostics(args, env, compatibility)
+    print("training_config_startup_diagnostics")
+    print(json.dumps(startup_diagnostics, indent=2))
+    if compatibility:
+        print("Cannot train: model/env compatibility check failed.")
+        raise SystemExit(2)
+    if args.dry_run_train_config:
+        print("dry_run_train_config ok: model compatibility check passed; learn/save skipped.")
+        return
+
+    train_started_at = _utc_timestamp()
+    train_start_seconds = time.monotonic()
+    progress_callback = _TrainingProgressCallback(
+        total_timesteps=args.timesteps,
+        progress_every_steps=args.progress_every_steps,
+        curriculum_reset_mode=args.curriculum_reset_mode,
+        model_path=args.model_path,
+        base_callback_class=BaseCallback,
+    )
+    model.learn(total_timesteps=args.timesteps, callback=progress_callback, log_interval=args.log_interval)
+    elapsed_seconds = time.monotonic() - train_start_seconds
+    train_finished_at = _utc_timestamp()
 
     args.model_path.parent.mkdir(parents=True, exist_ok=True)
     model.save(args.model_path)
@@ -204,6 +235,7 @@ def main() -> None:
         "seed": args.seed,
         "model_path": str(args.model_path),
         "load_model": str(args.load_model) if args.load_model else None,
+        "route_demonstration_warm_start": _load_bc_warm_start_metadata(args.load_model),
         "curriculum_reset_mode": args.curriculum_reset_mode,
         "selected_curriculum_submode": observation_meta["last_curriculum_reset_metadata"].get(
             "selected_curriculum_submode"
@@ -215,6 +247,12 @@ def main() -> None:
         "n_steps": args.n_steps,
         "batch_size": args.batch_size,
         "gamma": args.gamma,
+        "verbose": args.verbose,
+        "log_interval": args.log_interval,
+        "progress_every_steps": args.progress_every_steps,
+        "train_started_at": train_started_at,
+        "train_finished_at": train_finished_at,
+        "elapsed_seconds": elapsed_seconds,
         "selected_character_ids": env.get_selected_character_ids(),
         "selected_party_character_ids": env.get_selected_party_character_ids(),
         "selected_party_id": env.get_party_id() or args.party,
@@ -400,6 +438,99 @@ def _model_space_mismatches(model: Any, env: Any) -> dict[str, Any]:
     return mismatches
 
 
+def _set_model_verbose(model: Any, verbose: int) -> None:
+    if hasattr(model, "verbose"):
+        model.verbose = verbose
+
+
+def _build_startup_diagnostics(args: argparse.Namespace, env: Any, compatibility: dict[str, Any]) -> dict[str, Any]:
+    policy_action_ids = env.get_policy_action_ids()
+    return {
+        "party_id": env.get_party_id() or args.party,
+        "selected_party_members": env.get_selected_party_character_ids(),
+        "initial_active_character": env.get_initial_active_character(),
+        "curriculum_reset_mode": args.curriculum_reset_mode,
+        "load_model": str(args.load_model) if args.load_model else None,
+        "model_path": str(args.model_path),
+        "timesteps": args.timesteps,
+        "ent_coef": args.ent_coef,
+        "learning_rate": args.learning_rate,
+        "n_steps": args.n_steps,
+        "batch_size": args.batch_size,
+        "gamma": args.gamma,
+        "verbose": args.verbose,
+        "log_interval": args.log_interval,
+        "progress_every_steps": args.progress_every_steps,
+        "observation_shape": list(env.observation_space.shape),
+        "action_count": int(env.action_space.n),
+        "first_20_policy_action_ids": policy_action_ids[:20],
+        "source_ref_repair_guard_run_by_this_script": False,
+        "source_ref_repair_guard_note": "Source-ref repair guard is not run by this training script.",
+        "model_env_compatibility_check": "failed" if compatibility else "ok",
+        "model_env_compatibility_mismatches": compatibility,
+    }
+
+
+def _TrainingProgressCallback(
+    *,
+    total_timesteps: int,
+    progress_every_steps: int,
+    curriculum_reset_mode: str,
+    model_path: Path,
+    base_callback_class: Any,
+) -> Any:
+    interval = max(1, int(progress_every_steps))
+    target = max(1, int(total_timesteps))
+    output_model_path = str(model_path)
+
+    class TrainingProgressCallback(base_callback_class):  # type: ignore[misc, valid-type]
+        def __init__(self) -> None:
+            super().__init__(verbose=0)
+            self._started_at = time.monotonic()
+            self._next_report_at = interval
+            self._episode_count = 0
+
+        def _on_step(self) -> bool:
+            dones = self.locals.get("dones")
+            if dones is not None:
+                try:
+                    self._episode_count += sum(1 for done in dones if bool(done))
+                except TypeError:
+                    if bool(dones):
+                        self._episode_count += 1
+            if self.num_timesteps >= self._next_report_at or self.num_timesteps >= target:
+                self._print_progress()
+                while self._next_report_at <= self.num_timesteps:
+                    self._next_report_at += interval
+            return True
+
+        def _on_training_end(self) -> None:
+            self._print_progress(final=True)
+
+        def _print_progress(self, *, final: bool = False) -> None:
+            elapsed = max(time.monotonic() - self._started_at, 1e-9)
+            steps_per_second = float(self.num_timesteps) / elapsed
+            percent_complete = min(100.0, (float(self.num_timesteps) / float(target)) * 100.0)
+            payload = {
+                "event": "training_progress_final" if final else "training_progress",
+                "num_timesteps": int(self.num_timesteps),
+                "target_timesteps": int(total_timesteps),
+                "percent_complete": round(percent_complete, 2),
+                "elapsed_seconds": round(elapsed, 2),
+                "steps_per_second": round(steps_per_second, 2),
+                "curriculum_reset_mode": curriculum_reset_mode,
+                "latest_episode_count": int(self._episode_count),
+                "model_path": output_model_path,
+            }
+            print(json.dumps(payload, indent=2), flush=True)
+
+    return TrainingProgressCallback()
+
+
+def _utc_timestamp() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
 def _load_methodology_summary() -> dict[str, Any]:
     if not METHODOLOGY_PATH.exists():
         return {
@@ -408,6 +539,23 @@ def _load_methodology_summary() -> dict[str, Any]:
             "old_model_invalidation_note": "Methodology metadata file missing at training time.",
         }
     return json.loads(METHODOLOGY_PATH.read_text(encoding="utf-8"))
+
+
+def _load_bc_warm_start_metadata(load_model_path: Path | None) -> dict[str, Any] | None:
+    if load_model_path is None:
+        return None
+    sidecar = Path(str(load_model_path) + ".bc_metadata.json")
+    if not sidecar.exists():
+        return None
+    data = json.loads(sidecar.read_text(encoding="utf-8"))
+    return {
+        "demo_path": data.get("demo_path"),
+        "route_set_id": data.get("route_set_id"),
+        "epochs": data.get("epochs"),
+        "sample_count": data.get("sample_count"),
+        "no_character_specific_usage_reward_bonus": data.get("no_character_specific_usage_reward_bonus"),
+        "reward_formula_unchanged": data.get("reward_formula_unchanged"),
+    }
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 from pathlib import Path
 
 
@@ -8,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from scripts.aemeath_mornye_lynae_policy_probability_diagnostic import run_policy_probability_diagnostic
+from scripts.generate_route_demonstrations import generate_route_demonstrations
 
 
 def main() -> None:
@@ -35,6 +37,12 @@ def main() -> None:
     assert "lynae_polychrome_leap" in states["I_after_lynae_intro_liberation_skill_spark"]["valid_action_ids"]
     assert "aemeath_resonance_liberation" not in states["J_aemeath_post_liberation_concerto_ready"]["valid_action_ids"]
     assert "swap_to_aemeath" in states["G_after_lynae_intro_and_liberation"]["focus_actions"]
+    with tempfile.TemporaryDirectory() as temp_dir:
+        demo_path = Path(temp_dir) / "route_demo.npz"
+        generate_route_demonstrations(output_path=demo_path, repeat=1)
+        demo_report = run_policy_probability_diagnostic(route_demo_path=demo_path)["route_demo_probability_report"]
+        assert demo_report["status"] == "model_not_loaded"
+        assert demo_report["sample_count"] > 0
     print("aemeath_mornye_lynae_policy_probability_diagnostic_smoke_test ok")
 
 

@@ -20,6 +20,10 @@ def main() -> None:
         "not a mathematical proof",
         "No character-specific usage reward bonus is applied by default",
         "Character/route-specific curriculum reset modes may exist",
+        "Route demonstrations and behavior-cloning warm-starts",
+        "valid source-backed action sequences",
+        "Balanced demonstrations",
+        "BC refresh",
     ):
         assert phrase.lower() in ui_text.lower(), f"UI methodology text missing phrase: {phrase}"
     assert "manual use-Lynae reward bonus" not in ui_text

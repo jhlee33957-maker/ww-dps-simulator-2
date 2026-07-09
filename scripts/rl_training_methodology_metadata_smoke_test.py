@@ -30,9 +30,14 @@ def main() -> None:
         "final evaluation default is none",
         "Old PPO models before Lynae fixes are stale",
         "No character-specific usage reward bonus is applied by default",
+        "Route demonstrations and behavior-cloning warm-starts",
+        "Balanced demonstrations",
+        "BC refresh",
     ):
         assert phrase.lower() in report.lower(), f"methodology report missing phrase: {phrase}"
     assert data["no_character_specific_usage_reward_bonus"] is True
+    assert data["route_demonstration_warm_start"]["reward_shaping"] is False
+    assert data["route_demonstration_warm_start"]["character_usage_bonus"] is False
     assert "manual use-Lynae reward bonus" not in report
     print("rl_training_methodology_metadata_smoke_test ok")
 
