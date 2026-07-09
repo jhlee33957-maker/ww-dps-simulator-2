@@ -1,0 +1,38 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def main() -> None:
+    data_path = ROOT / "data" / "rl_training_methodology.json"
+    report_path = ROOT / "reports" / "rl_training_methodology.md"
+    assert data_path.exists(), "data/rl_training_methodology.json missing"
+    assert report_path.exists(), "reports/rl_training_methodology.md missing"
+    data = json.loads(data_path.read_text(encoding="utf-8"))
+    for key in (
+        "reward_formula",
+        "algorithm",
+        "action_mask_description",
+        "curriculum_modes",
+        "evaluation_default",
+        "stale_model_warning",
+    ):
+        assert key in data, f"methodology metadata missing {key}"
+    report = report_path.read_text(encoding="utf-8")
+    for phrase in (
+        "MaskablePPO",
+        "damage_this_action / 10000.0",
+        "Curriculum reset is training-only",
+        "final evaluation default is none",
+        "Old PPO models before Lynae fixes are stale",
+    ):
+        assert phrase.lower() in report.lower(), f"methodology report missing phrase: {phrase}"
+    print("rl_training_methodology_metadata_smoke_test ok")
+
+
+if __name__ == "__main__":
+    main()

@@ -28,6 +28,7 @@ from simulator.transition_config import (
 from rl.evaluation_report import build_generated_damage_summary
 
 
+METHODOLOGY_PATH = PROJECT_ROOT / "data" / "rl_training_methodology.json"
 OBSERVATION_METADATA_KEYS = (
     "observation_shape",
     "observation_version",
@@ -83,6 +84,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
         default=None,
     )
     parser.add_argument("--allow-mismatch", action="store_true")
+    parser.add_argument("--diagnose-policy-probs", action="store_true")
+    parser.add_argument(
+        "--write-policy-probability-report",
+        type=Path,
+        default=PROJECT_ROOT / "reports" / "aemeath_mornye_lynae_policy_probability_report.json",
+    )
     return parser
 
 
@@ -221,6 +228,7 @@ def main() -> None:
         summary.timeline,
         total_damage=summary.total_damage,
     )
+    training_methodology_summary = _load_training_methodology_summary()
     unused_party_members = [
         character_id
         for character_id in env.get_selected_party_character_ids()
@@ -409,6 +417,9 @@ def main() -> None:
         "observation_channel_mapping": env.observation_channel_mapping(),
         "observation_slot_mapping": env.observation_slot_mapping(),
         "max_party_slots": env.observation_metadata()["max_party_slots"],
+        "curriculum_reset_mode": env.get_last_curriculum_reset_mode(),
+        "training_methodology_summary": training_methodology_summary,
+        "model_training_metadata": metadata if metadata_path.exists() else None,
         "model_observation_shape": metadata.get("observation_shape") if metadata_path.exists() else None,
         "current_observation_shape": list(env.observation_space.shape),
         "observation_shape_matches_model": (
@@ -540,6 +551,16 @@ def main() -> None:
 
     print(f"Saved evaluation summary to {summary_path}")
     print(f"Saved timeline to {timeline_path}")
+    if args.diagnose_policy_probs:
+        from scripts.aemeath_mornye_lynae_policy_probability_diagnostic import run_policy_probability_diagnostic
+
+        probability_report = run_policy_probability_diagnostic(
+            model_path=args.model_path,
+            party=args.party or "aemeath_mornye_lynae_enabled_test_party",
+            write_json=args.write_policy_probability_report,
+        )
+        print(f"Saved policy probability diagnostic to {args.write_policy_probability_report}")
+        print("Policy probability diagnostic status:", probability_report["model_probability_status"])
 
 
 def _deep_update(target: dict[str, Any], updates: dict[str, Any]) -> dict[str, Any]:
@@ -577,6 +598,26 @@ def _policy_actions_exposed_by_character(
         if character_id in exposed:
             exposed[character_id].append(action_id)
     return {character_id: sorted(action_ids) for character_id, action_ids in exposed.items()}
+
+
+def _load_training_methodology_summary() -> dict[str, Any]:
+    if not METHODOLOGY_PATH.exists():
+        return {
+            "methodology_summary_id": "missing",
+            "algorithm": "MaskablePPO",
+            "reward_formula": "damage_this_action / 10000.0",
+            "evaluation_default": "none",
+        }
+    data = json.loads(METHODOLOGY_PATH.read_text(encoding="utf-8"))
+    return {
+        "methodology_version": data.get("methodology_version"),
+        "methodology_summary_id": data.get("methodology_summary_id"),
+        "algorithm": data.get("algorithm"),
+        "reward_formula": data.get("reward_formula"),
+        "evaluation_default": data.get("evaluation_default"),
+        "curriculum_training_only_note": data.get("curriculum_training_only_note"),
+        "stale_model_warning": data.get("stale_model_warning"),
+    }
 
 
 if __name__ == "__main__":

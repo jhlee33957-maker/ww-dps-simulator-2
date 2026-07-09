@@ -19,6 +19,21 @@ from env.reward import calculate_reward
 from simulator.simulation import Simulation
 
 
+CURRICULUM_RESET_MODES = {
+    "none",
+    "aemeath_ready_for_lynae",
+    "lynae_after_intro",
+    "lynae_kaleidoscopic_ready",
+    "mixed_lynae_curriculum",
+}
+MIXED_LYNAE_CURRICULUM_CHOICES = (
+    "none",
+    "aemeath_ready_for_lynae",
+    "lynae_after_intro",
+    "lynae_kaleidoscopic_ready",
+)
+
+
 class WuwaDpsEnv(gym.Env):
     metadata = {"render_modes": []}
 
@@ -34,6 +49,7 @@ class WuwaDpsEnv(gym.Env):
         transition_config: dict | None = None,
         build_profile_overrides: dict[str, str] | None = None,
         stat_overrides: dict[str, dict[str, float]] | None = None,
+        curriculum_reset_mode: str | None = None,
     ) -> None:
         super().__init__()
         self.data_dir = Path(data_dir)
@@ -53,6 +69,8 @@ class WuwaDpsEnv(gym.Env):
         self.transition_config_arg = transition_config
         self.build_profile_overrides_arg = build_profile_overrides
         self.stat_overrides_arg = stat_overrides
+        self.curriculum_reset_mode_arg = self._normalize_curriculum_reset_mode(curriculum_reset_mode)
+        self.last_curriculum_reset_mode = "none"
         self.simulation = Simulation.from_json(
             self.data_dir,
             selected_character_ids=self.selected_character_ids_arg,
@@ -86,7 +104,10 @@ class WuwaDpsEnv(gym.Env):
         self.action_ids = self._get_action_order()
         self.character_ids = self._get_character_order()
         self.buff_ids = self._get_buff_order()
-        return self._get_observation(), {}
+        applied_curriculum_mode = self._select_curriculum_reset_mode()
+        self._apply_curriculum_reset(applied_curriculum_mode)
+        self.last_curriculum_reset_mode = applied_curriculum_mode
+        return self._get_observation(), {"curriculum_reset_mode": applied_curriculum_mode}
 
     def step(self, action: int):
         if self.simulation.state.combat_time >= self.simulation.combat_duration:
@@ -100,6 +121,7 @@ class WuwaDpsEnv(gym.Env):
                 "dps": self.simulation.state.total_damage / self.simulation.combat_duration,
                 "action_time": self.simulation.state.current_time,
                 "combat_time": self.simulation.state.combat_time,
+                "curriculum_reset_mode": self.last_curriculum_reset_mode,
             }
             return self._get_observation(), 0.0, True, False, info
 
@@ -136,6 +158,7 @@ class WuwaDpsEnv(gym.Env):
             "dps": self.simulation.state.total_damage / self.simulation.combat_duration,
             "action_time": self.simulation.state.current_time,
             "combat_time": self.simulation.state.combat_time,
+            "curriculum_reset_mode": self.last_curriculum_reset_mode,
         }
         return self._get_observation(), reward, terminated, truncated, info
 
@@ -173,7 +196,66 @@ class WuwaDpsEnv(gym.Env):
         return build_observation_slot_mapping(self.simulation)
 
     def observation_metadata(self) -> dict:
-        return observation_metadata(self)
+        metadata = observation_metadata(self)
+        metadata["curriculum_reset_mode"] = self.curriculum_reset_mode_arg
+        metadata["last_curriculum_reset_mode"] = self.last_curriculum_reset_mode
+        return metadata
+
+    @staticmethod
+    def _normalize_curriculum_reset_mode(mode: str | None) -> str:
+        normalized = "none" if mode is None else str(mode).strip().lower()
+        if normalized == "":
+            normalized = "none"
+        if normalized not in CURRICULUM_RESET_MODES:
+            choices = ", ".join(sorted(CURRICULUM_RESET_MODES))
+            raise ValueError(f"Unsupported curriculum_reset_mode {mode!r}. Expected one of: {choices}")
+        return normalized
+
+    def _select_curriculum_reset_mode(self) -> str:
+        if self.curriculum_reset_mode_arg != "mixed_lynae_curriculum":
+            return self.curriculum_reset_mode_arg
+        index = int(self.np_random.integers(0, len(MIXED_LYNAE_CURRICULUM_CHOICES)))
+        return MIXED_LYNAE_CURRICULUM_CHOICES[index]
+
+    def _apply_curriculum_reset(self, mode: str) -> None:
+        if mode == "none":
+            return
+        if mode not in MIXED_LYNAE_CURRICULUM_CHOICES:
+            raise ValueError(f"Unsupported applied curriculum reset mode: {mode}")
+        self._set_active_character("aemeath")
+        self._set_concerto_ready("aemeath", 100.0)
+        if mode == "aemeath_ready_for_lynae":
+            return
+        self._execute_curriculum_action("swap_to_lynae", mode)
+        if mode == "lynae_after_intro":
+            return
+        self._execute_curriculum_action("lynae_resonance_skill", mode)
+        self._execute_curriculum_action("lynae_spark_collision", mode)
+
+    def _set_active_character(self, character_id: str) -> None:
+        if character_id not in self.simulation.selected_party_character_ids:
+            raise RuntimeError(f"Curriculum reset requires party member {character_id!r}.")
+        self.simulation.state.active_character_id = character_id
+
+    def _set_concerto_ready(self, character_id: str, amount: float = 100.0) -> None:
+        character_state = self.simulation.state.character_states.setdefault(character_id, {})
+        cap = float(character_state.get("concerto_energy_cap", 100.0) or 100.0)
+        energy = min(float(amount), cap)
+        character_state["concerto_energy"] = energy
+        character_state["concerto_energy_cap"] = cap
+        character_state["concerto_ready"] = energy >= cap
+        self.simulation.state.concerto_energy[character_id] = energy
+
+    def _execute_curriculum_action(self, action_id: str, mode: str) -> None:
+        if action_id not in self.simulation.actions:
+            raise RuntimeError(f"Curriculum reset mode {mode!r} requires missing action {action_id!r}.")
+        if not self.simulation.execute_action(action_id):
+            active = self.simulation.state.active_character_id
+            valid_actions = self.simulation.valid_action_ids()
+            raise RuntimeError(
+                f"Curriculum reset mode {mode!r} could not execute {action_id!r}; "
+                f"active={active!r}, valid_actions={valid_actions!r}."
+            )
 
     def _cooldown_ratio(self, action_id: str) -> float:
         action_data = self.simulation.resolve_action(self.simulation.actions[action_id])
@@ -214,3 +296,9 @@ class WuwaDpsEnv(gym.Env):
 
     def get_effective_build_stats_summary(self) -> dict:
         return dict(self.simulation.effective_build_stats_summary)
+
+    def get_curriculum_reset_mode(self) -> str:
+        return self.curriculum_reset_mode_arg
+
+    def get_last_curriculum_reset_mode(self) -> str:
+        return self.last_curriculum_reset_mode

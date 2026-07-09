@@ -25,10 +25,21 @@ from simulator.transition_config import (
 )
 
 
+CURRICULUM_RESET_MODE_CHOICES = [
+    "none",
+    "aemeath_ready_for_lynae",
+    "lynae_after_intro",
+    "lynae_kaleidoscopic_ready",
+    "mixed_lynae_curriculum",
+]
+METHODOLOGY_PATH = PROJECT_ROOT / "data" / "rl_training_methodology.json"
+
+
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Train Maskable PPO for the Wuwa DPS simulator.")
     parser.add_argument("--timesteps", type=int, default=50_000)
     parser.add_argument("--model-path", type=Path, default=PROJECT_ROOT / "models" / "maskable_ppo_wuwa.zip")
+    parser.add_argument("--load-model", type=Path, default=None, help="Existing MaskablePPO checkpoint to continue training.")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--character-ids", type=str, default=None)
     parser.add_argument("--party-character-ids", type=str, default=None)
@@ -64,6 +75,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
         choices=["disabled", "field_creation_only", "simplified_syntony_field_uptime"],
         default=None,
     )
+    parser.add_argument("--curriculum-reset-mode", choices=CURRICULUM_RESET_MODE_CHOICES, default="none")
+    parser.add_argument("--ent-coef", type=float, default=0.01)
+    parser.add_argument("--learning-rate", type=float, default=3e-4)
+    parser.add_argument("--n-steps", type=int, default=512)
+    parser.add_argument("--batch-size", type=int, default=64)
+    parser.add_argument("--gamma", type=float, default=0.999)
     return parser
 
 
@@ -120,6 +137,7 @@ def main() -> None:
         transition_config=transition_config,
         build_profile_overrides=build_profile_overrides,
         stat_overrides=stat_overrides,
+        curriculum_reset_mode=args.curriculum_reset_mode,
     )
     validation = env.simulation.validate_build_profiles()
     if not validation.get("ok", False):
@@ -135,17 +153,37 @@ def main() -> None:
     except Exception as exc:  # check_env is useful, but training should still show the real failure if any.
         print(f"Environment check warning: {exc}")
 
-    model = MaskablePPO(
-        "MlpPolicy",
-        env,
-        learning_rate=3e-4,
-        gamma=0.999,
-        n_steps=512,
-        batch_size=64,
-        ent_coef=0.01,
-        verbose=1,
-        seed=args.seed,
-    )
+    if args.load_model is not None:
+        if not args.load_model.exists():
+            print(f"Cannot continue training: load model not found at {args.load_model}")
+            raise SystemExit(2)
+        loaded_model = MaskablePPO.load(args.load_model)
+        mismatches = _model_space_mismatches(loaded_model, env)
+        if mismatches:
+            print("Cannot continue training: loaded model is incompatible with the requested env.")
+            print(json.dumps(mismatches, indent=2))
+            raise SystemExit(2)
+        model = MaskablePPO.load(
+            args.load_model,
+            env=env,
+            learning_rate=args.learning_rate,
+            gamma=args.gamma,
+            n_steps=args.n_steps,
+            batch_size=args.batch_size,
+            ent_coef=args.ent_coef,
+        )
+    else:
+        model = MaskablePPO(
+            "MlpPolicy",
+            env,
+            learning_rate=args.learning_rate,
+            gamma=args.gamma,
+            n_steps=args.n_steps,
+            batch_size=args.batch_size,
+            ent_coef=args.ent_coef,
+            verbose=1,
+            seed=args.seed,
+        )
     model.learn(total_timesteps=args.timesteps)
 
     args.model_path.parent.mkdir(parents=True, exist_ok=True)
@@ -153,6 +191,7 @@ def main() -> None:
     mechanic_event_metadata = mechanic_event_metadata_for_config(transition_config.get("mechanics"))
     training_summary = env.simulation.summary()
     observation_meta = env.observation_metadata()
+    methodology = _load_methodology_summary()
 
     metadata: dict[str, Any] = {
         "algorithm": "MaskablePPO",
@@ -160,6 +199,13 @@ def main() -> None:
         "timesteps": args.timesteps,
         "seed": args.seed,
         "model_path": str(args.model_path),
+        "load_model": str(args.load_model) if args.load_model else None,
+        "curriculum_reset_mode": args.curriculum_reset_mode,
+        "ent_coef": args.ent_coef,
+        "learning_rate": args.learning_rate,
+        "n_steps": args.n_steps,
+        "batch_size": args.batch_size,
+        "gamma": args.gamma,
         "selected_character_ids": env.get_selected_character_ids(),
         "selected_party_character_ids": env.get_selected_party_character_ids(),
         "selected_party_id": env.get_party_id() or args.party,
@@ -306,6 +352,11 @@ def main() -> None:
         "observation_slot_mapping": observation_meta["observation_slot_mapping"],
         "max_party_slots": observation_meta["max_party_slots"],
         "reward": "damage_this_action / 10000.0",
+        "reward_formula": "damage_this_action / 10000.0",
+        "evaluation_default_reset_mode": "none",
+        "methodology_summary_id": methodology.get("methodology_summary_id"),
+        "methodology_version": methodology.get("methodology_version"),
+        "old_model_invalidation_note": methodology.get("old_model_invalidation_note"),
         "uses_action_masks": True,
         "note": "Maskable PPO models are party-specific because action space and observation shape can change.",
     }
@@ -324,6 +375,29 @@ def _deep_update(target: dict[str, Any], updates: dict[str, Any]) -> dict[str, A
         else:
             target[key] = value
     return target
+
+
+def _model_space_mismatches(model: Any, env: Any) -> dict[str, Any]:
+    mismatches: dict[str, Any] = {}
+    model_action_n = getattr(getattr(model, "action_space", None), "n", None)
+    env_action_n = getattr(env.action_space, "n", None)
+    if model_action_n != env_action_n:
+        mismatches["action_space_n"] = {"model": model_action_n, "env": env_action_n}
+    model_observation_shape = list(getattr(getattr(model, "observation_space", None), "shape", []) or [])
+    env_observation_shape = list(getattr(env.observation_space, "shape", []) or [])
+    if model_observation_shape != env_observation_shape:
+        mismatches["observation_shape"] = {"model": model_observation_shape, "env": env_observation_shape}
+    return mismatches
+
+
+def _load_methodology_summary() -> dict[str, Any]:
+    if not METHODOLOGY_PATH.exists():
+        return {
+            "methodology_summary_id": "missing",
+            "methodology_version": "missing",
+            "old_model_invalidation_note": "Methodology metadata file missing at training time.",
+        }
+    return json.loads(METHODOLOGY_PATH.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

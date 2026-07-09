@@ -1,0 +1,31 @@
+{
+  "methodology_version": "2026-07-09-lynae-curriculum-v1",
+  "methodology_summary_id": "rl_training_methodology_lynae_curriculum_v1",
+  "algorithm": "MaskablePPO",
+  "objective": "Optimize total simulated damage over the 120s Wuwa DPS simulator episode.",
+  "reward_formula": "damage_this_action / 10000.0",
+  "final_metric": "total_damage and DPS over the normal 120s simulation",
+  "action_mask_description": "Action masks remove invalid policy actions such as cooldown-gated skills, resource-gated skills, unavailable swaps, and invalid state actions. Masks prevent illegal moves but do not tell PPO which valid route is best.",
+  "curriculum_modes": {
+    "none": "Normal reset. This is the default evaluation condition.",
+    "aemeath_ready_for_lynae": "Training reset with active Aemeath and Aemeath Concerto ready so swap_to_lynae can expose Lynae Intro reward immediately.",
+    "lynae_after_intro": "Training reset that executes Aemeath Concerto swap_to_lynae and starts after Lynae Intro.",
+    "lynae_kaleidoscopic_ready": "Training reset that executes Aemeath Concerto swap_to_lynae, Lynae resonance skill, and Spark Collision to start inside Kaleidoscopic Parade with full Lumiflow.",
+    "mixed_lynae_curriculum": "Training reset that samples among none and Lynae curriculum states with the env RNG/seed."
+  },
+  "curriculum_training_only_note": "curriculum reset is training-only; final fair evaluation should use curriculum_reset_mode = none unless explicitly studying curriculum starts.",
+  "evaluation_default": "none",
+  "trust_notes": [
+    "The model is an RL-discovered policy under the simulator's current assumptions, not a mathematical proof of the optimal rotation.",
+    "No manual use-Lynae reward bonus is applied by default.",
+    "Action masks prevent illegal actions; they do not encode the best Lynae route."
+  ],
+  "known_limitations": [
+    "Single-target 120s Endgame Matrix-style setting.",
+    "Movement, stamina, continuous positioning, and some animation-cancel details are simplified.",
+    "Long delayed-reward branches may require curriculum, entropy, longer training, macro actions, or additional diagnostics.",
+    "Simulator output is only as reliable as the current action data, transition data, source refs, and implemented mechanics."
+  ],
+  "stale_model_warning": "old PPO models before Lynae fixes are stale; old PPO models before Lynae transition, reward exposure, observation, and source-ref fixes should not be compared with new results.",
+  "old_model_invalidation_note": "Retrain or continue-training from a compatible checkpoint after Lynae transition/observation/source fixes; do not treat older Aemeath/Mornye-only local optima as current evidence."
+}
