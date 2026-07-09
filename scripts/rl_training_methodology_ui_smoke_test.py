@@ -18,9 +18,11 @@ def main() -> None:
         "curriculum reset is training-only",
         "final evaluation default is none",
         "not a mathematical proof",
-        "manual use-Lynae reward bonus",
+        "No character-specific usage reward bonus is applied by default",
+        "Character/route-specific curriculum reset modes may exist",
     ):
         assert phrase.lower() in ui_text.lower(), f"UI methodology text missing phrase: {phrase}"
+    assert "manual use-Lynae reward bonus" not in ui_text
     print("rl_training_methodology_ui_smoke_test ok")
 
 

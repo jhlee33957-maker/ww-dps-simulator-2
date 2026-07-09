@@ -615,6 +615,7 @@ def _load_training_methodology_summary() -> dict[str, Any]:
         "algorithm": data.get("algorithm"),
         "reward_formula": data.get("reward_formula"),
         "evaluation_default": data.get("evaluation_default"),
+        "no_character_specific_usage_reward_bonus": data.get("no_character_specific_usage_reward_bonus"),
         "curriculum_training_only_note": data.get("curriculum_training_only_note"),
         "stale_model_warning": data.get("stale_model_warning"),
     }

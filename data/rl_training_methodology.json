@@ -11,13 +11,19 @@
     "aemeath_ready_for_lynae": "Training reset with active Aemeath and Aemeath Concerto ready so swap_to_lynae can expose Lynae Intro reward immediately.",
     "lynae_after_intro": "Training reset that executes Aemeath Concerto swap_to_lynae and starts after Lynae Intro.",
     "lynae_kaleidoscopic_ready": "Training reset that executes Aemeath Concerto swap_to_lynae, Lynae resonance skill, and Spark Collision to start inside Kaleidoscopic Parade with full Lumiflow.",
-    "mixed_lynae_curriculum": "Training reset that samples among none and Lynae curriculum states with the env RNG/seed."
+    "mixed_lynae_curriculum": "Training reset that samples among none and Lynae curriculum states with the env RNG/seed.",
+    "aemeath_post_liberation_ready_for_lynae": "Training reset with active Aemeath, Aemeath Concerto ready, and Aemeath Liberation artificially blocked so swap_to_lynae can be explored without immediate Liberation competition.",
+    "lynae_after_intro_liberation_used": "Training reset that executes real Lynae Intro and real Lynae Liberation, then starts with Lynae active after Liberation is consumed.",
+    "lynae_kaleidoscopic_ready_after_liberation": "Training reset that executes real Lynae Intro, real Lynae Liberation, Lynae Resonance Skill, and Spark Collision, then starts in Kaleidoscopic Parade with Liberation unavailable.",
+    "mixed_lynae_route_curriculum": "Training reset that samples among none, anti-Liberation Lynae route curriculum states, and the earlier Lynae curriculum states with the env RNG/seed."
   },
-  "curriculum_training_only_note": "curriculum reset is training-only; final fair evaluation should use curriculum_reset_mode = none unless explicitly studying curriculum starts.",
+  "route_specific_curriculum_note": "Character/route-specific curriculum reset modes may exist for delayed-payoff branches. They adjust training start states only.",
+  "curriculum_training_only_note": "curriculum reset is training-only; it does not modify damage formulas, cooldowns, action masks, final evaluation reward, or default evaluation reset. Final fair evaluation should use curriculum_reset_mode = none unless explicitly studying curriculum starts.",
   "evaluation_default": "none",
+  "no_character_specific_usage_reward_bonus": true,
   "trust_notes": [
     "The model is an RL-discovered policy under the simulator's current assumptions, not a mathematical proof of the optimal rotation.",
-    "No manual use-Lynae reward bonus is applied by default.",
+    "No character-specific usage reward bonus is applied by default.",
     "Action masks prevent illegal actions; they do not encode the best Lynae route."
   ],
   "known_limitations": [
@@ -27,5 +33,13 @@
     "Simulator output is only as reliable as the current action data, transition data, source refs, and implemented mechanics."
   ],
   "stale_model_warning": "old PPO models before Lynae fixes are stale; old PPO models before Lynae transition, reward exposure, observation, and source-ref fixes should not be compared with new results.",
-  "old_model_invalidation_note": "Retrain or continue-training from a compatible checkpoint after Lynae transition/observation/source fixes; do not treat older Aemeath/Mornye-only local optima as current evidence."
+  "recommended_training_sequence": [
+    "Stage 1: curriculum_reset_mode=lynae_kaleidoscopic_ready_after_liberation, timesteps=100000, ent_coef=0.04",
+    "Stage 2: curriculum_reset_mode=lynae_after_intro_liberation_used, load Stage 1, timesteps=100000, ent_coef=0.03",
+    "Stage 3: curriculum_reset_mode=aemeath_post_liberation_ready_for_lynae, load Stage 2, timesteps=100000, ent_coef=0.02",
+    "Stage 4: curriculum_reset_mode=mixed_lynae_route_curriculum, load Stage 3, timesteps=200000, ent_coef=0.02",
+    "Stage 5 final: curriculum_reset_mode=none, load Stage 4, timesteps=300000, ent_coef=0.01",
+    "Final evaluation: curriculum_reset_mode=none with --diagnose-policy-probs"
+  ],
+  "old_model_invalidation_note": "Retrain or continue-training from a compatible checkpoint after transition/observation/source fixes; do not treat older local optima as current evidence."
 }

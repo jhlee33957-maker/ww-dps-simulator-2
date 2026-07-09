@@ -41,12 +41,18 @@ def render_training_methodology(data_dir: Path, results_dir: Path) -> None:
         "Curriculum reset modes expose PPO to Lynae branch states during training. "
         "curriculum reset is training-only; final evaluation default is none."
     )
+    st.write(
+        "Character/route-specific curriculum reset modes may exist for future delayed-payoff branches. "
+        "They adjust training start states only; they do not modify damage formulas, cooldowns, "
+        "action masks, final evaluation reward, or default evaluation reset."
+    )
     st.json(methodology.get("curriculum_modes", {}))
 
     st.subheader("What Curriculum Does Not Mean / 커리큘럼이 바꾸지 않는 것")
     st.write(
         "It does not change Lynae damage, cooldowns, resources, transition actions, or action masks. "
-        "It does not give a manual use-Lynae reward bonus by default. "
+        "No character-specific usage reward bonus is applied by default. "
+        "기본 보상에는 특정 캐릭터를 사용했다는 이유만으로 주는 추가 점수가 없습니다. "
         "It does not change final evaluation conditions unless explicitly selected."
     )
 

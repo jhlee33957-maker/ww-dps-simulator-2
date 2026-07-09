@@ -23,6 +23,8 @@ FOCUS_ACTION_IDS = (
     "lynae_spark_collision",
     "lynae_polychrome_leap",
     "lynae_visual_impact",
+    "lynae_resonance_liberation",
+    "swap_to_aemeath",
 )
 
 
@@ -75,6 +77,35 @@ def run_policy_probability_diagnostic(
     observation = env._get_observation()
     states.append(_state_report("F_after_lynae_spark_collision", env, observation, model))
 
+    post_liberation_env = _env_after_actions(party, ["swap_to_aemeath"], force_aemeath_concerto=True)
+    _execute_or_record(post_liberation_env, "swap_to_lynae")
+    _execute_or_record(post_liberation_env, "lynae_resonance_liberation")
+    observation = post_liberation_env._get_observation()
+    states.append(_state_report("G_after_lynae_intro_and_liberation", post_liberation_env, observation, model))
+
+    _execute_or_record(post_liberation_env, "lynae_resonance_skill")
+    observation = post_liberation_env._get_observation()
+    states.append(_state_report("H_after_lynae_intro_liberation_and_skill", post_liberation_env, observation, model))
+
+    _execute_or_record(post_liberation_env, "lynae_spark_collision")
+    observation = post_liberation_env._get_observation()
+    states.append(_state_report("I_after_lynae_intro_liberation_skill_spark", post_liberation_env, observation, model))
+
+    aemeath_post_liberation_env = WuwaDpsEnv(
+        data_dir=ROOT / "data",
+        party=party,
+        curriculum_reset_mode="aemeath_post_liberation_ready_for_lynae",
+    )
+    observation, _ = aemeath_post_liberation_env.reset(seed=0)
+    states.append(
+        _state_report(
+            "J_aemeath_post_liberation_concerto_ready",
+            aemeath_post_liberation_env,
+            observation,
+            model,
+        )
+    )
+
     report = {
         "party_id": party,
         "diagnostic": "aemeath_mornye_lynae_policy_probability",
@@ -88,6 +119,22 @@ def run_policy_probability_diagnostic(
         write_json.parent.mkdir(parents=True, exist_ok=True)
         write_json.write_text(json.dumps(report, indent=2), encoding="utf-8")
     return report
+
+
+def _env_after_actions(
+    party: str,
+    actions: list[str],
+    *,
+    force_aemeath_concerto: bool = False,
+) -> WuwaDpsEnv:
+    env = WuwaDpsEnv(data_dir=ROOT / "data", party=party)
+    env.reset(seed=0)
+    for action_id in actions:
+        _execute_or_record(env, action_id)
+    if force_aemeath_concerto:
+        env.simulation.state.active_character_id = "aemeath"
+        set_full_concerto(env, "aemeath")
+    return env
 
 
 def _load_model(model_path: Path | None, env: WuwaDpsEnv) -> tuple[Any | None, str, str | None]:

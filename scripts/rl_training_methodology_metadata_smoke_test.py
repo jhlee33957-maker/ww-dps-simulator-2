@@ -29,8 +29,11 @@ def main() -> None:
         "Curriculum reset is training-only",
         "final evaluation default is none",
         "Old PPO models before Lynae fixes are stale",
+        "No character-specific usage reward bonus is applied by default",
     ):
         assert phrase.lower() in report.lower(), f"methodology report missing phrase: {phrase}"
+    assert data["no_character_specific_usage_reward_bonus"] is True
+    assert "manual use-Lynae reward bonus" not in report
     print("rl_training_methodology_metadata_smoke_test ok")
 
 

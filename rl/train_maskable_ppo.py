@@ -31,6 +31,10 @@ CURRICULUM_RESET_MODE_CHOICES = [
     "lynae_after_intro",
     "lynae_kaleidoscopic_ready",
     "mixed_lynae_curriculum",
+    "aemeath_post_liberation_ready_for_lynae",
+    "lynae_after_intro_liberation_used",
+    "lynae_kaleidoscopic_ready_after_liberation",
+    "mixed_lynae_route_curriculum",
 ]
 METHODOLOGY_PATH = PROJECT_ROOT / "data" / "rl_training_methodology.json"
 
@@ -201,6 +205,11 @@ def main() -> None:
         "model_path": str(args.model_path),
         "load_model": str(args.load_model) if args.load_model else None,
         "curriculum_reset_mode": args.curriculum_reset_mode,
+        "selected_curriculum_submode": observation_meta["last_curriculum_reset_metadata"].get(
+            "selected_curriculum_submode"
+        ),
+        "curriculum_reset_pre_roll_type": observation_meta["last_curriculum_reset_metadata"].get("pre_roll_type"),
+        "curriculum_reset_training_only": observation_meta["last_curriculum_reset_metadata"].get("training_only"),
         "ent_coef": args.ent_coef,
         "learning_rate": args.learning_rate,
         "n_steps": args.n_steps,
@@ -353,6 +362,7 @@ def main() -> None:
         "max_party_slots": observation_meta["max_party_slots"],
         "reward": "damage_this_action / 10000.0",
         "reward_formula": "damage_this_action / 10000.0",
+        "no_character_specific_usage_reward_bonus": True,
         "evaluation_default_reset_mode": "none",
         "methodology_summary_id": methodology.get("methodology_summary_id"),
         "methodology_version": methodology.get("methodology_version"),

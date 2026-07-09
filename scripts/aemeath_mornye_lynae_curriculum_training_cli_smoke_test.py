@@ -41,6 +41,14 @@ def main() -> None:
     assert args.n_steps == 256
     assert args.batch_size == 32
     assert args.gamma == 0.995
+    for mode in (
+        "aemeath_post_liberation_ready_for_lynae",
+        "lynae_after_intro_liberation_used",
+        "lynae_kaleidoscopic_ready_after_liberation",
+        "mixed_lynae_route_curriculum",
+    ):
+        parsed = parser.parse_args(["--curriculum-reset-mode", mode])
+        assert parsed.curriculum_reset_mode == mode
     print("aemeath_mornye_lynae_curriculum_training_cli_smoke_test ok")
 
 

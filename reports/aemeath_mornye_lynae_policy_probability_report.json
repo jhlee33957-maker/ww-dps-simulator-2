@@ -1,7 +1,7 @@
 {
   "party_id": "aemeath_mornye_lynae_enabled_test_party",
   "diagnostic": "aemeath_mornye_lynae_policy_probability",
-  "model_path": "models\\maskable_ppo_aemeath_mornye_lynae_curr_final_300k.zip",
+  "model_path": "models\\maskable_ppo_aemeath_mornye_lynae_route_final_300k.zip",
   "model_probability_status": "loaded",
   "model_probability_error": null,
   "note": "Diagnostic only: no PPO quality pass/fail threshold is applied.",
@@ -21,39 +21,39 @@
       "valid_action_count": 7,
       "top_10_valid_action_probabilities": [
         {
-          "action_id": "mornye_resonance_liberation",
-          "probability": 0.9976254983135923
+          "action_id": "mornye_heavy_attack",
+          "probability": 0.9975978626760523
         },
         {
-          "action_id": "swap_to_aemeath",
-          "probability": 0.002344800085409798
+          "action_id": "mornye_resonance_liberation",
+          "probability": 0.0015634303520184892
         },
         {
           "action_id": "mornye_resonance_skill",
-          "probability": 2.0890514202471233e-05
+          "probability": 0.0008345848509303985
         },
         {
-          "action_id": "mornye_heavy_attack",
-          "probability": 8.608729059761638e-06
-        },
-        {
-          "action_id": "mornye_basic_attack",
-          "probability": 1.7372240697838292e-07
+          "action_id": "swap_to_aemeath",
+          "probability": 3.996537524191239e-06
         },
         {
           "action_id": "short_wait",
-          "probability": 1.8450314471852436e-08
+          "probability": 6.184700359455668e-08
+        },
+        {
+          "action_id": "mornye_basic_attack",
+          "probability": 5.2054181751253935e-08
         },
         {
           "action_id": "swap_to_lynae",
-          "probability": 1.018501428836965e-08
+          "probability": 1.1682289298461463e-08
         }
       ],
       "focus_actions": {
         "swap_to_lynae": {
           "present": true,
           "valid": true,
-          "probability": 1.018501428836965e-08,
+          "probability": 1.1682289298461463e-08,
           "rank": 7
         },
         "lynae_resonance_skill": {
@@ -79,6 +79,18 @@
           "valid": false,
           "probability": 0.0,
           "rank": null
+        },
+        "lynae_resonance_liberation": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "swap_to_aemeath": {
+          "present": true,
+          "valid": true,
+          "probability": 3.996537524191239e-06,
+          "rank": 4
         }
       },
       "model_probability_error": null
@@ -98,40 +110,40 @@
       "valid_action_count": 7,
       "top_10_valid_action_probabilities": [
         {
-          "action_id": "aemeath_resonance_liberation",
-          "probability": 0.9993238502263857
+          "action_id": "aemeath_basic_attack",
+          "probability": 0.8578609320533493
         },
         {
-          "action_id": "aemeath_basic_attack",
-          "probability": 0.0006427914520465203
+          "action_id": "aemeath_resonance_liberation",
+          "probability": 0.07393167478909814
         },
         {
           "action_id": "aemeath_resonance_skill",
-          "probability": 3.328648035196014e-05
+          "probability": 0.06810359256976985
         },
         {
           "action_id": "swap_to_mornye",
-          "probability": 3.961836035887921e-08
-        },
-        {
-          "action_id": "aemeath_heavy_attack",
-          "probability": 2.4886771886900852e-08
+          "probability": 8.109153237945472e-05
         },
         {
           "action_id": "short_wait",
-          "probability": 4.9414370636212995e-09
+          "probability": 1.8043340637875556e-05
         },
         {
           "action_id": "swap_to_lynae",
-          "probability": 2.394646493847817e-09
+          "probability": 3.7629065510346586e-06
+        },
+        {
+          "action_id": "aemeath_heavy_attack",
+          "probability": 9.028082142522004e-07
         }
       ],
       "focus_actions": {
         "swap_to_lynae": {
           "present": true,
           "valid": true,
-          "probability": 2.394646493847817e-09,
-          "rank": 7
+          "probability": 3.7629065510346586e-06,
+          "rank": 6
         },
         "lynae_resonance_skill": {
           "present": true,
@@ -152,6 +164,18 @@
           "rank": null
         },
         "lynae_visual_impact": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_resonance_liberation": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "swap_to_aemeath": {
           "present": true,
           "valid": false,
           "probability": 0.0,
@@ -175,40 +199,40 @@
       "valid_action_count": 7,
       "top_10_valid_action_probabilities": [
         {
-          "action_id": "aemeath_resonance_liberation",
-          "probability": 0.9995995666537744
+          "action_id": "aemeath_basic_attack",
+          "probability": 0.6316733278731131
         },
         {
-          "action_id": "aemeath_basic_attack",
-          "probability": 0.0003229893113756706
+          "action_id": "aemeath_resonance_liberation",
+          "probability": 0.2017611537155042
         },
         {
           "action_id": "aemeath_resonance_skill",
-          "probability": 7.720984480739053e-05
+          "probability": 0.16149198800428985
         },
         {
           "action_id": "swap_to_mornye",
-          "probability": 1.962354481227159e-07
-        },
-        {
-          "action_id": "aemeath_heavy_attack",
-          "probability": 2.3656284187439575e-08
+          "probability": 0.004950394790031824
         },
         {
           "action_id": "short_wait",
-          "probability": 1.1369563172761166e-08
+          "probability": 9.533662400513424e-05
         },
         {
           "action_id": "swap_to_lynae",
-          "probability": 2.9287470427136924e-09
+          "probability": 2.6416822606710026e-05
+        },
+        {
+          "action_id": "aemeath_heavy_attack",
+          "probability": 1.382170449122002e-06
         }
       ],
       "focus_actions": {
         "swap_to_lynae": {
           "present": true,
           "valid": true,
-          "probability": 2.9287470427136924e-09,
-          "rank": 7
+          "probability": 2.6416822606710026e-05,
+          "rank": 6
         },
         "lynae_resonance_skill": {
           "present": true,
@@ -229,6 +253,18 @@
           "rank": null
         },
         "lynae_visual_impact": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_resonance_liberation": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "swap_to_aemeath": {
           "present": true,
           "valid": false,
           "probability": 0.0,
@@ -253,31 +289,31 @@
       "top_10_valid_action_probabilities": [
         {
           "action_id": "lynae_resonance_liberation",
-          "probability": 0.9869815932533652
+          "probability": 0.9986349190778425
         },
         {
           "action_id": "swap_to_aemeath",
-          "probability": 0.012988296633947242
+          "probability": 0.000745391215169763
         },
         {
           "action_id": "lynae_echo_hyvatia",
-          "probability": 1.538767027000843e-05
+          "probability": 0.0003603682430911555
         },
         {
           "action_id": "lynae_resonance_skill",
-          "probability": 7.864441793036522e-06
+          "probability": 0.000140590672209025
         },
         {
           "action_id": "lynae_basic_attack",
-          "probability": 6.31261915119261e-06
+          "probability": 0.00011085402129689741
         },
         {
           "action_id": "swap_to_mornye",
-          "probability": 4.971177076900135e-07
+          "probability": 6.470446637913761e-06
         },
         {
           "action_id": "short_wait",
-          "probability": 4.8263765642336334e-08
+          "probability": 1.4063237527143359e-06
         }
       ],
       "focus_actions": {
@@ -290,7 +326,7 @@
         "lynae_resonance_skill": {
           "present": true,
           "valid": true,
-          "probability": 7.864441793036522e-06,
+          "probability": 0.000140590672209025,
           "rank": 4
         },
         "lynae_spark_collision": {
@@ -310,6 +346,18 @@
           "valid": false,
           "probability": 0.0,
           "rank": null
+        },
+        "lynae_resonance_liberation": {
+          "present": true,
+          "valid": true,
+          "probability": 0.9986349190778425,
+          "rank": 1
+        },
+        "swap_to_aemeath": {
+          "present": true,
+          "valid": true,
+          "probability": 0.000745391215169763,
+          "rank": 2
         }
       },
       "model_probability_error": null
@@ -330,31 +378,31 @@
       "top_10_valid_action_probabilities": [
         {
           "action_id": "lynae_resonance_liberation",
-          "probability": 0.9876641867844485
-        },
-        {
-          "action_id": "swap_to_aemeath",
-          "probability": 0.012283874038722284
+          "probability": 0.9937058662584424
         },
         {
           "action_id": "lynae_spark_collision",
-          "probability": 3.078789160221109e-05
+          "probability": 0.005097873190515291
+        },
+        {
+          "action_id": "swap_to_aemeath",
+          "probability": 0.0006967092778294324
         },
         {
           "action_id": "lynae_echo_hyvatia",
-          "probability": 1.4723022457463743e-05
+          "probability": 0.00037448399805906204
         },
         {
           "action_id": "lynae_basic_attack",
-          "probability": 5.9403616037738405e-06
+          "probability": 0.00011674084087892024
         },
         {
           "action_id": "swap_to_mornye",
-          "probability": 4.433511086821578e-07
+          "probability": 6.855666951361012e-06
         },
         {
           "action_id": "short_wait",
-          "probability": 4.455005715636228e-08
+          "probability": 1.470767323547777e-06
         }
       ],
       "focus_actions": {
@@ -373,8 +421,8 @@
         "lynae_spark_collision": {
           "present": true,
           "valid": true,
-          "probability": 3.078789160221109e-05,
-          "rank": 3
+          "probability": 0.005097873190515291,
+          "rank": 2
         },
         "lynae_polychrome_leap": {
           "present": true,
@@ -387,6 +435,18 @@
           "valid": false,
           "probability": 0.0,
           "rank": null
+        },
+        "lynae_resonance_liberation": {
+          "present": true,
+          "valid": true,
+          "probability": 0.9937058662584424,
+          "rank": 1
+        },
+        "swap_to_aemeath": {
+          "present": true,
+          "valid": true,
+          "probability": 0.0006967092778294324,
+          "rank": 3
         }
       },
       "model_probability_error": null
@@ -407,31 +467,31 @@
       "top_10_valid_action_probabilities": [
         {
           "action_id": "lynae_resonance_liberation",
-          "probability": 0.9744303162408833
+          "probability": 0.9984241341662519
         },
         {
           "action_id": "swap_to_aemeath",
-          "probability": 0.024760705839357928
-        },
-        {
-          "action_id": "lynae_polychrome_leap",
-          "probability": 0.0007669597817206765
+          "probability": 0.0009317991432593007
         },
         {
           "action_id": "lynae_echo_hyvatia",
-          "probability": 2.6869479927789953e-05
+          "probability": 0.0002896147378172584
+        },
+        {
+          "action_id": "lynae_polychrome_leap",
+          "probability": 0.00026706424683188074
         },
         {
           "action_id": "lynae_basic_attack",
-          "probability": 1.341519674067633e-05
+          "probability": 8.220491557826698e-05
         },
         {
           "action_id": "swap_to_mornye",
-          "probability": 1.6045838459091376e-06
+          "probability": 4.089082110861978e-06
         },
         {
           "action_id": "short_wait",
-          "probability": 1.288775236945669e-07
+          "probability": 1.0937081505725605e-06
         }
       ],
       "focus_actions": {
@@ -456,10 +516,358 @@
         "lynae_polychrome_leap": {
           "present": true,
           "valid": true,
-          "probability": 0.0007669597817206765,
+          "probability": 0.00026706424683188074,
+          "rank": 4
+        },
+        "lynae_visual_impact": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_resonance_liberation": {
+          "present": true,
+          "valid": true,
+          "probability": 0.9984241341662519,
+          "rank": 1
+        },
+        "swap_to_aemeath": {
+          "present": true,
+          "valid": true,
+          "probability": 0.0009317991432593007,
+          "rank": 2
+        }
+      },
+      "model_probability_error": null
+    },
+    {
+      "state": "G_after_lynae_intro_and_liberation",
+      "active_character": "lynae",
+      "valid_action_ids": [
+        "swap_to_aemeath",
+        "short_wait",
+        "lynae_basic_attack",
+        "lynae_resonance_skill",
+        "lynae_echo_hyvatia",
+        "swap_to_mornye"
+      ],
+      "valid_action_count": 6,
+      "top_10_valid_action_probabilities": [
+        {
+          "action_id": "swap_to_aemeath",
+          "probability": 0.7447877381534802
+        },
+        {
+          "action_id": "lynae_echo_hyvatia",
+          "probability": 0.14691861864076242
+        },
+        {
+          "action_id": "lynae_resonance_skill",
+          "probability": 0.06395059466435161
+        },
+        {
+          "action_id": "lynae_basic_attack",
+          "probability": 0.04055065907382151
+        },
+        {
+          "action_id": "swap_to_mornye",
+          "probability": 0.0032870238310303427
+        },
+        {
+          "action_id": "short_wait",
+          "probability": 0.0005053656365539429
+        }
+      ],
+      "focus_actions": {
+        "swap_to_lynae": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_resonance_skill": {
+          "present": true,
+          "valid": true,
+          "probability": 0.06395059466435161,
+          "rank": 3
+        },
+        "lynae_spark_collision": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_polychrome_leap": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_visual_impact": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_resonance_liberation": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "swap_to_aemeath": {
+          "present": true,
+          "valid": true,
+          "probability": 0.7447877381534802,
+          "rank": 1
+        }
+      },
+      "model_probability_error": null
+    },
+    {
+      "state": "H_after_lynae_intro_liberation_and_skill",
+      "active_character": "lynae",
+      "valid_action_ids": [
+        "swap_to_aemeath",
+        "short_wait",
+        "lynae_basic_attack",
+        "lynae_spark_collision",
+        "lynae_echo_hyvatia",
+        "swap_to_mornye"
+      ],
+      "valid_action_count": 6,
+      "top_10_valid_action_probabilities": [
+        {
+          "action_id": "lynae_spark_collision",
+          "probability": 0.736223130927923
+        },
+        {
+          "action_id": "swap_to_aemeath",
+          "probability": 0.2008379181714924
+        },
+        {
+          "action_id": "lynae_echo_hyvatia",
+          "probability": 0.04816704807723063
+        },
+        {
+          "action_id": "lynae_basic_attack",
+          "probability": 0.013567986506998002
+        },
+        {
+          "action_id": "swap_to_mornye",
+          "probability": 0.001038809930355404
+        },
+        {
+          "action_id": "short_wait",
+          "probability": 0.00016510638600056806
+        }
+      ],
+      "focus_actions": {
+        "swap_to_lynae": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_resonance_skill": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_spark_collision": {
+          "present": true,
+          "valid": true,
+          "probability": 0.736223130927923,
+          "rank": 1
+        },
+        "lynae_polychrome_leap": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_visual_impact": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_resonance_liberation": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "swap_to_aemeath": {
+          "present": true,
+          "valid": true,
+          "probability": 0.2008379181714924,
+          "rank": 2
+        }
+      },
+      "model_probability_error": null
+    },
+    {
+      "state": "I_after_lynae_intro_liberation_skill_spark",
+      "active_character": "lynae",
+      "valid_action_ids": [
+        "swap_to_aemeath",
+        "short_wait",
+        "lynae_basic_attack",
+        "lynae_echo_hyvatia",
+        "lynae_polychrome_leap",
+        "swap_to_mornye"
+      ],
+      "valid_action_count": 6,
+      "top_10_valid_action_probabilities": [
+        {
+          "action_id": "swap_to_aemeath",
+          "probability": 0.7791625441585849
+        },
+        {
+          "action_id": "lynae_echo_hyvatia",
+          "probability": 0.10314703226327811
+        },
+        {
+          "action_id": "lynae_polychrome_leap",
+          "probability": 0.08934450356257381
+        },
+        {
+          "action_id": "lynae_basic_attack",
+          "probability": 0.02645394453519507
+        },
+        {
+          "action_id": "swap_to_mornye",
+          "probability": 0.0015468690902274373
+        },
+        {
+          "action_id": "short_wait",
+          "probability": 0.00034510639014070563
+        }
+      ],
+      "focus_actions": {
+        "swap_to_lynae": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_resonance_skill": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_spark_collision": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_polychrome_leap": {
+          "present": true,
+          "valid": true,
+          "probability": 0.08934450356257381,
           "rank": 3
         },
         "lynae_visual_impact": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_resonance_liberation": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "swap_to_aemeath": {
+          "present": true,
+          "valid": true,
+          "probability": 0.7791625441585849,
+          "rank": 1
+        }
+      },
+      "model_probability_error": null
+    },
+    {
+      "state": "J_aemeath_post_liberation_concerto_ready",
+      "active_character": "aemeath",
+      "valid_action_ids": [
+        "aemeath_basic_attack",
+        "aemeath_resonance_skill",
+        "aemeath_heavy_attack",
+        "short_wait",
+        "swap_to_mornye",
+        "swap_to_lynae"
+      ],
+      "valid_action_count": 6,
+      "top_10_valid_action_probabilities": [
+        {
+          "action_id": "aemeath_basic_attack",
+          "probability": 0.8631772928429937
+        },
+        {
+          "action_id": "aemeath_resonance_skill",
+          "probability": 0.1282560545550717
+        },
+        {
+          "action_id": "swap_to_mornye",
+          "probability": 0.008418419564752639
+        },
+        {
+          "action_id": "short_wait",
+          "probability": 0.00011499830042086622
+        },
+        {
+          "action_id": "swap_to_lynae",
+          "probability": 3.1510703154404726e-05
+        },
+        {
+          "action_id": "aemeath_heavy_attack",
+          "probability": 1.724033606636481e-06
+        }
+      ],
+      "focus_actions": {
+        "swap_to_lynae": {
+          "present": true,
+          "valid": true,
+          "probability": 3.1510703154404726e-05,
+          "rank": 5
+        },
+        "lynae_resonance_skill": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_spark_collision": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_polychrome_leap": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_visual_impact": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "lynae_resonance_liberation": {
+          "present": true,
+          "valid": false,
+          "probability": 0.0,
+          "rank": null
+        },
+        "swap_to_aemeath": {
           "present": true,
           "valid": false,
           "probability": 0.0,

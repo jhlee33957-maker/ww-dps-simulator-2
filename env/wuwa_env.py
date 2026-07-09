@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import gymnasium as gym
 import numpy as np
@@ -25,6 +26,10 @@ CURRICULUM_RESET_MODES = {
     "lynae_after_intro",
     "lynae_kaleidoscopic_ready",
     "mixed_lynae_curriculum",
+    "aemeath_post_liberation_ready_for_lynae",
+    "lynae_after_intro_liberation_used",
+    "lynae_kaleidoscopic_ready_after_liberation",
+    "mixed_lynae_route_curriculum",
 }
 MIXED_LYNAE_CURRICULUM_CHOICES = (
     "none",
@@ -32,6 +37,52 @@ MIXED_LYNAE_CURRICULUM_CHOICES = (
     "lynae_after_intro",
     "lynae_kaleidoscopic_ready",
 )
+MIXED_LYNAE_ROUTE_CURRICULUM_CHOICES = (
+    "none",
+    "aemeath_post_liberation_ready_for_lynae",
+    "lynae_after_intro_liberation_used",
+    "lynae_kaleidoscopic_ready_after_liberation",
+    "lynae_after_intro",
+    "lynae_kaleidoscopic_ready",
+)
+
+CURRICULUM_RESET_METADATA: dict[str, dict[str, Any]] = {
+    "none": {
+        "training_only": False,
+        "pre_roll_type": "normal_reset",
+        "reason": "normal evaluation-compatible reset",
+    },
+    "aemeath_ready_for_lynae": {
+        "training_only": True,
+        "pre_roll_type": "artificial_concerto_adjustment",
+        "reason": "exposes swap_to_lynae when Aemeath Concerto is ready",
+    },
+    "lynae_after_intro": {
+        "training_only": True,
+        "pre_roll_type": "source_consistent_pre_roll",
+        "reason": "starts after real Lynae Intro to expose Lynae internal route",
+    },
+    "lynae_kaleidoscopic_ready": {
+        "training_only": True,
+        "pre_roll_type": "source_consistent_pre_roll",
+        "reason": "starts after real Intro, Resonance Skill, and Spark Collision",
+    },
+    "aemeath_post_liberation_ready_for_lynae": {
+        "training_only": True,
+        "pre_roll_type": "artificial_cooldown_energy_adjustment",
+        "reason": "removes immediate Aemeath Liberation competition so swap_to_lynae can be explored",
+    },
+    "lynae_after_intro_liberation_used": {
+        "training_only": True,
+        "pre_roll_type": "source_consistent_pre_roll",
+        "reason": "starts after real Lynae Intro and real Lynae Liberation so core route actions compete fairly",
+    },
+    "lynae_kaleidoscopic_ready_after_liberation": {
+        "training_only": True,
+        "pre_roll_type": "source_consistent_pre_roll",
+        "reason": "starts in Kaleidoscopic Parade after Lynae Liberation has already been consumed",
+    },
+}
 
 
 class WuwaDpsEnv(gym.Env):
@@ -71,6 +122,7 @@ class WuwaDpsEnv(gym.Env):
         self.stat_overrides_arg = stat_overrides
         self.curriculum_reset_mode_arg = self._normalize_curriculum_reset_mode(curriculum_reset_mode)
         self.last_curriculum_reset_mode = "none"
+        self.last_curriculum_reset_metadata = self._curriculum_metadata("none", requested_mode=self.curriculum_reset_mode_arg)
         self.simulation = Simulation.from_json(
             self.data_dir,
             selected_character_ids=self.selected_character_ids_arg,
@@ -107,7 +159,11 @@ class WuwaDpsEnv(gym.Env):
         applied_curriculum_mode = self._select_curriculum_reset_mode()
         self._apply_curriculum_reset(applied_curriculum_mode)
         self.last_curriculum_reset_mode = applied_curriculum_mode
-        return self._get_observation(), {"curriculum_reset_mode": applied_curriculum_mode}
+        self.last_curriculum_reset_metadata = self._curriculum_metadata(
+            applied_curriculum_mode,
+            requested_mode=self.curriculum_reset_mode_arg,
+        )
+        return self._get_observation(), dict(self.last_curriculum_reset_metadata)
 
     def step(self, action: int):
         if self.simulation.state.combat_time >= self.simulation.combat_duration:
@@ -122,6 +178,7 @@ class WuwaDpsEnv(gym.Env):
                 "action_time": self.simulation.state.current_time,
                 "combat_time": self.simulation.state.combat_time,
                 "curriculum_reset_mode": self.last_curriculum_reset_mode,
+                "curriculum_reset_metadata": dict(self.last_curriculum_reset_metadata),
             }
             return self._get_observation(), 0.0, True, False, info
 
@@ -159,6 +216,7 @@ class WuwaDpsEnv(gym.Env):
             "action_time": self.simulation.state.current_time,
             "combat_time": self.simulation.state.combat_time,
             "curriculum_reset_mode": self.last_curriculum_reset_mode,
+            "curriculum_reset_metadata": dict(self.last_curriculum_reset_metadata),
         }
         return self._get_observation(), reward, terminated, truncated, info
 
@@ -199,6 +257,7 @@ class WuwaDpsEnv(gym.Env):
         metadata = observation_metadata(self)
         metadata["curriculum_reset_mode"] = self.curriculum_reset_mode_arg
         metadata["last_curriculum_reset_mode"] = self.last_curriculum_reset_mode
+        metadata["last_curriculum_reset_metadata"] = dict(self.last_curriculum_reset_metadata)
         return metadata
 
     @staticmethod
@@ -212,22 +271,30 @@ class WuwaDpsEnv(gym.Env):
         return normalized
 
     def _select_curriculum_reset_mode(self) -> str:
-        if self.curriculum_reset_mode_arg != "mixed_lynae_curriculum":
-            return self.curriculum_reset_mode_arg
-        index = int(self.np_random.integers(0, len(MIXED_LYNAE_CURRICULUM_CHOICES)))
-        return MIXED_LYNAE_CURRICULUM_CHOICES[index]
+        if self.curriculum_reset_mode_arg == "mixed_lynae_curriculum":
+            index = int(self.np_random.integers(0, len(MIXED_LYNAE_CURRICULUM_CHOICES)))
+            return MIXED_LYNAE_CURRICULUM_CHOICES[index]
+        if self.curriculum_reset_mode_arg == "mixed_lynae_route_curriculum":
+            index = int(self.np_random.integers(0, len(MIXED_LYNAE_ROUTE_CURRICULUM_CHOICES)))
+            return MIXED_LYNAE_ROUTE_CURRICULUM_CHOICES[index]
+        return self.curriculum_reset_mode_arg
 
     def _apply_curriculum_reset(self, mode: str) -> None:
         if mode == "none":
             return
-        if mode not in MIXED_LYNAE_CURRICULUM_CHOICES:
+        if mode not in set(MIXED_LYNAE_CURRICULUM_CHOICES).union(MIXED_LYNAE_ROUTE_CURRICULUM_CHOICES):
             raise ValueError(f"Unsupported applied curriculum reset mode: {mode}")
         self._set_active_character("aemeath")
         self._set_concerto_ready("aemeath", 100.0)
+        if mode == "aemeath_post_liberation_ready_for_lynae":
+            self._block_resonance_liberation("aemeath", "aemeath_resonance_liberation")
+            return
         if mode == "aemeath_ready_for_lynae":
             return
         self._execute_curriculum_action("swap_to_lynae", mode)
-        if mode == "lynae_after_intro":
+        if mode in {"lynae_after_intro_liberation_used", "lynae_kaleidoscopic_ready_after_liberation"}:
+            self._execute_curriculum_action("lynae_resonance_liberation", mode)
+        if mode in {"lynae_after_intro", "lynae_after_intro_liberation_used"}:
             return
         self._execute_curriculum_action("lynae_resonance_skill", mode)
         self._execute_curriculum_action("lynae_spark_collision", mode)
@@ -256,6 +323,24 @@ class WuwaDpsEnv(gym.Env):
                 f"Curriculum reset mode {mode!r} could not execute {action_id!r}; "
                 f"active={active!r}, valid_actions={valid_actions!r}."
             )
+
+    def _block_resonance_liberation(self, character_id: str, action_id: str) -> None:
+        self.simulation.state.resonance_energy[character_id] = 0.0
+        self.simulation.state.cooldowns[action_id] = max(
+            float(self.simulation.state.cooldowns.get(action_id, 0.0) or 0.0),
+            25.0,
+        )
+
+    def _curriculum_metadata(self, mode: str, *, requested_mode: str) -> dict[str, Any]:
+        base = dict(CURRICULUM_RESET_METADATA.get(mode, CURRICULUM_RESET_METADATA["none"]))
+        base.update(
+            {
+                "curriculum_reset_mode": mode,
+                "selected_curriculum_submode": mode if requested_mode.startswith("mixed_") else None,
+                "requested_curriculum_reset_mode": requested_mode,
+            }
+        )
+        return base
 
     def _cooldown_ratio(self, action_id: str) -> float:
         action_data = self.simulation.resolve_action(self.simulation.actions[action_id])

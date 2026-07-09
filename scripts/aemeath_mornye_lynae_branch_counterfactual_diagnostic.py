@@ -62,6 +62,36 @@ def run_branch_counterfactual_diagnostic(
             party=party,
         ),
         _execute_lynae_outro_route(party),
+        _execute_route(
+            "aemeath_post_liberation_ready_for_lynae_route",
+            setup=_setup_aemeath_post_liberation_ready_for_lynae,
+            actions=["swap_to_lynae"],
+            party=party,
+        ),
+        _execute_route(
+            "lynae_after_intro_liberation_used_route",
+            setup=_setup_lynae_after_intro_liberation_used,
+            actions=[
+                "lynae_resonance_skill",
+                "lynae_spark_collision",
+                "lynae_polychrome_leap",
+                "lynae_polychrome_leap",
+                "lynae_polychrome_leap",
+                "lynae_visual_impact",
+            ],
+            party=party,
+        ),
+        _execute_route(
+            "lynae_kaleidoscopic_after_liberation_route",
+            setup=_setup_lynae_kaleidoscopic_after_liberation,
+            actions=[
+                "lynae_polychrome_leap",
+                "lynae_polychrome_leap",
+                "lynae_polychrome_leap",
+                "lynae_visual_impact",
+            ],
+            party=party,
+        ),
     ]
     report = {
         "party_id": party,
@@ -84,12 +114,38 @@ def _setup_aemeath_ready(sim: Simulation) -> None:
     _set_full_concerto(sim, "aemeath")
 
 
+def _setup_aemeath_post_liberation_ready_for_lynae(sim: Simulation) -> None:
+    _setup_aemeath_ready(sim)
+    sim.state.resonance_energy["aemeath"] = 0.0
+    sim.state.cooldowns["aemeath_resonance_liberation"] = 25.0
+
+
+def _setup_lynae_after_intro_liberation_used(sim: Simulation) -> None:
+    _setup_aemeath_ready(sim)
+    _must_execute(sim, "swap_to_lynae")
+    _must_execute(sim, "lynae_resonance_liberation")
+
+
+def _setup_lynae_kaleidoscopic_after_liberation(sim: Simulation) -> None:
+    _setup_lynae_after_intro_liberation_used(sim)
+    _must_execute(sim, "lynae_resonance_skill")
+    _must_execute(sim, "lynae_spark_collision")
+
+
 def _set_full_concerto(sim: Simulation, character_id: str) -> None:
     state = sim.state.character_states[character_id]
     cap = float(state.get("concerto_energy_cap", 100.0) or 100.0)
     state["concerto_energy"] = cap
     state["concerto_ready"] = True
     sim.state.concerto_energy[character_id] = cap
+
+
+def _must_execute(sim: Simulation, action_id: str) -> None:
+    if not sim.execute_action(action_id):
+        raise RuntimeError(
+            f"Could not execute setup action {action_id!r}; "
+            f"active={sim.state.active_character_id!r}, valid={sim.valid_action_ids()!r}"
+        )
 
 
 def _execute_route(
@@ -191,6 +247,16 @@ def _route_report(
     resolved_actions = [row.resolved_action_id or row.selected_action_id for row in sim.timeline]
     final_row = sim.timeline[-1].model_dump(mode="json") if sim.timeline else {}
     lynae_outro_became_available = any(point["concerto_ready"] for point in trajectory)
+    lynae_core_actions = (
+        "lynae_resonance_skill",
+        "lynae_spark_collision",
+        "lynae_polychrome_leap",
+        "lynae_visual_impact",
+    )
+    lynae_core_action_validity = {
+        action_id: bool(action_id in sim.actions and sim.is_action_available(sim.actions[action_id]))
+        for action_id in lynae_core_actions
+    }
     return {
         "route_id": name,
         "route_label": name.replace("_", " "),
@@ -202,6 +268,10 @@ def _route_report(
         "selected_actions": selected_actions,
         "resolved_actions": resolved_actions,
         "lynae_resource_trajectory": trajectory,
+        "liberation_already_consumed": _liberation_already_consumed(sim),
+        "lynae_core_actions_valid": lynae_core_action_validity,
+        "visual_impact_reached": any(action_id == "lynae_visual_impact" for action_id in selected_actions + resolved_actions),
+        "outro_handoff_reached": selected_actions[-1:] == ["swap_to_aemeath"],
         "lynae_outro_available": lynae_outro_became_available,
         "lynae_outro_ready_at_end": _concerto_ready(sim, "lynae"),
         "buffs_applied_after_lynae_outro": final_row.get("applied_buffs", []) if selected_actions[-1:] == ["swap_to_aemeath"] else [],
@@ -225,6 +295,19 @@ def _lynae_state_point(sim: Simulation, label: str) -> dict[str, Any]:
 
 def _concerto_ready(sim: Simulation, character_id: str) -> bool:
     return bool(sim.state.character_states.get(character_id, {}).get("concerto_ready", False))
+
+
+def _liberation_already_consumed(sim: Simulation) -> bool:
+    used = any(
+        row.selected_action_id == "lynae_resonance_liberation"
+        or row.resolved_action_id == "lynae_resonance_liberation_prismatic_overblast"
+        for row in sim.timeline
+    )
+    blocked = (
+        sim.state.cooldowns.get("lynae_resonance_liberation", 0.0) > 0.0
+        or sim.state.resonance_energy.get("lynae", 0.0) < sim.actions["lynae_resonance_liberation"].resonance_energy_cost
+    )
+    return bool(used or blocked)
 
 
 def main() -> None:

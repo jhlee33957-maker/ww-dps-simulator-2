@@ -6,7 +6,7 @@ The training algorithm is MaskablePPO. The objective is to maximize simulated 12
 
 Action masks prevent invalid policy choices such as cooldown-gated skills, resource-gated skills, unavailable swaps, and state-invalid actions. They prevent illegal moves, but they do not tell the policy which valid route is best.
 
-Curriculum reset is training-only. It can start PPO from Aemeath-ready, Lynae-after-Intro, or Lynae-Kaleidoscopic states so delayed Lynae payoff is explored more often. It does not change Lynae damage, cooldowns, resources, source refs, action masks, or transition mechanics. It does not add a manual use-Lynae reward bonus.
+Curriculum reset is training-only. Character/route-specific curriculum reset modes may exist for delayed-payoff branches. They adjust training start states only. They do not modify damage formulas, cooldowns, action masks, final evaluation reward, or default evaluation reset. No character-specific usage reward bonus is applied by default.
 
 The final evaluation default is none: use `curriculum_reset_mode = none` for fair 120s comparisons unless intentionally studying curriculum-start behavior.
 
@@ -17,3 +17,13 @@ Known limitations:
 - Long delayed-reward branches may still require curriculum, entropy, longer training, macro actions, or additional diagnostics.
 
 Old PPO models before Lynae fixes are stale. Models trained before the Lynae transition, observation, reward exposure, and source-ref fixes should not be compared with new results without retraining or compatible continue-training.
+
+Recommended next training sequence:
+- Stage 1: `curriculum_reset_mode = lynae_kaleidoscopic_ready_after_liberation`, `timesteps = 100000`, `ent_coef = 0.04`
+- Stage 2: `curriculum_reset_mode = lynae_after_intro_liberation_used`, load Stage 1, `timesteps = 100000`, `ent_coef = 0.03`
+- Stage 3: `curriculum_reset_mode = aemeath_post_liberation_ready_for_lynae`, load Stage 2, `timesteps = 100000`, `ent_coef = 0.02`
+- Stage 4: `curriculum_reset_mode = mixed_lynae_route_curriculum`, load Stage 3, `timesteps = 200000`, `ent_coef = 0.02`
+- Stage 5 final: `curriculum_reset_mode = none`, load Stage 4, `timesteps = 300000`, `ent_coef = 0.01`
+- Final evaluation: `curriculum_reset_mode = none` with `--diagnose-policy-probs`
+
+This sequence is not guaranteed to make a delayed branch optimal. It gives PPO a fairer chance to learn the branch before returning to normal reset.

@@ -60,6 +60,10 @@ def main() -> None:
         modes_2.append(info["curriculum_reset_mode"])
     assert modes_1 == modes_2
     assert set(modes_1).issubset({"none", "aemeath_ready_for_lynae", "lynae_after_intro", "lynae_kaleidoscopic_ready"})
+    route_mixed = WuwaDpsEnv(ROOT / "data", party=PARTY_ID, curriculum_reset_mode="mixed_lynae_route_curriculum")
+    _obs, info = route_mixed.reset(seed=23)
+    assert info["selected_curriculum_submode"] == info["curriculum_reset_mode"]
+    assert info["requested_curriculum_reset_mode"] == "mixed_lynae_route_curriculum"
     print("aemeath_mornye_lynae_curriculum_reset_smoke_test ok")
 
 
