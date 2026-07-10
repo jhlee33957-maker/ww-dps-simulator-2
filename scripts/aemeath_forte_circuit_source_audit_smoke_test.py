@@ -33,8 +33,8 @@ def test_audit_outputs_exist_and_confirm_tune_rupture_followup() -> None:
     }
     for expected in (2786, 2787, 2931, 2932, 2578, 2579, 2628, 2629):
         assert expected in rows, f"missing source-confirmed row {expected}"
-    assert all(row["implementation_status"] == "workbook_confirmed" for row in audit["action_rows"])
-    assert all(row["implementation_status"] == "workbook_confirmed" for row in audit["dmg_rows"])
+    assert all(row["source_status"] == "workbook_confirmed" for row in audit["action_rows"])
+    assert all(row["source_status"] == "workbook_confirmed" for row in audit["dmg_rows"])
 
     text = report_path.read_text(encoding="utf-8-sig").lower()
     assert "workbook_confirmed" in text

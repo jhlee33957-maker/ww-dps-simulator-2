@@ -770,7 +770,7 @@
       "resource_aggregation": "selector_or_constellation_guard",
       "resonance_energy_gain": 0.0,
       "source_resonance_energy_gain": null,
-      "concerto_energy_gain": 0.0,
+      "concerto_energy_gain": 20.0,
       "source_concerto_energy_gain": null,
       "special_resource_gain": {},
       "resonance_energy_cost": 125,

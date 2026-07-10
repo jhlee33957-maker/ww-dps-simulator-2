@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T01:52:37.328079+00:00",
+  "generated_at": "2026-07-10T13:48:43.395877+00:00",
   "source": "data\\source\\鸣潮动作数据汇总.xlsx",
   "safe_to_patch": false,
   "repeat_metadata_index": [
@@ -345,9 +345,11 @@
     {
       "action_id": "aemeath_basic_form_stage_2",
       "coefficient_candidate": {
-        "safe_to_patch": true,
-        "safe_to_patch_reasons": [],
-        "confidence": "high",
+        "safe_to_patch": false,
+        "safe_to_patch_reasons": [
+          "candidate_longer_than_current_requires_review"
+        ],
+        "confidence": "medium",
         "base_source_rows": [
           {
             "row_number": 2688,
@@ -453,24 +455,36 @@
           0.3473
         ],
         "current_actions_comparison": {
-          "current_hit_count": 3,
+          "current_hit_count": 1,
           "candidate_hit_count": 3,
-          "same_hit_count": true,
-          "shape_status": "exact_match",
-          "max_abs_diff": 0.0,
-          "warnings": []
+          "same_hit_count": false,
+          "shape_status": "longer_than_current",
+          "max_abs_diff": 0.5557,
+          "warnings": [
+            "Coefficient candidate has more hits than current actions.json; review before applying."
+          ]
         },
         "critical_warnings": [],
         "excluded_variants_count": 0,
         "excluded_unrelated_rows_count": 0,
         "repeat_expansions_applied": 0,
-        "warnings": []
+        "warnings": [
+          {
+            "severity": "warning",
+            "message": "Coefficient candidate has more hits than current actions.json; review before applying."
+          }
+        ]
       },
       "resource_candidate": {
         "safe_to_patch": false,
-        "confidence": "high",
+        "confidence": "medium",
         "parsed_resource_candidates": {
-          "concerto_energy_gain": 1.25
+          "resonance_energy_gain": 0.63,
+          "core_energy_raw": 0,
+          "concerto_energy_gain": 1.25,
+          "toughness_value": 24.95,
+          "tune_value": 19.96,
+          "resonance_reduction_raw": 0
         },
         "raw_resources": {
           "大招能量": 0.63,
@@ -502,17 +516,17 @@
         ]
       },
       "current_actions_json_multipliers": [
-        0.1389,
-        0.2084,
-        0.3473
+        0.6946
       ]
     },
     {
       "action_id": "aemeath_basic_form_stage_3",
       "coefficient_candidate": {
-        "safe_to_patch": true,
-        "safe_to_patch_reasons": [],
-        "confidence": "high",
+        "safe_to_patch": false,
+        "safe_to_patch_reasons": [
+          "candidate_longer_than_current_requires_review"
+        ],
+        "confidence": "medium",
         "base_source_rows": [
           {
             "row_number": 2691,
@@ -682,24 +696,36 @@
           0.4656
         ],
         "current_actions_comparison": {
-          "current_hit_count": 5,
+          "current_hit_count": 1,
           "candidate_hit_count": 5,
-          "same_hit_count": true,
-          "shape_status": "exact_match",
-          "max_abs_diff": 0.0,
-          "warnings": []
+          "same_hit_count": false,
+          "shape_status": "longer_than_current",
+          "max_abs_diff": 0.8383,
+          "warnings": [
+            "Coefficient candidate has more hits than current actions.json; review before applying."
+          ]
         },
         "critical_warnings": [],
         "excluded_variants_count": 0,
         "excluded_unrelated_rows_count": 5,
         "repeat_expansions_applied": 0,
-        "warnings": []
+        "warnings": [
+          {
+            "severity": "warning",
+            "message": "Coefficient candidate has more hits than current actions.json; review before applying."
+          }
+        ]
       },
       "resource_candidate": {
         "safe_to_patch": false,
-        "confidence": "high",
+        "confidence": "medium",
         "parsed_resource_candidates": {
-          "concerto_energy_gain": 3.18
+          "resonance_energy_gain": 1.59,
+          "core_energy_raw": 0,
+          "concerto_energy_gain": 3.18,
+          "toughness_value": 93.45,
+          "tune_value": 50.76,
+          "resonance_reduction_raw": 0
         },
         "raw_resources": {
           "大招能量": 1.59,
@@ -731,19 +757,17 @@
         ]
       },
       "current_actions_json_multipliers": [
-        0.0932,
-        0.0932,
-        0.0932,
-        0.1863,
-        0.4656
+        0.9315
       ]
     },
     {
       "action_id": "aemeath_basic_form_stage_4",
       "coefficient_candidate": {
-        "safe_to_patch": true,
-        "safe_to_patch_reasons": [],
-        "confidence": "high",
+        "safe_to_patch": false,
+        "safe_to_patch_reasons": [
+          "candidate_longer_than_current_requires_review"
+        ],
+        "confidence": "medium",
         "base_source_rows": [
           {
             "row_number": 2701,
@@ -866,24 +890,36 @@
           1.0094
         ],
         "current_actions_comparison": {
-          "current_hit_count": 6,
+          "current_hit_count": 1,
           "candidate_hit_count": 6,
-          "same_hit_count": true,
-          "shape_status": "exact_match",
-          "max_abs_diff": 0.0,
-          "warnings": []
+          "same_hit_count": false,
+          "shape_status": "longer_than_current",
+          "max_abs_diff": 1.2786,
+          "warnings": [
+            "Coefficient candidate has more hits than current actions.json; review before applying."
+          ]
         },
         "critical_warnings": [],
         "excluded_variants_count": 0,
         "excluded_unrelated_rows_count": 0,
         "repeat_expansions_applied": 1,
-        "warnings": []
+        "warnings": [
+          {
+            "severity": "warning",
+            "message": "Coefficient candidate has more hits than current actions.json; review before applying."
+          }
+        ]
       },
       "resource_candidate": {
         "safe_to_patch": false,
-        "confidence": "high",
+        "confidence": "medium",
         "parsed_resource_candidates": {
-          "concerto_energy_gain": 3.63
+          "resonance_energy_gain": 1.82,
+          "core_energy_raw": 0,
+          "concerto_energy_gain": 3.63,
+          "toughness_value": 72.53,
+          "tune_value": 58.02,
+          "resonance_reduction_raw": 0
         },
         "raw_resources": {
           "大招能量": 1.82,
@@ -915,12 +951,7 @@
         ]
       },
       "current_actions_json_multipliers": [
-        0.0673,
-        0.0673,
-        0.0673,
-        0.0673,
-        0.0673,
-        1.0094
+        1.3459
       ]
     },
     {
@@ -940,7 +971,7 @@
         "raw_coefficients": [],
         "parsed_multipliers": [],
         "current_actions_comparison": {
-          "current_hit_count": 3,
+          "current_hit_count": 1,
           "candidate_hit_count": 0,
           "same_hit_count": false,
           "shape_status": "empty_candidate",
@@ -971,9 +1002,7 @@
         "warnings": []
       },
       "current_actions_json_multipliers": [
-        0.232,
-        0.232,
-        0.232
+        0.696
       ]
     },
     {
@@ -1080,11 +1109,9 @@
       "coefficient_candidate": {
         "safe_to_patch": false,
         "safe_to_patch_reasons": [
-          "candidate_shorter_than_current",
-          "shape_status_shorter_than_current",
-          "critical_warnings_present"
+          "candidate_values_differ_from_current"
         ],
-        "confidence": "low",
+        "confidence": "medium",
         "base_source_rows": [
           {
             "row_number": 2705,
@@ -1126,25 +1153,23 @@
           0.1857
         ],
         "current_actions_comparison": {
-          "current_hit_count": 2,
+          "current_hit_count": 1,
           "candidate_hit_count": 1,
-          "same_hit_count": false,
-          "shape_status": "shorter_than_current",
-          "max_abs_diff": 0.0,
+          "same_hit_count": true,
+          "shape_status": "same_length_diff_values",
+          "max_abs_diff": 0.7426,
           "warnings": [
-            "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+            "Coefficient candidate hit count matches current actions.json but values differ."
           ]
         },
-        "critical_warnings": [
-          "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
-        ],
+        "critical_warnings": [],
         "excluded_variants_count": 0,
         "excluded_unrelated_rows_count": 0,
         "repeat_expansions_applied": 0,
         "warnings": [
           {
-            "severity": "critical",
-            "message": "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+            "severity": "warning",
+            "message": "Coefficient candidate hit count matches current actions.json but values differ."
           }
         ]
       },
@@ -1189,8 +1214,7 @@
         ]
       },
       "current_actions_json_multipliers": [
-        0.1857,
-        0.7426
+        0.9283
       ]
     },
     {
@@ -1360,11 +1384,11 @@
           1.856
         ],
         "current_actions_comparison": {
-          "current_hit_count": 5,
+          "current_hit_count": 1,
           "candidate_hit_count": 6,
           "same_hit_count": false,
           "shape_status": "longer_than_current",
-          "max_abs_diff": 1.74,
+          "max_abs_diff": 1.5774,
           "warnings": [
             "Coefficient candidate has more hits than current actions.json; review before applying."
           ]
@@ -1421,11 +1445,7 @@
         ]
       },
       "current_actions_json_multipliers": [
-        0.116,
-        0.116,
-        0.116,
-        0.116,
-        1.856
+        2.32
       ]
     },
     {
@@ -1629,9 +1649,11 @@
     {
       "action_id": "aemeath_liberation_overdrive",
       "coefficient_candidate": {
-        "safe_to_patch": true,
-        "safe_to_patch_reasons": [],
-        "confidence": "high",
+        "safe_to_patch": false,
+        "safe_to_patch_reasons": [
+          "candidate_longer_than_current_requires_review"
+        ],
+        "confidence": "medium",
         "base_source_rows": [
           {
             "row_number": 2729,
@@ -1719,24 +1741,36 @@
           2.6774
         ],
         "current_actions_comparison": {
-          "current_hit_count": 4,
+          "current_hit_count": 1,
           "candidate_hit_count": 4,
-          "same_hit_count": true,
-          "shape_status": "exact_match",
-          "max_abs_diff": 0.0,
-          "warnings": []
+          "same_hit_count": false,
+          "shape_status": "longer_than_current",
+          "max_abs_diff": 8.0322,
+          "warnings": [
+            "Coefficient candidate has more hits than current actions.json; review before applying."
+          ]
         },
         "critical_warnings": [],
         "excluded_variants_count": 2,
         "excluded_unrelated_rows_count": 0,
         "repeat_expansions_applied": 1,
-        "warnings": []
+        "warnings": [
+          {
+            "severity": "warning",
+            "message": "Coefficient candidate has more hits than current actions.json; review before applying."
+          }
+        ]
       },
       "resource_candidate": {
         "safe_to_patch": false,
-        "confidence": "high",
+        "confidence": "medium",
         "parsed_resource_candidates": {
-          "concerto_energy_gain": 0.0
+          "resonance_energy_gain": 0.0,
+          "core_energy_raw": 0,
+          "concerto_energy_gain": 0.0,
+          "toughness_value": 106.67,
+          "tune_value": 224.0,
+          "resonance_reduction_raw": 0
         },
         "raw_resources": {
           "大招能量": 0,
@@ -1768,18 +1802,17 @@
         ]
       },
       "current_actions_json_multipliers": [
-        2.008,
-        2.6774,
-        2.6774,
-        2.6774
+        10.0402
       ]
     },
     {
       "action_id": "aemeath_mech_basic_stage_1",
       "coefficient_candidate": {
-        "safe_to_patch": true,
-        "safe_to_patch_reasons": [],
-        "confidence": "high",
+        "safe_to_patch": false,
+        "safe_to_patch_reasons": [
+          "candidate_longer_than_current_requires_review"
+        ],
+        "confidence": "medium",
         "base_source_rows": [
           {
             "row_number": 2743,
@@ -1835,24 +1868,36 @@
           0.232
         ],
         "current_actions_comparison": {
-          "current_hit_count": 3,
+          "current_hit_count": 1,
           "candidate_hit_count": 3,
-          "same_hit_count": true,
-          "shape_status": "exact_match",
-          "max_abs_diff": 0.0,
-          "warnings": []
+          "same_hit_count": false,
+          "shape_status": "longer_than_current",
+          "max_abs_diff": 0.464,
+          "warnings": [
+            "Coefficient candidate has more hits than current actions.json; review before applying."
+          ]
         },
         "critical_warnings": [],
         "excluded_variants_count": 0,
         "excluded_unrelated_rows_count": 0,
         "repeat_expansions_applied": 1,
-        "warnings": []
+        "warnings": [
+          {
+            "severity": "warning",
+            "message": "Coefficient candidate has more hits than current actions.json; review before applying."
+          }
+        ]
       },
       "resource_candidate": {
         "safe_to_patch": false,
-        "confidence": "high",
+        "confidence": "medium",
         "parsed_resource_candidates": {
-          "concerto_energy_gain": 0.84
+          "resonance_energy_gain": 0.42,
+          "core_energy_raw": 0,
+          "concerto_energy_gain": 0.84,
+          "toughness_value": 16.67,
+          "tune_value": 13.34,
+          "resonance_reduction_raw": 0
         },
         "raw_resources": {
           "大招能量": 0.42,
@@ -1884,17 +1929,17 @@
         ]
       },
       "current_actions_json_multipliers": [
-        0.232,
-        0.232,
-        0.232
+        0.696
       ]
     },
     {
       "action_id": "aemeath_mech_basic_stage_2",
       "coefficient_candidate": {
-        "safe_to_patch": true,
-        "safe_to_patch_reasons": [],
-        "confidence": "high",
+        "safe_to_patch": false,
+        "safe_to_patch_reasons": [
+          "candidate_longer_than_current_requires_review"
+        ],
+        "confidence": "medium",
         "base_source_rows": [
           {
             "row_number": 2744,
@@ -1968,24 +2013,36 @@
           0.7426
         ],
         "current_actions_comparison": {
-          "current_hit_count": 2,
+          "current_hit_count": 1,
           "candidate_hit_count": 2,
-          "same_hit_count": true,
-          "shape_status": "exact_match",
-          "max_abs_diff": 0.0,
-          "warnings": []
+          "same_hit_count": false,
+          "shape_status": "longer_than_current",
+          "max_abs_diff": 0.7426,
+          "warnings": [
+            "Coefficient candidate has more hits than current actions.json; review before applying."
+          ]
         },
         "critical_warnings": [],
         "excluded_variants_count": 0,
         "excluded_unrelated_rows_count": 0,
         "repeat_expansions_applied": 0,
-        "warnings": []
+        "warnings": [
+          {
+            "severity": "warning",
+            "message": "Coefficient candidate has more hits than current actions.json; review before applying."
+          }
+        ]
       },
       "resource_candidate": {
         "safe_to_patch": false,
-        "confidence": "high",
+        "confidence": "medium",
         "parsed_resource_candidates": {
-          "concerto_energy_gain": 2.67
+          "resonance_energy_gain": 1.34,
+          "core_energy_raw": 0,
+          "concerto_energy_gain": 2.67,
+          "toughness_value": 53.36,
+          "tune_value": 42.69,
+          "resonance_reduction_raw": 0
         },
         "raw_resources": {
           "大招能量": 1.34,
@@ -2017,8 +2074,7 @@
         ]
       },
       "current_actions_json_multipliers": [
-        0.1857,
-        0.7426
+        0.9283
       ]
     },
     {
@@ -2026,11 +2082,9 @@
       "coefficient_candidate": {
         "safe_to_patch": false,
         "safe_to_patch_reasons": [
-          "candidate_shorter_than_current",
-          "shape_status_shorter_than_current",
-          "critical_warnings_present"
+          "candidate_longer_than_current_requires_review"
         ],
-        "confidence": "low",
+        "confidence": "medium",
         "base_source_rows": [
           {
             "row_number": 2746,
@@ -2182,25 +2236,23 @@
           0.8154
         ],
         "current_actions_comparison": {
-          "current_hit_count": 8,
+          "current_hit_count": 1,
           "candidate_hit_count": 6,
           "same_hit_count": false,
-          "shape_status": "shorter_than_current",
-          "max_abs_diff": 0.7765,
+          "shape_status": "longer_than_current",
+          "max_abs_diff": 0.971,
           "warnings": [
-            "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+            "Coefficient candidate has more hits than current actions.json; review before applying."
           ]
         },
-        "critical_warnings": [
-          "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
-        ],
+        "critical_warnings": [],
         "excluded_variants_count": 0,
         "excluded_unrelated_rows_count": 4,
         "repeat_expansions_applied": 1,
         "warnings": [
           {
-            "severity": "critical",
-            "message": "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
+            "severity": "warning",
+            "message": "Coefficient candidate has more hits than current actions.json; review before applying."
           }
         ]
       },
@@ -2245,22 +2297,17 @@
         ]
       },
       "current_actions_json_multipliers": [
-        0.0389,
-        0.0389,
-        0.0389,
-        0.0389,
-        0.0389,
-        0.0389,
-        0.8154,
-        0.6165
+        1.0875
       ]
     },
     {
       "action_id": "aemeath_mech_basic_stage_4",
       "coefficient_candidate": {
-        "safe_to_patch": true,
-        "safe_to_patch_reasons": [],
-        "confidence": "high",
+        "safe_to_patch": false,
+        "safe_to_patch_reasons": [
+          "candidate_longer_than_current_requires_review"
+        ],
+        "confidence": "medium",
         "base_source_rows": [
           {
             "row_number": 2754,
@@ -2334,24 +2381,36 @@
           0.9421
         ],
         "current_actions_comparison": {
-          "current_hit_count": 2,
+          "current_hit_count": 1,
           "candidate_hit_count": 2,
-          "same_hit_count": true,
-          "shape_status": "exact_match",
-          "max_abs_diff": 0.0,
-          "warnings": []
+          "same_hit_count": false,
+          "shape_status": "longer_than_current",
+          "max_abs_diff": 0.9421,
+          "warnings": [
+            "Coefficient candidate has more hits than current actions.json; review before applying."
+          ]
         },
         "critical_warnings": [],
         "excluded_variants_count": 0,
         "excluded_unrelated_rows_count": 0,
         "repeat_expansions_applied": 0,
-        "warnings": []
+        "warnings": [
+          {
+            "severity": "warning",
+            "message": "Coefficient candidate has more hits than current actions.json; review before applying."
+          }
+        ]
       },
       "resource_candidate": {
         "safe_to_patch": false,
-        "confidence": "high",
+        "confidence": "medium",
         "parsed_resource_candidates": {
-          "concerto_energy_gain": 3.39
+          "resonance_energy_gain": 1.7,
+          "core_energy_raw": 0,
+          "concerto_energy_gain": 3.39,
+          "toughness_value": 67.69,
+          "tune_value": 54.16,
+          "resonance_reduction_raw": 0
         },
         "raw_resources": {
           "大招能量": 1.7,
@@ -2383,16 +2442,17 @@
         ]
       },
       "current_actions_json_multipliers": [
-        0.4038,
-        0.9421
+        1.3459
       ]
     },
     {
       "action_id": "aemeath_seraphic_duet_encore",
       "coefficient_candidate": {
-        "safe_to_patch": true,
-        "safe_to_patch_reasons": [],
-        "confidence": "high",
+        "safe_to_patch": false,
+        "safe_to_patch_reasons": [
+          "candidate_longer_than_current_requires_review"
+        ],
+        "confidence": "medium",
         "base_source_rows": [
           {
             "row_number": 2769,
@@ -2595,24 +2655,36 @@
           0.3579
         ],
         "current_actions_comparison": {
-          "current_hit_count": 8,
+          "current_hit_count": 1,
           "candidate_hit_count": 8,
-          "same_hit_count": true,
-          "shape_status": "exact_match",
-          "max_abs_diff": 0.0,
-          "warnings": []
+          "same_hit_count": false,
+          "shape_status": "longer_than_current",
+          "max_abs_diff": 3.4,
+          "warnings": [
+            "Coefficient candidate has more hits than current actions.json; review before applying."
+          ]
         },
         "critical_warnings": [],
         "excluded_variants_count": 5,
         "excluded_unrelated_rows_count": 2,
         "repeat_expansions_applied": 3,
-        "warnings": []
+        "warnings": [
+          {
+            "severity": "warning",
+            "message": "Coefficient candidate has more hits than current actions.json; review before applying."
+          }
+        ]
       },
       "resource_candidate": {
         "safe_to_patch": false,
-        "confidence": "high",
+        "confidence": "medium",
         "parsed_resource_candidates": {
-          "concerto_energy_gain": 0.0
+          "resonance_energy_gain": 0.0,
+          "core_energy_raw": 0,
+          "concerto_energy_gain": 0.0,
+          "toughness_value": 16.2,
+          "tune_value": 0.0,
+          "resonance_reduction_raw": 0
         },
         "raw_resources": {
           "大招能量": 0,
@@ -2644,22 +2716,17 @@
         ]
       },
       "current_actions_json_multipliers": [
-        0.179,
-        0.179,
-        0.3579,
-        0.3579,
-        0.179,
-        0.179,
-        1.7893,
-        0.3579
+        3.579
       ]
     },
     {
       "action_id": "aemeath_seraphic_duet_overturn",
       "coefficient_candidate": {
-        "safe_to_patch": true,
-        "safe_to_patch_reasons": [],
-        "confidence": "high",
+        "safe_to_patch": false,
+        "safe_to_patch_reasons": [
+          "candidate_longer_than_current_requires_review"
+        ],
+        "confidence": "medium",
         "base_source_rows": [
           {
             "row_number": 2716,
@@ -2848,24 +2915,36 @@
           0.5965
         ],
         "current_actions_comparison": {
-          "current_hit_count": 13,
+          "current_hit_count": 1,
           "candidate_hit_count": 13,
-          "same_hit_count": true,
-          "shape_status": "exact_match",
-          "max_abs_diff": 0.0,
-          "warnings": []
+          "same_hit_count": false,
+          "shape_status": "longer_than_current",
+          "max_abs_diff": 3.4005,
+          "warnings": [
+            "Coefficient candidate has more hits than current actions.json; review before applying."
+          ]
         },
         "critical_warnings": [],
         "excluded_variants_count": 4,
         "excluded_unrelated_rows_count": 2,
         "repeat_expansions_applied": 3,
-        "warnings": []
+        "warnings": [
+          {
+            "severity": "warning",
+            "message": "Coefficient candidate has more hits than current actions.json; review before applying."
+          }
+        ]
       },
       "resource_candidate": {
         "safe_to_patch": false,
-        "confidence": "high",
+        "confidence": "medium",
         "parsed_resource_candidates": {
-          "concerto_energy_gain": 0.0
+          "resonance_energy_gain": 0.0,
+          "core_energy_raw": 0,
+          "concerto_energy_gain": 0.0,
+          "toughness_value": 16.2,
+          "tune_value": 0.0,
+          "resonance_reduction_raw": 0
         },
         "raw_resources": {
           "大招能量": 0,
@@ -2897,19 +2976,7 @@
         ]
       },
       "current_actions_json_multipliers": [
-        0.179,
-        0.1492,
-        0.1492,
-        0.1492,
-        0.1492,
-        0.1492,
-        0.1492,
-        0.2386,
-        0.2386,
-        0.2386,
-        0.5965,
-        0.5965,
-        0.5965
+        3.5795
       ]
     }
   ]

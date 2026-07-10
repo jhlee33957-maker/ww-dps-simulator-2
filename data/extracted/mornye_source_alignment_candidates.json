@@ -1,12 +1,262 @@
 {
   "source_name": "莫宁",
-  "generated_at": "2026-07-06T01:53:42.926262+00:00",
-  "safe_to_patch_count": 0,
+  "generated_at": "2026-07-10T13:51:01.810714+00:00",
+  "safe_to_patch_count": 22,
   "candidates": [
+    {
+      "target": "mornye_basic_stage_1",
+      "aspect": "coefficients",
+      "current_value": [
+        0.5569
+      ],
+      "source_value": [
+        0.1671,
+        0.2227,
+        0.1671
+      ],
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_basic_stage_1",
+      "aspect": "timing",
+      "current_value": 0.4167,
+      "source_value": 1.0167,
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_basic_stage_2",
+      "aspect": "coefficients",
+      "current_value": [
+        1.1932
+      ],
+      "source_value": [
+        0.2386,
+        0.2386,
+        0.179,
+        0.179,
+        0.179,
+        0.179
+      ],
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_basic_stage_2",
+      "aspect": "timing",
+      "current_value": 0.8167,
+      "source_value": 1.1333,
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_basic_stage_3",
+      "aspect": "coefficients",
+      "current_value": [
+        1.034
+      ],
+      "source_value": [
+        0.4136,
+        0.1034,
+        0.1034,
+        0.1034,
+        0.1034,
+        0.1034,
+        0.1034
+      ],
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_basic_stage_3",
+      "aspect": "timing",
+      "current_value": 0.8333,
+      "source_value": 1.5167,
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_basic_stage_4",
+      "aspect": "timing",
+      "current_value": 1.9333,
+      "source_value": 2.8333,
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_wfo_basic_stage_1",
+      "aspect": "coefficients",
+      "current_value": [
+        0.5568
+      ],
+      "source_value": [
+        0.1392,
+        0.1392,
+        0.1392,
+        0.1392
+      ],
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_wfo_basic_stage_1",
+      "aspect": "timing",
+      "current_value": 0.35,
+      "source_value": 0.7167,
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_wfo_basic_stage_2",
+      "aspect": "coefficients",
+      "current_value": [
+        1.034
+      ],
+      "source_value": [
+        0.2585,
+        0.2585,
+        0.2585,
+        0.2585
+      ],
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_wfo_basic_stage_2",
+      "aspect": "timing",
+      "current_value": 0.7167,
+      "source_value": 1.1333,
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_wfo_basic_stage_3",
+      "aspect": "coefficients",
+      "current_value": [
+        1.0342
+      ],
+      "source_value": [
+        0.0931,
+        0.0931,
+        0.0931,
+        0.0931,
+        0.3309,
+        0.3309
+      ],
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_wfo_basic_stage_3",
+      "aspect": "timing",
+      "current_value": 0.65,
+      "source_value": 1.0167,
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_wfo_basic_stage_3",
+      "aspect": "resource:concerto_energy_gain",
+      "current_value": 22.56,
+      "source_value": 20,
+      "safe_to_patch": true,
+      "reason": "Resource mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_heavy_attack_normal",
+      "aspect": "coefficients",
+      "current_value": [
+        0.37
+      ],
+      "source_value": [
+        0.111,
+        0.111,
+        0.148
+      ],
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_heavy_attack_normal",
+      "aspect": "timing",
+      "current_value": 1.5833,
+      "source_value": 2.3333,
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_heavy_geopotential_shift",
+      "aspect": "coefficients",
+      "current_value": [
+        0.4414
+      ],
+      "source_value": [
+        0.4414,
+        0.9902
+      ],
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_heavy_geopotential_shift",
+      "aspect": "timing",
+      "current_value": 1.3333,
+      "source_value": 1.2,
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_heavy_inversion",
+      "aspect": "timing",
+      "current_value": 1.4333,
+      "source_value": 1.3,
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_skill_optimal_solution",
+      "aspect": "timing",
+      "current_value": 2.0167,
+      "source_value": 1.8333,
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_skill_distributed_array",
+      "aspect": "coefficients",
+      "current_value": [
+        1.5908
+      ],
+      "source_value": [
+        0.3977,
+        0.3977,
+        0.3977,
+        0.3977
+      ],
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_liberation_critical_protocol",
+      "aspect": "timing",
+      "current_value": 4.7,
+      "source_value": 4.9333,
+      "safe_to_patch": true,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
+    {
+      "target": "mornye_intro_convergence",
+      "aspect": "timing",
+      "current_value": 1.8333,
+      "source_value": 1.7,
+      "safe_to_patch": false,
+      "reason": "Source/current mismatch found in audit. Human review required before patching."
+    },
     {
       "target": "mornye_intro_convergence",
       "aspect": "resource:concerto_energy_gain",
-      "current_value": 30,
+      "current_value": 30.0,
       "source_value": 10,
       "safe_to_patch": false,
       "reason": "Resource mismatch found in audit. Human review required before patching."

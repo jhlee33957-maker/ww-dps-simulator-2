@@ -1,0 +1,460 @@
+Work on the current `ww-dps-simulator-2(70)` branch.
+
+This is an implementation-only task. The source audit and numeric decisions have already been completed manually outside Codex.
+
+## Authoritative patch input
+
+Use this file as the sole numeric source of truth for this task:
+
+`direct_action_data_patch_manifest_v61.json`
+
+Expected SHA-256:
+
+`9bded75a07c398fe977ebc57989c3b6d1d581b8502c5472d8ec4a920a29a3a92`
+
+The accompanying human-readable audit is:
+
+`direct_action_data_audit_v61.md`
+
+Do not independently reinterpret, remap, or replace any values from the original workbooks. Do not ask whether another source value would be preferable. Apply the manifest exactly.
+
+The audit directly compared:
+
+- `ww-dps-simulator-2(70)`
+- `鸣潮动作数据汇总(5).xlsx`
+- `명조_종말매트릭스_액션데이터_v6.1_확정수정본(1).zip`
+
+The raw workbook SHA-256 is:
+
+`81604978551989b5575e2d637ad4dfeb8c3b3b34d48e00a9ea79e9008c62f1f9`
+
+The organized v6.1 JSON SHA-256 is:
+
+`baf3470b7db3f1f711fde3945a8fc145a1a71ed61be291c8f92226a283d7caec`
+
+## Objective
+
+Apply every confirmed `after` value in the manifest to the simulator while preserving all action IDs, action ordering, policy-selectable ordering, cooldowns, mechanics, tags, damage categories, scaling stats, Off-Tune metadata, weapons, Echoes, build profiles, and RL structure unless this prompt explicitly says otherwise.
+
+The manifest contains:
+
+- 74 `data/actions.json` records
+- 4 `data/transition_actions.json` records
+- 76 unique action IDs
+- 5 state-dependent timing decisions
+
+Do not train or evaluate PPO models during this task.
+
+## Files to add
+
+Copy the supplied artifacts into the project:
+
+- `data/source/direct_action_data_patch_manifest_v61.json`
+- `reports/direct_action_data_audit_v61.md`
+
+Add:
+
+- `scripts/apply_direct_action_data_v61.py`
+- `scripts/direct_action_data_v61_alignment_smoke_test.py`
+
+The apply script must be deterministic and idempotent.
+
+Supported commands:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\apply_direct_action_data_v61.py --check
+.\.venv\Scripts\python.exe scripts\apply_direct_action_data_v61.py --apply
+.\.venv\Scripts\python.exe scripts\apply_direct_action_data_v61.py --check --fail-on-diff
+```
+
+`--check` must not modify files. `--apply` must modify only the expected data/runtime/test files. Running `--apply` a second time must produce no changes.
+
+## Exact data application rules
+
+### 1. `data/actions.json`
+
+For every item in `action_patches`, locate the record by `action_id` and apply:
+
+- `after.duration`
+- `after.action_time`
+- `after.combat_time_cost`
+- `after.resonance_energy_gain`
+- `after.concerto_energy_gain`
+- `after.damage_total` or `after.tune_break_total`
+- `after.timing_overrides`, when present
+
+Do not rename, remove, insert, or reorder action records.
+
+Preserve these fields unless the manifest explicitly changes them:
+
+- `id`
+- `name`
+- `character_id`
+- `action_type`
+- `cooldown`
+- `cooldown_group`
+- `damage_category`
+- `damage_bonus_category`
+- `damage_element`
+- `scaling_stat`
+- `raw_skill_category`
+- `raw_damage_type`
+- `resonance_energy_cost`
+- `off_tune_value`
+- `tune_break_boost_points`
+- `mechanic_effects`
+- `mechanic_event_tags`
+- `mechanic_event_triggers`
+- `tags`
+- `policy_selectable`
+- action availability and resource-cost logic
+
+### 2. Lumped hit policy
+
+The organized v6.1 source explicitly uses `lumped_action_level`.
+
+For every patched damaging action:
+
+- Store exactly one explicit `hits` item.
+- Set the hit `time` to the final resolved base `action_time` in the JSON record.
+- Set the hit multiplier to the manifest action-level total.
+- Preserve the action's existing damage category and relevant tags.
+- Set top-level `damage_multiplier` to the same confirmed normal-damage total.
+- Set top-level `tune_break_multiplier` to zero.
+
+For every patched Tune Break action:
+
+- Store exactly one explicit Tune Break hit.
+- Set its `time` to the base action time.
+- Set `damage_category` to `tune_break`.
+- Set its `tune_break_multiplier` to the manifest total.
+- Set top-level `damage_multiplier` to zero.
+- Set top-level `tune_break_multiplier` to the same manifest total.
+
+For confirmed non-damaging actions:
+
+- Set `damage_multiplier` and `tune_break_multiplier` to zero.
+- Use an empty `hits` list.
+
+Do not retain old fabricated per-hit coefficient distributions or evenly spaced hit times.
+
+Do not derive new individual hit frames. The action-end hit is an explicit simulator proxy because exact hit occurrence timestamps are outside the v6.1 scope.
+
+### 3. True damage-total corrections
+
+Apply these exact corrections. Do not preserve the old totals:
+
+- `aemeath_tune_break`: Tune Break total `13.0 -> 12.0`
+- `mornye_heavy_geopotential_shift`: normal damage total `1.4316 -> 0.4414`
+- `mornye_tune_break`: Tune Break total `16.0 -> 12.0`
+
+For `mornye_heavy_geopotential_shift`, the removed `0.9902` is not part of the heavy attack. Syntony Field damage remains a separate automatic event through `mornye_syntony_field_damage`.
+
+Do not change `mornye_syntony_field_damage` in this task.
+
+### 4. Mornye scaling
+
+Preserve all currently source-backed Mornye direct damage as DEF scaling.
+
+Do not change Mornye actions from `def` to `atk`, even if the generic raw table contains an ATK label. The project DEF scaling comes from the user-supplied skill description and is an intentional higher-priority mechanic source.
+
+Tune Break actions remain on their special Tune Break formula and must not become ordinary DEF or ATK damage.
+
+### 5. Constellation variants
+
+The disabled-by-default Lynae constellation variants are complete replacement action variants, not damage-only additive packets.
+
+Apply the energy gains from the manifest, including:
+
+- `lynae_iridescent_splash_c3`: RE `8.13`, CE `7.65`
+- `lynae_visual_impact_c3`: RE `14.05`, CE `14.58`
+- `lynae_polychrome_leap_stage_1_c1`: RE `2.25`, CE `5.40`
+- `lynae_polychrome_leap_stage_2_c1`: RE `0.38`, CE `0.90`
+- `lynae_polychrome_leap_stage_3_c1`: RE `0.60`, CE `1.40`
+- `lynae_resonance_liberation_prismatic_overblast_c5`: RE `0`, CE `20`
+
+Do not add C1/C3/C5 damage to the default C0 action.
+
+### 6. `data/transition_actions.json`
+
+Apply all four `transition_action_patches` exactly.
+
+Transition records use a numeric multiplier list rather than `HitData` dictionaries. Replace each patched transition `hits` list with one number equal to `after.damage_total`.
+
+Apply exact timing and resource gains:
+
+- `aemeath_qte_intro_human`: 71F, 71F Matrix cost, RE10, CE10, total 1.3458
+- `aemeath_qte_intro_mech`: 76F, 76F Matrix cost, RE10, CE10, total 1.6325
+- `mornye_intro_convergence`: 110F, 110F Matrix cost, RE10, CE30, total 2.0279
+- `lynae_intro_time_to_show_some_colors`: 80F, 80F Matrix cost, RE1.34, CE1.20, total 2.2480
+
+Update stale Mornye source text from the old 102F result to:
+
+`102F base ready + 8F self hitstop = 110F; no 全局时停, so combat_time_cost is 110F / 60.`
+
+Do not alter transition IDs or routing.
+
+## State-dependent timing implementation
+
+Update `simulator/action_executor.py::resolve_action_timing` without changing its public signature.
+
+Keep the existing Instant Response override, then apply these exact conditions:
+
+1. `aemeath_tune_break`
+   - default Aemeath form: action time `90/60`, combat cost `0`
+   - when actor state `form == "mech"`: action time `94/60`, combat cost `0`
+
+2. `mornye_liberation_critical_protocol`
+   - baseline mode: action time `282/60`, combat cost `0`
+   - when actor state `mode == "wide_field_observation"`: action time `296/60`, combat cost `0`
+
+3. `lynae_kaleidoscopic_basic_stage_1`
+   - default target-present route: action time and combat cost `35/60`
+   - when `lumiflow > 119`: action time and combat cost `40/60`
+   - do not implement the no-target 45F branch because the DPS simulator always has a target; retain it only in source metadata/reporting
+
+4. Existing Instant Response timing overrides in `data/actions.json`
+   - `aemeath_heavy_aemeath_charged_2`: `91/60`
+   - `aemeath_heavy_mech_charged_2`: `56/60`
+
+`ActionData.timing_overrides` is typed as nested floats. Do not put explanatory strings such as `reason` inside the runtime JSON timing override dictionary. Keep reasons in the manifest/report or action notes.
+
+## Stale numeric metadata
+
+Update duplicated stale source descriptions without changing mechanics:
+
+- In `characters/mornye.py`, change the Inversion timing explanation from `78F / 60` to `78F base ready + 8F self hitstop = 86F / 60`.
+- In `characters/mornye.py`, change the Intro timing explanation from `102F / 60` to `102F base ready + 8F self hitstop = 110F / 60`.
+- Update matching stale strings in `data/actions.json` and `data/transition_actions.json` metadata.
+
+Search for old exact timing constants and descriptions for the patched actions. Update only duplicated source metadata or tests that encode obsolete values. Do not modify unrelated mechanics.
+
+## Explicitly unchanged data
+
+Do not change:
+
+- `data/tune_responses.json`
+  - Aemeath `5.9643`
+  - Mornye `2.9822`
+  - Lynae `18.8075`
+- `mornye_syntony_field_damage`
+- weapons
+- Echoes
+- build profiles
+- party preset composition
+- RL observations
+- RL rewards
+- curriculum logic
+- route demonstration files
+- PPO model files
+- the nine lost Mornye diagnostic scripts
+
+Do not add Aemeath Fusion Burst/聚爆 settlement damage. It remains blocked/unresolved in v6.1.
+
+## Validation script requirements
+
+Create `scripts/direct_action_data_v61_alignment_smoke_test.py`.
+
+It must read the checked-in manifest and verify:
+
+- every manifest action ID exists exactly once;
+- every `after` timing/resource value matches runtime JSON;
+- every patched normal-damage action has one hit at base action end and the correct total;
+- every patched Tune Break action has one Tune Break hit and the correct total;
+- `action_time >= combat_time_cost`;
+- Mornye source-backed actions remain DEF scaling;
+- all four transition records match the manifest;
+- `resolve_action_timing` returns the exact five conditional timing outcomes;
+- action ID order is unchanged;
+- policy-selectable action ID order is unchanged;
+- `data/tune_responses.json` remains unchanged;
+- C0 and constellation variants remain separate;
+- the three corrected damage totals are exact;
+- no patched action retains an old multi-hit distribution;
+- all JSON records load through current Pydantic models.
+
+The test must compare against the manifest, not duplicate a second handwritten table of values.
+
+## Existing tests
+
+Many current tests encode obsolete timing or old per-hit arrays. Update their expected source values; do not weaken or delete them.
+
+At minimum inspect and update where necessary:
+
+- `scripts/aemeath_source_aligned_coefficients_smoke_test.py`
+- `scripts/aemeath_coefficients_smoke_test.py`
+- `scripts/aemeath_cooldown_combat_time_smoke_test.py`
+- `scripts/aemeath_time_stop_timing_smoke_test.py`
+- `scripts/aemeath_heavy_form_switch_sync_timing_smoke_test.py`
+- `scripts/aemeath_qte_enabled_transition_smoke_test.py`
+- `scripts/mornye_action_data_time_resource_smoke_test.py`
+- `scripts/mornye_excel_source_audit_smoke_test.py`
+- `scripts/mornye_character_smoke_test.py`
+- `scripts/mornye_critical_protocol_same_action_high_field_smoke_test.py`
+- `scripts/character_tune_break_action_smoke_test.py`
+- `scripts/tune_break_excel_source_audit_smoke_test.py`
+- `scripts/lynae_excel_source_alignment_smoke_test.py`
+- `scripts/lynae_timing_cooldown_audit_smoke_test.py`
+- `scripts/lynae_repeated_hit_multiplier_smoke_test.py`
+- `scripts/lynae_intro_liberation_vivid_tick_multiplier_smoke_test.py`
+- `scripts/lynae_polychrome_tick_multiplier_smoke_test.py`
+- `scripts/lynae_kp_stage5_tick_multiplier_smoke_test.py`
+- `scripts/lynae_outro_tick_sum_smoke_test.py`
+- `scripts/lynae_liberation_action_data_guard_smoke_test.py`
+- `scripts/transition_actions_metadata_encoding_smoke_test.py`
+
+Tests that formerly asserted a specific per-hit list must now assert the manifest action-level total and one-hit policy.
+
+Tests that validate mechanics rather than source data must continue validating the same mechanic. Update only legitimately changed timing, resources, hit count, timeline duration, or damage totals.
+
+Do not change production mechanics merely to preserve an obsolete expected value.
+
+## Idempotence and diff constraints
+
+The apply script must:
+
+- fail if a manifest action ID is missing or duplicated;
+- fail if the action order changes;
+- fail if an unresolved field would need guessing;
+- produce a machine-readable change log at `data/extracted/direct_action_data_v61_applied_changes.json`;
+- produce no changes when run twice;
+- avoid reformatting unrelated JSON records;
+- not alter the two supplied source files.
+
+Record each applied field with:
+
+- target file
+- action ID
+- field
+- before
+- after
+- source evidence from the manifest
+
+## Final report
+
+In the final response, report:
+
+1. Files changed.
+2. Whether the manifest hash matched.
+3. Number of action and transition records applied.
+4. Number of field-level changes.
+5. Confirmation that action IDs and policy ordering did not change.
+6. The three actual damage-total corrections.
+7. Runtime timing branches added.
+8. Tests updated.
+9. Full test results.
+10. Any remaining failures, clearly separated into pre-existing failures and regressions.
+
+Do not claim that exact per-hit timing was implemented.
+
+## Commands to run
+
+Run from the project root in PowerShell.
+
+### Preflight
+
+```powershell
+Get-FileHash .\direct_action_data_patch_manifest_v61.json -Algorithm SHA256
+Get-FileHash .\direct_action_data_audit_v61.md -Algorithm SHA256
+
+git status --short
+.\.venv\Scripts\python.exe -m compileall .
+```
+
+The manifest hash must equal:
+
+```text
+9bded75a07c398fe977ebc57989c3b6d1d581b8502c5472d8ec4a920a29a3a92
+```
+
+### Copy authoritative artifacts
+
+```powershell
+Copy-Item .\direct_action_data_patch_manifest_v61.json .\data\source\direct_action_data_patch_manifest_v61.json -Force
+Copy-Item .\direct_action_data_audit_v61.md .\reports\direct_action_data_audit_v61.md -Force
+```
+
+### Apply and verify idempotence
+
+```powershell
+.\.venv\Scripts\python.exe scripts\apply_direct_action_data_v61.py --check
+.\.venv\Scripts\python.exe scripts\apply_direct_action_data_v61.py --apply
+.\.venv\Scripts\python.exe scripts\apply_direct_action_data_v61.py --check --fail-on-diff
+.\.venv\Scripts\python.exe scripts\apply_direct_action_data_v61.py --apply
+```
+
+The second `--apply` must report zero changes.
+
+### Core validation
+
+```powershell
+.\.venv\Scripts\python.exe -m compileall .
+.\.venv\Scripts\python.exe scripts\direct_action_data_v61_alignment_smoke_test.py
+
+.\.venv\Scripts\python.exe scripts\aemeath_action_timing_extraction_smoke_test.py
+.\.venv\Scripts\python.exe scripts\aemeath_source_aligned_coefficients_smoke_test.py
+.\.venv\Scripts\python.exe scripts\aemeath_coefficients_smoke_test.py
+.\.venv\Scripts\python.exe scripts\aemeath_cooldown_combat_time_smoke_test.py
+.\.venv\Scripts\python.exe scripts\aemeath_time_stop_timing_smoke_test.py
+.\.venv\Scripts\python.exe scripts\aemeath_heavy_form_switch_sync_timing_smoke_test.py
+.\.venv\Scripts\python.exe scripts\aemeath_qte_enabled_transition_smoke_test.py
+
+.\.venv\Scripts\python.exe scripts\mornye_action_data_source_guard_smoke_test.py
+.\.venv\Scripts\python.exe scripts\mornye_action_data_time_resource_smoke_test.py
+.\.venv\Scripts\python.exe scripts\mornye_excel_source_audit_smoke_test.py
+.\.venv\Scripts\python.exe scripts\mornye_def_scaling_source_guard_smoke_test.py
+.\.venv\Scripts\python.exe scripts\mornye_character_smoke_test.py
+.\.venv\Scripts\python.exe scripts\mornye_critical_protocol_same_action_high_field_smoke_test.py
+
+.\.venv\Scripts\python.exe scripts\lynae_excel_source_alignment_smoke_test.py
+.\.venv\Scripts\python.exe scripts\lynae_timing_cooldown_audit_smoke_test.py
+.\.venv\Scripts\python.exe scripts\lynae_mode_variant_not_additive_smoke_test.py
+.\.venv\Scripts\python.exe scripts\lynae_global_timestop_timing_guard_smoke_test.py
+.\.venv\Scripts\python.exe scripts\lynae_repeated_hit_multiplier_smoke_test.py
+.\.venv\Scripts\python.exe scripts\lynae_intro_liberation_vivid_tick_multiplier_smoke_test.py
+.\.venv\Scripts\python.exe scripts\lynae_polychrome_tick_multiplier_smoke_test.py
+.\.venv\Scripts\python.exe scripts\lynae_kp_stage5_tick_multiplier_smoke_test.py
+.\.venv\Scripts\python.exe scripts\lynae_outro_tick_sum_smoke_test.py
+
+.\.venv\Scripts\python.exe scripts\character_tune_break_action_smoke_test.py
+.\.venv\Scripts\python.exe scripts\tune_break_excel_source_audit_smoke_test.py
+.\.venv\Scripts\python.exe scripts\tune_break_formula_smoke_test.py
+.\.venv\Scripts\python.exe scripts\tune_break_party_response_smoke_test.py
+.\.venv\Scripts\python.exe scripts\transition_action_scaling_stat_guard_smoke_test.py
+.\.venv\Scripts\python.exe scripts\transition_actions_metadata_encoding_smoke_test.py
+.\.venv\Scripts\python.exe scripts\env_smoke_test.py
+```
+
+### Full smoke-test run
+
+```powershell
+$failed = @()
+
+Get-ChildItem ".\scripts\*_smoke_test.py" |
+    Sort-Object Name |
+    ForEach-Object {
+        Write-Host "`n=== $($_.Name) ==="
+        & ".\.venv\Scripts\python.exe" $_.FullName
+
+        if ($LASTEXITCODE -ne 0) {
+            $failed += $_.Name
+        }
+    }
+
+Write-Host "`nFailed tests:"
+$failed | ForEach-Object { Write-Host $_ }
+
+if ($failed.Count -gt 0) {
+    exit 1
+}
+```
+
+### Final diff inspection
+
+```powershell
+git diff --check
+git status --short
+git diff --stat
+git diff -- data/actions.json data/transition_actions.json simulator/action_executor.py characters/mornye.py
+git diff -- scripts data/source reports data/extracted
+```

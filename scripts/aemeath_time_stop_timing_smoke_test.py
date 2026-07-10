@@ -51,10 +51,10 @@ def test_whitelist_action_data() -> str:
     )
 
     expected = {
-        "aemeath_liberation_overdrive": (4.3667, 0.0),
-        "aemeath_heavenfall_finale": (5.6667, 0.0),
-        seraphic_id: (3.0, 1.3167),
-        "aemeath_seraphic_duet_encore": (2.4167, 1.3333),
+        "aemeath_liberation_overdrive": (262 / 60, 0.0),
+        "aemeath_heavenfall_finale": (340 / 60, 0.0),
+        seraphic_id: (185 / 60, 84 / 60),
+        "aemeath_seraphic_duet_encore": (145 / 60, 80 / 60),
     }
     for action_id, (action_time, combat_time_cost) in expected.items():
         action = actions[action_id]

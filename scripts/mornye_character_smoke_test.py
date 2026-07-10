@@ -66,7 +66,7 @@ def test_basic_resolves_and_builds_rest_mass() -> None:
     assert row.selected_action_id == "mornye_basic_attack"
     assert row.resolved_action_id == "mornye_basic_stage_1"
     assert row.total_action_damage > 0.0
-    assert row.hit_count == 3
+    assert row.hit_count == 1
     assert state["baseline_combo_stage"] == 2
     assert state["rest_mass_energy"] == 20.0
 

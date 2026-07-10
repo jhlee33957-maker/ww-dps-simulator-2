@@ -66,11 +66,9 @@ def test_related_metadata_updated() -> None:
     mechanics = json.loads((DATA_DIR / "mechanics" / "mornye_mechanics.json").read_text(encoding="utf-8"))
     high_state = next(item for item in mechanics["states"] if item["state"] == "high_syntony_field")
     assert high_state["implemented"] == "implemented_simplified_runtime_support"
+    assert "inherited Off-Tune +50%" in high_state["notes"]
     high_field = next(item for item in mechanics["syntony_field"] if item["field"] == "High Syntony Field")
-    assert high_field["high_syntony_field_off_tune_bonus_status"] == "implemented_simplified_inheritance"
-    assert "full Tune Break / Interfered system" in high_field["not_implemented"]
-    unsupported = mechanics["off_tune_buildup_rate_and_halo"]["unsupported"]
-    assert "High Syntony Field Off-Tune inheritance" not in unsupported
+    assert "inherits party off_tune_buildup_rate +0.5" in high_field["effects"]
 
 
 def main() -> None:

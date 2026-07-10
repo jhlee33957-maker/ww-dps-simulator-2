@@ -20,6 +20,7 @@ AnomalyType = Literal["aero_erosion", "spectro_frazzle", "electro_flare", "havoc
 BuffModifierType = Literal["attack", "damage_bonus", "boost", "dmg_taken", "damage_amp"]
 BuffTarget = Literal["self", "active", "team", "party", "next_active", "specific_character", "enemy"]
 ScalingStat = Literal["atk", "def", "hp", "none", "unresolved"]
+HitTimeMode = Literal["source_time", "resolved_action_end"]
 
 
 class CharacterData(BaseModel):
@@ -170,6 +171,7 @@ class HitData(BaseModel):
     tune_break_multiplier: float = Field(default=0.0, ge=0)
     tags: list[str] = Field(default_factory=list)
     name: str | None = None
+    hit_time_mode: HitTimeMode = "source_time"
 
 
 class ActionData(BaseModel):

@@ -18,6 +18,9 @@ SHEET = "角色-女"
 REPORT = PROJECT_ROOT / "reports" / "mornye_action_data_time_resource_source_guard.md"
 OUTPUT = DATA_DIR / "extracted" / "mornye_action_data_time_resource_source_guard.json"
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
 
 def resolve_workbook_path() -> Path:
     for path in (EXPECTED_WORKBOOK, ESCAPED_WORKBOOK):
@@ -181,15 +184,15 @@ def main() -> None:
         "interpretation": {
             "inversion": {
                 "has_global_time_stop": False,
-                "action_time": 78 / 60,
-                "combat_time_cost": 78 / 60,
+                "action_time": 86 / 60,
+                "combat_time_cost": 86 / 60,
                 "resource_delta": -100,
                 "direct_interfered_source_confirmed": False,
             },
             "qte_intro": {
                 "has_global_time_stop": False,
-                "action_time": 102 / 60,
-                "combat_time_cost": 102 / 60,
+                "action_time": 110 / 60,
+                "combat_time_cost": 110 / 60,
                 "base_concerto_gain": 10,
                 "passive_concerto_source_confirmed": passive_confirmed,
                 "passive_concerto_gain": 20 if passive_confirmed else 0,
@@ -202,10 +205,11 @@ def main() -> None:
             },
             "liberation": {
                 "has_global_time_stop": True,
-                "action_time": 296 / 60,
+                "action_time": 282 / 60,
                 "combat_time_cost": 0.0,
                 "global_time_stop_frames": 300,
                 "concerto_gain": 20,
+                "wide_field_observation_action_time": 296 / 60,
             },
             "tune_rupture": {
                 "has_global_time_stop": True,

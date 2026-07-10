@@ -54,6 +54,8 @@ def load_source_guard() -> dict:
 def test_source_guard_dependency() -> None:
     payload = load_source_guard()
     assert payload["interpretation"]["liberation"]["combat_time_cost"] == 0.0
+    assert payload["interpretation"]["liberation"]["action_time"] == 282 / 60
+    assert payload["interpretation"]["liberation"]["wide_field_observation_action_time"] == 296 / 60
     assert payload["interpretation"]["distributed_array"]["relative_momentum_gain_total"] == 60
     assert payload["interpretation"]["qte_intro"]["passive_concerto_source_confirmed"] is True
 
@@ -64,7 +66,7 @@ def test_liberation_combat_time() -> None:
     assert sim.execute_action("mornye_resonance_liberation")
     row = sim.timeline[-1]
     assert row.resolved_action_id == "mornye_liberation_critical_protocol"
-    assert_close(row.action_time, 296 / 60, "Liberation action_time")
+    assert_close(row.action_time, 282 / 60, "Liberation action_time")
     assert row.combat_time_cost == 0.0
     assert row.effective_combat_time_cost == 0.0
     assert row.has_global_time_stop is True
@@ -87,8 +89,8 @@ def test_inversion_combat_time() -> None:
     row = sim.timeline[-1]
     state = mornye_state(sim)
     assert row.resolved_action_id == "mornye_heavy_inversion"
-    assert_close(row.action_time, 78 / 60, "Inversion action_time")
-    assert_close(row.combat_time_cost, 78 / 60, "Inversion combat_time_cost")
+    assert_close(row.action_time, 86 / 60, "Inversion action_time")
+    assert_close(row.combat_time_cost, 86 / 60, "Inversion combat_time_cost")
     assert row.has_global_time_stop is False
     assert row.source_rows == [4135, 4136]
     assert row.source_status == "not_source_confirmed_direct_interfered"
@@ -105,8 +107,8 @@ def test_qte_intro_resources() -> None:
     row = sim.timeline[-1]
     state = mornye_state(sim)
     assert row.resolved_action_id == "transition:mornye_intro_convergence"
-    assert_close(row.action_time, 102 / 60, "QTE action_time")
-    assert_close(row.combat_time_cost, 102 / 60, "QTE combat_time_cost")
+    assert_close(row.action_time, 110 / 60, "QTE action_time")
+    assert_close(row.combat_time_cost, 110 / 60, "QTE combat_time_cost")
     assert row.has_global_time_stop is False
     assert row.source_rows == [4148, 4149, 4164]
     assert row.base_concerto_gain == 10.0
@@ -157,7 +159,8 @@ def test_observation_a3_passive() -> None:
     state = mornye_state(sim)
     assert row.resolved_action_id == "mornye_wfo_basic_stage_3"
     assert state["relative_momentum"] == 18.0
-    assert state["concerto_energy"] == before_concerto + 20.0
+    assert state["concerto_energy"] == before_concerto + 22.56
+    assert row.concerto_gain == 22.56
     assert row.passive_concerto_gain == 20.0
     assert row.final_concerto_gain == 20.0
     assert row.passive_concerto_source

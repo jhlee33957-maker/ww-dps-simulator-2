@@ -102,22 +102,53 @@ def reduce_cooldowns(state: CombatState, elapsed: float) -> None:
             del state.cooldowns[action_id]
 
 
-def resolve_action_timing(action: ActionData, actor_state: Any | None = None) -> tuple[float, float]:
+def _runtime_value(runtime_context: Any | None, key: str, default: Any = None) -> Any:
+    if isinstance(runtime_context, dict):
+        return runtime_context.get(key, default)
+    if runtime_context is not None:
+        return getattr(runtime_context, key, default)
+    return default
+
+
+def _has_valid_target(runtime_context: Any | None) -> bool:
+    if bool(_runtime_value(runtime_context, "no_target", False)):
+        return False
+    for key in ("has_valid_target", "target_valid", "valid_target"):
+        value = _runtime_value(runtime_context, key, None)
+        if value is not None:
+            return bool(value)
+    return True
+
+
+def _timing_override_applies(override_key: str, runtime_context: Any | None) -> bool:
+    if override_key == "instant_response":
+        return bool(_runtime_value(runtime_context, "instant_response", False))
+    if override_key == "form_mech":
+        return _runtime_value(runtime_context, "form") == "mech"
+    if override_key == "wide_field_observation":
+        return _runtime_value(runtime_context, "mode") == "wide_field_observation"
+    if override_key == "lumiflow_gt_119":
+        return float(_runtime_value(runtime_context, "lumiflow", 0.0) or 0.0) > 119.0
+    if override_key == "no_target":
+        return not _has_valid_target(runtime_context)
+    raise ValueError(f"Unknown timing override key {override_key!r}")
+
+
+def resolve_action_runtime_timing(action: ActionData, runtime_context: Any | None = None) -> tuple[float, float, float]:
+    duration = action.duration
     action_time = action.effective_action_time
     combat_time_cost = action.effective_combat_time_cost
-    overrides = action.timing_overrides or {}
+    for override_key, override in (action.timing_overrides or {}).items():
+        if not _timing_override_applies(override_key, runtime_context):
+            continue
+        duration = float(override.get("duration", duration))
+        action_time = float(override.get("action_time", action_time))
+        combat_time_cost = float(override.get("combat_time_cost", action_time))
+    return duration, action_time, combat_time_cost
 
-    instant_response = False
-    if isinstance(actor_state, dict):
-        instant_response = bool(actor_state.get("instant_response"))
-    elif actor_state is not None:
-        instant_response = bool(getattr(actor_state, "instant_response", False))
 
-    if instant_response and "instant_response" in overrides:
-        override = overrides["instant_response"]
-        action_time = override.get("action_time", action_time)
-        combat_time_cost = override.get("combat_time_cost", action_time)
-
+def resolve_action_timing(action: ActionData, actor_state: Any | None = None) -> tuple[float, float]:
+    _duration, action_time, combat_time_cost = resolve_action_runtime_timing(action, actor_state)
     return action_time, combat_time_cost
 
 
@@ -152,6 +183,16 @@ def _hit_combat_offset(
     if action_time <= 0.0:
         return combat_time_cost
     return min(combat_time_cost, hit.time / action_time * combat_time_cost)
+
+
+def _resolved_action_hits(action: ActionData, *, action_time: float) -> list[HitData]:
+    resolved_hits: list[HitData] = []
+    for hit in action.effective_hits():
+        if hit.hit_time_mode == "resolved_action_end":
+            resolved_hits.append(hit.model_copy(update={"time": action_time}))
+        else:
+            resolved_hits.append(hit)
+    return resolved_hits
 
 
 def _calculate_hit_damage(
@@ -530,7 +571,7 @@ def _calculate_hit_damage_totals(
     tune_break_damage_after_target_amp = 0.0
     has_explicit_hit_timing = bool(action.hits)
 
-    for hit in sorted(action.effective_hits(), key=lambda item: item.time):
+    for hit in sorted(_resolved_action_hits(action, action_time=action_time), key=lambda item: item.time):
         if hit.time > action_time:
             continue
         damage, detail = _calculate_hit_damage(
@@ -717,7 +758,7 @@ def _calculate_hit_damage_totals(
 def _action_has_trigger_damage_potential(action: ActionData, action_time: float) -> bool:
     if action.character_id is None:
         return False
-    for hit in action.effective_hits():
+    for hit in _resolved_action_hits(action, action_time=action_time):
         if hit.time > action_time:
             continue
         if hit.damage_category == "normal" and hit.damage_multiplier > 0.0:
@@ -855,7 +896,7 @@ def execute_action(
     )
     actor_character_id = actor_character_id or active_character_before
     actor_state = state.character_mechanics_state.get(action.character_id or state.active_character_id, {})
-    action_time, combat_time_cost = resolve_action_timing(action, actor_state)
+    _duration, action_time, combat_time_cost = resolve_action_runtime_timing(action, actor_state)
     if combat_duration is not None and combat_start_time >= combat_duration:
         valid = False
         reason = "Combat duration has ended."

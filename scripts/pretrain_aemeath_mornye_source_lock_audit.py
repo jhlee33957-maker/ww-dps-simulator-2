@@ -417,7 +417,7 @@ def audit_aemeath_tune(data_dmg_ws: Any, raw_dmg_ws: Any, actions: dict[str, dic
     add_close_check(section, "Starburst code multiplier", 5.9643, starburst.get("multiplier"))
     add_check(section, "Starburst source_status", "workbook_confirmed", starburst.get("source_status"))
     tune_break = actions["aemeath_tune_break"]
-    add_check(section, "Aemeath Tune Break multipliers", [1.0, 12.0], [hit.get("tune_break_multiplier") for hit in tune_break.get("hits", [])])
+    add_check(section, "Aemeath Tune Break multipliers", [12.0], [hit.get("tune_break_multiplier") for hit in tune_break.get("hits", [])])
     section["unresolved_intentionally_not_implemented"] = list(forte["modes"]["fusion_burst"].get("unresolved_entries", []))
     return finalize_section(section)
 
@@ -452,8 +452,8 @@ def audit_mornye_relative_momentum(data_action_ws: Any, actions: dict[str, dict[
         + actions["mornye_wfo_basic_stage_2"]["action_time"]
         + actions["mornye_wfo_basic_stage_3"]["action_time"]
     )
-    add_close_check(section, "Route time to 100 RM", 3.8667, route_time)
-    add_close_check(section, "Route time including Heavy Inversion", 5.1667, route_time + actions["mornye_heavy_inversion"]["action_time"])
+    add_close_check(section, "Route time to 100 RM", 163 / 60, route_time)
+    add_close_check(section, "Route time including Heavy Inversion", 4.15, route_time + actions["mornye_heavy_inversion"]["action_time"])
     section["workbook_values"] = source_values
     return finalize_section(section)
 
@@ -487,7 +487,7 @@ def audit_mornye_fields(actions: dict[str, dict[str, Any]]) -> tuple[dict[str, A
     high = make_section("mornye_high_syntony_critical_protocol", "Mornye High Syntony / Critical Protocol")
     liberation = actions["mornye_liberation_critical_protocol"]
     effects = liberation.get("mechanic_effects", {})
-    add_close_check(high, "Critical Protocol action_time", 4.9333, liberation.get("action_time"))
+    add_close_check(high, "Critical Protocol action_time", 282 / 60, liberation.get("action_time"))
     add_close_check(high, "Critical Protocol combat_time_cost", 0.0, liberation.get("combat_time_cost"))
     add_check(high, "global time stop source flag", True, effects.get("has_global_time_stop"))
     add_check(high, "High Syntony duration", 25, effects.get("high_syntony_field_duration"))
@@ -538,7 +538,7 @@ def audit_mornye_tune(data_dmg_ws: Any, raw_dmg_ws: Any, actions: dict[str, dict
     add_close_check(section, "Particle Jet C5 multiplier", 7.7536, particle.get("c5_multiplier"))
     add_check(section, "Particle Jet C5 gate", 5, particle.get("c5_enabled_constellation"))
     tune_break = actions["mornye_tune_break"]
-    add_check(section, "Mornye Tune Break multipliers", [1.7334, 2.2666, 12.0], [hit.get("tune_break_multiplier") for hit in tune_break.get("hits", [])])
+    add_check(section, "Mornye Tune Break multipliers", [12.0], [hit.get("tune_break_multiplier") for hit in tune_break.get("hits", [])])
     return finalize_section(section)
 
 

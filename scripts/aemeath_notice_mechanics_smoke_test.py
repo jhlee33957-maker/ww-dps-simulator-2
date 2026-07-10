@@ -13,6 +13,7 @@ from simulator.simulation import Simulation
 
 
 DATA_DIR = PROJECT_ROOT / "data"
+MANIFEST_PATH = DATA_DIR / "source" / "direct_action_data_patch_manifest_v61.json"
 
 
 def approx(actual: float, expected: float, tolerance: float = 1e-4) -> bool:
@@ -26,6 +27,11 @@ def assert_approx(actual: float, expected: float, label: str) -> None:
 def actions_by_id() -> dict[str, dict]:
     actions = json.loads((DATA_DIR / "actions.json").read_text(encoding="utf-8-sig"))
     return {action["id"]: action for action in actions}
+
+
+def manifest_patches_by_id() -> dict[str, dict]:
+    manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+    return {patch["action_id"]: patch for patch in manifest["action_patches"]}
 
 
 def make_sim() -> Simulation:
@@ -196,32 +202,24 @@ def test_sync_delta_source_alignment(actions: dict[str, dict]) -> None:
 def test_timing_and_coefficient_guardrails(actions: dict[str, dict]) -> None:
     assert_approx(actions["aemeath_liberation_overdrive"]["action_time"], 4.3667, "Overdrive action_time")
     assert_approx(actions["aemeath_liberation_overdrive"]["combat_time_cost"], 0.0, "Overdrive combat_time_cost")
-    assert multipliers(actions["aemeath_liberation_overdrive"]) == [2.008, 2.6774, 2.6774, 2.6774]
+    assert multipliers(actions["aemeath_liberation_overdrive"]) == [10.0402]
 
     assert_approx(actions["aemeath_heavenfall_finale"]["action_time"], 5.6667, "Finale action_time")
     assert_approx(actions["aemeath_heavenfall_finale"]["combat_time_cost"], 0.0, "Finale combat_time_cost")
     assert multipliers(actions["aemeath_heavenfall_finale"]) == [17.8929]
 
-    assert_approx(actions["aemeath_seraphic_duet_overturn"]["action_time"], 3.0, "Seraphic Overturn action_time")
-    assert_approx(actions["aemeath_seraphic_duet_overturn"]["combat_time_cost"], 1.3167, "Seraphic Overturn combat_time_cost")
-    assert_approx(actions["aemeath_seraphic_duet_encore"]["action_time"], 2.4167, "Seraphic Encore action_time")
-    assert_approx(actions["aemeath_seraphic_duet_encore"]["combat_time_cost"], 1.3333, "Seraphic Encore combat_time_cost")
-    assert multipliers(actions["aemeath_seraphic_duet_encore"]) == [
-        0.179,
-        0.179,
-        0.3579,
-        0.3579,
-        0.179,
-        0.179,
-        1.7893,
-        0.3579,
-    ]
+    assert_approx(actions["aemeath_seraphic_duet_overturn"]["action_time"], 185 / 60, "Seraphic Overturn action_time")
+    assert_approx(actions["aemeath_seraphic_duet_overturn"]["combat_time_cost"], 84 / 60, "Seraphic Overturn combat_time_cost")
+    assert multipliers(actions["aemeath_seraphic_duet_overturn"]) == [3.5795]
+    assert_approx(actions["aemeath_seraphic_duet_encore"]["action_time"], 145 / 60, "Seraphic Encore action_time")
+    assert_approx(actions["aemeath_seraphic_duet_encore"]["combat_time_cost"], 80 / 60, "Seraphic Encore combat_time_cost")
+    assert multipliers(actions["aemeath_seraphic_duet_encore"]) == [3.579]
 
     expected_heavy_times = {
-        "aemeath_heavy_aemeath_charged_1": (1.8333, 1.8333, None),
-        "aemeath_heavy_aemeath_charged_2": (3.6667, 3.6667, (1.8333, 1.8333)),
-        "aemeath_heavy_mech_charged_1": (1.0333, 1.0333, None),
-        "aemeath_heavy_mech_charged_2": (2.0667, 2.0667, (1.0333, 1.0333)),
+        "aemeath_heavy_aemeath_charged_1": (72 / 60, 72 / 60, None),
+        "aemeath_heavy_aemeath_charged_2": (145 / 60, 145 / 60, (91 / 60, 91 / 60)),
+        "aemeath_heavy_mech_charged_1": (56 / 60, 56 / 60, None),
+        "aemeath_heavy_mech_charged_2": (116 / 60, 116 / 60, (56 / 60, 56 / 60)),
     }
     for action_id, (action_time, combat_time_cost, override) in expected_heavy_times.items():
         action = actions[action_id]
@@ -234,28 +232,31 @@ def test_timing_and_coefficient_guardrails(actions: dict[str, dict]) -> None:
 
 
 def test_resource_guardrails(actions: dict[str, dict]) -> None:
-    expected_resources = {
-        "aemeath_basic_form_stage_1": (0, 5, 4),
-        "aemeath_basic_form_stage_2": (0, 5, 4),
-        "aemeath_basic_form_stage_3": (0, 6, 5),
-        "aemeath_basic_form_stage_4": (0, 7, 6),
-        "aemeath_mech_basic_stage_1": (0, 6, 5),
-        "aemeath_mech_basic_stage_2": (0, 6, 5),
-        "aemeath_mech_basic_stage_3": (0, 7, 6),
-        "aemeath_mech_basic_stage_4": (0, 8, 7),
-        "aemeath_form_switch_to_mech_normal": (0, 6, 4),
-        "aemeath_form_switch_to_aemeath_normal": (0, 5, 4),
-        "aemeath_form_switch_to_aemeath_after_overdrive": (0, 5, 4),
-        "aemeath_sync_strike_armament_merge": (0, 10, 8),
-        "aemeath_sync_strike_call_of_dawn": (0, 10, 8),
-        "aemeath_liberation_overdrive": (125, 0, 20),
-        "aemeath_heavenfall_finale": (0, 0, 20),
-    }
-    for action_id, (resonance_cost, resonance_gain, concerto_gain) in expected_resources.items():
+    patches = manifest_patches_by_id()
+    action_ids = [
+        "aemeath_basic_form_stage_1",
+        "aemeath_basic_form_stage_2",
+        "aemeath_basic_form_stage_3",
+        "aemeath_basic_form_stage_4",
+        "aemeath_mech_basic_stage_1",
+        "aemeath_mech_basic_stage_2",
+        "aemeath_mech_basic_stage_3",
+        "aemeath_mech_basic_stage_4",
+        "aemeath_form_switch_to_mech_normal",
+        "aemeath_form_switch_to_aemeath_normal",
+        "aemeath_form_switch_to_aemeath_after_overdrive",
+        "aemeath_sync_strike_armament_merge",
+        "aemeath_sync_strike_call_of_dawn",
+        "aemeath_liberation_overdrive",
+        "aemeath_heavenfall_finale",
+    ]
+    for action_id in action_ids:
         action = actions[action_id]
+        after = patches[action_id]["after"]
+        resonance_cost = 125 if action_id == "aemeath_liberation_overdrive" else 0
         assert action.get("resonance_energy_cost", 0) == resonance_cost, f"{action_id} resonance cost changed"
-        assert action.get("resonance_energy_gain", 0) == resonance_gain, f"{action_id} resonance gain changed"
-        assert action.get("concerto_energy_gain", 0) == concerto_gain, f"{action_id} concerto gain changed"
+        assert_approx(action.get("resonance_energy_gain", 0), after["resonance_energy_gain"], f"{action_id} resonance gain")
+        assert_approx(action.get("concerto_energy_gain", 0), after["concerto_energy_gain"], f"{action_id} concerto gain")
 
 
 def main() -> None:

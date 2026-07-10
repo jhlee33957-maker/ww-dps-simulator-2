@@ -31,15 +31,15 @@ EXPECTED_METADATA = {
 
 EXPECTED_FUNCTIONAL_VALUES = {
     "aemeath_qte_intro_human": {
-        "action_time": 1.0,
-        "combat_time_cost": 0.1667,
-        "hits": [0.1346, 0.1346, 1.0766],
+        "action_time": 71 / 60,
+        "combat_time_cost": 71 / 60,
+        "hits": [1.3458],
         "damage_bonus_category": "none_or_unmodeled_intro",
     },
     "aemeath_qte_intro_mech": {
-        "action_time": 1.2,
-        "combat_time_cost": 0.4333,
-        "hits": [0.653, 0.9795],
+        "action_time": 76 / 60,
+        "combat_time_cost": 76 / 60,
+        "hits": [1.6325],
         "damage_bonus_category": "resonance_skill",
     },
 }

@@ -140,11 +140,11 @@ def test_mode_event_emission_and_summary_counts() -> None:
     assert unresolved_summary.mechanic_event_unresolved_reason == "aemeath_resonance_mode_unresolved_no_events_emit"
 
 
-def test_same_skill_cooldown_and_multihit_single_event() -> None:
+def test_same_skill_cooldown_and_lumped_hit_single_event() -> None:
     sim = make_sim("fusion_burst")
     assert sim.execute_action("aemeath_basic_form_stage_3")
     first_row = sim.summary().timeline[-1]
-    assert first_row.hit_count > 1
+    assert first_row.hit_count == 1
     assert first_row.emitted_mechanic_event_tags == ["fusion_burst"]
     assert sim.summary().fusion_burst_event_count == 1
 
@@ -191,7 +191,7 @@ def main() -> None:
     test_trigger_metadata_is_on_expected_actions_only()
     test_transition_action_converter_preserves_event_triggers()
     test_mode_event_emission_and_summary_counts()
-    test_same_skill_cooldown_and_multihit_single_event()
+    test_same_skill_cooldown_and_lumped_hit_single_event()
     test_event_mode_adds_no_damage()
     test_user_real_aemeath_profile_still_present()
     print("aemeath_resonance_mode_mechanic_event_smoke_test ok")

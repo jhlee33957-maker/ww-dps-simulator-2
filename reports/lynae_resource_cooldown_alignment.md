@@ -46,4 +46,4 @@ Source action/resource rows: `角色-女!2577:2738`
 | `lynae_tune_break` | `[2702, 2703, 2704]` | `0.0` | `0.0` | `{}` | `0` | `0.0` | source_confirmed |  |
 | `lynae_tune_response_spectral_analysis` | `[2735]` | `0.0` | `0.0` | `{}` | `0` | `0.0` | source_confirmed |  |
 | `lynae_resonance_liberation` | `[]` | `0` | `0` | `{}` | `125` | `25` | non_damaging_selector |  |
-| `lynae_resonance_liberation_prismatic_overblast_c5` | `[2692, 2693, 2694, 2695, 2483]` | `0.0` | `0.0` | `{}` | `125` | `25` | constellation_gated_disabled_by_default_workbook_confirmed_global_timestop_decision_frame_240F_damage_repeat_from_2695 |  |
+| `lynae_resonance_liberation_prismatic_overblast_c5` | `[2692, 2693, 2694, 2695, 2483]` | `0.0` | `20.0` | `{}` | `125` | `25` | constellation_gated_disabled_by_default_workbook_confirmed_global_timestop_decision_frame_240F_damage_repeat_from_2695 |  |

@@ -78,8 +78,8 @@ def test_c_enabled_human_qte() -> None:
     assert row.incoming_qte_applied is True
     assert row.damage > 0.0
     assert row.scaling_stat == "atk"
-    assert_close(row.action_time, 1.0, "human qte action_time")
-    assert_close(row.combat_time_cost, 0.1667, "human qte combat_time_cost")
+    assert_close(row.action_time, 71 / 60, "human qte action_time")
+    assert_close(row.combat_time_cost, 71 / 60, "human qte combat_time_cost")
     assert row.incoming_qte_damage_bonus_category == "none_or_unmodeled_intro"
     assert row.incoming_qte_trigger_classification == "qte_intro"
     assert row.incoming_qte_source_damage_label == "intro_skill_damage"
@@ -101,8 +101,8 @@ def test_d_enabled_mech_qte() -> None:
     assert row.incoming_qte_applied is True
     assert row.damage > 0.0
     assert row.scaling_stat == "atk"
-    assert_close(row.action_time, 1.2, "mech qte action_time")
-    assert_close(row.combat_time_cost, 0.4333, "mech qte combat_time_cost")
+    assert_close(row.action_time, 76 / 60, "mech qte action_time")
+    assert_close(row.combat_time_cost, 76 / 60, "mech qte combat_time_cost")
     assert row.incoming_qte_damage_bonus_category == "resonance_skill"
     assert any(event.get("damage_bonus_category") == "resonance_skill" for event in row.transition_events)
     assert "aemeath_qte_intro_mech" not in sim.get_policy_action_ids()

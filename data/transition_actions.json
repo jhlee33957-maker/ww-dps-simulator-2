@@ -10,13 +10,11 @@
     "trigger_classification": "qte_intro",
     "source_damage_label": "intro_skill_damage",
     "damage_bonus_category": "none_or_unmodeled_intro",
-    "action_time": 1.0,
-    "combat_time_cost": 0.1667,
+    "action_time": 1.1833333333333333,
+    "combat_time_cost": 1.1833333333333333,
     "previous_outro_trigger_frame": 48,
     "hits": [
-      0.1346,
-      0.1346,
-      1.0766
+      1.3458
     ],
     "mechanic_event_tags": [],
     "mechanic_event_triggers": [
@@ -46,7 +44,9 @@
     "scaling_stat": "atk",
     "off_tune_value": 77.37,
     "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
-    "off_tune_value_source_ref": "角色-女!S2790:S2792"
+    "off_tune_value_source_ref": "角色-女!S2790:S2792",
+    "resonance_energy_gain": 10.0,
+    "concerto_energy_gain": 10.0
   },
   {
     "id": "aemeath_qte_intro_mech",
@@ -59,12 +59,11 @@
     "trigger_classification": "qte_intro",
     "source_damage_label": "intro_skill_damage",
     "damage_bonus_category": "resonance_skill",
-    "action_time": 1.2,
-    "combat_time_cost": 0.4333,
+    "action_time": 1.2666666666666666,
+    "combat_time_cost": 1.2666666666666666,
     "previous_outro_trigger_frame": 40,
     "hits": [
-      0.653,
-      0.9795
+      1.6325
     ],
     "mechanic_event_tags": [],
     "mechanic_event_triggers": [
@@ -94,7 +93,9 @@
     "scaling_stat": "atk",
     "off_tune_value": 93.85,
     "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
-    "off_tune_value_source_ref": "角色-女!S2935:S2936"
+    "off_tune_value_source_ref": "角色-女!S2935:S2936",
+    "resonance_energy_gain": 10.0,
+    "concerto_energy_gain": 10.0
   },
   {
     "id": "mornye_intro_convergence",
@@ -109,10 +110,10 @@
     "source_damage_label": "intro_skill_damage",
     "damage_bonus_category": "none_or_unmodeled_intro",
     "element": "fusion",
-    "action_time": 1.7,
-    "combat_time_cost": 1.7,
+    "action_time": 1.8333333333333333,
+    "combat_time_cost": 1.8333333333333333,
     "previous_outro_trigger_frame": 36,
-    "concerto_energy_gain": 30,
+    "concerto_energy_gain": 30.0,
     "hits": [
       2.0279
     ],
@@ -147,7 +148,7 @@
       "passive_concerto_gain": 20,
       "final_concerto_gain": 30,
       "passive_concerto_source": "角色-女!4164",
-      "combat_time_cost_source": "QTE has 时停 but no 全局时停 row; use 102F / 60"
+      "combat_time_cost_source": "102F base ready + 8F self hitstop = 110F; no 全局时停, so combat_time_cost is 110F / 60."
     },
     "metadata": {
       "source_name": "莫宁",
@@ -180,7 +181,8 @@
     "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
     "off_tune_value": 136.0,
     "off_tune_value_source_status": "workbook_confirmed",
-    "off_tune_value_source_ref": "角色-女!S4149"
+    "off_tune_value_source_ref": "角色-女!S4149",
+    "resonance_energy_gain": 10.0
   },
   {
     "id": "lynae_intro_time_to_show_some_colors",
@@ -195,22 +197,13 @@
     "source_damage_label": "intro_skill_damage",
     "damage_bonus_category": "intro",
     "element": "spectro",
-    "action_time": 1.0,
-    "combat_time_cost": 1.0,
+    "action_time": 1.3333333333333333,
+    "combat_time_cost": 1.3333333333333333,
     "previous_outro_trigger_frame": null,
     "resonance_energy_gain": 1.34,
     "concerto_energy_gain": 1.2,
     "hits": [
-      0.2248,
-      0.2248,
-      0.2248,
-      0.2248,
-      0.2248,
-      0.2248,
-      0.2248,
-      0.2248,
-      0.2248,
-      0.2248
+      2.248
     ],
     "apply_character_mechanics": false,
     "mechanic_event_tags": [],

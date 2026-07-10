@@ -65,37 +65,37 @@ def assert_effect_keys(action: dict, expected_keys: set[str]) -> None:
 
 
 def test_sync_strike_timings(actions: dict[str, dict]) -> None:
-    assert_time(actions["aemeath_sync_strike_armament_merge"], 1.1667, 1.1667)
-    assert_time(actions["aemeath_sync_strike_call_of_dawn"], 0.9667, 0.9667)
+    assert_time(actions["aemeath_sync_strike_armament_merge"], 77 / 60, 77 / 60)
+    assert_time(actions["aemeath_sync_strike_call_of_dawn"], 71 / 60, 71 / 60)
 
 
 def test_heavy_timings_and_overrides(actions: dict[str, dict]) -> None:
     expected = {
-        "aemeath_heavy_aemeath_charged_1": (1.8333, 1.8333),
-        "aemeath_heavy_aemeath_charged_2": (3.6667, 3.6667),
-        "aemeath_heavy_mech_charged_1": (1.0333, 1.0333),
-        "aemeath_heavy_mech_charged_2": (2.0667, 2.0667),
+        "aemeath_heavy_aemeath_charged_1": (72 / 60, 72 / 60),
+        "aemeath_heavy_aemeath_charged_2": (145 / 60, 145 / 60),
+        "aemeath_heavy_mech_charged_1": (56 / 60, 56 / 60),
+        "aemeath_heavy_mech_charged_2": (116 / 60, 116 / 60),
     }
     for action_id, (action_time, combat_time_cost) in expected.items():
         assert_time(actions[action_id], action_time, combat_time_cost)
 
     human_override = actions["aemeath_heavy_aemeath_charged_2"]["timing_overrides"]["instant_response"]
-    assert_approx(human_override["action_time"], 1.8333, "human Instant Response action_time")
-    assert_approx(human_override["combat_time_cost"], 1.8333, "human Instant Response combat_time_cost")
+    assert_approx(human_override["action_time"], 91 / 60, "human Instant Response action_time")
+    assert_approx(human_override["combat_time_cost"], 91 / 60, "human Instant Response combat_time_cost")
 
     mech_override = actions["aemeath_heavy_mech_charged_2"]["timing_overrides"]["instant_response"]
-    assert_approx(mech_override["action_time"], 1.0333, "mech Instant Response action_time")
-    assert_approx(mech_override["combat_time_cost"], 1.0333, "mech Instant Response combat_time_cost")
+    assert_approx(mech_override["action_time"], 56 / 60, "mech Instant Response action_time")
+    assert_approx(mech_override["combat_time_cost"], 56 / 60, "mech Instant Response combat_time_cost")
 
 
 def test_resolver_instant_response(actions: dict[str, dict]) -> None:
     human = action_model(actions["aemeath_heavy_aemeath_charged_2"])
-    assert resolve_action_timing(human, {"instant_response": False}) == (3.6667, 3.6667)
-    assert resolve_action_timing(human, {"instant_response": True}) == (1.8333, 1.8333)
+    assert resolve_action_timing(human, {"instant_response": False}) == (145 / 60, 145 / 60)
+    assert resolve_action_timing(human, {"instant_response": True}) == (91 / 60, 91 / 60)
 
     mech = action_model(actions["aemeath_heavy_mech_charged_2"])
-    assert resolve_action_timing(mech, {"instant_response": False}) == (2.0667, 2.0667)
-    assert resolve_action_timing(mech, {"instant_response": True}) == (1.0333, 1.0333)
+    assert resolve_action_timing(mech, {"instant_response": False}) == (116 / 60, 116 / 60)
+    assert resolve_action_timing(mech, {"instant_response": True}) == (56 / 60, 56 / 60)
 
 
 def set_unbound_instant_response(sim: Simulation, *, form: str) -> None:
@@ -117,8 +117,8 @@ def test_execution_uses_override_before_clear() -> None:
     data = sim.state.character_mechanics_state["aemeath"]
 
     assert entry.resolved_action_id == "aemeath_heavy_aemeath_charged_2"
-    assert_approx(entry.action_time, 1.8333, "executed human Instant Response action_time")
-    assert_approx(entry.combat_time_cost, 1.8333, "executed human Instant Response combat_time_cost")
+    assert_approx(entry.action_time, 91 / 60, "executed human Instant Response action_time")
+    assert_approx(entry.combat_time_cost, 91 / 60, "executed human Instant Response combat_time_cost")
     assert data["instant_response"] is False
     assert data["instant_response_consumed"] is True
 
@@ -129,8 +129,8 @@ def test_execution_uses_override_before_clear() -> None:
     data = sim.state.character_mechanics_state["aemeath"]
 
     assert entry.resolved_action_id == "aemeath_heavy_mech_charged_2"
-    assert_approx(entry.action_time, 1.0333, "executed mech Instant Response action_time")
-    assert_approx(entry.combat_time_cost, 1.0333, "executed mech Instant Response combat_time_cost")
+    assert_approx(entry.action_time, 56 / 60, "executed mech Instant Response action_time")
+    assert_approx(entry.combat_time_cost, 56 / 60, "executed mech Instant Response combat_time_cost")
     assert data["instant_response"] is False
     assert data["instant_response_consumed"] is True
 
@@ -152,10 +152,10 @@ def test_form_switch_stage_1_behavior(actions: dict[str, dict]) -> None:
 
 
 def test_time_stop_and_coefficient_guardrails(actions: dict[str, dict]) -> None:
-    assert_time(actions["aemeath_liberation_overdrive"], 4.3667, 0.0)
-    assert_multipliers(actions["aemeath_liberation_overdrive"], [2.008, 2.6774, 2.6774, 2.6774])
+    assert_time(actions["aemeath_liberation_overdrive"], 262 / 60, 0.0)
+    assert_multipliers(actions["aemeath_liberation_overdrive"], [10.0402])
 
-    assert_time(actions["aemeath_heavenfall_finale"], 5.6667, 0.0)
+    assert_time(actions["aemeath_heavenfall_finale"], 340 / 60, 0.0)
     assert_multipliers(actions["aemeath_heavenfall_finale"], [17.8929])
 
     seraphic_id = (
@@ -163,28 +163,26 @@ def test_time_stop_and_coefficient_guardrails(actions: dict[str, dict]) -> None:
         if "aemeath_seraphic_duet_overture" in actions
         else "aemeath_seraphic_duet_overturn"
     )
-    assert_time(actions[seraphic_id], 3.0, 1.3167)
-    assert_time(actions["aemeath_seraphic_duet_encore"], 2.4167, 1.3333)
-    assert_multipliers(
-        actions["aemeath_seraphic_duet_encore"],
-        [0.179, 0.179, 0.3579, 0.3579, 0.179, 0.179, 1.7893, 0.3579],
-    )
+    assert_time(actions[seraphic_id], 185 / 60, 84 / 60)
+    assert_multipliers(actions[seraphic_id], [3.5795])
+    assert_time(actions["aemeath_seraphic_duet_encore"], 145 / 60, 80 / 60)
+    assert_multipliers(actions["aemeath_seraphic_duet_encore"], [3.579])
 
 
 def test_resource_and_mechanic_key_guardrails(actions: dict[str, dict]) -> None:
     expected_resources = {
-        "aemeath_form_switch_to_mech_normal": (0, 6, 4),
-        "aemeath_form_switch_to_aemeath_normal": (0, 5, 4),
-        "aemeath_sync_strike_armament_merge": (0, 10, 8),
-        "aemeath_sync_strike_call_of_dawn": (0, 10, 8),
-        "aemeath_heavy_aemeath_charged_1": (0, 5, 4),
-        "aemeath_heavy_aemeath_charged_2": (0, 5, 5),
-        "aemeath_heavy_mech_charged_1": (0, 6, 4),
-        "aemeath_heavy_mech_charged_2": (0, 6, 5),
+        "aemeath_form_switch_to_mech_normal": (0, 1.26, 2.52),
+        "aemeath_form_switch_to_aemeath_normal": (0, 0.84, 1.67),
+        "aemeath_sync_strike_armament_merge": (0, 2.43, 4.85),
+        "aemeath_sync_strike_call_of_dawn": (0, 2.96, 5.88),
+        "aemeath_heavy_aemeath_charged_1": (0, 1.68, 3.34),
+        "aemeath_heavy_aemeath_charged_2": (0, 4.18, 8.35),
+        "aemeath_heavy_mech_charged_1": (0, 1.67, 3.34),
+        "aemeath_heavy_mech_charged_2": (0, 4.17, 8.34),
         "aemeath_liberation_overdrive": (125, 0, 20),
-        "aemeath_heavenfall_finale": (0, 0, 20),
-        "aemeath_seraphic_duet_overturn": (0, 8, 8),
-        "aemeath_seraphic_duet_encore": (0, 8, 10),
+        "aemeath_heavenfall_finale": (0, 20, 20),
+        "aemeath_seraphic_duet_overturn": (0, 5.05, 10.04),
+        "aemeath_seraphic_duet_encore": (0, 5.0, 10.0),
     }
     for action_id, (cost, resonance_gain, concerto_gain) in expected_resources.items():
         assert_resources(actions[action_id], cost=cost, resonance_gain=resonance_gain, concerto_gain=concerto_gain)

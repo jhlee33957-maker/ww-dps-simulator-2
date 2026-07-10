@@ -849,12 +849,7 @@
         }
       },
       "code_multipliers": [
-        0.1165,
-        0.0389,
-        0.0389,
-        0.0389,
-        0.0389,
-        0.8154
+        1.0875
       ]
     },
     {
@@ -899,11 +894,9 @@
         {
           "name": "Aemeath Tune Break multipliers",
           "expected": [
-            1.0,
             12.0
           ],
           "actual": [
-            1.0,
             12.0
           ],
           "source": null,
@@ -986,15 +979,15 @@
         },
         {
           "name": "Route time to 100 RM",
-          "expected": 3.8667,
-          "actual": 3.8667,
+          "expected": 2.716666666666667,
+          "actual": 2.716666666666667,
           "source": null,
           "ok": true
         },
         {
           "name": "Route time including Heavy Inversion",
-          "expected": 5.1667,
-          "actual": 5.1667,
+          "expected": 4.15,
+          "actual": 4.15,
           "source": null,
           "ok": true
         }
@@ -1102,8 +1095,8 @@
       "checks": [
         {
           "name": "Critical Protocol action_time",
-          "expected": 4.9333,
-          "actual": 4.9333,
+          "expected": 4.7,
+          "actual": 4.7,
           "source": null,
           "ok": true
         },
@@ -1224,13 +1217,9 @@
         {
           "name": "Mornye Tune Break multipliers",
           "expected": [
-            1.7334,
-            2.2666,
             12.0
           ],
           "actual": [
-            1.7334,
-            2.2666,
             12.0
           ],
           "source": null,

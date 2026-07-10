@@ -60,11 +60,11 @@
       "hit_count": 1,
       "hit_repeat_rule": [],
       "hit_offsets": [
-        0.6
+        0.5166666666666667
       ],
       "decision_cancel_frame_source": {},
-      "action_time": 0.65,
-      "combat_time_cost": 0.65,
+      "action_time": 0.5166666666666667,
+      "combat_time_cost": 0.5166666666666667,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -101,16 +101,14 @@
       ],
       "damage_multiplier": 1.5717,
       "tune_break_multiplier": 0.0,
-      "hit_count": 3,
+      "hit_count": 1,
       "hit_repeat_rule": [],
       "hit_offsets": [
-        0.25,
-        0.55,
-        0.9
+        1.0833333333333333
       ],
       "decision_cancel_frame_source": {},
-      "action_time": 0.95,
-      "combat_time_cost": 0.95,
+      "action_time": 1.0833333333333333,
+      "combat_time_cost": 1.0833333333333333,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -146,11 +144,11 @@
       "hit_count": 1,
       "hit_repeat_rule": [],
       "hit_offsets": [
-        0.95
+        0.7333333333333333
       ],
       "decision_cancel_frame_source": {},
-      "action_time": 1.0,
-      "combat_time_cost": 1.0,
+      "action_time": 0.7333333333333333,
+      "combat_time_cost": 0.7333333333333333,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -182,13 +180,15 @@
         2413
       ],
       "damage_multiplier": 2.3997,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [],
-      "hit_offsets": [],
+      "hit_offsets": [
+        0.8166666666666667
+      ],
       "decision_cancel_frame_source": {},
-      "action_time": 1.1167,
-      "combat_time_cost": 1.1167,
+      "action_time": 0.8166666666666667,
+      "combat_time_cost": 0.8166666666666667,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -267,7 +267,7 @@
       ],
       "damage_multiplier": 2.248,
       "tune_break_multiplier": 0.0,
-      "hit_count": 10,
+      "hit_count": 1,
       "hit_repeat_rule": [
         {
           "damage_rows": [
@@ -279,20 +279,11 @@
         }
       ],
       "hit_offsets": [
-        0.1,
-        0.2,
-        0.3,
-        0.4,
-        0.5,
-        0.6,
-        0.7,
-        0.8,
-        0.9,
-        1.0
+        1.3333333333333333
       ],
       "decision_cancel_frame_source": {},
-      "action_time": 1.0,
-      "combat_time_cost": 1.0,
+      "action_time": 1.3333333333333333,
+      "combat_time_cost": 1.3333333333333333,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -328,13 +319,15 @@
         2461
       ],
       "damage_multiplier": 3.0418,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [],
-      "hit_offsets": [],
+      "hit_offsets": [
+        1.1666666666666667
+      ],
       "decision_cancel_frame_source": {},
-      "action_time": 0.6667,
-      "combat_time_cost": 0.6667,
+      "action_time": 1.1666666666666667,
+      "combat_time_cost": 1.1666666666666667,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -363,20 +356,22 @@
         2463
       ],
       "damage_multiplier": 5.7795,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [],
-      "hit_offsets": [],
+      "hit_offsets": [
+        1.1666666666666667
+      ],
       "decision_cancel_frame_source": {},
-      "action_time": 0.6667,
-      "combat_time_cost": 0.6667,
+      "action_time": 1.1666666666666667,
+      "combat_time_cost": 1.1666666666666667,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
       "cooldown_group": null,
       "resource_cost": 0.0,
-      "resonance_energy_gain": 0.0,
-      "concerto_energy_gain": 0.0,
+      "resonance_energy_gain": 8.13,
+      "concerto_energy_gain": 7.65,
       "special_resource_gate": {},
       "state_resource_gates": "non_policy_concrete_not_direct_policy_spammable",
       "immediate_repeat_possible": false,
@@ -405,11 +400,11 @@
       "hit_count": 1,
       "hit_repeat_rule": [],
       "hit_offsets": [
-        0.5499999999999999
+        0.5833333333333334
       ],
       "decision_cancel_frame_source": {},
-      "action_time": 0.6,
-      "combat_time_cost": 0.6,
+      "action_time": 0.5833333333333334,
+      "combat_time_cost": 0.5833333333333334,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -442,15 +437,14 @@
       ],
       "damage_multiplier": 0.7774,
       "tune_break_multiplier": 0.0,
-      "hit_count": 2,
+      "hit_count": 1,
       "hit_repeat_rule": [],
       "hit_offsets": [
-        0.3,
-        0.65
+        0.4666666666666667
       ],
       "decision_cancel_frame_source": {},
-      "action_time": 0.8,
-      "combat_time_cost": 0.8,
+      "action_time": 0.4666666666666667,
+      "combat_time_cost": 0.4666666666666667,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -485,16 +479,14 @@
       ],
       "damage_multiplier": 1.1325,
       "tune_break_multiplier": 0.0,
-      "hit_count": 3,
+      "hit_count": 1,
       "hit_repeat_rule": [],
       "hit_offsets": [
-        0.25,
-        0.5,
-        0.8
+        0.6666666666666666
       ],
       "decision_cancel_frame_source": {},
-      "action_time": 0.9167,
-      "combat_time_cost": 0.9167,
+      "action_time": 0.6666666666666666,
+      "combat_time_cost": 0.6666666666666666,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -532,17 +524,14 @@
       ],
       "damage_multiplier": 1.4874,
       "tune_break_multiplier": 0.0,
-      "hit_count": 4,
+      "hit_count": 1,
       "hit_repeat_rule": [],
       "hit_offsets": [
-        0.25,
-        0.5,
-        0.75,
-        0.95
+        1.15
       ],
       "decision_cancel_frame_source": {},
-      "action_time": 1.0,
-      "combat_time_cost": 1.0,
+      "action_time": 1.15,
+      "combat_time_cost": 1.15,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -578,7 +567,7 @@
       ],
       "damage_multiplier": 2.5181,
       "tune_break_multiplier": 0.0,
-      "hit_count": 7,
+      "hit_count": 1,
       "hit_repeat_rule": [
         {
           "damage_row": 2435,
@@ -587,17 +576,11 @@
         }
       ],
       "hit_offsets": [
-        0.1571,
-        0.3143,
-        0.4714,
-        0.6286,
-        0.7857,
-        0.9429,
-        1.1
+        1.5166666666666666
       ],
       "decision_cancel_frame_source": {},
-      "action_time": 1.1,
-      "combat_time_cost": 1.1,
+      "action_time": 1.5166666666666666,
+      "combat_time_cost": 1.5166666666666666,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -627,13 +610,15 @@
         2424
       ],
       "damage_multiplier": 1.842,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [],
-      "hit_offsets": [],
+      "hit_offsets": [
+        0.55
+      ],
       "decision_cancel_frame_source": {},
-      "action_time": 0.9,
-      "combat_time_cost": 0.9,
+      "action_time": 0.55,
+      "combat_time_cost": 0.55,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -663,13 +648,15 @@
         2446
       ],
       "damage_multiplier": 1.0478,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [],
-      "hit_offsets": [],
+      "hit_offsets": [
+        0.5166666666666667
+      ],
       "decision_cancel_frame_source": {},
-      "action_time": 0.6167,
-      "combat_time_cost": 0.6167,
+      "action_time": 0.5166666666666667,
+      "combat_time_cost": 0.5166666666666667,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -711,13 +698,15 @@
         2445
       ],
       "damage_multiplier": 1.2341,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [],
-      "hit_offsets": [],
+      "hit_offsets": [
+        0.7333333333333333
+      ],
       "decision_cancel_frame_source": {},
-      "action_time": 0.8333,
-      "combat_time_cost": 0.8333,
+      "action_time": 0.7333333333333333,
+      "combat_time_cost": 0.7333333333333333,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -749,13 +738,15 @@
         2438
       ],
       "damage_multiplier": 1.4365,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [],
-      "hit_offsets": [],
+      "hit_offsets": [
+        0.95
+      ],
       "decision_cancel_frame_source": {},
-      "action_time": 1.0,
-      "combat_time_cost": 1.0,
+      "action_time": 0.95,
+      "combat_time_cost": 0.95,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -797,13 +788,15 @@
         2453
       ],
       "damage_multiplier": 2.4339,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [],
-      "hit_offsets": [],
+      "hit_offsets": [
+        2.6666666666666665
+      ],
       "decision_cancel_frame_source": {},
-      "action_time": 2.6667,
-      "combat_time_cost": 2.6667,
+      "action_time": 2.6666666666666665,
+      "combat_time_cost": 2.6666666666666665,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -835,13 +828,15 @@
         2415
       ],
       "damage_multiplier": 1.4365,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [],
-      "hit_offsets": [],
+      "hit_offsets": [
+        0.95
+      ],
       "decision_cancel_frame_source": {},
-      "action_time": 1.0,
-      "combat_time_cost": 1.0,
+      "action_time": 0.95,
+      "combat_time_cost": 0.95,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -893,11 +888,11 @@
         }
       ],
       "hit_offsets": [
-        0.0
+        2.55
       ],
       "decision_cancel_frame_source": {},
-      "action_time": 0.001,
-      "combat_time_cost": 0.001,
+      "action_time": 2.55,
+      "combat_time_cost": 2.55,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -967,13 +962,15 @@
         2470
       ],
       "damage_multiplier": 1.014,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [],
-      "hit_offsets": [],
+      "hit_offsets": [
+        0.75
+      ],
       "decision_cancel_frame_source": {},
-      "action_time": 0.8667,
-      "combat_time_cost": 0.8667,
+      "action_time": 0.75,
+      "combat_time_cost": 0.75,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -1006,20 +1003,22 @@
         2473
       ],
       "damage_multiplier": 2.2308,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [],
-      "hit_offsets": [],
+      "hit_offsets": [
+        0.75
+      ],
       "decision_cancel_frame_source": {},
-      "action_time": 0.8667,
-      "combat_time_cost": 0.8667,
+      "action_time": 0.75,
+      "combat_time_cost": 0.75,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
       "cooldown_group": null,
       "resource_cost": 0.0,
-      "resonance_energy_gain": 0.0,
-      "concerto_energy_gain": 0.0,
+      "resonance_energy_gain": 2.25,
+      "concerto_energy_gain": 5.4,
       "special_resource_gate": {},
       "state_resource_gates": "Polychrome Leap has no cooldown because KP + Lumiflow >= 40 gate is consumed",
       "immediate_repeat_possible": false,
@@ -1047,7 +1046,7 @@
       ],
       "damage_multiplier": 1.014,
       "tune_break_multiplier": 0.0,
-      "hit_count": 6,
+      "hit_count": 1,
       "hit_repeat_rule": [
         {
           "damage_row": 2474,
@@ -1059,16 +1058,11 @@
         }
       ],
       "hit_offsets": [
-        0.1444,
-        0.2889,
-        0.4334,
-        0.5778,
-        0.7222,
-        0.8667
+        0.6
       ],
       "decision_cancel_frame_source": {},
-      "action_time": 0.8667,
-      "combat_time_cost": 0.8667,
+      "action_time": 0.6,
+      "combat_time_cost": 0.6,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -1099,8 +1093,8 @@
         2475
       ],
       "damage_multiplier": 2.2308,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [
         {
           "damage_row": 2475,
@@ -1108,17 +1102,19 @@
           "max_hits": 6
         }
       ],
-      "hit_offsets": [],
+      "hit_offsets": [
+        0.6
+      ],
       "decision_cancel_frame_source": {},
-      "action_time": 0.8667,
-      "combat_time_cost": 0.8667,
+      "action_time": 0.6,
+      "combat_time_cost": 0.6,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
       "cooldown_group": null,
       "resource_cost": 0.0,
-      "resonance_energy_gain": 0.0,
-      "concerto_energy_gain": 0.0,
+      "resonance_energy_gain": 0.38,
+      "concerto_energy_gain": 0.9,
       "special_resource_gate": {},
       "state_resource_gates": "Polychrome Leap has no cooldown because KP + Lumiflow >= 40 gate is consumed",
       "immediate_repeat_possible": false,
@@ -1146,7 +1142,7 @@
       ],
       "damage_multiplier": 0.655,
       "tune_break_multiplier": 0.0,
-      "hit_count": 5,
+      "hit_count": 1,
       "hit_repeat_rule": [
         {
           "damage_row": 2476,
@@ -1155,15 +1151,11 @@
         }
       ],
       "hit_offsets": [
-        0.39,
-        0.78,
-        1.17,
-        1.56,
-        1.95
+        0.6166666666666667
       ],
       "decision_cancel_frame_source": {},
-      "action_time": 1.95,
-      "combat_time_cost": 1.95,
+      "action_time": 0.6166666666666667,
+      "combat_time_cost": 0.6166666666666667,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -1195,8 +1187,8 @@
         2479
       ],
       "damage_multiplier": 1.441,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [
         {
           "damage_row": 2478,
@@ -1204,17 +1196,19 @@
           "max_hits": 4
         }
       ],
-      "hit_offsets": [],
+      "hit_offsets": [
+        0.6166666666666667
+      ],
       "decision_cancel_frame_source": {},
-      "action_time": 1.95,
-      "combat_time_cost": 1.95,
+      "action_time": 0.6166666666666667,
+      "combat_time_cost": 0.6166666666666667,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
       "cooldown_group": null,
       "resource_cost": 0.0,
-      "resonance_energy_gain": 0.0,
-      "concerto_energy_gain": 0.0,
+      "resonance_energy_gain": 0.6,
+      "concerto_energy_gain": 1.4,
       "special_resource_gate": {},
       "state_resource_gates": "Polychrome Leap has no cooldown because KP + Lumiflow >= 40 gate is consumed",
       "immediate_repeat_possible": false,
@@ -1273,7 +1267,7 @@
       ],
       "damage_multiplier": 8.748,
       "tune_break_multiplier": 0.0,
-      "hit_count": 10,
+      "hit_count": 1,
       "hit_repeat_rule": [
         {
           "damage_row": 2482,
@@ -1282,16 +1276,7 @@
         }
       ],
       "hit_offsets": [
-        2.6167,
-        2.7167,
-        2.8167,
-        2.9167,
-        3.0167,
-        3.1167,
-        3.2167,
-        3.3167,
-        3.4167,
-        3.5167
+        4.0
       ],
       "decision_cancel_frame_source": {
         "rows": [
@@ -1339,8 +1324,8 @@
         2483
       ],
       "damage_multiplier": 14.871,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [
         {
           "damage_row": 2483,
@@ -1348,7 +1333,9 @@
           "max_hits": 10
         }
       ],
-      "hit_offsets": [],
+      "hit_offsets": [
+        4.0
+      ],
       "decision_cancel_frame_source": {
         "rows": [
           2692,
@@ -1369,7 +1356,7 @@
       "cooldown_group": "lynae_resonance_liberation",
       "resource_cost": 125,
       "resonance_energy_gain": 0.0,
-      "concerto_energy_gain": 0.0,
+      "concerto_energy_gain": 20.0,
       "special_resource_gate": {},
       "state_resource_gates": "non_policy_concrete_not_direct_policy_spammable",
       "immediate_repeat_possible": false,
@@ -1429,11 +1416,10 @@
       ],
       "damage_multiplier": 2.3262,
       "tune_break_multiplier": 0.0,
-      "hit_count": 2,
+      "hit_count": 1,
       "hit_repeat_rule": [],
       "hit_offsets": [
-        0.35,
-        0.75
+        1.2833333333333334
       ],
       "decision_cancel_frame_source": {
         "rows": [
@@ -1443,8 +1429,8 @@
           55
         ]
       },
-      "action_time": 0.9167,
-      "combat_time_cost": 0.9167,
+      "action_time": 1.2833333333333334,
+      "combat_time_cost": 1.2833333333333334,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 6.0,
@@ -1482,13 +1468,10 @@
       ],
       "damage_multiplier": 2.7863,
       "tune_break_multiplier": 0.0,
-      "hit_count": 4,
+      "hit_count": 1,
       "hit_repeat_rule": [],
       "hit_offsets": [
-        0.25,
-        0.5,
-        0.75,
-        1.0
+        1.2833333333333334
       ],
       "decision_cancel_frame_source": {
         "rows": [
@@ -1498,8 +1481,8 @@
           66
         ]
       },
-      "action_time": 1.1,
-      "combat_time_cost": 1.1,
+      "action_time": 1.2833333333333334,
+      "combat_time_cost": 1.2833333333333334,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 6.0,
@@ -1573,13 +1556,15 @@
         2418
       ],
       "damage_multiplier": 1.1112,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [],
-      "hit_offsets": [],
+      "hit_offsets": [
+        1.2333333333333334
+      ],
       "decision_cancel_frame_source": {},
-      "action_time": 1.5,
-      "combat_time_cost": 1.5,
+      "action_time": 1.2333333333333334,
+      "combat_time_cost": 1.2333333333333334,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -1611,13 +1596,15 @@
         2420
       ],
       "damage_multiplier": 3.3334,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [],
-      "hit_offsets": [],
+      "hit_offsets": [
+        1.55
+      ],
       "decision_cancel_frame_source": {},
-      "action_time": 1.5,
-      "combat_time_cost": 1.5,
+      "action_time": 1.55,
+      "combat_time_cost": 1.55,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -1649,13 +1636,15 @@
         2422
       ],
       "damage_multiplier": 5.5556,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [],
-      "hit_offsets": [],
+      "hit_offsets": [
+        1.55
+      ],
       "decision_cancel_frame_source": {},
-      "action_time": 1.5,
-      "combat_time_cost": 1.5,
+      "action_time": 1.55,
+      "combat_time_cost": 1.55,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -1689,7 +1678,7 @@
       ],
       "damage_multiplier": 2.0106,
       "tune_break_multiplier": 0.0,
-      "hit_count": 22,
+      "hit_count": 1,
       "hit_repeat_rule": [
         {
           "damage_row": 2484,
@@ -1703,32 +1692,11 @@
         }
       ],
       "hit_offsets": [
-        0.1371,
-        0.2742,
-        0.4114,
-        0.5485,
-        0.6856,
-        0.8227,
-        0.9599,
-        1.097,
-        1.2341,
-        1.3712,
-        1.5084,
-        1.6455,
-        1.7826,
-        1.9197,
-        2.0568,
-        2.194,
-        2.3311,
-        2.4682,
-        2.6053,
-        2.7425,
-        2.8796,
-        3.0167
+        2.4833333333333334
       ],
       "decision_cancel_frame_source": {},
-      "action_time": 3.0167,
-      "combat_time_cost": 3.0167,
+      "action_time": 2.4833333333333334,
+      "combat_time_cost": 2.4833333333333334,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
@@ -1764,7 +1732,7 @@
       "hit_count": 1,
       "hit_repeat_rule": [],
       "hit_offsets": [
-        1.2
+        1.6
       ],
       "decision_cancel_frame_source": {
         "rows": [
@@ -1847,13 +1815,15 @@
         2465
       ],
       "damage_multiplier": 12.1672,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [],
-      "hit_offsets": [],
+      "hit_offsets": [
+        1.1666666666666667
+      ],
       "decision_cancel_frame_source": {},
-      "action_time": 1.5,
-      "combat_time_cost": 1.5,
+      "action_time": 1.1666666666666667,
+      "combat_time_cost": 1.1666666666666667,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 25.0,
@@ -1882,20 +1852,22 @@
         2467
       ],
       "damage_multiplier": 23.1177,
-      "tune_break_multiplier": 0,
-      "hit_count": 0,
+      "tune_break_multiplier": 0.0,
+      "hit_count": 1,
       "hit_repeat_rule": [],
-      "hit_offsets": [],
+      "hit_offsets": [
+        1.1666666666666667
+      ],
       "decision_cancel_frame_source": {},
-      "action_time": 1.5,
-      "combat_time_cost": 1.5,
+      "action_time": 1.1666666666666667,
+      "combat_time_cost": 1.1666666666666667,
       "global_time_stop_rows": [],
       "global_time_stop_frames": 0,
       "cooldown": 0.0,
       "cooldown_group": null,
       "resource_cost": 0.0,
-      "resonance_energy_gain": 0.0,
-      "concerto_energy_gain": 0.0,
+      "resonance_energy_gain": 14.05,
+      "concerto_energy_gain": 14.58,
       "special_resource_gate": {},
       "state_resource_gates": "non_policy_concrete_not_direct_policy_spammable",
       "immediate_repeat_possible": false,

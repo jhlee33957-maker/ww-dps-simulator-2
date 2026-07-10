@@ -84,9 +84,9 @@ def test_seraphic_duet_ticks_by_combat_time_cost() -> None:
     data["seraphic_duo_remaining"] = 5.0
     data["synchronization_rate"] = 100.0
     execute(sim, "aemeath_resonance_skill", "aemeath_seraphic_duet_overturn")
-    assert_approx(sim.timeline[-1].action_time, 3.0, "Seraphic Overturn action_time")
-    assert_approx(sim.timeline[-1].combat_time_cost, 1.3167, "Seraphic Overturn combat_time_cost")
-    assert_approx(sim.state.cooldowns["probe"], 25.0 - 1.3167, "Seraphic Overturn cooldown tick")
+    assert_approx(sim.timeline[-1].action_time, 185 / 60, "Seraphic Overturn action_time")
+    assert_approx(sim.timeline[-1].combat_time_cost, 84 / 60, "Seraphic Overturn combat_time_cost")
+    assert_approx(sim.state.cooldowns["probe"], 25.0 - 84 / 60, "Seraphic Overturn cooldown tick")
 
     sim = make_sim()
     sim.state.cooldowns["probe"] = 25.0
@@ -95,20 +95,20 @@ def test_seraphic_duet_ticks_by_combat_time_cost() -> None:
     data["seraphic_duo_remaining"] = 5.0
     data["synchronization_rate"] = 100.0
     execute(sim, "aemeath_resonance_skill", "aemeath_seraphic_duet_encore")
-    assert_approx(sim.timeline[-1].action_time, 2.4167, "Seraphic Encore action_time")
-    assert_approx(sim.timeline[-1].combat_time_cost, 1.3333, "Seraphic Encore combat_time_cost")
-    assert_approx(sim.state.cooldowns["probe"], 25.0 - 1.3333, "Seraphic Encore cooldown tick")
+    assert_approx(sim.timeline[-1].action_time, 145 / 60, "Seraphic Encore action_time")
+    assert_approx(sim.timeline[-1].combat_time_cost, 80 / 60, "Seraphic Encore combat_time_cost")
+    assert_approx(sim.state.cooldowns["probe"], 25.0 - 80 / 60, "Seraphic Encore cooldown tick")
 
 
 def test_normal_action_fallback_ticks_by_action_time() -> None:
     sim = make_sim()
     basic = sim.actions["aemeath_basic_form_stage_1"]
-    assert basic.combat_time_cost is None
+    assert basic.combat_time_cost == 23 / 60
     sim.state.cooldowns["probe"] = 25.0
     execute(sim, "aemeath_basic_attack", "aemeath_basic_form_stage_1")
-    assert_approx(sim.timeline[-1].action_time, 0.45, "Basic fallback action_time")
-    assert_approx(sim.timeline[-1].combat_time_cost, 0.45, "Basic fallback combat_time_cost")
-    assert_approx(sim.state.cooldowns["probe"], 24.55, "Basic fallback cooldown tick")
+    assert_approx(sim.timeline[-1].action_time, 23 / 60, "Basic action_time")
+    assert_approx(sim.timeline[-1].combat_time_cost, 23 / 60, "Basic combat_time_cost")
+    assert_approx(sim.state.cooldowns["probe"], 25.0 - 23 / 60, "Basic cooldown tick")
 
 
 def test_form_switch_group_ticks_by_combat_time_cost() -> None:

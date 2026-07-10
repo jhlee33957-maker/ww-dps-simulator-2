@@ -96,8 +96,8 @@ def test_c_enabled_mornye_intro() -> None:
     assert row.incoming_qte_applied is True
     assert row.damage > 0.0
     assert row.scaling_stat == "def"
-    assert_close(row.action_time, 1.7, "Mornye Intro action_time")
-    assert_close(row.combat_time_cost, 1.7, "Mornye Intro combat_time_cost")
+    assert_close(row.action_time, 110 / 60, "Mornye Intro action_time")
+    assert_close(row.combat_time_cost, 110 / 60, "Mornye Intro combat_time_cost")
     assert row.incoming_intro_damage_bonus_category == "none_or_unmodeled_intro"
     assert row.incoming_intro_trigger_classification == "intro"
     assert row.fallback_swap_used is False
@@ -176,8 +176,8 @@ def test_g_transition_action_registry() -> None:
     assert record["scaling_stat_source"] == "user_supplied_skill_screenshot"
     assert record["scaling_stat_source_status"] == "user_supplied_screenshot_not_embedded"
     assert "DEF-scaling" in record["scaling_stat_note"]
-    assert_close(float(record["action_time"]), 1.7, "registry action_time")
-    assert_close(float(record["combat_time_cost"]), 1.7, "registry combat_time_cost")
+    assert_close(float(record["action_time"]), 110 / 60, "registry action_time")
+    assert_close(float(record["combat_time_cost"]), 110 / 60, "registry combat_time_cost")
     assert record["hits"] == [2.0279]
     assert record["concerto_energy_gain"] == 30
     effects = record["mechanic_effects"]

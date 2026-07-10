@@ -32,11 +32,11 @@ def test_resonance_energy_gain_only_scaling() -> None:
 
     assert sim.execute_action("aemeath_basic_attack"), "Aemeath basic should execute"
     row = sim.timeline[-1]
-    assert_close(row.base_resonance_energy_gain, 5.0, "Base resonance gain should remain action value")
+    assert_close(row.base_resonance_energy_gain, 0.84, "Base resonance gain should remain action value")
     assert_close(row.energy_regen, 2.0, "Timeline should log actor ER")
-    assert_close(row.final_resonance_energy_gain, 10.0, "Final resonance gain should scale by ER")
-    assert_close(row.resonance_energy_gained, 10.0, "Applied resonance gain should scale by ER")
-    assert_close(row.concerto_gain, 4.0, "Concerto gain should not scale by ER")
+    assert_close(row.final_resonance_energy_gain, 1.68, "Final resonance gain should scale by ER")
+    assert_close(row.resonance_energy_gained, 1.68, "Applied resonance gain should scale by ER")
+    assert_close(row.concerto_gain, 1.67, "Concerto gain should not scale by ER")
 
 
 def test_mornye_internal_resources_do_not_scale_with_energy_regen() -> None:

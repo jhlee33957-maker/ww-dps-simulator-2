@@ -33,10 +33,10 @@ def main() -> None:
     assert additive["cooldown_group"] == COOLDOWN_GROUP
     assert palette["source_status"] == "user_confirmed_numeric_cooldown"
     assert additive["source_status"] == "user_confirmed_numeric_cooldown"
-    assert palette["action_time"] == 1.1
-    assert palette["combat_time_cost"] == 1.1
-    assert additive["action_time"] == 0.9167
-    assert additive["combat_time_cost"] == 0.9167
+    assert palette["action_time"] == 77 / 60
+    assert palette["combat_time_cost"] == 77 / 60
+    assert additive["action_time"] == 77 / 60
+    assert additive["combat_time_cost"] == 77 / 60
 
     sim = Simulation.from_json(ROOT / "data", party=PARTY_ID)
     sim.state.active_character_id = "lynae"

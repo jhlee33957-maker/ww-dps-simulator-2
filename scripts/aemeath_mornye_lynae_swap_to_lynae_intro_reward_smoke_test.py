@@ -37,7 +37,7 @@ def main() -> None:
     assert reward > 0.0
     assert row.resolved_action_id == RESOLVED_ID
     assert row.total_action_damage == info["damage_this_action"]
-    assert row.combat_time_cost == 1.0
+    assert row.combat_time_cost == 80 / 60
     assert row.incoming_intro_applied is True
 
     print(
