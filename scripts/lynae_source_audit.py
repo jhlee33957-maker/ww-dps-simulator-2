@@ -246,6 +246,27 @@ RESOURCE_VARIANT_MAX_ACTIONS = {
     "lynae_polychrome_leap_stage_2",
     "lynae_intro_time_to_show_some_colors",
 }
+LYNAE_RESOURCE_COMPONENTS = {
+    "lynae_kaleidoscopic_basic_stage_5": [
+        {"action_rows": [2611], "repeat_count": 1, "component": "opening"},
+        {"action_rows": [2613], "repeat_count": 5, "component": "middle_repeated_tick"},
+        {"action_rows": [2614], "repeat_count": 1, "component": "finisher"},
+    ],
+    "lynae_polychrome_leap_stage_2": [
+        {"action_rows": [2649, 2650], "repeat_count": 6, "variant_rule": "max_abs"},
+    ],
+    "lynae_polychrome_leap_stage_3": [
+        {"action_rows": [2660], "repeat_count": 4, "component": "repeated_tick"},
+        {"action_rows": [2661], "repeat_count": 1, "component": "finisher"},
+    ],
+    "lynae_intro_time_to_show_some_colors": [
+        {"action_rows": [2690, 2691], "repeat_count": 10, "variant_rule": "max_abs"},
+    ],
+    "lynae_to_a_vivid_tomorrow": [
+        {"action_rows": [2697], "repeat_count": 12, "component": "first_repeated_tick"},
+        {"action_rows": [2698], "repeat_count": 10, "component": "second_repeated_tick"},
+    ],
+}
 LYNAE_SPECIAL_RESOURCE_NOTES = {
     "lynae_basic_stage_1": {"overflow_gain": 12.0},
     "lynae_basic_stage_2": {"overflow_gain": 21.0},
@@ -486,6 +507,38 @@ def _aggregate_resource_rows(rows: list[dict[str, Any]], *, use_max: bool) -> di
     return {field: round(sum(values), 4) for field, values in fields.items()}
 
 
+def _aggregate_resource_components(
+    components: list[dict[str, Any]],
+    action_rows_by_number: dict[int, dict[str, Any]],
+) -> dict[str, Any]:
+    totals = {field: 0.0 for field in RESOURCE_COLUMNS}
+    component_records = []
+    for component in components:
+        rows = [
+            action_rows_by_number[row_number]
+            for row_number in component.get("action_rows", [])
+            if row_number in action_rows_by_number
+        ]
+        values = _aggregate_resource_rows(rows, use_max=component.get("variant_rule") == "max_abs")
+        repeat_count = float(component.get("repeat_count", 1.0) or 1.0)
+        for field, value in values.items():
+            totals[field] += value * repeat_count
+        component_records.append(
+            {
+                **component,
+                "source_values": values,
+                "applied_values": {
+                    field: round(value * repeat_count, 4)
+                    for field, value in values.items()
+                },
+            }
+        )
+    return {
+        "values": {field: round(value, 4) for field, value in totals.items()},
+        "components": component_records,
+    }
+
+
 def build_resource_cooldown_alignment(audit: dict[str, Any], action_map: list[dict[str, Any]]) -> dict[str, Any]:
     actions_by_id = {
         action["id"]: action
@@ -498,15 +551,24 @@ def build_resource_cooldown_alignment(audit: dict[str, Any], action_map: list[di
         action_id = item["action_id"]
         current = actions_by_id.get(action_id, {})
         action_rows = [action_rows_by_number[row] for row in item["action_rows"] if row in action_rows_by_number]
-        use_max = action_id in RESOURCE_VARIANT_MAX_ACTIONS
-        source_values = _aggregate_resource_rows(action_rows, use_max=use_max)
+        resource_components = []
+        if action_id in LYNAE_RESOURCE_COMPONENTS:
+            aggregated = _aggregate_resource_components(LYNAE_RESOURCE_COMPONENTS[action_id], action_rows_by_number)
+            source_values = aggregated["values"]
+            resource_components = aggregated["components"]
+            resource_aggregation = "sum_component_resource_times_repeat_count"
+        else:
+            use_max = action_id in RESOURCE_VARIANT_MAX_ACTIONS
+            source_values = _aggregate_resource_rows(action_rows, use_max=use_max)
+            resource_aggregation = "max_variant_row" if use_max else "sum_action_rows"
         source_status = "source_confirmed" if action_rows else "unresolved_no_action_resource_rows"
         unresolved_reason = None if action_rows else "No action resource rows were mapped for this action."
         records.append(
             {
                 "action_id": action_id,
                 "action_rows": item["action_rows"],
-                "resource_aggregation": "max_variant_row" if use_max else "sum_action_rows",
+                "resource_aggregation": resource_aggregation,
+                "resource_components": resource_components,
                 "resonance_energy_gain": current.get("resonance_energy_gain"),
                 "source_resonance_energy_gain": source_values["resonance_energy_gain"],
                 "concerto_energy_gain": current.get("concerto_energy_gain"),

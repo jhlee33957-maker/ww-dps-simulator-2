@@ -104,11 +104,7 @@ class LynaeMechanic(CharacterMechanic):
         resolved_id = selected_action.id
         if selected_action.id == LYNAE_POLICY_BASIC_ACTION_ID:
             if data.get("to_vivid_tomorrow_window_remaining", 0.0) > 0.0:
-                resolved_id = (
-                    "lynae_kaleidoscopic_basic_stage_2"
-                    if self._in_kaleidoscopic_parade(data)
-                    else LYNAE_VIVID_TOMORROW_ACTION_ID
-                )
+                resolved_id = LYNAE_VIVID_TOMORROW_ACTION_ID
             elif self._in_kaleidoscopic_parade(data):
                 forced_stage = data.get("next_basic_forced_stage")
                 stage = int(forced_stage or data.get("kaleidoscopic_combo_stage", 1) or 1)

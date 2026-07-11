@@ -20,6 +20,7 @@
         2577
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 1.28,
       "source_resonance_energy_gain": 1.28,
       "concerto_energy_gain": 4.59,
@@ -44,6 +45,7 @@
         2580
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 2.34,
       "source_resonance_energy_gain": 2.34,
       "concerto_energy_gain": 8.37,
@@ -66,6 +68,7 @@
         2581
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 1.83,
       "source_resonance_energy_gain": 1.83,
       "concerto_energy_gain": 6.57,
@@ -88,6 +91,7 @@
         2582
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 2.05,
       "source_resonance_energy_gain": 2.05,
       "concerto_energy_gain": 7.38,
@@ -111,6 +115,7 @@
         2584
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 2.14,
       "source_resonance_energy_gain": 2.14,
       "concerto_energy_gain": 7.66,
@@ -134,6 +139,7 @@
         2587
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 1.66,
       "source_resonance_energy_gain": 1.66,
       "concerto_energy_gain": 5.92,
@@ -156,6 +162,7 @@
         2589
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 4.94,
       "source_resonance_energy_gain": 4.94,
       "concerto_energy_gain": 17.76,
@@ -178,6 +185,7 @@
         2591
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 8.22,
       "source_resonance_energy_gain": 8.22,
       "concerto_energy_gain": 29.6,
@@ -201,6 +209,7 @@
         2594
       ],
       "resource_aggregation": "max_variant_row",
+      "resource_components": [],
       "resonance_energy_gain": 1.23,
       "source_resonance_energy_gain": 1.23,
       "concerto_energy_gain": 4.41,
@@ -222,6 +231,7 @@
         2595
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 1.23,
       "source_resonance_energy_gain": 1.23,
       "concerto_energy_gain": 4.41,
@@ -244,6 +254,7 @@
         2597
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 1.16,
       "source_resonance_energy_gain": 1.16,
       "concerto_energy_gain": 4.14,
@@ -267,6 +278,7 @@
         2600
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 1.68,
       "source_resonance_energy_gain": 1.68,
       "concerto_energy_gain": 6.03,
@@ -292,6 +304,7 @@
         2605
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 2.2,
       "source_resonance_energy_gain": 2.2,
       "concerto_energy_gain": 7.94,
@@ -315,11 +328,76 @@
         2613,
         2614
       ],
-      "resource_aggregation": "sum_action_rows",
-      "resonance_energy_gain": 2.84,
-      "source_resonance_energy_gain": 2.84,
-      "concerto_energy_gain": 10.21,
-      "source_concerto_energy_gain": 10.21,
+      "resource_aggregation": "sum_component_resource_times_repeat_count",
+      "resource_components": [
+        {
+          "action_rows": [
+            2611
+          ],
+          "repeat_count": 1,
+          "component": "opening",
+          "source_values": {
+            "resonance_energy_gain": 1.12,
+            "concerto_energy_gain": 4.03,
+            "core_gain_1": 0.0,
+            "core_gain_2": 0.0,
+            "core_gain_3": 0.0
+          },
+          "applied_values": {
+            "resonance_energy_gain": 1.12,
+            "concerto_energy_gain": 4.03,
+            "core_gain_1": 0.0,
+            "core_gain_2": 0.0,
+            "core_gain_3": 0.0
+          }
+        },
+        {
+          "action_rows": [
+            2613
+          ],
+          "repeat_count": 5,
+          "component": "middle_repeated_tick",
+          "source_values": {
+            "resonance_energy_gain": 0.23,
+            "concerto_energy_gain": 0.81,
+            "core_gain_1": 0.0,
+            "core_gain_2": 0.0,
+            "core_gain_3": 0.0
+          },
+          "applied_values": {
+            "resonance_energy_gain": 1.15,
+            "concerto_energy_gain": 4.05,
+            "core_gain_1": 0.0,
+            "core_gain_2": 0.0,
+            "core_gain_3": 0.0
+          }
+        },
+        {
+          "action_rows": [
+            2614
+          ],
+          "repeat_count": 1,
+          "component": "finisher",
+          "source_values": {
+            "resonance_energy_gain": 1.49,
+            "concerto_energy_gain": 5.37,
+            "core_gain_1": 0.0,
+            "core_gain_2": 0.0,
+            "core_gain_3": 0.0
+          },
+          "applied_values": {
+            "resonance_energy_gain": 1.49,
+            "concerto_energy_gain": 5.37,
+            "core_gain_1": 0.0,
+            "core_gain_2": 0.0,
+            "core_gain_3": 0.0
+          }
+        }
+      ],
+      "resonance_energy_gain": 3.76,
+      "source_resonance_energy_gain": 3.76,
+      "concerto_energy_gain": 13.45,
+      "source_concerto_energy_gain": 13.45,
       "special_resource_gain": {
         "source_core_gain_1": 0.0,
         "source_core_gain_2": 0.0,
@@ -338,6 +416,7 @@
         2616
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 2.14,
       "source_resonance_energy_gain": 2.14,
       "concerto_energy_gain": 7.66,
@@ -365,6 +444,7 @@
         2623
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 2.94,
       "source_resonance_energy_gain": 2.94,
       "concerto_energy_gain": 6.58,
@@ -386,6 +466,7 @@
         2624
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 1.55,
       "source_resonance_energy_gain": 1.55,
       "concerto_energy_gain": 5.58,
@@ -413,6 +494,7 @@
         2639
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 5.81,
       "source_resonance_energy_gain": 5.81,
       "concerto_energy_gain": 13.02,
@@ -438,6 +520,7 @@
         2666
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 8.75,
       "source_resonance_energy_gain": 8.75,
       "concerto_energy_gain": 9.83,
@@ -462,6 +545,7 @@
         2674
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 6.92,
       "source_resonance_energy_gain": 6.92,
       "concerto_energy_gain": 8.2,
@@ -486,6 +570,7 @@
         2678
       ],
       "resource_aggregation": "max_variant_row",
+      "resource_components": [],
       "resonance_energy_gain": 8.13,
       "source_resonance_energy_gain": 8.13,
       "concerto_energy_gain": 7.65,
@@ -510,6 +595,7 @@
         2682
       ],
       "resource_aggregation": "max_variant_row",
+      "resource_components": [],
       "resonance_energy_gain": 14.05,
       "source_resonance_energy_gain": 14.05,
       "concerto_energy_gain": 14.58,
@@ -535,6 +621,7 @@
         2645
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 2.25,
       "source_resonance_energy_gain": 2.25,
       "concerto_energy_gain": 5.4,
@@ -561,11 +648,35 @@
         2650,
         2651
       ],
-      "resource_aggregation": "max_variant_row",
-      "resonance_energy_gain": 0.38,
-      "source_resonance_energy_gain": 0.38,
-      "concerto_energy_gain": 0.9,
-      "source_concerto_energy_gain": 0.9,
+      "resource_aggregation": "sum_component_resource_times_repeat_count",
+      "resource_components": [
+        {
+          "action_rows": [
+            2649,
+            2650
+          ],
+          "repeat_count": 6,
+          "variant_rule": "max_abs",
+          "source_values": {
+            "resonance_energy_gain": 0.38,
+            "concerto_energy_gain": 0.9,
+            "core_gain_1": 0.0,
+            "core_gain_2": 0.0,
+            "core_gain_3": 0.0
+          },
+          "applied_values": {
+            "resonance_energy_gain": 2.28,
+            "concerto_energy_gain": 5.4,
+            "core_gain_1": 0.0,
+            "core_gain_2": 0.0,
+            "core_gain_3": 0.0
+          }
+        }
+      ],
+      "resonance_energy_gain": 2.28,
+      "source_resonance_energy_gain": 2.28,
+      "concerto_energy_gain": 5.4,
+      "source_concerto_energy_gain": 5.4,
       "special_resource_gain": {
         "source_core_gain_1": 0.0,
         "source_core_gain_2": 0.0,
@@ -587,11 +698,55 @@
         2660,
         2661
       ],
-      "resource_aggregation": "sum_action_rows",
-      "resonance_energy_gain": 0.6,
-      "source_resonance_energy_gain": 0.6,
-      "concerto_energy_gain": 1.4,
-      "source_concerto_energy_gain": 1.4,
+      "resource_aggregation": "sum_component_resource_times_repeat_count",
+      "resource_components": [
+        {
+          "action_rows": [
+            2660
+          ],
+          "repeat_count": 4,
+          "component": "repeated_tick",
+          "source_values": {
+            "resonance_energy_gain": 0.3,
+            "concerto_energy_gain": 0.7,
+            "core_gain_1": 0.0,
+            "core_gain_2": 0.0,
+            "core_gain_3": 0.0
+          },
+          "applied_values": {
+            "resonance_energy_gain": 1.2,
+            "concerto_energy_gain": 2.8,
+            "core_gain_1": 0.0,
+            "core_gain_2": 0.0,
+            "core_gain_3": 0.0
+          }
+        },
+        {
+          "action_rows": [
+            2661
+          ],
+          "repeat_count": 1,
+          "component": "finisher",
+          "source_values": {
+            "resonance_energy_gain": 0.3,
+            "concerto_energy_gain": 0.7,
+            "core_gain_1": 0.0,
+            "core_gain_2": 0.0,
+            "core_gain_3": 0.0
+          },
+          "applied_values": {
+            "resonance_energy_gain": 0.3,
+            "concerto_energy_gain": 0.7,
+            "core_gain_1": 0.0,
+            "core_gain_2": 0.0,
+            "core_gain_3": 0.0
+          }
+        }
+      ],
+      "resonance_energy_gain": 1.5,
+      "source_resonance_energy_gain": 1.5,
+      "concerto_energy_gain": 3.5,
+      "source_concerto_energy_gain": 3.5,
       "special_resource_gain": {
         "source_core_gain_1": 0.0,
         "source_core_gain_2": 0.0,
@@ -612,13 +767,37 @@
         2690,
         2691
       ],
-      "resource_aggregation": "max_variant_row",
-      "resonance_energy_gain": 1.34,
-      "source_resonance_energy_gain": 1.34,
-      "concerto_energy_gain": 1.2,
-      "source_concerto_energy_gain": 1.2,
+      "resource_aggregation": "sum_component_resource_times_repeat_count",
+      "resource_components": [
+        {
+          "action_rows": [
+            2690,
+            2691
+          ],
+          "repeat_count": 10,
+          "variant_rule": "max_abs",
+          "source_values": {
+            "resonance_energy_gain": 1.34,
+            "concerto_energy_gain": 1.2,
+            "core_gain_1": 0.0,
+            "core_gain_2": 0.0,
+            "core_gain_3": 0.0
+          },
+          "applied_values": {
+            "resonance_energy_gain": 13.4,
+            "concerto_energy_gain": 12.0,
+            "core_gain_1": 0.0,
+            "core_gain_2": 0.0,
+            "core_gain_3": 0.0
+          }
+        }
+      ],
+      "resonance_energy_gain": 13.4,
+      "source_resonance_energy_gain": 13.4,
+      "concerto_energy_gain": 12.0,
+      "source_concerto_energy_gain": 12.0,
       "special_resource_gain": {
-        "source_core_gain_1": 100.0,
+        "source_core_gain_1": 0.0,
         "source_core_gain_2": 0.0,
         "source_core_gain_3": 0.0,
         "overflow_gain": 100.0
@@ -638,6 +817,7 @@
         2695
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 0.0,
       "source_resonance_energy_gain": 0.0,
       "concerto_energy_gain": 20.0,
@@ -660,11 +840,55 @@
         2697,
         2698
       ],
-      "resource_aggregation": "sum_action_rows",
-      "resonance_energy_gain": 0.5,
-      "source_resonance_energy_gain": 0.5,
-      "concerto_energy_gain": 1.78,
-      "source_concerto_energy_gain": 1.78,
+      "resource_aggregation": "sum_component_resource_times_repeat_count",
+      "resource_components": [
+        {
+          "action_rows": [
+            2697
+          ],
+          "repeat_count": 12,
+          "component": "first_repeated_tick",
+          "source_values": {
+            "resonance_energy_gain": 0.23,
+            "concerto_energy_gain": 0.81,
+            "core_gain_1": 0.0,
+            "core_gain_2": 0.0,
+            "core_gain_3": 0.0
+          },
+          "applied_values": {
+            "resonance_energy_gain": 2.76,
+            "concerto_energy_gain": 9.72,
+            "core_gain_1": 0.0,
+            "core_gain_2": 0.0,
+            "core_gain_3": 0.0
+          }
+        },
+        {
+          "action_rows": [
+            2698
+          ],
+          "repeat_count": 10,
+          "component": "second_repeated_tick",
+          "source_values": {
+            "resonance_energy_gain": 0.27,
+            "concerto_energy_gain": 0.97,
+            "core_gain_1": 0.0,
+            "core_gain_2": 0.0,
+            "core_gain_3": 0.0
+          },
+          "applied_values": {
+            "resonance_energy_gain": 2.7,
+            "concerto_energy_gain": 9.7,
+            "core_gain_1": 0.0,
+            "core_gain_2": 0.0,
+            "core_gain_3": 0.0
+          }
+        }
+      ],
+      "resonance_energy_gain": 5.46,
+      "source_resonance_energy_gain": 5.46,
+      "concerto_energy_gain": 19.42,
+      "source_concerto_energy_gain": 19.42,
       "special_resource_gain": {
         "source_core_gain_1": 0.0,
         "source_core_gain_2": 0.0,
@@ -684,6 +908,7 @@
         2701
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 0.0,
       "source_resonance_energy_gain": 0.0,
       "concerto_energy_gain": 0.0,
@@ -707,6 +932,7 @@
         2704
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 0.0,
       "source_resonance_energy_gain": 0.0,
       "concerto_energy_gain": 0.0,
@@ -728,6 +954,7 @@
         2735
       ],
       "resource_aggregation": "sum_action_rows",
+      "resource_components": [],
       "resonance_energy_gain": 0.0,
       "source_resonance_energy_gain": 0.0,
       "concerto_energy_gain": 0.0,

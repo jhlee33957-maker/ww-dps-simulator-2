@@ -14,7 +14,7 @@ MANIFEST_PATH = PROJECT_ROOT / "data" / "source" / "direct_action_data_patch_man
 ACTIONS_PATH = PROJECT_ROOT / "data" / "actions.json"
 TRANSITIONS_PATH = PROJECT_ROOT / "data" / "transition_actions.json"
 CHANGE_LOG_PATH = PROJECT_ROOT / "data" / "extracted" / "direct_action_data_v61_applied_changes.json"
-EXPECTED_MANIFEST_SHA256 = "a671be3b4f9cb998b345e5957aa0e54eb2b33f91426ce8c8c99b0ca080d53846"
+EXPECTED_MANIFEST_SHA256 = "d3a75ab243469dabdce3b07e2adf0936511b6851a5d69f33f94087ff5054bf9a"
 
 ACTION_VALUE_FIELDS = (
     "duration",

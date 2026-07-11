@@ -3964,8 +3964,8 @@
         "name": "Lynae Kaleidoscopic Basic Stage 5 hit"
       }
     ],
-    "resonance_energy_gain": 2.84,
-    "concerto_energy_gain": 10.21,
+    "resonance_energy_gain": 3.76,
+    "concerto_energy_gain": 13.45,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -4306,8 +4306,8 @@
         "name": "Lynae Intro Time to Show Some Colors hit"
       }
     ],
-    "resonance_energy_gain": 1.34,
-    "concerto_energy_gain": 1.2,
+    "resonance_energy_gain": 13.4,
+    "concerto_energy_gain": 12.0,
     "resonance_energy_cost": 0,
     "applies_buffs": [
       "lynae_intro_spectro_damage_bonus"
@@ -5497,8 +5497,8 @@
     "damage_multiplier": 1.014,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.38,
-    "concerto_energy_gain": 0.9,
+    "resonance_energy_gain": 2.28,
+    "concerto_energy_gain": 5.4,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -5564,8 +5564,8 @@
     "damage_multiplier": 0.655,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.6,
-    "concerto_energy_gain": 1.4,
+    "resonance_energy_gain": 1.5,
+    "concerto_energy_gain": 3.5,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -5789,8 +5789,8 @@
     "damage_multiplier": 2.0106,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.5,
-    "concerto_energy_gain": 1.78,
+    "resonance_energy_gain": 5.46,
+    "concerto_energy_gain": 19.42,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [

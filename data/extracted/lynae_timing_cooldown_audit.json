@@ -289,8 +289,8 @@
       "cooldown": 0.0,
       "cooldown_group": null,
       "resource_cost": 0,
-      "resonance_energy_gain": 1.34,
-      "concerto_energy_gain": 1.2,
+      "resonance_energy_gain": 13.4,
+      "concerto_energy_gain": 12.0,
       "special_resource_gate": {
         "overflow_gain": 100.0
       },
@@ -586,8 +586,8 @@
       "cooldown": 0.0,
       "cooldown_group": null,
       "resource_cost": 0,
-      "resonance_energy_gain": 2.84,
-      "concerto_energy_gain": 10.21,
+      "resonance_energy_gain": 3.76,
+      "concerto_energy_gain": 13.45,
       "special_resource_gate": {},
       "state_resource_gates": "KP basic combo: repeatable only while Kaleidoscopic Parade is active",
       "immediate_repeat_possible": true,
@@ -1068,8 +1068,8 @@
       "cooldown": 0.0,
       "cooldown_group": null,
       "resource_cost": 0.0,
-      "resonance_energy_gain": 0.38,
-      "concerto_energy_gain": 0.9,
+      "resonance_energy_gain": 2.28,
+      "concerto_energy_gain": 5.4,
       "special_resource_gate": {
         "true_color_gain": 1.0,
         "lumiflow_cost": 40.0
@@ -1161,8 +1161,8 @@
       "cooldown": 0.0,
       "cooldown_group": null,
       "resource_cost": 0.0,
-      "resonance_energy_gain": 0.6,
-      "concerto_energy_gain": 1.4,
+      "resonance_energy_gain": 1.5,
+      "concerto_energy_gain": 3.5,
       "special_resource_gate": {
         "true_color_gain": 1.0,
         "lumiflow_cost": 40.0
@@ -1702,8 +1702,8 @@
       "cooldown": 0.0,
       "cooldown_group": null,
       "resource_cost": 0.0,
-      "resonance_energy_gain": 0.5,
-      "concerto_energy_gain": 1.78,
+      "resonance_energy_gain": 5.46,
+      "concerto_energy_gain": 19.42,
       "special_resource_gate": {},
       "state_resource_gates": "repeatable only if policy path and mechanic gates permit it",
       "immediate_repeat_possible": true,
