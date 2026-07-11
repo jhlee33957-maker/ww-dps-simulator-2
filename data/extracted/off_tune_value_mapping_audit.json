@@ -454,14 +454,31 @@
     },
     {
       "action_id": "mornye_syntony_field_damage",
+      "off_tune_value": 0.0,
+      "source_status": "workbook_confirmed_zero_for_damage_1",
+      "source_ref": "角色-女!4126",
+      "source_rows": [
+        4126
+      ],
+      "sheet": "角色-女",
+      "column": "S",
+      "policy_selectable": false,
+      "damaging_action": true,
+      "note": "Mornye Syntony Field Damage 1 deals damage but has a source-confirmed Off-Tune contribution of 0. Its repeated executions are supplied by the scheduled-effect engine."
+    },
+    {
+      "action_id": "mornye_syntony_field_target_damage",
       "off_tune_value": 66.4,
       "source_status": "workbook_confirmed",
-      "source_ref": "角色-女!S4127",
+      "source_ref": "角色-女!4127",
       "source_rows": [
         4127
       ],
       "sheet": "角色-女",
-      "column": "S"
+      "column": "S",
+      "policy_selectable": false,
+      "damaging_action": true,
+      "note": "Mornye Syntony Field Damage 2 is the non-QTE target-position deployment event and owns the source-confirmed Off-Tune contribution of 66.4."
     },
     {
       "action_id": "mornye_tune_break",
@@ -566,6 +583,7 @@
     "mornye_skill_distributed_array",
     "mornye_skill_optimal_solution",
     "mornye_syntony_field_damage",
+    "mornye_syntony_field_target_damage",
     "mornye_wfo_basic_stage_1",
     "mornye_wfo_basic_stage_2",
     "mornye_wfo_basic_stage_3"
@@ -613,6 +631,8 @@
   "actions_with_missing_off_tune_metadata_after_patch": [],
   "off_tune_mapping_completeness_status": "complete",
   "notes": [
-    "Internal aliases copy source workbook Off-Tune metadata without changing damage/timing/resource behavior."
+    "Internal aliases copy source workbook Off-Tune metadata without changing damage/timing/resource behavior.",
+    "Mornye Syntony Field Damage 1 deals damage but has a source-confirmed Off-Tune contribution of 0. Its repeated executions are supplied by the scheduled-effect engine.",
+    "Mornye Syntony Field Damage 2 is the non-QTE target-position deployment event and owns the source-confirmed Off-Tune contribution of 66.4."
   ]
 }

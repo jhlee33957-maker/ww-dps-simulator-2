@@ -944,7 +944,7 @@
       "scheduled_payload": true,
       "scheduled_resource_policy": "none",
       "source_status": "workbook_confirmed_scheduled_tick",
-      "source_ref": "鰲믦돯-也?4126 / dmg!2655",
+      "source_ref": "角色-女!4126 / dmg/角色技能类型!2655",
       "relative_tick_frames": [
         1,
         28,
@@ -957,7 +957,7 @@
     "notes": "Payload for scheduler-supplied Syntony Field Damage 1 ticks. Scheduler supplies five executions at relative frames 1, 28, 55, 82, and 109; this record intentionally contains one 0.3977 hit and no Off-Tune/resources.",
     "off_tune_value": 0.0,
     "off_tune_value_source_status": "workbook_confirmed_zero_for_damage_1",
-    "off_tune_value_source_ref": "鰲믦돯-也?4126 / dmg!2655",
+    "off_tune_value_source_ref": "角色-女!4126 / dmg/角色技能类型!2655",
     "damage_multiplier": 0.3977,
     "tune_break_multiplier": 0.0
   },
@@ -1010,7 +1010,7 @@
       "scheduled_payload": true,
       "scheduled_resource_policy": "source_confirmed_positive_gains",
       "source_status": "workbook_confirmed_scheduled_target_damage",
-      "source_ref": "鰲믦돯-也?4127 / dmg!2656",
+      "source_ref": "角色-女!4127 / dmg/角色技能类型!2656",
       "relative_tick_frames": [
         23
       ],
@@ -1020,7 +1020,7 @@
     "notes": "Payload for the non-QTE Syntony Field Damage 2 deployment event. Scheduled once at relative frame 23 for Geopotential Shift-created normal fields only; grants source-confirmed positive resources through the scheduled-resource opt-in path.",
     "off_tune_value": 66.4,
     "off_tune_value_source_status": "workbook_confirmed",
-    "off_tune_value_source_ref": "鰲믦돯-也?4127 / dmg!2656",
+    "off_tune_value_source_ref": "角色-女!4127 / dmg/角色技能类型!2656",
     "damage_multiplier": 0.9902,
     "tune_break_multiplier": 0.0
   },

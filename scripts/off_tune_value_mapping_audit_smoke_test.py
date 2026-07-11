@@ -10,6 +10,29 @@ if str(ROOT) not in sys.path:
 
 from simulator.simulation import Simulation
 
+ROLE_FEMALE_SHEET = "\u89d2\u8272-\u5973"
+DAMAGE_1_ACTION_REF = f"{ROLE_FEMALE_SHEET}!4126"
+DAMAGE_2_ACTION_REF = f"{ROLE_FEMALE_SHEET}!4127"
+DAMAGE_1_NOTE = (
+    "Mornye Syntony Field Damage 1 deals damage but has a source-confirmed "
+    "Off-Tune contribution of 0. Its repeated executions are supplied by the "
+    "scheduled-effect engine."
+)
+DAMAGE_2_NOTE = (
+    "Mornye Syntony Field Damage 2 is the non-QTE target-position deployment "
+    "event and owns the source-confirmed Off-Tune contribution of 66.4."
+)
+LEGACY_NOTE_VARIANTS = {
+    (
+        "The payload deals damage but its source-confirmed Off-Tune contribution is zero. "
+        "Its repeated executions are supplied by the scheduled-effect engine."
+    ),
+    (
+        "The payload is the non-QTE target-position deployment event and carries the "
+        "source-confirmed Off-Tune contribution."
+    ),
+}
+
 
 def read_json(path: Path):
     return json.loads(path.read_text(encoding="utf-8-sig"))
@@ -42,6 +65,11 @@ def main() -> None:
     assert report_path.exists()
 
     audit = read_json(audit_path)
+    notes = audit.get("notes", [])
+    assert notes.count(DAMAGE_1_NOTE) == 1
+    assert notes.count(DAMAGE_2_NOTE) == 1
+    for legacy_note in LEGACY_NOTE_VARIANTS:
+        assert legacy_note not in notes
     assert audit["boss_tune_break_cooldown_seconds"] == 3.0
     assert audit["boss_tune_break_cooldown_source_ref"] == "附页2!B227"
     assert audit["cooldown_blocks_off_tune_accumulation"] is True
@@ -63,7 +91,14 @@ def main() -> None:
     assert_close(action_by_id("mornye_heavy_inversion")["off_tune_value"], 104.0, "Inversion")
     assert action_by_id("mornye_heavy_inversion")["off_tune_value_source_ref"] == "角色-女!S4136"
     assert_close(action_by_id("mornye_wfo_basic_stage_1")["off_tune_value"], 7.0, "WFO stage 1")
-    assert_close(action_by_id("mornye_syntony_field_damage")["off_tune_value"], 66.4, "Syntony Field")
+    damage_1_action = action_by_id("mornye_syntony_field_damage")
+    assert_close(damage_1_action["off_tune_value"], 0.0, "Syntony Field Damage 1")
+    assert damage_1_action["off_tune_value_source_status"] == "workbook_confirmed_zero_for_damage_1"
+    assert DAMAGE_1_ACTION_REF in damage_1_action["off_tune_value_source_ref"]
+    damage_2_action = action_by_id("mornye_syntony_field_target_damage")
+    assert_close(damage_2_action["off_tune_value"], 66.4, "Syntony Field Damage 2")
+    assert damage_2_action["off_tune_value_source_status"] == "workbook_confirmed"
+    assert DAMAGE_2_ACTION_REF in damage_2_action["off_tune_value_source_ref"]
     assert_close(action_by_id("aemeath_mech_basic_stage_1")["off_tune_value"], 13.34, "Aemeath mech stage 1")
     mech_a3 = action_by_id("aemeath_mech_basic_stage_3")
     assert_close(mech_a3["off_tune_value"], 62.54, "Aemeath mech stage 3 repeat-aware")
@@ -115,6 +150,30 @@ def main() -> None:
     assert_close(mapping["off_tune_value"], 62.54, "Aemeath mech stage 3 mapping")
     assert mapping["source_status"] == "workbook_confirmed_repeat_aware"
     assert mapping["repeat_formula"] == "6.7 + 2.24 * 3 + 2.24 + 46.88"
+    mappings_by_id = {row["action_id"]: row for row in audit["mappings"]}
+    damage_1_mapping = mappings_by_id["mornye_syntony_field_damage"]
+    assert_close(damage_1_mapping["off_tune_value"], 0.0, "Damage 1 audit mapping")
+    assert damage_1_mapping["source_status"] == "workbook_confirmed_zero_for_damage_1"
+    assert DAMAGE_1_ACTION_REF in damage_1_mapping["source_ref"]
+    assert damage_1_mapping["policy_selectable"] is False
+    assert damage_1_mapping["damaging_action"] is True
+    assert damage_1_mapping["note"] == DAMAGE_1_NOTE
+
+    damage_2_mapping = mappings_by_id["mornye_syntony_field_target_damage"]
+    assert_close(damage_2_mapping["off_tune_value"], 66.4, "Damage 2 audit mapping")
+    assert damage_2_mapping["source_status"] == "workbook_confirmed"
+    assert DAMAGE_2_ACTION_REF in damage_2_mapping["source_ref"]
+    assert damage_2_mapping["policy_selectable"] is False
+    assert damage_2_mapping["damaging_action"] is True
+    assert damage_2_mapping["note"] == DAMAGE_2_NOTE
+    assert "mornye_syntony_field_damage" in audit["damaging_actions_checked"]
+    assert "mornye_syntony_field_target_damage" in audit["damaging_actions_checked"]
+    assert report.count("`mornye_syntony_field_damage`") == 1
+    assert report.count("`mornye_syntony_field_target_damage`") == 1
+    assert report.count(DAMAGE_1_NOTE) == 1
+    assert report.count(DAMAGE_2_NOTE) == 1
+    for legacy_note in LEGACY_NOTE_VARIANTS:
+        assert legacy_note not in report
     assert "mornye_heavy_inversion" in report
     assert "角色-女!S4136" in report
 

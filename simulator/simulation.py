@@ -84,6 +84,18 @@ from simulator.weapon_effects import (
 
 
 class Simulation:
+    ROLE_FEMALE_SHEET = "\u89d2\u8272-\u5973"
+    SKILL_TYPE_SHEET = "\u89d2\u8272\u6280\u80fd\u7c7b\u578b"
+    MORNYE_SYNTONY_FIELD_DAMAGE_1_ACTION_REF = f"{ROLE_FEMALE_SHEET}!4126"
+    MORNYE_SYNTONY_FIELD_DAMAGE_2_ACTION_REF = f"{ROLE_FEMALE_SHEET}!4127"
+    MORNYE_SYNTONY_FIELD_DAMAGE_1_SKILL_REF = f"dmg/{SKILL_TYPE_SHEET}!2655"
+    MORNYE_SYNTONY_FIELD_DAMAGE_2_SKILL_REF = f"dmg/{SKILL_TYPE_SHEET}!2656"
+    MORNYE_SYNTONY_FIELD_DAMAGE_1_SOURCE_REF = (
+        f"{MORNYE_SYNTONY_FIELD_DAMAGE_1_ACTION_REF} / {MORNYE_SYNTONY_FIELD_DAMAGE_1_SKILL_REF}"
+    )
+    MORNYE_SYNTONY_FIELD_DAMAGE_2_SOURCE_REF = (
+        f"{MORNYE_SYNTONY_FIELD_DAMAGE_2_ACTION_REF} / {MORNYE_SYNTONY_FIELD_DAMAGE_2_SKILL_REF}"
+    )
     MORNYE_SYNTONY_FIELD_DAMAGE_1_INSTANCE_ID = "mornye_syntony_field_damage_1:mornye"
     MORNYE_SYNTONY_FIELD_DAMAGE_2_INSTANCE_ID = "mornye_syntony_field_damage_2:mornye"
     MORNYE_SYNTONY_FIELD_DAMAGE_1_ACTION_ID = "mornye_syntony_field_damage"
@@ -1944,7 +1956,7 @@ class Simulation:
             refresh_rule="replace",
             scheduled_resource_policy="none",
             source_status="workbook_confirmed_scheduled_tick",
-            source_ref="鰲믦돯-也?4126 / dmg!2655",
+            source_ref=self.MORNYE_SYNTONY_FIELD_DAMAGE_1_SOURCE_REF,
             metadata={
                 **common_metadata,
                 "relative_tick_frames": [1, 28, 55, 82, 109],
@@ -1968,12 +1980,12 @@ class Simulation:
                 refresh_rule="replace",
                 scheduled_resource_policy="source_confirmed_positive_gains",
                 source_status="workbook_confirmed_scheduled_target_damage",
-                source_ref="鰲믦돯-也?4127 / dmg!2656",
+                source_ref=self.MORNYE_SYNTONY_FIELD_DAMAGE_2_SOURCE_REF,
                 metadata={
                     **common_metadata,
                     "relative_tick_frames": [23],
                     "qte_allowed": False,
-                    "qte_restriction_source": "鰲믦돯-也?4127",
+                    "qte_restriction_source": self.MORNYE_SYNTONY_FIELD_DAMAGE_2_ACTION_REF,
                     "scheduled_resource_policy": "source_confirmed_positive_gains",
                 },
             )

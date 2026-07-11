@@ -14,7 +14,7 @@ MANIFEST_PATH = PROJECT_ROOT / "data" / "source" / "direct_action_data_patch_man
 ACTIONS_PATH = PROJECT_ROOT / "data" / "actions.json"
 TRANSITIONS_PATH = PROJECT_ROOT / "data" / "transition_actions.json"
 CHANGE_LOG_PATH = PROJECT_ROOT / "data" / "extracted" / "direct_action_data_v61_applied_changes.json"
-EXPECTED_MANIFEST_SHA256 = "5cde6d11c9c36c6fbd209f9f24b656b5d02ddd092419efd34e87548189662a6c"
+EXPECTED_MANIFEST_SHA256 = "63e8c9accc2ac4081a736fa8b736cac44da1fedb8e9a88c1958b354c93c5c4d6"
 MORNYE_SYNTONY_FIELD_PAYLOAD_SECTION = "mornye_syntony_field_payload_patches"
 
 ACTION_VALUE_FIELDS = (

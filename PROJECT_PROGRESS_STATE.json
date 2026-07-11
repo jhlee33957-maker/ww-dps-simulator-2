@@ -13,11 +13,11 @@
     "language_preference": "설명은 한국어, Codex 프롬프트와 코드 식별자는 영어 가능"
   },
   "status": {
-    "last_updated": "2026-07-11T17:57:22+09:00",
+    "last_updated": "2026-07-11T20:02:28+09:00",
     "latest_verified_archive": "ww-dps-simulator-2(87).zip",
     "latest_verified_baseline_label": "87",
     "current_task_status": "complete_pending_external_review",
-    "current_task": "Mornye Syntony Field deployment-damage integration",
+    "current_task": "Mornye manifest hash and Off-Tune audit idempotence repair",
     "current_task_expected_next_archive": "미정",
     "do_not_treat_current_task_as_complete_until_reviewed": true
   },
@@ -264,7 +264,9 @@
         55,
         82,
         109
-      ]
+      ],
+      "off_tune_source_status": "workbook_confirmed_zero_for_damage_1",
+      "source_ref": "角色-女!4126 / dmg/角色技能类型!2655"
     },
     "damage_2_mapping": {
       "action_id": "mornye_syntony_field_target_damage",
@@ -277,7 +279,9 @@
       "relative_tick_frames": [
         23
       ],
-      "scheduled_resource_policy": "source_confirmed_positive_gains"
+      "scheduled_resource_policy": "source_confirmed_positive_gains",
+      "off_tune_source_status": "workbook_confirmed",
+      "source_ref": "角色-女!4127 / dmg/角色技能类型!2656"
     },
     "activation_timing": {
       "geopotential_shift": "host combat start + 48 / 60",
@@ -307,8 +311,22 @@
       "liberation_unclamped_attempt": 4436.1,
       "theoretical_overflow": 516.1
     },
-    "remaining_limitation": "Exact 3-second Syntony/High Syntony healing remains simplified and out of scope.",
-    "external_review_required": true
+    "remaining_limitation": "Exact 180-frame Syntony/High Syntony healing remains simplified and out of scope.",
+    "external_review_required": true,
+    "notes": "Canonical Unicode traceability remains correct. Manifest hash guard now matches the canonical manifest bytes; patch check succeeds with field_level_change_count=0. Off-Tune audit generation is deterministic and idempotent; duplicated Syntony notes were removed and replaced by exactly one generator-owned Damage 1 note and one Damage 2 note. Runtime deployment-damage behavior was not changed. Exact 180-frame healing remains the next task; external review is still required.",
+    "title": "Fix manifest-integrity and Off-Tune audit-idempotence defects after (90) review",
+    "manifest_hash_guard": {
+      "previous_expected_sha256": "c59c3584d5c09aa106f643b1546957b471a9e841398cc9e0cba046f93e53bf8b",
+      "verified_canonical_sha256": "63e8c9accc2ac4081a736fa8b736cac44da1fedb8e9a88c1958b354c93c5c4d6",
+      "manifest_copies_byte_identical": true
+    },
+    "off_tune_audit_idempotence": {
+      "json_sha256": "83fd7fd399c07820e0330d5185912c3c5af93f5134fa7b1b5a763ec88c38de0b",
+      "markdown_sha256": "8bf92eb56d6f93bc280d57e2139b4f0f06ff4a344e45fa35c58d98c710cd5e56",
+      "damage_1_note_count": 1,
+      "damage_2_note_count": 1,
+      "legacy_note_variant_count": 0
+    }
   },
   "manual_cycle_reference": {
     "status": "user_researched_reference_cycle",
@@ -376,9 +394,9 @@
     },
     {
       "id": "U002",
-      "item": "모니에 Syntony/High Syntony Field 자동 피해",
-      "status": "not_implemented",
-      "note": "데이터 액션은 있으나 생산 메커니즘에서 예약되지 않음."
+      "item": "Mornye Syntony/High Syntony Field deployment damage and exact healing",
+      "status": "deployment_damage_implemented_candidate_canonical_source_traceability_repaired_candidate",
+      "note": "Deployment damage implemented candidate; canonical source traceability repaired candidate; exact 180-frame Syntony/High Syntony healing remains simplified; external review required."
     },
     {
       "id": "U003",
@@ -432,8 +450,8 @@
   "next_planned_tasks": [
     {
       "order": 1,
-      "task": "exact Mornye Syntony/High Syntony 180-frame healing events and replacement of the simplified action-boundary heal proxy",
-      "prerequisite": "external review of deployment-damage candidate",
+      "task": "exact Mornye Syntony/High Syntony 180-frame healing events and replacement of the action-boundary healing proxy",
+      "prerequisite": "external review of deployment-damage audit cleanup candidate",
       "acceptance": [
         "normal Syntony exact 180-frame healing cadence",
         "High Syntony exact 180-frame healing cadence",
@@ -441,90 +459,53 @@
       ]
     },
     {
-      "order": 1,
-      "task": "현재 Codex가 구현 중인 범용 scheduler 결과 검수",
-      "prerequisite": "새 ZIP 업로드",
-      "acceptance": [
-        "combat_time_cost=0에서 진행·틱 0",
-        "한 행동 중 다중 틱",
-        "오프필드 소스 캐릭터 스탯",
-        "일반 행동 부작용 없음",
-        "조화도·보상 1회 반영",
-        "생산 캐릭터 메커니즘은 아직 연결되지 않음"
-      ]
-    },
-    {
       "order": 2,
-      "task": "모니에 Syntony/High Syntony Field 원본 데이터 직접 검수 후 scheduler 연결",
-      "needs": [
-        "원본 엑셀",
-        "필요 시 중국어 웹 스킬 설명"
-      ],
+      "task": "Lynae Spray Paint source audit and scheduler integration",
       "do_not_guess": true
     },
     {
       "order": 3,
-      "task": "린네 Spray Paint 원본 데이터 직접 검수 후 scheduler 연결",
-      "needs": [
-        "원본 엑셀",
-        "필요 시 중국어 웹 스킬 설명"
-      ],
-      "do_not_guess": true
+      "task": "Aemeath 30-stack source audit and implementation",
+      "likely_observation_change": "v5 may be required"
     },
     {
       "order": 4,
-      "task": "에이메스 30스택 메커니즘 직접 검수·구현",
+      "task": "Mornye/Aemeath active Echo actions",
       "needs": [
-        "원본 엑셀",
-        "중국어 웹 스킬·패시브 설명"
-      ],
-      "likely_observation_change": "v5 필요 가능성"
-    },
-    {
-      "order": 5,
-      "task": "모니에·에이메스 액티브 에코 구현",
-      "needs": [
-        "스크린샷",
-        "원본 엑셀 타이밍·조화도"
+        "source screenshots",
+        "source workbook mapping for damage, resources, and Off-Tune"
       ]
     },
     {
+      "order": 5,
+      "task": "full real-cycle integration",
+      "acceptance": "stable full-cycle run without resource or Off-Tune injection"
+    },
+    {
       "order": 6,
-      "task": "실전 전체 사이클 1회 통합 테스트",
-      "acceptance": "자원·조화도 주입 없이 유저 기준 사이클 완주"
+      "task": "120-second manual baseline",
+      "outputs": [
+        "total damage",
+        "DPS",
+        "damage by character",
+        "buff uptime",
+        "Off-Tune timeline",
+        "action log"
+      ]
     },
     {
       "order": 7,
-      "task": "120초 수동 기준선 상태 머신",
-      "variants": [
-        "린네 미사용",
-        "유저 연구 사이클",
-        "순서 변형"
-      ],
-      "outputs": [
-        "총 피해",
-        "DPS",
-        "캐릭터별 피해",
-        "버프 가동률",
-        "조화도 파괴 시각",
-        "행동 로그"
+      "task": "BC/PPO regeneration and training",
+      "requirements": [
+        "latest observation version",
+        "regenerated demonstrations",
+        "manual baseline reproduction check"
       ]
     },
     {
       "order": 8,
-      "task": "BC 데모 재생성과 PPO 재학습",
-      "requirements": [
-        "관측 최신 버전",
-        "고유 상태 중심 데모",
-        "return-to-go/value 사전학습",
-        "gamma/gae_lambda 재검토",
-        "수동 기준선 99% 이상 재현 여부 평가"
-      ]
-    },
-    {
-      "order": 9,
-      "task": "Beam Search 또는 MCTS 보조 탐색",
-      "rule": "120초 최종 총 피해만 목적함수로 사용. 린네 사용·버프에 임의 가중치 금지."
+      "task": "Beam Search/MCTS comparison",
+      "rule": "Use only final 120-second total damage as the objective; no arbitrary character-use or buff bonuses."
     }
   ],
   "validation_invariants": [
@@ -644,6 +625,96 @@
         "bundled Python compileall simulator env scripts passed",
         ".venv launcher failed before Python start with unable-to-create-process error"
       ]
+    },
+    {
+      "baseline": "syntony_audit_cleanup_after_88",
+      "status": "candidate_pending_external_review",
+      "summary": "Repaired Mornye Syntony Field source traceability, updated global Off-Tune audit to the two-payload structure, kept deployment runtime behavior unchanged, and preserved exact 180-frame healing as the remaining limitation.",
+      "known_good_for_next_task": false,
+      "tests": [
+        "mornye_syntony_field_source_traceability_smoke_test.py passed",
+        "off_tune_damaging_action_metadata_guard_smoke_test.py passed",
+        "off_tune_value_mapping_audit_smoke_test.py passed",
+        "mornye_syntony_field_payload_data_smoke_test.py passed",
+        "mornye_syntony_field_scheduler_smoke_test.py passed",
+        "mornye_syntony_field_intro_qte_smoke_test.py passed",
+        "mornye_high_syntony_field_scheduler_cancel_smoke_test.py passed",
+        "scheduled_source_resource_gain_smoke_test.py passed",
+        "mornye_syntony_field_manifest_reapply_smoke_test.py passed",
+        "all scheduled_effect*_smoke_test.py passed",
+        "mornye_discord_r5_no_counter_opener_smoke_test.py passed",
+        "lynae_off_tune_real_cycle_smoke_test.py passed",
+        "aemeath_mornye_lynae_short_rollout_smoke_test.py passed",
+        "env_smoke_test.py passed with observation shape 312",
+        "apply_direct_action_data_v61.py --check --fail-on-diff passed",
+        "manifest copies match",
+        "PROJECT_PROGRESS_STATE.json UTF-8 without BOM and baseline 87 checks passed",
+        "corrupted source-reference search returned no matches",
+        ".venv launcher failed before Python start with unable-to-create-process error",
+        "bundled Python compileall . passed"
+      ]
+    },
+    {
+      "baseline": "syntony_unicode_traceability_fix_after_89",
+      "status": "candidate_pending_external_review",
+      "summary": "Repaired Mornye Syntony Field source-reference Unicode traceability after externally reviewed (89) candidate. Runtime scheduling/action values unchanged; exact 180-frame healing remains simplified.",
+      "known_good_for_next_task": false,
+      "tests": [
+        "bundled python -m compileall simulator scripts",
+        "mornye_syntony_field_source_traceability_smoke_test.py",
+        "mornye_syntony_field_payload_data_smoke_test.py",
+        "off_tune_damaging_action_metadata_guard_smoke_test.py",
+        "off_tune_value_mapping_audit_smoke_test.py",
+        "mornye_syntony_field_scheduler_smoke_test.py",
+        "mornye_syntony_field_intro_qte_smoke_test.py",
+        "mornye_high_syntony_field_scheduler_cancel_smoke_test.py",
+        "scheduled_source_resource_gain_smoke_test.py",
+        "mornye_syntony_field_manifest_reapply_smoke_test.py",
+        "scheduled_effect_* smoke suite",
+        "mornye_high_syntony_field_runtime/buff/metadata smoke tests",
+        "rl_observation_shape_guard_smoke_test.py",
+        "rl_observation_delayed_reward_v4_smoke_test.py",
+        "rl_observation_off_field_cooldown_v4_smoke_test.py",
+        "aemeath_mornye_lynae_observation_preflight_smoke_test.py",
+        "aemeath_mornye_lynae_swap_to_lynae_intro_reward_smoke_test.py",
+        "train_maskable_ppo_progress_cli_smoke_test.py",
+        "maskable_ppo_bc_cli_smoke_test.py",
+        "bc_refresh_plan_cli_smoke_test.py",
+        "route_bc_probability_validation_smoke_test.py",
+        "aemeath_mornye_lynae_policy_probability_diagnostic_smoke_test.py",
+        "apply_direct_action_data_v61.py --check --fail-on-diff",
+        "manifest semantic equivalence check",
+        "encoding/mojibake/BOM scan"
+      ]
+    },
+    {
+      "baseline": "syntony_manifest_hash_and_audit_idempotence_fix_after_90",
+      "status": "candidate_pending_external_review",
+      "summary": "Updated manifest hash guard to verified canonical bytes and made Off-Tune audit generation deterministic/idempotent. Runtime behavior, observation v4/312, reward, action IDs, and policy ordering unchanged. Exact 180-frame healing remains pending.",
+      "known_good_for_next_task": false,
+      "tests": [
+        "direct_action_manifest_hash_guard_smoke_test.py",
+        "off_tune_audit_generator_idempotence_smoke_test.py",
+        "off_tune_damaging_action_metadata_guard_smoke_test.py",
+        "off_tune_value_mapping_audit_smoke_test.py",
+        "mornye_syntony_field_source_traceability_smoke_test.py",
+        "mornye_syntony_field_payload_data_smoke_test.py",
+        "mornye_syntony_field_scheduler_smoke_test.py",
+        "mornye_syntony_field_intro_qte_smoke_test.py",
+        "mornye_high_syntony_field_scheduler_cancel_smoke_test.py",
+        "scheduled_source_resource_gain_smoke_test.py",
+        "mornye_syntony_field_manifest_reapply_smoke_test.py",
+        "scheduled_effect*_smoke_test.py suite",
+        "mornye_discord_r5_no_counter_opener_smoke_test.py",
+        "lynae_off_tune_real_cycle_smoke_test.py",
+        "aemeath_mornye_lynae_short_rollout_smoke_test.py",
+        "env_smoke_test.py",
+        "apply_direct_action_data_v61.py --check --fail-on-diff",
+        "manifest byte/hash verification",
+        "generator double-run SHA-256 idempotence check",
+        "UTF-8 no-BOM check"
+      ]
     }
-  ]
+  ],
+  "next_planned_task": "exact Mornye Syntony/High Syntony 180-frame healing events"
 }

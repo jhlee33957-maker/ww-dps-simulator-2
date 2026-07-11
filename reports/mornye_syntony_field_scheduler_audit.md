@@ -9,6 +9,18 @@ This report covers only source-confirmed normal Syntony Field deployment damage:
 
 Exact 180-frame field healing remains out of scope and is still represented by the existing simplified action-boundary heal/Halo proxy.
 
+## Source Traceability
+
+Readable source references used by this implementation:
+
+- `角色-女!4117`
+- `角色-女!4118`
+- `角色-女!4125`
+- `角色-女!4126`
+- `角色-女!4127`
+- `dmg/角色技能类型!2655`
+- `dmg/角色技能类型!2656`
+
 ## Field Creation Timing
 
 Geopotential Shift (`mornye_heavy_geopotential_shift`) creates Wide Field Observation at source action frame 48. The normal Syntony Field deployment-damage scheduler therefore uses:
@@ -72,7 +84,7 @@ The event is permitted to occur exactly at its expiration boundary and then the 
 
 ## QTE Restriction
 
-Damage 2 is non-QTE only per source row `鰲믦돯-也?4127`.
+Damage 2 is non-QTE only per source row `角色-女!4127`.
 
 - Geopotential Shift schedules Damage 1 and Damage 2.
 - Intro/QTE schedules Damage 1 only.
