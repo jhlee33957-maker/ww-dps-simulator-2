@@ -1103,9 +1103,17 @@ class Simulation:
         result.party_response_scan_triggered = bool(result.party_response_scan_triggered)
         result.unresolved_response_damage_events = list(self.state.unresolved_response_damage_events)
 
-    def resolve_action(self, selected_action: ActionData) -> ActionData:
-        mechanic = self._mechanic_for_character(self.state.active_character_id)
+    def resolve_action_for_character(
+        self,
+        selected_action: ActionData,
+        character_id: str | None = None,
+    ) -> ActionData:
+        resolver_character_id = character_id or selected_action.character_id or self.state.active_character_id
+        mechanic = self._mechanic_for_character(resolver_character_id)
         return mechanic.resolve_action(self.state, selected_action, self.actions)
+
+    def resolve_action(self, selected_action: ActionData) -> ActionData:
+        return self.resolve_action_for_character(selected_action, self.state.active_character_id)
 
     def resolve_action_id(self, action_id: str) -> str:
         return self.resolve_action(self.actions[action_id]).id

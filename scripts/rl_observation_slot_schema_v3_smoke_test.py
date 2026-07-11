@@ -52,9 +52,9 @@ def main() -> None:
     )
     env.reset()
     mapping = env.observation_channel_mapping()
-    assert env.observation_version == "slot_generic_mechanics_v3"
-    assert env.observation_space.shape == (204,)
-    assert len(env._get_observation()) == 204
+    assert env.observation_version == "slot_generic_mechanics_v4"
+    assert env.observation_space.shape == (312,)
+    assert len(env._get_observation()) == 312
     assert mapping["slot_1.mechanic_state_4"] == "aemeath_forte_enhancement_stacks"
     assert mapping["slot_1.mechanic_state_5"] == "aemeath_trail_no_cost"
     assert mapping["slot_1.mechanic_state_6"] == "aemeath_rupturous_trail"

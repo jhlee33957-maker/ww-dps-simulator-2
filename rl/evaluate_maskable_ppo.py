@@ -34,6 +34,8 @@ OBSERVATION_METADATA_KEYS = (
     "observation_version",
     "observation_labels",
     "max_party_slots",
+    "max_policy_action_slots",
+    "observation_action_slot_mapping",
 )
 
 
@@ -416,7 +418,9 @@ def main() -> None:
         "observation_labels": env.observation_labels(),
         "observation_channel_mapping": env.observation_channel_mapping(),
         "observation_slot_mapping": env.observation_slot_mapping(),
+        "observation_action_slot_mapping": env.observation_action_slot_mapping(),
         "max_party_slots": env.observation_metadata()["max_party_slots"],
+        "max_policy_action_slots": env.observation_metadata()["max_policy_action_slots"],
         "curriculum_reset_mode": env.get_last_curriculum_reset_mode(),
         "training_methodology_summary": training_methodology_summary,
         "model_training_metadata": metadata if metadata_path.exists() else None,

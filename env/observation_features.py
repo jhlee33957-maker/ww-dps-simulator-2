@@ -3,13 +3,23 @@ from __future__ import annotations
 import math
 from typing import Any
 
-from simulator.buff_system import buffed_combat_stats, support_stat_context
+from simulator.buff_system import (
+    buffed_combat_stats,
+    effective_atk_percent_contribution,
+    effective_damage_amp_contribution,
+    get_active_buffs_for_character,
+    support_stat_context,
+)
 from simulator.mechanic_events import aemeath_resonance_mode_from_config
 
 
-OBSERVATION_VERSION = "slot_generic_mechanics_v3"
-DEPRECATED_OBSERVATION_VERSION = "off_tune_tune_break_weapon_state_v1"
+OBSERVATION_VERSION = "slot_generic_mechanics_v4"
+DEPRECATED_OBSERVATION_VERSION = "slot_generic_mechanics_v3"
 MAX_PARTY_SLOTS = 3
+MAX_POLICY_ACTION_SLOTS = 32
+ALL_DAMAGE_AMP_DENOMINATOR = 1.0
+LIBERATION_DAMAGE_AMP_DENOMINATOR = 1.0
+ATK_PERCENT_BONUS_DENOMINATOR = 0.50
 
 GLOBAL_SCHEMA = [
     "global.time_ratio",
@@ -62,7 +72,11 @@ SLOT_SCHEMA = [
     "runtime_hp_percent_bonus_scaled",
     "runtime_crit_rate_bonus_scaled",
     "runtime_crit_damage_bonus_scaled",
-    "runtime_damage_taken_amp_outgoing_scaled",
+    "runtime_all_damage_amp_scaled",
+    "runtime_all_damage_amp_remaining_ratio",
+    "runtime_liberation_damage_amp_scaled",
+    "runtime_liberation_damage_amp_remaining_ratio",
+    "runtime_atk_percent_bonus_remaining_ratio",
     "mechanic_state_0_active",
     "mechanic_state_0_remaining_ratio",
     "mechanic_state_0_value_scaled",
@@ -107,6 +121,12 @@ SLOT_SCHEMA = [
     "tune_response_1_available",
 ]
 
+ACTION_SLOT_SCHEMA = [
+    "present",
+    "available",
+    "cooldown_remaining_ratio",
+]
+
 ANOMALY_CHANNEL_MAPPING = {
     "global.anomaly_0": "aero_erosion",
     "global.anomaly_1": "spectro_frazzle",
@@ -119,6 +139,8 @@ def build_observation_labels(max_party_slots: int = MAX_PARTY_SLOTS) -> list[str
     labels = list(GLOBAL_SCHEMA)
     for slot_index in range(max_party_slots):
         labels.extend(f"slot_{slot_index}.{name}" for name in SLOT_SCHEMA)
+    for action_slot_index in range(MAX_POLICY_ACTION_SLOTS):
+        labels.extend(f"action_slot_{action_slot_index}.{name}" for name in ACTION_SLOT_SCHEMA)
     return labels
 
 
@@ -127,6 +149,7 @@ def build_observation_values(simulation: Any, max_party_slots: int = MAX_PARTY_S
     slot_ids = _slot_character_ids(simulation, max_party_slots=max_party_slots)
     for character_id in slot_ids:
         values.extend(_slot_values(simulation, character_id))
+    values.extend(_action_slot_values(simulation))
     labels = build_observation_labels(max_party_slots=max_party_slots)
     assert len(values) == len(labels), f"Observation value/label mismatch: {len(values)} != {len(labels)}"
     return [_finite_nonnegative(value) for value in values]
@@ -196,6 +219,15 @@ def build_observation_slot_mapping(simulation: Any, max_party_slots: int = MAX_P
     }
 
 
+def build_observation_action_slot_mapping(simulation: Any) -> dict[str, str | None]:
+    action_ids = _policy_action_ids(simulation)
+    _ensure_policy_action_slot_capacity(action_ids)
+    return {
+        f"action_slot_{slot_index}": action_ids[slot_index] if slot_index < len(action_ids) else None
+        for slot_index in range(MAX_POLICY_ACTION_SLOTS)
+    }
+
+
 def observation_metadata(env: Any) -> dict[str, Any]:
     return {
         "observation_version": OBSERVATION_VERSION,
@@ -204,7 +236,14 @@ def observation_metadata(env: Any) -> dict[str, Any]:
         "observation_labels": env.observation_labels(),
         "observation_channel_mapping": env.observation_channel_mapping(),
         "observation_slot_mapping": env.observation_slot_mapping(),
+        "observation_action_slot_mapping": env.observation_action_slot_mapping(),
         "max_party_slots": MAX_PARTY_SLOTS,
+        "max_policy_action_slots": MAX_POLICY_ACTION_SLOTS,
+        "normalization": {
+            "runtime_all_damage_amp_scaled": ALL_DAMAGE_AMP_DENOMINATOR,
+            "runtime_liberation_damage_amp_scaled": LIBERATION_DAMAGE_AMP_DENOMINATOR,
+            "runtime_atk_percent_bonus_scaled": ATK_PERCENT_BONUS_DENOMINATOR,
+        },
     }
 
 
@@ -278,6 +317,7 @@ def _slot_values(simulation: Any, character_id: str | None) -> list[float]:
     character = simulation.characters[character_id]
     character_state = state.character_mechanics_state.get(character_id, {})
     runtime_stats = buffed_combat_stats(character, state, simulation.buffs)
+    support_buff_channels = _runtime_support_buff_channels(simulation, character)
     values = [
         1.0,
         _bool(getattr(state, "active_character_id", None) == character_id),
@@ -286,7 +326,7 @@ def _slot_values(simulation: Any, character_id: str | None) -> list[float]:
         _ratio(float(state.resonance_energy.get(character_id, 0.0) or 0.0), float(character.resonance_energy_max or 0.0)),
         _ratio(float(state.concerto_energy.get(character_id, 0.0) or 0.0), 100.0),
         *_resource_values(character_id, character_state),
-        _ratio(float(runtime_stats.get("runtime_atk_percent_bonus", 0.0) or 0.0), 0.50),
+        _ratio(float(runtime_stats.get("runtime_atk_percent_bonus", 0.0) or 0.0), ATK_PERCENT_BONUS_DENOMINATOR),
         _ratio(float(runtime_stats.get("runtime_def_percent_bonus", 0.0) or 0.0), 0.50),
         _ratio(float(runtime_stats.get("runtime_hp_percent_bonus", 0.0) or 0.0), 0.50),
         _ratio(
@@ -298,7 +338,7 @@ def _slot_values(simulation: Any, character_id: str | None) -> list[float]:
             0.20,
         ),
         _ratio(float(runtime_stats.get("runtime_crit_damage_bonus", 0.0) or 0.0), 0.40),
-        0.0,
+        *support_buff_channels,
     ]
     values.extend(_mechanic_channel_values(simulation, character_id, character_state, runtime_stats))
     values.extend(_echo_channel_values(simulation, character_id))
@@ -328,6 +368,38 @@ def _resource_values(character_id: str, character_state: dict[str, Any]) -> list
             _ratio(float(character_state.get("true_color", 0.0) or 0.0), float(character_state.get("true_color_max", 3.0) or 3.0)),
         ]
     return [0.0, 0.0, 0.0]
+
+
+def _runtime_support_buff_channels(simulation: Any, character: Any) -> list[float]:
+    all_damage_amp = 0.0
+    all_damage_duration_ratio = 0.0
+    liberation_damage_amp = 0.0
+    liberation_duration_ratio = 0.0
+    atk_percent_duration_ratio = 0.0
+
+    for active, buff in get_active_buffs_for_character(character, simulation.state, simulation.buffs):
+        duration_ratio = _ratio(_remaining(active), float(getattr(buff, "duration", 0.0) or 0.0))
+        all_contribution = effective_damage_amp_contribution(active, buff, category="all")
+        if all_contribution > 0.0:
+            all_damage_amp += all_contribution
+            all_damage_duration_ratio = max(all_damage_duration_ratio, duration_ratio)
+
+        liberation_contribution = effective_damage_amp_contribution(active, buff, category="resonance_liberation")
+        if liberation_contribution > 0.0:
+            liberation_damage_amp += liberation_contribution
+            liberation_duration_ratio = max(liberation_duration_ratio, duration_ratio)
+
+        atk_percent_contribution = effective_atk_percent_contribution(active, buff)
+        if atk_percent_contribution > 0.0:
+            atk_percent_duration_ratio = max(atk_percent_duration_ratio, duration_ratio)
+
+    return [
+        _ratio(all_damage_amp, ALL_DAMAGE_AMP_DENOMINATOR),
+        all_damage_duration_ratio,
+        _ratio(liberation_damage_amp, LIBERATION_DAMAGE_AMP_DENOMINATOR),
+        liberation_duration_ratio,
+        atk_percent_duration_ratio,
+    ]
 
 
 def _mechanic_channel_values(
@@ -532,6 +604,43 @@ def _tune_response_channel_values(simulation: Any, character_id: str) -> list[fl
 def _slot_character_ids(simulation: Any, *, max_party_slots: int) -> list[str | None]:
     selected = list(getattr(simulation, "selected_party_character_ids", []) or getattr(simulation, "selected_character_ids", []) or [])
     return (selected[:max_party_slots] + [None] * max_party_slots)[:max_party_slots]
+
+
+def _policy_action_ids(simulation: Any) -> list[str]:
+    if hasattr(simulation, "get_policy_action_ids"):
+        return list(simulation.get_policy_action_ids())
+    return list(getattr(simulation, "policy_actions", {}) or {})
+
+
+def _ensure_policy_action_slot_capacity(action_ids: list[str]) -> None:
+    if len(action_ids) > MAX_POLICY_ACTION_SLOTS:
+        raise ValueError(
+            f"Policy action count {len(action_ids)} exceeds MAX_POLICY_ACTION_SLOTS={MAX_POLICY_ACTION_SLOTS}."
+        )
+
+
+def _action_slot_values(simulation: Any) -> list[float]:
+    action_ids = _policy_action_ids(simulation)
+    _ensure_policy_action_slot_capacity(action_ids)
+    values: list[float] = []
+    for slot_index in range(MAX_POLICY_ACTION_SLOTS):
+        if slot_index >= len(action_ids):
+            values.extend([0.0, 0.0, 0.0])
+            continue
+        action_id = action_ids[slot_index]
+        action = simulation.policy_actions[action_id]
+        resolved = simulation.resolve_action_for_character(action, getattr(action, "character_id", None))
+        cooldown = float(getattr(resolved, "cooldown", 0.0) or 0.0)
+        cooldown_key = getattr(resolved, "cooldown_group", None) or resolved.id
+        remaining = float(getattr(simulation.state, "cooldowns", {}).get(cooldown_key, 0.0) or 0.0)
+        values.extend(
+            [
+                1.0,
+                _bool(simulation.is_action_available(action)),
+                _ratio(remaining, cooldown) if cooldown > 0.0 else 0.0,
+            ]
+        )
+    return values
 
 
 def _active_slot_index(simulation: Any, *, max_party_slots: int) -> int:

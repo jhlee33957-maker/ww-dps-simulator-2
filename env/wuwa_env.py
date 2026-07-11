@@ -9,7 +9,9 @@ from gymnasium import spaces
 
 from env.action_mask import action_mask
 from env.observation_features import (
+    MAX_POLICY_ACTION_SLOTS,
     OBSERVATION_VERSION,
+    build_observation_action_slot_mapping,
     build_observation_channel_mapping,
     build_observation_labels,
     build_observation_slot_mapping,
@@ -132,6 +134,10 @@ class WuwaDpsEnv(gym.Env):
             stat_overrides=self.stat_overrides_arg,
         )
         self.action_ids = self._get_action_order()
+        if len(self.action_ids) > MAX_POLICY_ACTION_SLOTS:
+            raise ValueError(
+                f"Policy action count {len(self.action_ids)} exceeds MAX_POLICY_ACTION_SLOTS={MAX_POLICY_ACTION_SLOTS}."
+            )
         self.character_ids = self._get_character_order()
         self.buff_ids = self._get_buff_order()
         self.action_space = spaces.Discrete(len(self.action_ids))
@@ -154,6 +160,10 @@ class WuwaDpsEnv(gym.Env):
             stat_overrides=self.stat_overrides_arg,
         )
         self.action_ids = self._get_action_order()
+        if len(self.action_ids) > MAX_POLICY_ACTION_SLOTS:
+            raise ValueError(
+                f"Policy action count {len(self.action_ids)} exceeds MAX_POLICY_ACTION_SLOTS={MAX_POLICY_ACTION_SLOTS}."
+            )
         self.character_ids = self._get_character_order()
         self.buff_ids = self._get_buff_order()
         applied_curriculum_mode = self._select_curriculum_reset_mode()
@@ -252,6 +262,9 @@ class WuwaDpsEnv(gym.Env):
 
     def observation_slot_mapping(self) -> dict[str, str | None]:
         return build_observation_slot_mapping(self.simulation)
+
+    def observation_action_slot_mapping(self) -> dict[str, str | None]:
+        return build_observation_action_slot_mapping(self.simulation)
 
     def observation_metadata(self) -> dict:
         metadata = observation_metadata(self)

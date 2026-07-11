@@ -64,7 +64,7 @@ def test_party_shapes_match() -> None:
     )
     dummy = make_env(selected_character_ids="main,sub,support")
     assert aemeath.observation_space.shape == duo.observation_space.shape == dummy.observation_space.shape
-    assert aemeath.observation_space.shape == (204,)
+    assert aemeath.observation_space.shape == (312,)
     assert len(aemeath._get_observation()) == len(duo._get_observation()) == len(dummy._get_observation())
 
 
