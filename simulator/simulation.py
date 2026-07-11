@@ -515,13 +515,18 @@ class Simulation:
 
     def _refresh_off_tune_mapping_metadata(self) -> None:
         mapped_status_prefixes = ("workbook_confirmed", "excel_cell", "excel_summed")
-        unresolved_statuses = {"unresolved_missing_excel_mapping"}
+        unresolved_status_prefixes = ("unresolved_",)
         mapped_count = 0
         unmapped: list[str] = []
         unresolved: list[str] = []
         selected = set(self.selected_character_ids)
+        covered_characters = {"aemeath", "mornye", "lynae"} & selected
+        if "lynae" in covered_characters:
+            self.state.off_tune_value_mapping_source_report = (
+                "reports/off_tune_value_mapping_audit.md; reports/lynae_off_tune_direct_mapping_audit.md"
+            )
         for action in self.actions.values():
-            if action.character_id not in {"aemeath", "mornye"}:
+            if action.character_id not in covered_characters:
                 continue
             if action.character_id is not None and action.character_id not in selected:
                 continue
@@ -532,9 +537,11 @@ class Simulation:
                 continue
             source_status = str(action.off_tune_value_source_status or "")
             has_value_metadata = action.off_tune_value is not None
-            if has_value_metadata and action.off_tune_value > 0.0 and source_status.startswith(mapped_status_prefixes):
+            if source_status == "non_damaging_selector":
+                continue
+            if has_value_metadata and source_status.startswith(mapped_status_prefixes):
                 mapped_count += 1
-            elif source_status in unresolved_statuses:
+            elif source_status.startswith(unresolved_status_prefixes):
                 unresolved.append(action.id)
             elif not has_value_metadata or not source_status:
                 unmapped.append(action.id)

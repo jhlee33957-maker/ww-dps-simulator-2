@@ -14,10 +14,14 @@ def main() -> None:
     runpy.run_path(str(ROOT / "scripts/lynae_source_audit.py"), run_name="__main__")
     action_map_path = ROOT / "data/extracted/lynae_excel_action_map.json"
     unresolved_path = ROOT / "data/extracted/lynae_excel_unresolved_rows.json"
+    off_tune_audit_path = ROOT / "data/extracted/lynae_off_tune_direct_mapping_audit.json"
     report_path = ROOT / "reports/lynae_excel_source_alignment.md"
+    off_tune_report_path = ROOT / "reports/lynae_off_tune_direct_mapping_audit.md"
     assert action_map_path.exists()
     assert unresolved_path.exists()
+    assert off_tune_audit_path.exists()
     assert report_path.exists()
+    assert off_tune_report_path.exists()
 
     action_map = json.loads(action_map_path.read_text(encoding="utf-8"))
     by_id = {item["action_id"]: item for item in action_map}
@@ -35,6 +39,16 @@ def main() -> None:
     unresolved = json.loads(unresolved_path.read_text(encoding="utf-8"))
     assert any(item["topic"] == "spray_paint_periodic_ticks" for item in unresolved)
     assert any(item["topic"] == "skill_type_reference_region" for item in unresolved)
+    off_tune_audit = json.loads(off_tune_audit_path.read_text(encoding="utf-8"))
+    assert off_tune_audit["action_record_count"] == 43
+    assert off_tune_audit["confirmed_source_backed_action_count"] == 37
+    assert off_tune_audit["confirmed_selector_count"] == 5
+    assert off_tune_audit["unresolved_action_ids"] == ["lynae_echo_hyvatia"]
+    assert {
+        "lynae_polychrome_leap_stage_1_c1",
+        "lynae_visual_impact_c3",
+        "lynae_resonance_liberation_prismatic_overblast_c5",
+    }.issubset(set(off_tune_audit["internal_alias_action_ids"]))
     report = report_path.read_text(encoding="utf-8")
     assert "角色技能类型!2553:2635" in report
     assert "角色技能类型!772:784" not in report

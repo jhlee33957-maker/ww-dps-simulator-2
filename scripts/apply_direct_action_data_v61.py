@@ -14,7 +14,7 @@ MANIFEST_PATH = PROJECT_ROOT / "data" / "source" / "direct_action_data_patch_man
 ACTIONS_PATH = PROJECT_ROOT / "data" / "actions.json"
 TRANSITIONS_PATH = PROJECT_ROOT / "data" / "transition_actions.json"
 CHANGE_LOG_PATH = PROJECT_ROOT / "data" / "extracted" / "direct_action_data_v61_applied_changes.json"
-EXPECTED_MANIFEST_SHA256 = "d3a75ab243469dabdce3b07e2adf0936511b6851a5d69f33f94087ff5054bf9a"
+EXPECTED_MANIFEST_SHA256 = "cc68addf7dcd33ab1f27ff9083933b86724aa1c2753a831a31c4b49505b49613"
 
 ACTION_VALUE_FIELDS = (
     "duration",
@@ -28,6 +28,15 @@ TRANSITION_VALUE_FIELDS = (
     "combat_time_cost",
     "resonance_energy_gain",
     "concerto_energy_gain",
+)
+OFF_TUNE_VALUE_FIELDS = (
+    "off_tune_value",
+    "off_tune_value_source_status",
+    "off_tune_value_source_ref",
+)
+OFF_TUNE_OPTIONAL_FIELDS = (
+    "off_tune_value_alias_of",
+    "off_tune_value_alias_note",
 )
 
 
@@ -104,6 +113,9 @@ def source_evidence(patch: dict[str, Any]) -> dict[str, Any]:
     return {
         "confidence": patch.get("confidence"),
         "source_rows": patch.get("source_rows", []),
+        "source_ref": patch.get("off_tune_value_source_ref"),
+        "mapping_type": patch.get("mapping_type"),
+        "formula": patch.get("formula"),
         "source_evidence": patch.get("source_evidence", {}),
     }
 
@@ -151,6 +163,34 @@ def set_field(
         field=field,
         before=before,
         after=copy.deepcopy(value),
+        patch=patch,
+    )
+
+
+def set_optional_field(
+    record: dict[str, Any],
+    field: str,
+    value: Any,
+    changes: list[dict[str, Any]],
+    *,
+    target_file: str,
+    action_id: str,
+    patch: dict[str, Any],
+) -> None:
+    before = copy.deepcopy(record.get(field))
+    if value is None:
+        record.pop(field, None)
+        after = None
+    else:
+        record[field] = value
+        after = copy.deepcopy(value)
+    record_change(
+        changes,
+        target_file=target_file,
+        action_id=action_id,
+        field=field,
+        before=before,
+        after=after,
         patch=patch,
     )
 
@@ -234,6 +274,34 @@ def apply_action_patch(record: dict[str, Any], patch: dict[str, Any], changes: l
     set_field(record, "hits", hits, changes, target_file="data/actions.json", action_id=action_id, patch=patch)
 
 
+def apply_off_tune_action_patch(record: dict[str, Any], patch: dict[str, Any], changes: list[dict[str, Any]]) -> None:
+    action_id = patch["action_id"]
+    for field in OFF_TUNE_VALUE_FIELDS:
+        if field not in patch:
+            raise AlignmentError(f"{action_id} missing {field}")
+        set_field(
+            record,
+            field,
+            patch[field],
+            changes,
+            target_file="data/actions.json",
+            action_id=action_id,
+            patch=patch,
+        )
+    for field in OFF_TUNE_OPTIONAL_FIELDS:
+        if field not in patch:
+            raise AlignmentError(f"{action_id} missing {field}")
+        set_optional_field(
+            record,
+            field,
+            patch[field],
+            changes,
+            target_file="data/actions.json",
+            action_id=action_id,
+            patch=patch,
+        )
+
+
 def apply_transition_patch(record: dict[str, Any], patch: dict[str, Any], changes: list[dict[str, Any]]) -> None:
     action_id = patch["action_id"]
     after = patch.get("after")
@@ -257,6 +325,22 @@ def apply_transition_patch(record: dict[str, Any], patch: dict[str, Any], change
     set_field(record, "hits", hits, changes, target_file="data/transition_actions.json", action_id=action_id, patch=patch)
 
 
+def apply_off_tune_transition_patch(record: dict[str, Any], patch: dict[str, Any], changes: list[dict[str, Any]]) -> None:
+    action_id = patch["action_id"]
+    for field in OFF_TUNE_VALUE_FIELDS:
+        if field not in patch:
+            raise AlignmentError(f"{action_id} missing {field}")
+        set_field(
+            record,
+            field,
+            patch[field],
+            changes,
+            target_file="data/transition_actions.json",
+            action_id=action_id,
+            patch=patch,
+        )
+
+
 def apply_manifest_documents(
     manifest: dict[str, Any],
     actions: list[dict[str, Any]],
@@ -275,14 +359,27 @@ def apply_manifest_documents(
     transition_records = index_records(transitions, "data/transition_actions.json")
     action_patches = patch_index(manifest.get("action_patches", []), "action_id")
     transition_patches = patch_index(manifest.get("transition_action_patches", []), "action_id")
+    lynae_off_tune_action_patches = patch_index(manifest.get("lynae_off_tune_action_patches", []), "action_id")
+    lynae_off_tune_transition_patches = patch_index(
+        manifest.get("lynae_off_tune_transition_patches", []),
+        "action_id",
+    )
 
     if len(action_patches) != 74:
         raise AlignmentError(f"expected 74 action patches, got {len(action_patches)}")
     if len(transition_patches) != 4:
         raise AlignmentError(f"expected 4 transition patches, got {len(transition_patches)}")
+    if len(lynae_off_tune_action_patches) != 43:
+        raise AlignmentError(f"expected 43 Lynae Off-Tune action patches, got {len(lynae_off_tune_action_patches)}")
+    if len(lynae_off_tune_transition_patches) != 1:
+        raise AlignmentError(
+            f"expected 1 Lynae Off-Tune transition patch, got {len(lynae_off_tune_transition_patches)}"
+        )
 
-    missing_actions = sorted(set(action_patches) - set(action_records))
-    missing_transitions = sorted(set(transition_patches) - set(transition_records))
+    missing_actions = sorted((set(action_patches) | set(lynae_off_tune_action_patches)) - set(action_records))
+    missing_transitions = sorted(
+        (set(transition_patches) | set(lynae_off_tune_transition_patches)) - set(transition_records)
+    )
     if missing_actions:
         raise AlignmentError(f"manifest action ids missing from data/actions.json: {missing_actions}")
     if missing_transitions:
@@ -293,6 +390,10 @@ def apply_manifest_documents(
         apply_action_patch(action_records[patch["action_id"]], patch, changes)
     for patch in manifest["transition_action_patches"]:
         apply_transition_patch(transition_records[patch["action_id"]], patch, changes)
+    for patch in manifest["lynae_off_tune_action_patches"]:
+        apply_off_tune_action_patch(action_records[patch["action_id"]], patch, changes)
+    for patch in manifest["lynae_off_tune_transition_patches"]:
+        apply_off_tune_transition_patch(transition_records[patch["action_id"]], patch, changes)
 
     action_ids_after = [record["id"] for record in actions]
     policy_ids_after = [record["id"] for record in actions if record.get("policy_selectable", True)]
@@ -308,6 +409,8 @@ def apply_manifest_documents(
         "manifest_sha256": manifest_hash,
         "action_patch_count": len(action_patches),
         "transition_patch_count": len(transition_patches),
+        "lynae_off_tune_action_patch_count": len(lynae_off_tune_action_patches),
+        "lynae_off_tune_transition_patch_count": len(lynae_off_tune_transition_patches),
         "field_level_change_count": len(changes),
         "action_id_order_unchanged": True,
         "policy_selectable_action_id_order_unchanged": True,

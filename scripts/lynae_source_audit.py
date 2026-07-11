@@ -21,6 +21,7 @@ DATA_DIR = ROOT / "data"
 SOURCE_DIR = DATA_DIR / "source"
 EXTRACTED_DIR = DATA_DIR / "extracted"
 REPORTS_DIR = ROOT / "reports"
+LYNAE_OFF_TUNE_MAPPING_PATH = SOURCE_DIR / "lynae_off_tune_direct_mapping_v80.json"
 
 WORKBOOK_ALIASES = {
     "action_sheet": "角色-女",
@@ -280,6 +281,30 @@ LYNAE_SPECIAL_RESOURCE_NOTES = {
     "lynae_polychrome_leap_stage_2": {"true_color_gain": 1.0, "lumiflow_cost": 40.0},
     "lynae_polychrome_leap_stage_3": {"true_color_gain": 1.0, "lumiflow_cost": 40.0},
 }
+LYNAE_OFF_TUNE_STATUS_BY_TYPE = {
+    "single": "workbook_confirmed",
+    "sum_rows": "workbook_confirmed_summed_from_rows",
+    "repeat_aware": "workbook_confirmed_repeat_aware",
+    "mutually_exclusive_timing_variant": "workbook_confirmed_mode_representative",
+    "mutually_exclusive_mode_variant": "workbook_confirmed_mode_representative",
+    "repeat_aware_mode_variant": "workbook_confirmed_repeat_aware_mode_variant",
+    "constellation_same_action_rows": "workbook_confirmed_internal_alias",
+    "workbook_confirmed_zero": "workbook_confirmed_zero",
+    "non_damaging_selector": "non_damaging_selector",
+    "unresolved_echo_off_tune": "unresolved_echo_off_tune",
+}
+LYNAE_OFF_TUNE_ALIASES = {
+    "lynae_polychrome_leap_stage_1_c1": "lynae_polychrome_leap_stage_1",
+    "lynae_polychrome_leap_stage_2_c1": "lynae_polychrome_leap_stage_2",
+    "lynae_polychrome_leap_stage_3_c1": "lynae_polychrome_leap_stage_3",
+    "lynae_iridescent_splash_c3": "lynae_iridescent_splash",
+    "lynae_visual_impact_c3": "lynae_visual_impact",
+    "lynae_resonance_liberation_prismatic_overblast_c5": "lynae_resonance_liberation_prismatic_overblast",
+}
+LYNAE_OFF_TUNE_ALIAS_NOTE = (
+    "Constellation changes the damage option but uses the same action-row Off-Tune value as the C0 action."
+)
+LYNAE_OFF_TUNE_UNRESOLVED_ID = "lynae_echo_hyvatia"
 
 
 def lynae_unresolved_rows() -> list[dict[str, Any]]:
@@ -288,6 +313,156 @@ def lynae_unresolved_rows() -> list[dict[str, Any]]:
         for item in LYNAE_UNRESOLVED_ROWS
         if not str(item.get("topic", "")).endswith("_implemented_single_target")
     ]
+
+
+def _record_index(records: list[dict[str, Any]], label: str) -> dict[str, dict[str, Any]]:
+    result: dict[str, dict[str, Any]] = {}
+    duplicates: list[str] = []
+    for record in records:
+        record_id = record.get("id")
+        if not isinstance(record_id, str):
+            raise ValueError(f"{label} contains a record without a string id")
+        if record_id in result:
+            duplicates.append(record_id)
+        result[record_id] = record
+    if duplicates:
+        raise ValueError(f"{label} contains duplicate ids: {sorted(set(duplicates))}")
+    return result
+
+
+def _assert_close(actual: Any, expected: Any, label: str, tolerance: float = 1e-6) -> None:
+    if actual is None or abs(float(actual) - float(expected)) > tolerance:
+        raise ValueError(f"{label}: expected {expected}, got {actual}")
+
+
+def load_lynae_off_tune_mapping() -> dict[str, Any]:
+    mapping = json.loads(LYNAE_OFF_TUNE_MAPPING_PATH.read_text(encoding="utf-8"))
+    mappings = mapping.get("mappings") or []
+    if len(mappings) != 43 or len(mappings) != mapping.get("action_record_count"):
+        raise ValueError(f"unexpected Lynae Off-Tune mapping count: {len(mappings)}")
+    confirmed = [
+        item
+        for item in mappings
+        if item.get("confidence") == "confirmed" and item.get("mapping_type") != "non_damaging_selector"
+    ]
+    selectors = [item for item in mappings if item.get("mapping_type") == "non_damaging_selector"]
+    unresolved = [item for item in mappings if item.get("confidence") == "unresolved"]
+    if len(confirmed) != 37:
+        raise ValueError(f"expected 37 confirmed source-backed Lynae Off-Tune actions, got {len(confirmed)}")
+    if len(selectors) != 5:
+        raise ValueError(f"expected 5 confirmed Lynae selector Off-Tune records, got {len(selectors)}")
+    if [item.get("action_id") for item in unresolved] != [LYNAE_OFF_TUNE_UNRESOLVED_ID]:
+        raise ValueError(f"unexpected Lynae unresolved Off-Tune records: {unresolved}")
+    ids = [item["action_id"] for item in mappings]
+    if len(ids) != len(set(ids)):
+        raise ValueError("duplicate action_id in Lynae Off-Tune mapping")
+    return mapping
+
+
+def build_lynae_off_tune_direct_mapping_audit(mapping: dict[str, Any]) -> dict[str, Any]:
+    actions = _record_index(json.loads((DATA_DIR / "actions.json").read_text(encoding="utf-8")), "actions")
+    transitions = _record_index(
+        json.loads((DATA_DIR / "transition_actions.json").read_text(encoding="utf-8")),
+        "transition_actions",
+    )
+    records = []
+    for item in mapping["mappings"]:
+        action_id = item["action_id"]
+        action = actions.get(action_id)
+        if action is None:
+            raise ValueError(f"Lynae Off-Tune mapping id missing from actions.json: {action_id}")
+        mapping_type = item["mapping_type"]
+        expected_status = LYNAE_OFF_TUNE_STATUS_BY_TYPE[mapping_type]
+        runtime_value = 0.0 if action_id == LYNAE_OFF_TUNE_UNRESOLVED_ID else float(item["off_tune_value"])
+        _assert_close(action.get("off_tune_value"), runtime_value, f"{action_id} off_tune_value")
+        if action.get("off_tune_value_source_status") != expected_status:
+            raise ValueError(
+                f"{action_id} status expected {expected_status}, got {action.get('off_tune_value_source_status')}"
+            )
+        if action.get("off_tune_value_source_ref") != item.get("source_ref"):
+            raise ValueError(
+                f"{action_id} source ref expected {item.get('source_ref')}, got {action.get('off_tune_value_source_ref')}"
+            )
+        alias_of = LYNAE_OFF_TUNE_ALIASES.get(action_id)
+        if alias_of:
+            if action.get("off_tune_value_alias_of") != alias_of:
+                raise ValueError(f"{action_id} alias expected {alias_of}, got {action.get('off_tune_value_alias_of')}")
+            if action.get("off_tune_value_alias_note") != LYNAE_OFF_TUNE_ALIAS_NOTE:
+                raise ValueError(f"{action_id} alias note mismatch")
+        elif action.get("off_tune_value_alias_of") or action.get("off_tune_value_alias_note"):
+            raise ValueError(f"{action_id} has unexpected Off-Tune alias metadata")
+        records.append(
+            {
+                "action_id": action_id,
+                "off_tune_value": runtime_value,
+                "source_value": item.get("off_tune_value"),
+                "source_ref": item.get("source_ref"),
+                "source_status": expected_status,
+                "mapping_type": mapping_type,
+                "formula": item.get("formula"),
+                "confidence": item.get("confidence"),
+                "alias_of": alias_of,
+            }
+        )
+
+    override_by_id = {item["action_id"]: item for item in mapping.get("transition_action_overrides", [])}
+    if set(override_by_id) != {"lynae_intro_time_to_show_some_colors"}:
+        raise ValueError(f"unexpected Lynae transition Off-Tune overrides: {sorted(override_by_id)}")
+    intro_transition = transitions["lynae_intro_time_to_show_some_colors"]
+    intro_action = actions["lynae_intro_time_to_show_some_colors"]
+    _assert_close(intro_transition.get("off_tune_value"), intro_action.get("off_tune_value"), "intro transition parity")
+    if intro_transition.get("off_tune_value_source_status") != intro_action.get("off_tune_value_source_status"):
+        raise ValueError("intro transition Off-Tune status does not match action record")
+    if intro_transition.get("off_tune_value_source_ref") != intro_action.get("off_tune_value_source_ref"):
+        raise ValueError("intro transition Off-Tune source ref does not match action record")
+
+    return {
+        "mapping_file": str(LYNAE_OFF_TUNE_MAPPING_PATH.relative_to(ROOT)),
+        "source_workbook": mapping["source_workbook"],
+        "source_sheet": mapping["source_sheet"],
+        "source_column": mapping["source_column"],
+        "action_record_count": len(records),
+        "confirmed_source_backed_action_count": mapping["confirmed_source_backed_action_count"],
+        "confirmed_selector_count": mapping["confirmed_selector_count"],
+        "unresolved_count": mapping["unresolved_count"],
+        "unresolved_action_ids": [LYNAE_OFF_TUNE_UNRESOLVED_ID],
+        "internal_alias_action_ids": sorted(LYNAE_OFF_TUNE_ALIASES),
+        "transition_action_overrides": list(mapping.get("transition_action_overrides", [])),
+        "cycle_validation": mapping.get("cycle_validation", {}),
+        "records": records,
+    }
+
+
+def lynae_off_tune_direct_mapping_markdown(audit: dict[str, Any]) -> str:
+    lines = [
+        "# Lynae Off-Tune Direct Mapping Audit",
+        "",
+        f"Mapping file: `{audit['mapping_file']}`",
+        f"Source workbook: `{audit['source_workbook']}`",
+        f"Source sheet/column: `{audit['source_sheet']}` `{audit['source_column']}`",
+        "",
+        "## Counts",
+        f"- Action records: `{audit['action_record_count']}`",
+        f"- Confirmed source-backed actions: `{audit['confirmed_source_backed_action_count']}`",
+        f"- Confirmed selectors: `{audit['confirmed_selector_count']}`",
+        f"- Unresolved: `{audit['unresolved_count']}` (`{', '.join(audit['unresolved_action_ids'])}`)",
+        "",
+        "## Records",
+        "| action_id | value | source | status | mapping | alias_of |",
+        "| --- | ---: | --- | --- | --- | --- |",
+    ]
+    for record in audit["records"]:
+        lines.append(
+            "| `{action_id}` | `{off_tune_value}` | `{source_ref}` | `{source_status}` | `{mapping_type}` | `{alias}` |".format(
+                action_id=record["action_id"],
+                off_tune_value=record["off_tune_value"],
+                source_ref=record["source_ref"],
+                source_status=record["source_status"],
+                mapping_type=record["mapping_type"],
+                alias=record["alias_of"] or "",
+            )
+        )
+    return "\n".join(lines) + "\n"
 
 
 def workbook_sheet_names(workbook_path: Path) -> set[str]:
@@ -858,6 +1033,15 @@ def timing_cooldown_audit_markdown(timing: dict[str, Any]) -> str:
 def write_outputs(audit: dict[str, Any]) -> None:
     EXTRACTED_DIR.mkdir(parents=True, exist_ok=True)
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
+    off_tune_audit = build_lynae_off_tune_direct_mapping_audit(load_lynae_off_tune_mapping())
+    (EXTRACTED_DIR / "lynae_off_tune_direct_mapping_audit.json").write_text(
+        json.dumps(off_tune_audit, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    (REPORTS_DIR / "lynae_off_tune_direct_mapping_audit.md").write_text(
+        lynae_off_tune_direct_mapping_markdown(off_tune_audit),
+        encoding="utf-8",
+    )
     json_path = EXTRACTED_DIR / "lynae_source_audit.json"
     report_path = REPORTS_DIR / "lynae_source_audit.md"
     action_map_path = EXTRACTED_DIR / "lynae_excel_action_map.json"

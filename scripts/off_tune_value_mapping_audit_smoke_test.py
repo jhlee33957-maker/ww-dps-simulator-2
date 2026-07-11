@@ -98,6 +98,18 @@ def main() -> None:
     assert summary.off_tune_mapping_completeness_status == "complete"
     assert summary.off_tune_value_mapping_source_report == "reports/off_tune_value_mapping_audit.md"
 
+    three_party_sim = Simulation.from_json(
+        ROOT / "data",
+        selected_character_ids="aemeath_mornye_lynae_enabled_test_party",
+    )
+    three_party_summary = three_party_sim.summary()
+    assert three_party_summary.mapped_off_tune_action_count >= summary.mapped_off_tune_action_count
+    assert three_party_summary.unresolved_off_tune_damaging_action_ids == ["lynae_echo_hyvatia"]
+    assert three_party_summary.off_tune_mapping_completeness_status == "incomplete"
+    assert "reports/lynae_off_tune_direct_mapping_audit.md" in (
+        three_party_summary.off_tune_value_mapping_source_report
+    )
+
     report = report_path.read_text(encoding="utf-8")
     mapping = {row["action_id"]: row for row in audit["mappings"]}["aemeath_mech_basic_stage_3"]
     assert_close(mapping["off_tune_value"], 62.54, "Aemeath mech stage 3 mapping")

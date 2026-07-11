@@ -3486,7 +3486,7 @@
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_status": "non_damaging_selector",
     "off_tune_value_source_ref": null,
     "hits": [],
     "resonance_energy_gain": 0.0,
@@ -3522,9 +3522,9 @@
     "damage_multiplier": 0.8619,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 40.8,
+    "off_tune_value_source_status": "workbook_confirmed",
+    "off_tune_value_source_ref": "角色-女!S2577",
     "hits": [
       {
         "time": 0.5166666666666667,
@@ -3575,9 +3575,9 @@
     "damage_multiplier": 1.5717,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 74.4,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2578:S2580",
     "hits": [
       {
         "time": 1.0833333333333333,
@@ -3632,9 +3632,9 @@
     "damage_multiplier": 1.2337,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 58.4,
+    "off_tune_value_source_status": "workbook_confirmed",
+    "off_tune_value_source_ref": "角色-女!S2581",
     "hits": [
       {
         "time": 0.7333333333333333,
@@ -3706,7 +3706,10 @@
     ],
     "source_status": "user_tooltip_confirmed_timing_simplified",
     "data_status": "user_tooltip_confirmed_timing_simplified",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "non_damaging_selector",
+    "off_tune_value_source_ref": null
   },
   {
     "id": "lynae_kaleidoscopic_basic_stage_1",
@@ -3723,9 +3726,9 @@
     "damage_multiplier": 0.8281,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 39.2,
+    "off_tune_value_source_status": "workbook_confirmed_mode_representative",
+    "off_tune_value_source_ref": "角色-女!S2592:S2594",
     "hits": [
       {
         "time": 0.5833333333333334,
@@ -3785,9 +3788,9 @@
     "damage_multiplier": 0.7774,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 36.8,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2596:S2597",
     "hits": [
       {
         "time": 0.4666666666666667,
@@ -3838,9 +3841,9 @@
     "damage_multiplier": 1.1325,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 53.61,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2598:S2600",
     "hits": [
       {
         "time": 0.6666666666666666,
@@ -3892,9 +3895,9 @@
     "damage_multiplier": 1.4874,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 70.4,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2602:S2605",
     "hits": [
       {
         "time": 1.15,
@@ -3947,9 +3950,9 @@
     "damage_multiplier": 2.5181,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 119.24,
+    "off_tune_value_source_status": "workbook_confirmed_repeat_aware",
+    "off_tune_value_source_ref": "角色-女!S2611:S2614",
     "hits": [
       {
         "time": 1.5166666666666666,
@@ -4015,7 +4018,7 @@
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_status": "non_damaging_selector",
     "off_tune_value_source_ref": null,
     "hits": [],
     "resonance_energy_gain": 0.0,
@@ -4052,9 +4055,9 @@
     "damage_multiplier": 2.7863,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 87.22,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2663:S2666",
     "hits": [
       {
         "time": 1.2833333333333334,
@@ -4114,9 +4117,9 @@
     "damage_multiplier": 2.3262,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 72.8,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2673:S2674",
     "hits": [
       {
         "time": 1.2833333333333334,
@@ -4173,7 +4176,7 @@
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_status": "non_damaging_selector",
     "off_tune_value_source_ref": null,
     "hits": [],
     "resonance_energy_gain": 0,
@@ -4210,9 +4213,9 @@
     "damage_multiplier": 8.748,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 480.0,
+    "off_tune_value_source_status": "workbook_confirmed_repeat_aware",
+    "off_tune_value_source_ref": "角色-女!S2695",
     "hits": [
       {
         "time": 4.0,
@@ -4288,9 +4291,9 @@
     "damage_multiplier": 2.248,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 106.4,
+    "off_tune_value_source_status": "workbook_confirmed_repeat_aware_mode_variant",
+    "off_tune_value_source_ref": "角色-女!S2689:S2691",
     "hits": [
       {
         "time": 1.3333333333333333,
@@ -4370,8 +4373,8 @@
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value_source_status": "workbook_confirmed_zero",
+    "off_tune_value_source_ref": "角色-女!S2700:S2701",
     "hits": [
       {
         "time": 2.55,
@@ -4453,8 +4456,8 @@
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value_source_status": "unresolved_echo_off_tune",
+    "off_tune_value_source_ref": "声骸!371",
     "hits": [
       {
         "time": 0.1,
@@ -4594,8 +4597,8 @@
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value_source_status": "workbook_confirmed_zero",
+    "off_tune_value_source_ref": "角色-女!S2735",
     "hits": [],
     "resonance_energy_gain": 0.0,
     "concerto_energy_gain": 0.0,
@@ -4635,8 +4638,8 @@
     "tune_break_multiplier": 16.0,
     "tune_break_boost_points": 0.0,
     "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value_source_status": "workbook_confirmed_zero",
+    "off_tune_value_source_ref": "角色-女!S2704",
     "hits": [
       {
         "time": 1.6,
@@ -4710,7 +4713,10 @@
     "mechanic_effects": {},
     "source_status": "selector_runtime_routes_to_workbook_confirmed_stage",
     "data_status": "selector_runtime_routes_to_workbook_confirmed_stage",
-    "notes": "Policy selector resolved by Lynae mechanic to the current Polychrome Leap stage; stage coefficients and timings remain on the resolved actions."
+    "notes": "Policy selector resolved by Lynae mechanic to the current Polychrome Leap stage; stage coefficients and timings remain on the resolved actions.",
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "non_damaging_selector",
+    "off_tune_value_source_ref": null
   },
   {
     "id": "lynae_visual_impact",
@@ -4770,7 +4776,10 @@
         ],
         "name": "Lynae Visual Impact hit"
       }
-    ]
+    ],
+    "off_tune_value": 609.6,
+    "off_tune_value_source_status": "workbook_confirmed_mode_representative",
+    "off_tune_value_source_ref": "角色-女!S2680:S2682"
   },
   {
     "id": "lynae_dodge_counter",
@@ -4817,7 +4826,10 @@
         ],
         "name": "Lynae Dodge Counter hit"
       }
-    ]
+    ],
+    "off_tune_value": 65.6,
+    "off_tune_value_source_status": "workbook_confirmed",
+    "off_tune_value_source_ref": "角色-女!S2582"
   },
   {
     "id": "lynae_mid_air_attack",
@@ -4866,7 +4878,10 @@
         ],
         "name": "Lynae Mid-air Attack hit"
       }
-    ]
+    ],
+    "off_tune_value": 68.0,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2583:S2584"
   },
   {
     "id": "lynae_spark_collision_lv1",
@@ -4915,7 +4930,10 @@
         ],
         "name": "Lynae Spark Collision Lv1 hit"
       }
-    ]
+    ],
+    "off_tune_value": 52.6,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2586:S2587"
   },
   {
     "id": "lynae_spark_collision_lv2",
@@ -4964,7 +4982,10 @@
         ],
         "name": "Lynae Spark Collision Lv2 hit"
       }
-    ]
+    ],
+    "off_tune_value": 157.8,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2588:S2589"
   },
   {
     "id": "lynae_spark_collision_lv3",
@@ -5013,7 +5034,10 @@
         ],
         "name": "Lynae Spark Collision Lv3 hit"
       }
-    ]
+    ],
+    "off_tune_value": 263.0,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2590:S2591"
   },
   {
     "id": "lynae_kaleidoscopic_dodge_counter",
@@ -5060,7 +5084,10 @@
         ],
         "name": "Lynae KP Dodge Counter hit"
       }
-    ]
+    ],
+    "off_tune_value": 39.2,
+    "off_tune_value_source_status": "workbook_confirmed",
+    "off_tune_value_source_ref": "角色-女!S2595"
   },
   {
     "id": "lynae_kaleidoscopic_mid_air_attack",
@@ -5109,7 +5136,10 @@
         ],
         "name": "Lynae KP Mid-air Attack hit"
       }
-    ]
+    ],
+    "off_tune_value": 68.0,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2615:S2616"
   },
   {
     "id": "lynae_kaleidoscopic_ground_heavy_hold",
@@ -5168,7 +5198,10 @@
         ],
         "name": "Lynae KP Ground Heavy Hold hit"
       }
-    ]
+    ],
+    "off_tune_value": 58.45,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2617:S2623"
   },
   {
     "id": "lynae_kaleidoscopic_graffiti_blast",
@@ -5215,7 +5248,10 @@
         ],
         "name": "Lynae KP Graffiti Blast hit"
       }
-    ]
+    ],
+    "off_tune_value": 49.6,
+    "off_tune_value_source_status": "workbook_confirmed",
+    "off_tune_value_source_ref": "角色-女!S2624"
   },
   {
     "id": "lynae_kaleidoscopic_mid_air_heavy",
@@ -5274,7 +5310,10 @@
         ],
         "name": "Lynae KP Mid-air Heavy hit"
       }
-    ]
+    ],
+    "off_tune_value": 115.22,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2633:S2639"
   },
   {
     "id": "lynae_iridescent_splash",
@@ -5332,7 +5371,10 @@
         ],
         "name": "Lynae Iridescent Splash hit"
       }
-    ]
+    ],
+    "off_tune_value": 68.0,
+    "off_tune_value_source_status": "workbook_confirmed_mode_representative",
+    "off_tune_value_source_ref": "角色-女!S2677:S2678"
   },
   {
     "id": "lynae_iridescent_splash_c3",
@@ -5379,7 +5421,12 @@
         ],
         "name": "Lynae Iridescent Splash C3 hit"
       }
-    ]
+    ],
+    "off_tune_value": 68.0,
+    "off_tune_value_source_status": "workbook_confirmed_internal_alias",
+    "off_tune_value_source_ref": "角色-女!S2677:S2678",
+    "off_tune_value_alias_of": "lynae_iridescent_splash",
+    "off_tune_value_alias_note": "Constellation changes the damage option but uses the same action-row Off-Tune value as the C0 action."
   },
   {
     "id": "lynae_visual_impact_c3",
@@ -5426,7 +5473,12 @@
         ],
         "name": "Lynae Visual Impact C3 hit"
       }
-    ]
+    ],
+    "off_tune_value": 609.6,
+    "off_tune_value_source_status": "workbook_confirmed_internal_alias",
+    "off_tune_value_source_ref": "角色-女!S2680:S2682",
+    "off_tune_value_alias_of": "lynae_visual_impact",
+    "off_tune_value_alias_note": "Constellation changes the damage option but uses the same action-row Off-Tune value as the C0 action."
   },
   {
     "id": "lynae_polychrome_leap_stage_1",
@@ -5479,7 +5531,10 @@
         ],
         "name": "Lynae Polychrome Leap Stage 1 hit"
       }
-    ]
+    ],
+    "off_tune_value": 48.0,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2643:S2645"
   },
   {
     "id": "lynae_polychrome_leap_stage_2",
@@ -5546,7 +5601,10 @@
         2649,
         2650
       ]
-    }
+    },
+    "off_tune_value": 48.0,
+    "off_tune_value_source_status": "workbook_confirmed_repeat_aware_mode_variant",
+    "off_tune_value_source_ref": "角色-女!S2649:S2650"
   },
   {
     "id": "lynae_polychrome_leap_stage_3",
@@ -5609,7 +5667,10 @@
       "additive_rows": [
         2477
       ]
-    }
+    },
+    "off_tune_value": 31.0,
+    "off_tune_value_source_status": "workbook_confirmed_repeat_aware",
+    "off_tune_value_source_ref": "角色-女!S2660:S2661"
   },
   {
     "id": "lynae_polychrome_leap_stage_1_c1",
@@ -5657,7 +5718,12 @@
         ],
         "name": "Lynae Polychrome Leap Stage 1 C1 hit"
       }
-    ]
+    ],
+    "off_tune_value": 48.0,
+    "off_tune_value_source_status": "workbook_confirmed_internal_alias",
+    "off_tune_value_source_ref": "角色-女!S2643:S2645",
+    "off_tune_value_alias_of": "lynae_polychrome_leap_stage_1",
+    "off_tune_value_alias_note": "Constellation changes the damage option but uses the same action-row Off-Tune value as the C0 action."
   },
   {
     "id": "lynae_polychrome_leap_stage_2_c1",
@@ -5712,7 +5778,12 @@
         ],
         "name": "Lynae Polychrome Leap Stage 2 C1 hit"
       }
-    ]
+    ],
+    "off_tune_value": 48.0,
+    "off_tune_value_source_status": "workbook_confirmed_internal_alias",
+    "off_tune_value_source_ref": "角色-女!S2649:S2650",
+    "off_tune_value_alias_of": "lynae_polychrome_leap_stage_2",
+    "off_tune_value_alias_note": "Constellation changes the damage option but uses the same action-row Off-Tune value as the C0 action."
   },
   {
     "id": "lynae_polychrome_leap_stage_3_c1",
@@ -5771,7 +5842,12 @@
         ],
         "name": "Lynae Polychrome Leap Stage 3 C1 hit"
       }
-    ]
+    ],
+    "off_tune_value": 31.0,
+    "off_tune_value_source_status": "workbook_confirmed_internal_alias",
+    "off_tune_value_source_ref": "角色-女!S2660:S2661",
+    "off_tune_value_alias_of": "lynae_polychrome_leap_stage_3",
+    "off_tune_value_alias_note": "Constellation changes the damage option but uses the same action-row Off-Tune value as the C0 action."
   },
   {
     "id": "lynae_to_a_vivid_tomorrow",
@@ -5835,7 +5911,10 @@
           "max_hits": 10
         }
       ]
-    }
+    },
+    "off_tune_value": 171.28,
+    "off_tune_value_source_status": "workbook_confirmed_repeat_aware",
+    "off_tune_value_source_ref": "角色-女!S2697:S2698"
   },
   {
     "id": "lynae_resonance_liberation_prismatic_overblast_c5",
@@ -5902,6 +5981,11 @@
         ],
         "name": "Lynae Prismatic Overblast C5 hit"
       }
-    ]
+    ],
+    "off_tune_value": 480.0,
+    "off_tune_value_source_status": "workbook_confirmed_internal_alias",
+    "off_tune_value_source_ref": "角色-女!S2695",
+    "off_tune_value_alias_of": "lynae_resonance_liberation_prismatic_overblast",
+    "off_tune_value_alias_note": "Constellation changes the damage option but uses the same action-row Off-Tune value as the C0 action."
   }
 ]

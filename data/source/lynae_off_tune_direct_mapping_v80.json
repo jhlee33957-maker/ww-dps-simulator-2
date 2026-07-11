@@ -1,0 +1,438 @@
+{
+  "source_workbook": "鸣潮动作数据汇总(5).xlsx",
+  "source_sheet": "角色-女",
+  "source_column": "S (偏谐值)",
+  "organized_package": "名조_종말매트릭스_액션데이터_v6.1_확定修改本(1).zip",
+  "project_baseline": "ww-dps-simulator-2(80).zip",
+  "mapping_rule": "Sum S for distinct components; multiply only rows with explicit maximum repeat count; choose one mutually exclusive mode/timing variant; constellation damage variants retain the same action-row Off-Tune value.",
+  "action_record_count": 43,
+  "confirmed_source_backed_action_count": 37,
+  "confirmed_selector_count": 5,
+  "unresolved_count": 1,
+  "transition_action_overrides": [
+    {
+      "action_id": "lynae_intro_time_to_show_some_colors",
+      "off_tune_value": 106.4,
+      "source_ref": "角色-女!S2689:S2691"
+    }
+  ],
+  "mappings": [
+    {
+      "action_id": "lynae_basic_stage_1",
+      "off_tune_value": 40.8,
+      "source_ref": "角色-女!S2577",
+      "formula": "40.8",
+      "mapping_type": "single",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_basic_stage_2",
+      "off_tune_value": 74.4,
+      "source_ref": "角色-女!S2578:S2580",
+      "formula": "24.8 + 24.8 + 24.8",
+      "mapping_type": "sum_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_basic_stage_3",
+      "off_tune_value": 58.4,
+      "source_ref": "角色-女!S2581",
+      "formula": "58.4",
+      "mapping_type": "single",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_dodge_counter",
+      "off_tune_value": 65.6,
+      "source_ref": "角色-女!S2582",
+      "formula": "65.6",
+      "mapping_type": "single",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_mid_air_attack",
+      "off_tune_value": 68.0,
+      "source_ref": "角色-女!S2583:S2584",
+      "formula": "6.8 + 61.2",
+      "mapping_type": "sum_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_spark_collision_lv1",
+      "off_tune_value": 52.6,
+      "source_ref": "角色-女!S2586:S2587",
+      "formula": "26.3 × 2",
+      "mapping_type": "sum_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_spark_collision_lv2",
+      "off_tune_value": 157.8,
+      "source_ref": "角色-女!S2588:S2589",
+      "formula": "78.9 × 2",
+      "mapping_type": "sum_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_spark_collision_lv3",
+      "off_tune_value": 263.0,
+      "source_ref": "角色-女!S2590:S2591",
+      "formula": "131.5 × 2",
+      "mapping_type": "sum_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_basic_stage_1",
+      "off_tune_value": 39.2,
+      "source_ref": "角色-女!S2592:S2594",
+      "formula": "39.2 (timing variants; choose one)",
+      "mapping_type": "mutually_exclusive_timing_variant",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_dodge_counter",
+      "off_tune_value": 39.2,
+      "source_ref": "角色-女!S2595",
+      "formula": "39.2",
+      "mapping_type": "single",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_basic_stage_2",
+      "off_tune_value": 36.8,
+      "source_ref": "角色-女!S2596:S2597",
+      "formula": "18.4 × 2",
+      "mapping_type": "sum_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_basic_stage_3",
+      "off_tune_value": 53.61,
+      "source_ref": "角色-女!S2598:S2600",
+      "formula": "17.87 × 3",
+      "mapping_type": "sum_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_basic_stage_4",
+      "off_tune_value": 70.4,
+      "source_ref": "角色-女!S2602:S2605",
+      "formula": "14.08 + 14.08 + 21.12 + 21.12",
+      "mapping_type": "sum_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_basic_stage_5",
+      "off_tune_value": 119.24,
+      "source_ref": "角色-女!S2611:S2614",
+      "formula": "35.76 + 7.16 × 5 + 47.68",
+      "mapping_type": "repeat_aware",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_mid_air_attack",
+      "off_tune_value": 68.0,
+      "source_ref": "角色-女!S2615:S2616",
+      "formula": "6.8 + 61.2",
+      "mapping_type": "sum_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_ground_heavy_hold",
+      "off_tune_value": 58.45,
+      "source_ref": "角色-女!S2617:S2623",
+      "formula": "8.35 × 7",
+      "mapping_type": "sum_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_graffiti_blast",
+      "off_tune_value": 49.6,
+      "source_ref": "角色-女!S2624",
+      "formula": "49.6",
+      "mapping_type": "single",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_kaleidoscopic_mid_air_heavy",
+      "off_tune_value": 115.22,
+      "source_ref": "角色-女!S2633:S2639",
+      "formula": "16.46 × 7",
+      "mapping_type": "sum_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_polychrome_leap_stage_1",
+      "off_tune_value": 48.0,
+      "source_ref": "角色-女!S2643:S2645",
+      "formula": "16 × 3",
+      "mapping_type": "sum_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_polychrome_leap_stage_2",
+      "off_tune_value": 48.0,
+      "source_ref": "角色-女!S2649:S2650",
+      "formula": "8 × 6 (choose current mode, not both rows)",
+      "mapping_type": "repeat_aware_mode_variant",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_polychrome_leap_stage_3",
+      "off_tune_value": 31.0,
+      "source_ref": "角色-女!S2660:S2661",
+      "formula": "6.2 × 4 + 6.2",
+      "mapping_type": "repeat_aware",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_resonance_skill_palette",
+      "off_tune_value": 87.22,
+      "source_ref": "角色-女!S2663:S2666",
+      "formula": "43.6 + 14.54 × 3",
+      "mapping_type": "sum_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_resonance_skill_additive_color",
+      "off_tune_value": 72.8,
+      "source_ref": "角色-女!S2673:S2674",
+      "formula": "36.4 × 2",
+      "mapping_type": "sum_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_iridescent_splash",
+      "off_tune_value": 68.0,
+      "source_ref": "角色-女!S2677:S2678",
+      "formula": "68 (choose current mode)",
+      "mapping_type": "mutually_exclusive_mode_variant",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_visual_impact",
+      "off_tune_value": 609.6,
+      "source_ref": "角色-女!S2680:S2682",
+      "formula": "609.6 (choose current mode; row 2680 is 0)",
+      "mapping_type": "mutually_exclusive_mode_variant",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_intro_time_to_show_some_colors",
+      "off_tune_value": 106.4,
+      "source_ref": "角色-女!S2689:S2691",
+      "formula": "10.64 × 10 (choose current mode)",
+      "mapping_type": "repeat_aware_mode_variant",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_resonance_liberation_prismatic_overblast",
+      "off_tune_value": 480.0,
+      "source_ref": "角色-女!S2695",
+      "formula": "48 × 10",
+      "mapping_type": "repeat_aware",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_to_a_vivid_tomorrow",
+      "off_tune_value": 171.28,
+      "source_ref": "角色-女!S2697:S2698",
+      "formula": "7.14 × 12 + 8.56 × 10",
+      "mapping_type": "repeat_aware",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_outro_lets_hit_the_road",
+      "off_tune_value": 0.0,
+      "source_ref": "角色-女!S2700:S2701",
+      "formula": "0 × 12 + 0 × 10",
+      "mapping_type": "workbook_confirmed_zero",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_tune_break",
+      "off_tune_value": 0.0,
+      "source_ref": "角色-女!S2704",
+      "formula": "0",
+      "mapping_type": "workbook_confirmed_zero",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_tune_response_spectral_analysis",
+      "off_tune_value": 0.0,
+      "source_ref": "角色-女!S2735",
+      "formula": "0",
+      "mapping_type": "workbook_confirmed_zero",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_polychrome_leap_stage_1_c1",
+      "off_tune_value": 48.0,
+      "source_ref": "角色-女!S2643:S2645",
+      "formula": "same action rows as C0: 16 × 3",
+      "mapping_type": "constellation_same_action_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_polychrome_leap_stage_2_c1",
+      "off_tune_value": 48.0,
+      "source_ref": "角色-女!S2649:S2650",
+      "formula": "same action rows as C0: 8 × 6",
+      "mapping_type": "constellation_same_action_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_polychrome_leap_stage_3_c1",
+      "off_tune_value": 31.0,
+      "source_ref": "角色-女!S2660:S2661",
+      "formula": "same action rows as C0: 6.2 × 4 + 6.2",
+      "mapping_type": "constellation_same_action_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_iridescent_splash_c3",
+      "off_tune_value": 68.0,
+      "source_ref": "角色-女!S2677:S2678",
+      "formula": "same action rows as C0; constellation changes damage option only",
+      "mapping_type": "constellation_same_action_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_visual_impact_c3",
+      "off_tune_value": 609.6,
+      "source_ref": "角色-女!S2680:S2682",
+      "formula": "same action rows as C0; constellation changes damage option only",
+      "mapping_type": "constellation_same_action_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_resonance_liberation_prismatic_overblast_c5",
+      "off_tune_value": 480.0,
+      "source_ref": "角色-女!S2695",
+      "formula": "same action row as C0; constellation changes damage option only",
+      "mapping_type": "constellation_same_action_rows",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_basic_attack",
+      "off_tune_value": 0.0,
+      "source_ref": null,
+      "formula": "selector only; resolved child action carries Off-Tune",
+      "mapping_type": "non_damaging_selector",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_spark_collision",
+      "off_tune_value": 0.0,
+      "source_ref": null,
+      "formula": "selector only; resolved child action carries Off-Tune",
+      "mapping_type": "non_damaging_selector",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_resonance_skill",
+      "off_tune_value": 0.0,
+      "source_ref": null,
+      "formula": "selector only; resolved child action carries Off-Tune",
+      "mapping_type": "non_damaging_selector",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_resonance_liberation",
+      "off_tune_value": 0.0,
+      "source_ref": null,
+      "formula": "selector only; resolved child action carries Off-Tune",
+      "mapping_type": "non_damaging_selector",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_polychrome_leap",
+      "off_tune_value": 0.0,
+      "source_ref": null,
+      "formula": "selector only; resolved child action carries Off-Tune",
+      "mapping_type": "non_damaging_selector",
+      "confidence": "confirmed"
+    },
+    {
+      "action_id": "lynae_echo_hyvatia",
+      "off_tune_value": null,
+      "source_ref": "声骸!371",
+      "formula": "Echo sheet has no 偏谐值 column/value for this action",
+      "mapping_type": "unresolved_echo_off_tune",
+      "confidence": "unresolved"
+    }
+  ],
+  "cycle_validation": {
+    "enemy_off_tune_max": 3920.0,
+    "sequence": "Aemeath BA×4 → Skill → swap Mornye → no-counter opener → Lynae Intro → Skill → Spark Lv3 → Leap×3 → Visual Impact → Liberation → Hyvatia → swap Aemeath → BA×2",
+    "checkpoints": [
+      {
+        "after": "Aemeath opening",
+        "off_tune": 263.25
+      },
+      {
+        "after": "Mornye opener",
+        "off_tune": 1826.67
+      },
+      {
+        "after": "Lynae Intro",
+        "off_tune": 1986.27
+      },
+      {
+        "after": "Lynae Resonance Skill",
+        "off_tune": 2117.1
+      },
+      {
+        "after": "Spark Collision Lv3",
+        "off_tune": 2511.6
+      },
+      {
+        "after": "Polychrome Leap 1",
+        "off_tune": 2583.6
+      },
+      {
+        "after": "Polychrome Leap 2",
+        "off_tune": 2655.6
+      },
+      {
+        "after": "Polychrome Leap 3",
+        "off_tune": 2702.1
+      },
+      {
+        "after": "Visual Impact",
+        "off_tune": 3616.5
+      },
+      {
+        "after": "Prismatic Overblast",
+        "off_tune": 3920.0,
+        "unclamped": 4336.5,
+        "overflow": 416.5
+      },
+      {
+        "after": "Hyvatia",
+        "off_tune": 3920.0
+      },
+      {
+        "after": "Aemeath Intro + BA×2",
+        "off_tune": 3920.0
+      }
+    ],
+    "tune_break_available_first_after": "lynae_resonance_liberation_prismatic_overblast",
+    "tune_break_triggered_automatically": false,
+    "intended_manual_trigger_after_aemeath_basic_2_is_legal": true,
+    "runtime_off_tune_rate_during_lynae": 1.5,
+    "notes": [
+      "Gauge reaches cap during Lynae Liberation, but Tune Break is a separate manual action. Delaying the trigger through Hyvatia, swap, and two Aemeath basics is supported.",
+      "Hyvatia Off-Tune remains unresolved, but this does not affect the tested trigger timing because the gauge is already capped.",
+      "Mornye automatic field damage is still unimplemented and therefore absent from this validation."
+    ],
+    "manual_tune_break_execution": {
+      "selected_action": "aemeath_tune_break",
+      "legal_after_aemeath_basic_2": true,
+      "enemy_off_tune_before": 3920.0,
+      "enemy_off_tune_after": 0.0,
+      "tune_break_cooldown_seconds": 3.0,
+      "interfered_marker_remaining_seconds": 8.0
+    }
+  }
+}

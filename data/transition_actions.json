@@ -254,8 +254,8 @@
     "scaling_stat_source": "data/actions.json",
     "scaling_stat_source_status": "workbook_confirmed_repeated_tick_mode_variant_and_user_tooltip",
     "scaling_stat_note": "Lynae Intro uses ATK scaling in the canonical action data; source rows 2480/2481 are mode variants and 2689 supplies ten repeated ticks.",
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null
+    "off_tune_value": 106.4,
+    "off_tune_value_source_status": "workbook_confirmed_repeat_aware_mode_variant",
+    "off_tune_value_source_ref": "角色-女!S2689:S2691"
   }
 ]
