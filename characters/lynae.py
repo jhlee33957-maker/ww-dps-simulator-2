@@ -264,7 +264,7 @@ class LynaeMechanic(CharacterMechanic):
         self._clamp(data)
         self._sync_result_state(result, data)
 
-    def advance_time(self, state: Any, elapsed_time: float) -> None:
+    def advance_time(self, state: Any, combat_elapsed: float, action_elapsed: float | None = None) -> None:
         data = self._state(state)
         for key in (
             "kaleidoscopic_parade_remaining",
@@ -272,11 +272,15 @@ class LynaeMechanic(CharacterMechanic):
             "target_tune_shift_remaining",
             "hyvatia_outro_window_remaining",
             "spray_paint_window_remaining",
-            "visual_impact_cooldown_remaining",
             "to_vivid_tomorrow_window_remaining",
+        ):
+            data[key] = max(0.0, float(data.get(key, 0.0) or 0.0) - max(0.0, combat_elapsed))
+        cooldown_elapsed = max(0.0, float(action_elapsed if action_elapsed is not None else combat_elapsed))
+        for key in (
+            "visual_impact_cooldown_remaining",
             "spectral_analysis_cooldown_remaining",
         ):
-            data[key] = max(0.0, float(data.get(key, 0.0) or 0.0) - max(0.0, elapsed_time))
+            data[key] = max(0.0, float(data.get(key, 0.0) or 0.0) - cooldown_elapsed)
         data["photocromic_flux_active"] = data["photocromic_flux_remaining"] > 0.0
         if data["target_tune_shift_remaining"] <= 0.0:
             data["target_tune_shift_state"] = None

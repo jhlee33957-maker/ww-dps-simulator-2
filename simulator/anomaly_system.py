@@ -40,15 +40,15 @@ def get_havoc_bane_def_reduction_at_time(state: CombatState, time_offset: float)
     return calculate_havoc_bane_def_reduction(havoc_bane.stacks)
 
 
-def advance_anomalies(state: CombatState, duration: float) -> tuple[float, dict[str, float]]:
+def advance_anomalies(state: CombatState, combat_elapsed: float) -> tuple[float, dict[str, float]]:
     total_damage = 0.0
     damage_by_type: dict[str, float] = {}
     expired: list[str] = []
 
     for anomaly_type, anomaly in list(state.active_anomalies.items()):
         elapsed = 0.0
-        while elapsed < duration and anomaly.remaining_duration > 0.0:
-            step = min(anomaly.tick_timer, duration - elapsed, anomaly.remaining_duration)
+        while elapsed < combat_elapsed and anomaly.remaining_duration > 0.0:
+            step = min(anomaly.tick_timer, combat_elapsed - elapsed, anomaly.remaining_duration)
             elapsed += step
             anomaly.remaining_duration = max(0.0, anomaly.remaining_duration - step)
             anomaly.tick_timer = max(0.0, anomaly.tick_timer - step)

@@ -302,7 +302,7 @@ class MornyeMechanic(CharacterMechanic):
             self._resolve_interfered_marker(state, result)
         data["last_resolved_action_id"] = action.id
 
-    def advance_time(self, state: Any, elapsed_time: float) -> None:
+    def advance_time(self, state: Any, combat_elapsed: float, action_elapsed: float | None = None) -> None:
         data = self._state(state)
         for key in (
             "wide_field_observation_remaining",
@@ -311,7 +311,7 @@ class MornyeMechanic(CharacterMechanic):
             "observation_marker_remaining",
         ):
             if data[key] > 0.0:
-                data[key] = max(0.0, float(data[key]) - elapsed_time)
+                data[key] = max(0.0, float(data[key]) - combat_elapsed)
         if data["wide_field_observation_remaining"] <= 0.0 and data["mode"] == "wide_field_observation":
             data["mode"] = "baseline"
             data["relative_momentum"] = 0.0

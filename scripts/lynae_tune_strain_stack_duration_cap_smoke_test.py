@@ -38,10 +38,10 @@ def main() -> None:
     assert c2_row["target_tune_strain_interfered_max_stacks"] == 2
     assert c2_row["lynae_spectral_analysis_c2_disabled_by_default"] is True
 
-    c2_sim._advance_tune_break_runtime(29.0)
+    c2_sim._advance_tune_break_runtime(action_elapsed=29.0, combat_elapsed=29.0)
     assert c2_sim.state.target_tune_strain_interfered_stacks == 2
     assert c2_sim.state.target_tune_strain_interfered_remaining == 1.0
-    c2_sim._advance_tune_break_runtime(1.1)
+    c2_sim._advance_tune_break_runtime(action_elapsed=1.1, combat_elapsed=1.1)
     assert c2_sim.state.target_interfered_state is None
     assert c2_sim.state.target_tune_strain_interfered_stacks == 0
     assert c2_sim.state.target_tune_strain_interfered_remaining == 0.0

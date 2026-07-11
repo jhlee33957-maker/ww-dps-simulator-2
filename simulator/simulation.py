@@ -376,7 +376,7 @@ class Simulation:
                 characters=self.characters,
                 buffs=self.buffs,
                 weapon_definitions=self.weapon_definitions,
-                application_time=result.end_time,
+                application_time=result.combat_time_end,
                 event_source=f"mechanic_event:{action.id}",
             )
             self._sync_weapon_result_fields(result, mechanic_weapon_log)
@@ -386,13 +386,16 @@ class Simulation:
                 characters=self.characters,
                 buffs=self.buffs,
                 weapon_definitions=self.weapon_definitions,
-                application_time=result.end_time,
+                application_time=result.combat_time_end,
             )
             self._sync_weapon_result_fields(result, weapon_action_log)
         if not bool(weapon_action_log.get("weapon_effect_triggered", False)):
             advance_weapon_effect_cooldowns(self.state, result.action_time)
 
-        self._advance_tune_break_runtime(result.action_time)
+        self._advance_tune_break_runtime(
+            action_elapsed=result.action_time,
+            combat_elapsed=result.effective_combat_time_cost,
+        )
         self._apply_off_tune_accumulation(action, result)
         if action.action_type == "tune_break":
             self._apply_tune_break_after_effects(action, result)
@@ -404,7 +407,11 @@ class Simulation:
             )
 
         for mechanic in self.character_mechanics.values():
-            mechanic.advance_time(self.state, result.action_time)
+            mechanic.advance_time(
+                self.state,
+                result.effective_combat_time_cost,
+                action_elapsed=result.action_time,
+            )
         if not result.truncated_by_combat_limit and not (action.mechanic_effects or {}).get("skip_character_after_action"):
             actor_mechanic.after_action(self.state, action, result)
         if not result.truncated_by_combat_limit:
@@ -554,23 +561,22 @@ class Simulation:
             "complete" if not self.state.unmapped_off_tune_action_ids and not self.state.unresolved_off_tune_damaging_action_ids else "incomplete"
         )
 
-    def _advance_tune_break_runtime(self, elapsed: float) -> None:
-        elapsed = max(0.0, float(elapsed or 0.0))
-        if elapsed <= 0.0:
-            return
+    def _advance_tune_break_runtime(self, *, action_elapsed: float, combat_elapsed: float) -> None:
+        action_elapsed = max(0.0, float(action_elapsed or 0.0))
+        combat_elapsed = max(0.0, float(combat_elapsed or 0.0))
         self.state.enemy_tune_break_cooldown_remaining = max(
             0.0,
-            self.state.enemy_tune_break_cooldown_remaining - elapsed,
+            self.state.enemy_tune_break_cooldown_remaining - action_elapsed,
         )
-        self.state.target_tune_shift_remaining = max(0.0, self.state.target_tune_shift_remaining - elapsed)
+        self.state.target_tune_shift_remaining = max(0.0, self.state.target_tune_shift_remaining - combat_elapsed)
         if self.state.target_tune_shift_remaining <= 0.0:
             self.state.target_tune_shift_state = None
-        self.state.target_interfered_remaining = max(0.0, self.state.target_interfered_remaining - elapsed)
+        self.state.target_interfered_remaining = max(0.0, self.state.target_interfered_remaining - combat_elapsed)
         if self.state.target_interfered_remaining <= 0.0:
             self.state.target_interfered_state = None
         self.state.target_tune_strain_interfered_remaining = max(
             0.0,
-            self.state.target_tune_strain_interfered_remaining - elapsed,
+            self.state.target_tune_strain_interfered_remaining - combat_elapsed,
         )
         if self.state.target_interfered_state != "tune_strain_interfered":
             clear_lynae_tune_strain_state(self.state)
@@ -583,20 +589,20 @@ class Simulation:
             self.state.target_tune_strain_interfered_max_stacks = lynae_tune_strain_max_stacks(
                 self.state.mechanics_config
             )
-        self.state.interfered_marker_remaining = max(0.0, self.state.interfered_marker_remaining - elapsed)
+        self.state.interfered_marker_remaining = max(0.0, self.state.interfered_marker_remaining - combat_elapsed)
         if self.state.interfered_marker_remaining <= 0.0:
             self.state.interfered_marker_damage_taken_amp = 0.0
         self.state.aemeath_starburst_response_cooldown_remaining = max(
             0.0,
-            self.state.aemeath_starburst_response_cooldown_remaining - elapsed,
+            self.state.aemeath_starburst_response_cooldown_remaining - action_elapsed,
         )
         self.state.mornye_particle_jet_response_cooldown_remaining = max(
             0.0,
-            self.state.mornye_particle_jet_response_cooldown_remaining - elapsed,
+            self.state.mornye_particle_jet_response_cooldown_remaining - action_elapsed,
         )
         self.state.lynae_spectral_analysis_response_cooldown_remaining = max(
             0.0,
-            self.state.lynae_spectral_analysis_response_cooldown_remaining - elapsed,
+            self.state.lynae_spectral_analysis_response_cooldown_remaining - action_elapsed,
         )
 
     def _apply_off_tune_accumulation(self, action: ActionData, result: Any) -> None:
@@ -1243,7 +1249,7 @@ class Simulation:
         incoming_character_id = transition_resolution.incoming_character_id
         if incoming_character_id not in self.characters:
             return
-        application_time = float(result.end_time)
+        application_time = float(result.combat_time_end)
         applied: list[str] = []
 
         for buff_id in ("lynae_outro_all_damage_amp", "lynae_outro_liberation_damage_amp"):
@@ -1455,7 +1461,7 @@ class Simulation:
             characters=self.characters,
             state=self.state,
             buffs=self.buffs,
-            application_time=self.state.current_time,
+            application_time=self.state.combat_time,
             event_source="simplified_syntony_field_uptime_action_boundary",
         )
         log["mornye_heal_proxy_implementation_status"] = "simplified_field_uptime_heal_proxy"
@@ -1482,7 +1488,7 @@ class Simulation:
             self._apply_team_heal_weapon_effects(
                 log,
                 source_character_id="mornye",
-                application_time=self.state.current_time,
+                application_time=self.state.combat_time,
                 event_source="simplified_syntony_field_uptime_action_boundary",
             )
         )
@@ -1517,8 +1523,8 @@ class Simulation:
             "field_id": "high_syntony_field",
             "source_action_id": action.id,
             "character_id": "mornye",
-            "start_time": self.state.current_time,
-            "end_time": self.state.current_time + duration,
+            "start_time": self.state.combat_time,
+            "end_time": self.state.combat_time + duration,
             "duration": duration,
             "implementation_timing_mode": HIGH_SYNTONY_SAME_ACTION_TIMING_MODE,
         }
@@ -1531,7 +1537,7 @@ class Simulation:
             source_character_id="mornye",
             duration=duration,
             constellation=self._mornye_constellation(),
-            application_time=self.state.current_time,
+            application_time=self.state.combat_time,
         )
         high_syntony_log_fields = {
             "mornye_constellation": self._mornye_constellation(),
@@ -1570,7 +1576,7 @@ class Simulation:
                 characters=self.characters,
                 state=self.state,
                 buffs=self.buffs,
-                application_time=self.state.current_time,
+                application_time=self.state.combat_time,
                 event_source=(
                     "high_syntony_field_creation_only"
                     if mode == "field_creation_only"
@@ -1582,7 +1588,7 @@ class Simulation:
                 self._apply_team_heal_weapon_effects(
                     halo_log,
                     source_character_id="mornye",
-                    application_time=self.state.current_time,
+                    application_time=self.state.combat_time,
                     event_source=(
                         "high_syntony_field_creation_only"
                         if mode == "field_creation_only"
@@ -1623,7 +1629,7 @@ class Simulation:
                 self._apply_team_heal_weapon_effects(
                     log_updates,
                     source_character_id="mornye",
-                    application_time=self.state.current_time,
+                    application_time=self.state.combat_time,
                     event_source="field_creation_halo_disabled_team_heal",
                 )
             )
@@ -1645,7 +1651,7 @@ class Simulation:
                     source_character_id="mornye",
                     duration=float(syntony_duration),
                     constellation=self._mornye_constellation(),
-                    application_time=self.state.current_time,
+                    application_time=self.state.combat_time,
                 )
             )
         log_updates.update(
@@ -1655,7 +1661,7 @@ class Simulation:
                 characters=self.characters,
                 state=self.state,
                 buffs=self.buffs,
-                application_time=self.state.current_time,
+                application_time=self.state.combat_time,
                 event_source=(
                     "field_creation_only"
                     if mode == "field_creation_only"
@@ -1668,7 +1674,7 @@ class Simulation:
             self._apply_team_heal_weapon_effects(
                 log_updates,
                 source_character_id="mornye",
-                application_time=self.state.current_time,
+                application_time=self.state.combat_time,
                 event_source=(
                     "field_creation_only"
                     if mode == "field_creation_only"
@@ -1703,7 +1709,7 @@ class Simulation:
                 source_character_id="mornye",
                 duration=float(syntony_duration),
                 constellation=self._mornye_constellation(),
-                application_time=result.end_time,
+                application_time=result.combat_time_end,
             )
             log_updates.update(syntony_log)
         high_syntony_heal_metadata = bool(effects.get("upgrade_syntony_to_high") or effects.get("high_syntony_field_duration"))
@@ -1720,14 +1726,14 @@ class Simulation:
                 characters=self.characters,
                 state=self.state,
                 buffs=self.buffs,
-                application_time=result.end_time,
+                application_time=result.combat_time_end,
                 event_source="field_creation_only" if mode == "field_creation_only" else "simplified_syntony_field_creation_proxy",
             )
             halo_log.update(
                 self._apply_team_heal_weapon_effects(
                     halo_log,
                     source_character_id="mornye",
-                    application_time=result.end_time,
+                    application_time=result.combat_time_end,
                     event_source=(
                         "field_creation_only"
                         if mode == "field_creation_only"
@@ -2087,7 +2093,7 @@ class Simulation:
             starfield_calibrator_party_crit_damage_uptime_seconds=weapon_effect_uptime_seconds(
                 self.state,
                 STARFIELD_CALIBRATOR_BUFF_ID,
-                self.state.current_time,
+                self.state.combat_time,
             ),
             starfield_calibrator_party_crit_damage_bonus=float(
                 (starfield_crit_buff.metadata or {}).get("dynamic_value", 0.0)
@@ -2107,7 +2113,7 @@ class Simulation:
             everbright_polestar_liberation_penetration_uptime_seconds=weapon_effect_uptime_seconds(
                 self.state,
                 "everbright_polestar_liberation_penetration",
-                self.state.current_time,
+                self.state.combat_time,
             ),
             everbright_polestar_def_ignore_bonus=float(
                 (everbright_penetration_buff.metadata or {}).get("dynamic_def_ignore", 0.0)
@@ -2135,7 +2141,7 @@ class Simulation:
             ),
             aemeath_trailblazing_star_5set_uptime_seconds=trailblazing_star_uptime_seconds(
                 self.state,
-                self.state.current_time,
+                self.state.combat_time,
             ),
             aemeath_trailblazing_star_5set_buff_windows=trailblazing_windows,
             base_off_tune_buildup_rate=base_off_tune,
@@ -2160,7 +2166,7 @@ class Simulation:
             ),
             mornye_halo_of_starry_radiance_5set_uptime_seconds=halo_of_starry_radiance_uptime_seconds(
                 self.state,
-                self.state.current_time,
+                self.state.combat_time,
             ),
             halo_of_starry_radiance_5set_unavailable_reason=halo_unavailable_reason,
             high_syntony_field_active=high_syntony_active,

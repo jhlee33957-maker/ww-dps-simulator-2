@@ -49,12 +49,17 @@ def _recalculate_attack_stats(stats: dict[str, Any]) -> None:
     _recalculate_scaling_stats(stats)
 
 
-def tick_buffs(state: CombatState, elapsed: float) -> None:
+def tick_buffs(state: CombatState, combat_elapsed: float) -> None:
+    combat_elapsed = max(0.0, float(combat_elapsed or 0.0))
+    combat_tick_start = max(0.0, float(getattr(state, "combat_time", 0.0) or 0.0) - combat_elapsed)
     remaining: list[ActiveBuff] = []
     for buff in state.active_buffs:
-        buff.remaining_duration = max(0.0, buff.remaining_duration - elapsed)
+        previous_remaining = float(buff.remaining_duration)
+        buff.remaining_duration = max(0.0, buff.remaining_duration - combat_elapsed)
         if buff.remaining_duration > 0.0:
             remaining.append(buff)
+        elif previous_remaining > 0.0:
+            _cap_combat_uptime_windows(state, buff.buff_id, combat_tick_start + min(previous_remaining, combat_elapsed))
     state.active_buffs = remaining
     state.team_buffs = list(remaining)
 
@@ -78,8 +83,19 @@ def add_team_buff(party_state: CombatState, buff: BuffData, source_character_id:
     apply_buff(party_state, buff, source_character_id)
 
 
-def tick_team_buffs(party_state: CombatState, action_time: float) -> None:
-    tick_buffs(party_state, action_time)
+def tick_team_buffs(party_state: CombatState, combat_elapsed: float) -> None:
+    tick_buffs(party_state, combat_elapsed)
+
+
+def _cap_combat_uptime_windows(state: CombatState, buff_id: str, expiration_combat_time: float) -> None:
+    for windows_attr in ("weapon_effect_buff_windows", "echo_set_buff_windows"):
+        for window in getattr(state, windows_attr, []):
+            if window.get("buff_id") != buff_id:
+                continue
+            start = float(window.get("start_time", expiration_combat_time))
+            capped_end = max(start, min(float(window.get("end_time", start)), expiration_combat_time))
+            window["end_time"] = capped_end
+            window["duration"] = max(0.0, capped_end - start)
 
 
 def has_required_buffs(state: CombatState, required_buffs: list[str]) -> bool:

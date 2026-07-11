@@ -66,7 +66,7 @@ class CharacterMechanic:
     ) -> tuple[str | None, list[str]]:
         return None, []
 
-    def advance_time(self, state: Any, elapsed_time: float) -> None:
+    def advance_time(self, state: Any, combat_elapsed: float, action_elapsed: float | None = None) -> None:
         pass
 
     def get_observation_values(self, state: Any) -> list[float]:

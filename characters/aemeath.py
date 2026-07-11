@@ -351,28 +351,28 @@ class AemeathMechanic(CharacterMechanic):
         self._derive_state(data)
         data["last_resolved_action_id"] = action.id
 
-    def advance_time(self, state: Any, elapsed_time: float) -> None:
+    def advance_time(self, state: Any, combat_elapsed: float, action_elapsed: float | None = None) -> None:
         data = self._state(state)
         if data["seraphic_duo_remaining"] > 0.0:
-            data["seraphic_duo_remaining"] = max(0.0, data["seraphic_duo_remaining"] - elapsed_time)
+            data["seraphic_duo_remaining"] = max(0.0, data["seraphic_duo_remaining"] - combat_elapsed)
         if data["heavenfall_unbound_remaining"] > 0.0:
-            data["heavenfall_unbound_remaining"] = max(0.0, data["heavenfall_unbound_remaining"] - elapsed_time)
+            data["heavenfall_unbound_remaining"] = max(0.0, data["heavenfall_unbound_remaining"] - combat_elapsed)
         if data["stardust_resonance_remaining"] > 0.0:
-            data["stardust_resonance_remaining"] = max(0.0, data["stardust_resonance_remaining"] - elapsed_time)
+            data["stardust_resonance_remaining"] = max(0.0, data["stardust_resonance_remaining"] - combat_elapsed)
         if data["starlume_acceleration_remaining"] > 0.0:
-            data["starlume_acceleration_remaining"] = max(0.0, data["starlume_acceleration_remaining"] - elapsed_time)
+            data["starlume_acceleration_remaining"] = max(0.0, data["starlume_acceleration_remaining"] - combat_elapsed)
         if data["forte_enhancement_remaining"] > 0.0:
-            data["forte_enhancement_remaining"] = max(0.0, data["forte_enhancement_remaining"] - elapsed_time)
+            data["forte_enhancement_remaining"] = max(0.0, data["forte_enhancement_remaining"] - combat_elapsed)
             if data["forte_enhancement_remaining"] <= 0.0:
                 data["forte_enhancement_stacks"] = 0
         if data["trail_no_cost_remaining"] > 0.0:
-            data["trail_no_cost_remaining"] = max(0.0, data["trail_no_cost_remaining"] - elapsed_time)
+            data["trail_no_cost_remaining"] = max(0.0, data["trail_no_cost_remaining"] - combat_elapsed)
         if data["rupturous_trail_remaining"] > 0.0:
-            data["rupturous_trail_remaining"] = max(0.0, data["rupturous_trail_remaining"] - elapsed_time)
+            data["rupturous_trail_remaining"] = max(0.0, data["rupturous_trail_remaining"] - combat_elapsed)
             if data["rupturous_trail_remaining"] <= 0.0:
                 data["rupturous_trail_stacks"] = 0
         if data["fusion_trail_remaining"] > 0.0:
-            data["fusion_trail_remaining"] = max(0.0, data["fusion_trail_remaining"] - elapsed_time)
+            data["fusion_trail_remaining"] = max(0.0, data["fusion_trail_remaining"] - combat_elapsed)
             if data["fusion_trail_remaining"] <= 0.0:
                 data["fusion_trail_stacks"] = 0
         self._derive_state(data)

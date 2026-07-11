@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from simulator.anomaly_system import advance_anomalies, apply_anomaly, get_havoc_bane_def_reduction_at_time
+from simulator.action_start_snapshot import ActionStartEffectSnapshot, capture_action_start_effect_snapshot
+from simulator.anomaly_system import advance_anomalies, apply_anomaly
 from simulator.buff_system import (
     apply_buff,
     apply_buff_modifiers_to_damage_context,
@@ -80,11 +81,17 @@ def _active_interfered_marker_buff_damage_amp(
     buffs: dict[str, BuffData],
     *,
     time_offset: float,
+    action_start_snapshot: ActionStartEffectSnapshot | None = None,
 ) -> float:
     for active in state.active_buffs:
         if active.buff_id != INTERFERED_MARKER_BUFF_ID:
             continue
-        if active.remaining_duration <= time_offset:
+        if (
+            action_start_snapshot is not None
+            and action_start_snapshot.buff_active(INTERFERED_MARKER_BUFF_ID)
+        ):
+            pass
+        elif active.remaining_duration <= time_offset:
             continue
         buff = buffs.get(active.buff_id)
         if buff is None or buff.modifier_type != "damage_amp":
@@ -203,6 +210,7 @@ def _calculate_hit_damage(
     buffs: dict[str, BuffData],
     temporary_stat_modifiers: dict[str, float] | None = None,
     force_active_buff_ids: set[str] | None = None,
+    action_start_snapshot: ActionStartEffectSnapshot | None = None,
     weapon_definitions: dict[str, Any] | None = None,
 ) -> tuple[float, dict]:
     transition_damage_action = bool((action.mechanic_effects or {}).get("transition_action"))
@@ -242,9 +250,18 @@ def _calculate_hit_damage(
         time_offset=hit.time,
         force_active_buff_ids=force_active_buff_ids,
     )
-    target_damage_taken_amp = current_interfered_damage_taken_amp(state)
+    target_damage_taken_amp = (
+        action_start_snapshot.target_damage_taken_amp
+        if action_start_snapshot is not None
+        else current_interfered_damage_taken_amp(state)
+    )
     if target_damage_taken_amp > 0.0:
-        damage_amp -= _active_interfered_marker_buff_damage_amp(state, buffs, time_offset=hit.time)
+        damage_amp -= _active_interfered_marker_buff_damage_amp(
+            state,
+            buffs,
+            time_offset=hit.time,
+            action_start_snapshot=action_start_snapshot,
+        )
     target_damage_taken_multiplier = 1.0 + target_damage_taken_amp
     damage_element = action_damage_element(action, character)
     runtime_weapon_effects = weapon_runtime_damage_effects(
@@ -257,6 +274,7 @@ def _calculate_hit_damage(
         damage_bonus_category=action.damage_bonus_category or action.action_type or "other",
         hit_damage_category=hit.damage_category,
         time_offset=hit.time,
+        action_start_snapshot=action_start_snapshot,
     )
     runtime_element_bonuses = dict(stats.get("damage_bonus_by_element_buff") or {})
     for element, value in (runtime_weapon_effects.get("runtime_element_bonus_by_element") or {}).items():
@@ -279,11 +297,16 @@ def _calculate_hit_damage(
         damage_bonus_category=str(damage_bonus_context.get("damage_bonus_category") or "other"),
         hit_damage_category=hit.damage_category,
         time_offset=hit.time,
+        action_start_snapshot=action_start_snapshot,
     )
     all_attribute_bonus = float(runtime_weapon_effects.get("runtime_all_attribute_damage_bonus", 0.0) or 0.0)
     element_damage_bonus_after_weapon = float(damage_bonus_context.get("element_dmg_bonus", 0.0) or 0.0)
     element_damage_bonus_before_weapon = element_damage_bonus_after_weapon - all_attribute_bonus
-    havoc_def_reduction = get_havoc_bane_def_reduction_at_time(state, hit.time)
+    havoc_def_reduction = (
+        action_start_snapshot.havoc_bane_def_reduction
+        if action_start_snapshot is not None
+        else 0.0
+    )
     final_def_reduction = state.def_reduction + havoc_def_reduction
     scaling_stat, scaling_value = scaling_value_for_action(stats, action, character)
     def_ignore_before_weapon = float(stats["def_ignore"])
@@ -550,6 +573,7 @@ def _calculate_hit_damage_totals(
     action_damage_multiplier: float = 1.0,
     temporary_stat_modifiers: dict[str, float] | None = None,
     force_active_buff_ids: set[str] | None = None,
+    action_start_snapshot: ActionStartEffectSnapshot | None = None,
     weapon_definitions: dict[str, Any] | None = None,
 ) -> tuple[float, float, list[dict], dict[str, float], float, dict[str, Any], dict[str, Any]]:
     normal_damage = 0.0
@@ -582,6 +606,7 @@ def _calculate_hit_damage_totals(
             buffs,
             temporary_stat_modifiers,
             force_active_buff_ids=force_active_buff_ids,
+            action_start_snapshot=action_start_snapshot,
             weapon_definitions=weapon_definitions,
         )
         if damage > 0.0 and action_damage_multiplier != 1.0:
@@ -967,12 +992,13 @@ def execute_action(
             characters=characters,
             state=state,
             buffs=buffs,
-            application_time=start_time,
+            application_time=combat_start_time,
             applied_before_triggering_damage=True,
             ),
         )
 
-    force_active_buff_ids: set[str] = set()
+    action_start_snapshot = capture_action_start_effect_snapshot(state)
+    force_active_buff_ids: set[str] = set(action_start_snapshot.active_buff_ids)
     if echo_set_log_fields.get("halo_of_starry_radiance_5set_same_action_application"):
         force_active_buff_ids.add(MORNYE_HALO_OF_STARRY_RADIANCE_5SET_BUFF_ID)
     if echo_set_log_fields.get("high_syntony_field_same_action_application"):
@@ -1003,6 +1029,7 @@ def execute_action(
         action_damage_multiplier=action_damage_multiplier,
         temporary_stat_modifiers=temporary_stat_modifiers,
         force_active_buff_ids=force_active_buff_ids,
+        action_start_snapshot=action_start_snapshot,
         weapon_definitions=weapon_definitions,
     )
     direct_damage = normal_damage + tune_break_damage
@@ -1043,6 +1070,7 @@ def execute_action(
             characters=characters,
             buffs=buffs,
             force_active_buff_ids=force_active_buff_ids,
+            action_start_snapshot=action_start_snapshot,
         )
         event = {
             "id": packet.id,
@@ -1184,8 +1212,8 @@ def execute_action(
     state.current_time += action_time
     state.combat_time = combat_time_end
     reduce_cooldowns(state, effective_combat_time_cost)
-    tick_buffs(state, action_time)
-    anomaly_tick_damage, anomaly_damage_by_type = advance_anomalies(state, action_time)
+    tick_buffs(state, effective_combat_time_cost)
+    anomaly_tick_damage, anomaly_damage_by_type = advance_anomalies(state, effective_combat_time_cost)
     if truncated_by_combat_limit:
         damage_after_cutoff_excluded += anomaly_tick_damage
         anomaly_tick_damage = 0.0
