@@ -7,7 +7,7 @@ from typing import Any
 
 from characters.base import CharacterMechanic
 from characters.registry import get_mechanic, get_mechanics_for_characters
-from simulator.action_executor import execute_action, is_action_valid, timeline_entry
+from simulator.action_executor import execute_action, execute_scheduled_damage_event, is_action_valid, timeline_entry
 from simulator.build_profiles import (
     build_action_scaling_summary,
     effective_build_stats_summary,
@@ -62,6 +62,12 @@ from simulator.roster import (
     resolve_party_preset,
 )
 from simulator.state import create_initial_state
+from simulator.scheduled_effects import (
+    advance_scheduled_effects as advance_scheduled_effect_states,
+    remove_scheduled_effect as remove_scheduled_effect_state,
+    schedule_effect as schedule_effect_state,
+    scheduled_effect_by_instance_id as scheduled_effect_state_by_instance_id,
+)
 from simulator.transition_config import build_effective_transition_config, load_transition_config, mechanics_mode_summary
 from simulator.tune_break import calculate_tune_response_damage_detail, current_interfered_damage_taken_amp
 from simulator.weapon_effects import (
@@ -295,6 +301,216 @@ class Simulation:
         if tune_dmg_bonus is not None:
             self.state.tune_dmg_bonus = tune_dmg_bonus
 
+    def schedule_effect(
+        self,
+        *,
+        instance_id: str,
+        effect_id: str,
+        source_character_id: str,
+        payload_action_id: str,
+        remaining_duration: float,
+        tick_interval: float,
+        time_until_next_tick: float | None = None,
+        source_action_id: str | None = None,
+        trigger_count: int = 0,
+        max_trigger_count: int | None = None,
+        refresh_rule: str = "replace",
+        source_status: str = "scheduler_test_fixture",
+        source_ref: str | None = None,
+        metadata: dict[str, Any] | None = None,
+        trigger_on_apply: bool = False,
+        activation_combat_time: float | None = None,
+    ) -> dict[str, Any]:
+        activation_time = (
+            float(self.state.combat_time)
+            if activation_combat_time is None
+            else max(0.0, float(activation_combat_time))
+        )
+        result = schedule_effect_state(
+            self.state,
+            actions=self.actions,
+            selected_character_ids=set(self.selected_character_ids),
+            instance_id=instance_id,
+            effect_id=effect_id,
+            source_character_id=source_character_id,
+            source_action_id=source_action_id,
+            payload_action_id=payload_action_id,
+            remaining_duration=remaining_duration,
+            tick_interval=tick_interval,
+            time_until_next_tick=time_until_next_tick,
+            activation_combat_time=activation_time,
+            trigger_on_apply=trigger_on_apply,
+            trigger_count=trigger_count,
+            max_trigger_count=max_trigger_count,
+            refresh_rule=refresh_rule,
+            source_status=source_status,
+            source_ref=source_ref,
+            metadata=metadata,
+        )
+        effect = result["effect"]
+        if (
+            trigger_on_apply
+            and result.get("operation") in {"created", "replaced"}
+            and activation_time <= float(self.state.combat_time) + 1e-9
+        ):
+            trigger_index = int(effect.trigger_count) + 1
+            event = self.execute_scheduled_damage_event(
+                effect=effect,
+                host_action_id=source_action_id or "__schedule_effect__",
+                combat_time=activation_time,
+                host_action_combat_offset=0.0,
+                trigger_index=trigger_index,
+            )
+            effect.trigger_count = trigger_index
+            effect.trigger_on_apply_pending = False
+            effect.time_until_next_tick = float(effect.tick_interval)
+            self.state.total_damage += float(event.get("damage", 0.0) or 0.0)
+            result["trigger_on_apply_event"] = event
+            result["immediate_trigger_executed"] = True
+            result["immediate_trigger_pending"] = False
+            if effect.max_trigger_count is not None and effect.trigger_count >= effect.max_trigger_count:
+                remove_scheduled_effect_state(self.state, effect.instance_id)
+        elif result.get("operation") in {"created", "replaced"}:
+            result["immediate_trigger_pending"] = bool(effect.trigger_on_apply_pending)
+            result["immediate_trigger_executed"] = False
+        return result
+
+    def remove_scheduled_effect(self, instance_id: str):
+        return remove_scheduled_effect_state(self.state, instance_id)
+
+    def scheduled_effect_by_instance_id(self, instance_id: str):
+        return scheduled_effect_state_by_instance_id(self.state, instance_id)
+
+    def advance_scheduled_effects(
+        self,
+        *,
+        host_action: ActionData,
+        combat_start_time: float,
+        combat_elapsed: float,
+        action_start_snapshot: Any | None = None,
+        force_active_buff_ids: set[str] | None = None,
+    ) -> dict[str, Any]:
+        return advance_scheduled_effect_states(
+            self.state,
+            combat_start_time=combat_start_time,
+            combat_elapsed=combat_elapsed,
+            host_action_id=host_action.id,
+            execute_tick=lambda effect, combat_time, offset, trigger_index: self.execute_scheduled_damage_event(
+                effect=effect,
+                host_action_id=host_action.id,
+                combat_time=combat_time,
+                host_action_combat_offset=offset,
+                trigger_index=trigger_index,
+                action_start_snapshot=action_start_snapshot,
+                force_active_buff_ids=force_active_buff_ids,
+            ),
+        )
+
+    def execute_scheduled_damage_event(
+        self,
+        *,
+        effect,
+        host_action_id: str,
+        combat_time: float,
+        host_action_combat_offset: float,
+        trigger_index: int,
+        action_start_snapshot: Any | None = None,
+        force_active_buff_ids: set[str] | None = None,
+    ) -> dict[str, Any]:
+        payload = self.actions.get(effect.payload_action_id)
+        if payload is None:
+            raise ValueError(f"Unknown scheduled-effect payload action {effect.payload_action_id!r}")
+        event = execute_scheduled_damage_event(
+            effect=effect,
+            payload_action=payload,
+            state=self.state,
+            characters=self.characters,
+            buffs=self.buffs,
+            host_action_id=host_action_id,
+            combat_time=combat_time,
+            host_action_combat_offset=host_action_combat_offset,
+            trigger_index=trigger_index,
+            action_start_snapshot=action_start_snapshot,
+            force_active_buff_ids=force_active_buff_ids,
+            weapon_definitions=self.weapon_definitions,
+        )
+        self._apply_scheduled_off_tune_accumulation(payload, event, effect.source_character_id)
+        return event
+
+    def _apply_scheduled_off_tune_accumulation(
+        self,
+        action: ActionData,
+        event: dict[str, Any],
+        source_character_id: str,
+    ) -> None:
+        event["off_tune_value"] = float(action.off_tune_value or 0.0)
+        event["off_tune_value_source_status"] = action.off_tune_value_source_status or "not_found_or_non_damaging"
+        event["off_tune_value_source_ref"] = action.off_tune_value_source_ref
+        event["off_tune_gain"] = 0.0
+        if action.action_type == "tune_break" or float(event.get("normal_damage", 0.0) or 0.0) <= 0.0:
+            return
+        source_character = self.characters[source_character_id]
+        rate = float(support_stat_context(source_character, self.state, self.buffs)["current_off_tune_buildup_rate"])
+        before = self.state.enemy_off_tune_current
+        if self.state.enemy_tune_break_cooldown_remaining > 0.0:
+            added = 0.0
+            after = before
+            behavior = "blocked_by_tune_break_cooldown"
+            self.state.off_tune_accumulation_blocked_by_tune_break_cooldown_count += 1
+            blocked = True
+            value_before_block = event["off_tune_value"]
+            entered = False
+        else:
+            added = max(0.0, event["off_tune_value"]) * rate
+            after = before + added
+            behavior = "accumulated"
+            blocked = False
+            value_before_block = 0.0
+            entered = False
+            if after >= self.state.enemy_off_tune_max:
+                self.state.off_tune_overflow += max(0.0, after - self.state.enemy_off_tune_max)
+                after = self.state.enemy_off_tune_max
+                if not self.state.enemy_mistune_active:
+                    self.state.enemy_mistune_entered_count += 1
+                    entered = True
+                self.state.enemy_mistune_active = True
+                self.state.enemy_tune_break_available = True
+                behavior = "mistune_entered"
+        self.state.enemy_off_tune_current = after
+        self.state.off_tune_accumulated_total += added
+        self.state.off_tune_buildup_rate_used = rate
+        log = {
+            "event_type": "scheduled_damage",
+            "action_id": action.id,
+            "scheduled_effect_instance_id": event.get("scheduled_effect_instance_id"),
+            "scheduled_effect_id": event.get("scheduled_effect_id"),
+            "host_action_id": event.get("host_action_id"),
+            "source_character_id": source_character_id,
+            "off_tune_value": event["off_tune_value"],
+            "off_tune_value_source_status": event["off_tune_value_source_status"],
+            "off_tune_value_source_ref": event["off_tune_value_source_ref"],
+            "off_tune_buildup_rate_used": rate,
+            "off_tune_added": added,
+            "off_tune_accumulation_blocked_by_tune_break_cooldown": blocked,
+            "off_tune_value_before_block": value_before_block,
+            "enemy_tune_break_cooldown_remaining": self.state.enemy_tune_break_cooldown_remaining,
+            "enemy_off_tune_current_before": before,
+            "enemy_off_tune_current_after": after,
+            "enemy_off_tune_max": self.state.enemy_off_tune_max,
+            "enemy_mistune_active": self.state.enemy_mistune_active,
+            "enemy_tune_break_available": self.state.enemy_tune_break_available,
+            "enemy_mistune_entered_this_action": entered,
+            "behavior": behavior,
+        }
+        self.state.off_tune_accumulation_logs.append(log)
+        event["off_tune_gain"] = added
+        event["off_tune_buildup_rate_used"] = rate
+        event["enemy_off_tune_current_before"] = before
+        event["enemy_off_tune_current_after"] = after
+        event["off_tune_accumulation_log"] = log
+        if self.state.scheduled_effect_event_log:
+            self.state.scheduled_effect_event_log[-1].update(event)
+
     def execute_action(self, action_id: str) -> bool:
         if self.state.combat_time >= self.combat_duration:
             return False
@@ -346,6 +562,10 @@ class Simulation:
         )
         actor_character_id = actor_character_id or self.state.active_character_id
         actor_mechanic = self._mechanic_for_character(actor_character_id)
+        scheduled_effect_runner = lambda **kwargs: self.advance_scheduled_effects(
+            host_action=action,
+            **kwargs,
+        )
         result = execute_action(
             action,
             self.state,
@@ -355,6 +575,7 @@ class Simulation:
             combat_duration=self.combat_duration,
             pre_action_echo_set_log_fields=pre_action_echo_set_log_fields,
             weapon_definitions=self.weapon_definitions,
+            scheduled_effect_runner=scheduled_effect_runner,
         )
         if not result.valid:
             return False

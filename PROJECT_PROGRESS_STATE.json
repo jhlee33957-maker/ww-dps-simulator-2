@@ -1,0 +1,577 @@
+{
+    "schema_version":  "1.0.0",
+    "project":  {
+                    "name":  "Wuthering Waves End Matrix DPS Simulator",
+                    "short_name":  "ww-dps-simulator",
+                    "purpose":  "종말 매트릭스 120초 기준 파티 총 피해량과 DPS를 결정론적으로 계산하고, 수동 기준선·탐색 정책·RL 정책을 비교하는 시뮬레이터",
+                    "primary_party":  [
+                                          "aemeath",
+                                          "mornye",
+                                          "lynae"
+                                      ],
+                    "user_role":  "게임 기획자",
+                    "language_preference":  "설명은 한국어, Codex 프롬프트와 코드 식별자는 영어 가능"
+                },
+    "status":  {
+                   "last_updated":  "2026-07-11T16:57:25+09:00",
+                   "latest_verified_archive":  "ww-dps-simulator-2(84).zip",
+                   "latest_verified_baseline_label":  "84",
+                   "current_task_status":  "complete_pending_external_review",
+                   "current_task":  "범용 combat-time 예약 효과·자동 피해 스케줄러 인프라 구현",
+                   "current_task_expected_next_archive":  "미정",
+                   "do_not_treat_current_task_as_complete_until_reviewed":  true
+               },
+    "source_of_truth":  {
+                            "raw_action_workbook":  "鸣潮动作数据汇总(5).xlsx",
+                            "organized_action_package":  "명조_종말매트릭스_액션데이터_v6.1_확정수정본(1).zip",
+                            "canonical_action_patch_manifest":  "direct_action_data_patch_manifest_v61.json",
+                            "canonical_action_patch_manifest_copy":  "data/source/direct_action_data_patch_manifest_v61.json",
+                            "lynae_off_tune_mapping":  "data/source/lynae_off_tune_direct_mapping_v80.json",
+                            "source_priority":  [
+                                                    "사람이 직접 검수해 확정한 매니페스트·직접 매핑 파일",
+                                                    "v6.1 정리 데이터",
+                                                    "원본 엑셀",
+                                                    "현재 런타임 데이터",
+                                                    "추론값"
+                                                ],
+                            "rule":  "확정값은 Codex가 재해석하지 않고 그대로 적용한다. 불확실한 값은 임의로 채우지 않는다."
+                        },
+    "architecture_decisions":  {
+                                   "timing":  {
+                                                  "fps":  60,
+                                                  "action_time_definition":  "다음 행동 입력이 가능한 최종 시간",
+                                                  "combat_time_cost_definition":  "action_time에서 확정된 global time stop overlap만 차감한 종말 매트릭스 타이머 비용",
+                                                  "ready_frame_priority":  [
+                                                                               "派生帧",
+                                                                               "动作结束帧"
+                                                                           ],
+                                                  "effect_duration_clock":  "모든 버프·디버프·필드·지속 효과는 final resolved combat_time_cost 기준",
+                                                  "global_time_stop_rule":  "combat_time_cost가 0이면 효과 지속시간·예약 효과 주기·업타임 소비가 모두 정지",
+                                                  "action_start_approximation":  "행동 시작 시 활성 효과는 해당 행동 전체에 적용되고, 행동 종료 후 combat_time_cost만큼 감소"
+                                              },
+                                   "hit_policy":  {
+                                                      "policy":  "lumped_action_level",
+                                                      "description":  "정확한 개별 타격 시점이 확정되지 않은 다단 액션은 전체 계수를 액션 단위 1회 피해로 기록",
+                                                      "resolved_action_end_mode":  "Instant Response처럼 조건부 행동 시간이 줄어드는 통합 타격은 hit_time_mode=resolved_action_end 사용"
+                                                  },
+                                   "rl_observation":  {
+                                                          "version":  "slot_generic_mechanics_v4",
+                                                          "shape":  312,
+                                                          "policy_action_slots":  32,
+                                                          "notes":  [
+                                                                        "대기 캐릭터 selector 쿨다운도 행동 소유 캐릭터 기준으로 관측",
+                                                                        "린네 해방·Outro·공격력 버프 등 지연 보상 상태를 범용 효과 채널로 관측",
+                                                                        "v3 모델과 204차원 BC 데모는 비호환"
+                                                                    ]
+                                                      },
+                                   "reward":  {
+                                                  "current_formula":  "해당 스텝 실제 총 피해 기반 기존 보상식",
+                                                  "character_usage_bonus":  false,
+                                                  "delayed_reward_shaping":  false,
+                                                  "rule":  "린네 사용 보너스나 버프 보너스를 추가하지 않는다."
+                                              },
+                                   "search_strategy":  {
+                                                           "current_primary":  "PPO는 아직 재학습하지 않음",
+                                                           "future":  "수동 기준선 확정 후 PPO/Beam Search/MCTS 비교",
+                                                           "final_result_rule":  "동일한 120초 총 피해량만 비교하며 캐릭터 선호 가중치를 사용하지 않는다."
+                                                       }
+                               },
+    "completed_milestones":  [
+                                 {
+                                     "id":  "M001",
+                                     "title":  "프로젝트 전체 구조·테스트·RL 산출물 감사",
+                                     "status":  "complete",
+                                     "summary":  "결정론 시뮬레이터와 3인 파티 구조는 상당 부분 구현됨. 과거 모델 체크포인트는 누락. 모니에 진단 소스 9개 유실.",
+                                     "baseline":  "69~70"
+                                 },
+                                 {
+                                     "id":  "M002",
+                                     "title":  "v6.1 액션 데이터 직접 검수·적용",
+                                     "status":  "complete",
+                                     "summary":  "74개 액션과 4개 전환 액션의 타이밍·자원·계수·통합 히트 구조를 직접 검수해 반영. 액션 ID와 정책 순서 유지.",
+                                     "key_values":  {
+                                                        "aemeath_tune_break_multiplier":  12.0,
+                                                        "mornye_momentum_shift_heavy_multiplier":  0.4414,
+                                                        "mornye_tune_break_multiplier":  12.0
+                                                    }
+                                 },
+                                 {
+                                     "id":  "M003",
+                                     "title":  "Instant Response 통합 타격 회귀 수정",
+                                     "status":  "complete",
+                                     "summary":  "에이메스 인간형/기갑형 강공 2단이 조건부 행동 시간 단축 시 피해 0이 되던 문제 수정. 매니페스트 재적용 가능.",
+                                     "key_values":  {
+                                                        "human_action_time_frames":  91,
+                                                        "mech_action_time_frames":  56,
+                                                        "damage_multiplier":  2.32,
+                                                        "hit_count":  1,
+                                                        "hit_time_mode":  "resolved_action_end"
+                                                    }
+                                 },
+                                 {
+                                     "id":  "M004",
+                                     "title":  "관측 스키마 v4",
+                                     "status":  "complete",
+                                     "summary":  "지연 보상에 필요한 파티 버프·대기 캐릭터 쿨다운·행동 가용성을 관측에 추가.",
+                                     "observation_version":  "slot_generic_mechanics_v4",
+                                     "shape":  312
+                                 },
+                                 {
+                                     "id":  "M005",
+                                     "title":  "버프 중복 적용 제거",
+                                     "status":  "complete",
+                                     "summary":  "BuffData.value와 구조화 modifier가 중복 적용되던 문제를 구조화 modifier 우선, scalar fallback 규칙으로 수정.",
+                                     "verified_values":  {
+                                                             "static_mist_atk_percent":  0.1,
+                                                             "pact_neonlight_zero_boost_atk_percent":  0.15,
+                                                             "static_mist_plus_pact":  0.25,
+                                                             "lynae_outro_all_damage_amp":  0.15,
+                                                             "lynae_outro_liberation_specific_amp":  0.25,
+                                                             "lynae_liberation_party_amp":  0.24
+                                                         }
+                                 },
+                                 {
+                                     "id":  "M006",
+                                     "title":  "모니에 Discord R5 교체",
+                                     "status":  "complete",
+                                     "summary":  "실전 프로필 무기를 Starfield Calibrator에서 Discord R5로 교체. 반격 없는 오프닝에서 협주 100 달성 및 린네 Intro 자연 발동.",
+                                     "verified_values":  {
+                                                             "weapon_id":  "discord",
+                                                             "rank":  5,
+                                                             "final_def":  2997.0536,
+                                                             "energy_regen":  2.5424,
+                                                             "concerto_restore":  16.0,
+                                                             "weapon_icd_seconds":  20.0,
+                                                             "opener_unclamped_concerto":  101.44,
+                                                             "opener_clamped_concerto":  100.0,
+                                                             "interfered_marker_amp":  0.3856,
+                                                             "interfered_marker_duration":  8.0
+                                                         }
+                                 },
+                                 {
+                                     "id":  "M007",
+                                     "title":  "린네 반복 자원 집계 수정",
+                                     "status":  "complete",
+                                     "summary":  "반복 타격 계수에는 반복 횟수를 적용하면서 공명·협주 에너지에는 적용하지 않던 오류 수정. To a Vivid Tomorrow 우선순위도 수정.",
+                                     "verified_actions":  {
+                                                              "lynae_intro_time_to_show_some_colors":  {
+                                                                                                           "resonance_energy":  13.4,
+                                                                                                           "concerto_energy":  12.0
+                                                                                                       },
+                                                              "lynae_polychrome_leap_stage_2":  {
+                                                                                                    "resonance_energy":  2.28,
+                                                                                                    "concerto_energy":  5.4
+                                                                                                },
+                                                              "lynae_polychrome_leap_stage_3":  {
+                                                                                                    "resonance_energy":  1.5,
+                                                                                                    "concerto_energy":  3.5
+                                                                                                },
+                                                              "lynae_kaleidoscopic_basic_stage_5":  {
+                                                                                                        "resonance_energy":  3.76,
+                                                                                                        "concerto_energy":  13.45
+                                                                                                    },
+                                                              "lynae_to_a_vivid_tomorrow":  {
+                                                                                                "resonance_energy":  5.46,
+                                                                                                "concerto_energy":  19.42
+                                                                                            }
+                                                          },
+                                     "cycle_result":  {
+                                                          "lynae_unclamped_concerto":  100.31,
+                                                          "lynae_clamped_concerto":  100.0,
+                                                          "overflow":  0.31,
+                                                          "outro_to_aemeath":  "natural",
+                                                          "aemeath_intro":  "natural"
+                                                      }
+                                 },
+                                 {
+                                     "id":  "M008",
+                                     "title":  "린네 조화도 값 직접 매핑",
+                                     "status":  "complete",
+                                     "summary":  "43개 액션 중 37개 원본 확정, 5개 selector 0, Hyvatia 1개 미해결. 전체 실전 사이클 조화도 체크포인트 검증.",
+                                     "mapping_counts":  {
+                                                            "confirmed_source_backed":  37,
+                                                            "non_damaging_selectors":  5,
+                                                            "unresolved":  1,
+                                                            "total":  43
+                                                        },
+                                     "unresolved_action":  "lynae_echo_hyvatia",
+                                     "critical_values":  {
+                                                             "lynae_intro_time_to_show_some_colors":  106.4,
+                                                             "lynae_resonance_skill_palette":  87.22,
+                                                             "lynae_spark_collision_lv3":  263.0,
+                                                             "lynae_polychrome_leap_stage_1":  48.0,
+                                                             "lynae_polychrome_leap_stage_2":  48.0,
+                                                             "lynae_polychrome_leap_stage_3":  31.0,
+                                                             "lynae_visual_impact":  609.6,
+                                                             "lynae_resonance_liberation_prismatic_overblast":  480.0,
+                                                             "lynae_to_a_vivid_tomorrow":  171.28
+                                                         },
+                                     "cycle_checkpoints":  {
+                                                               "after_aemeath_opening":  263.25,
+                                                               "after_mornye_opener":  1826.67,
+                                                               "after_lynae_intro":  1986.27,
+                                                               "after_lynae_skill":  2117.1,
+                                                               "after_spark_lv3":  2511.6,
+                                                               "after_leap_1":  2583.6,
+                                                               "after_leap_2":  2655.6,
+                                                               "after_leap_3":  2702.1,
+                                                               "after_visual_impact":  3616.5,
+                                                               "after_liberation_clamped":  3920.0,
+                                                               "liberation_unclamped_attempt":  4336.5,
+                                                               "theoretical_overflow":  416.5
+                                                           }
+                                 },
+                                 {
+                                     "id":  "M009",
+                                     "title":  "combat_time 기준 효과 지속시간",
+                                     "status":  "complete",
+                                     "summary":  "모든 전투 효과 지속시간을 final combat_time_cost로 감소. 완전 시정지 중 버프 지속시간과 필드 창 정지.",
+                                     "rule":  "current_time은 action_time으로 진행, combat_time과 효과 지속시간은 combat_time_cost로 진행"
+                                 },
+                                 {
+                                     "id":  "M010",
+                                     "title":  "행동 시작 효과 스냅샷과 중복 제거",
+                                     "status":  "complete",
+                                     "summary":  "만료 직전 Interfered Marker 중복 적용, Havoc Bane·Everbright의 타격시점 만료 불일치 수정.",
+                                     "verified_ratios":  {
+                                                             "interfered_marker_full_duration":  1.3856,
+                                                             "interfered_marker_0_1_second_remaining":  1.3856,
+                                                             "incorrect_double_multiplier_removed":  1.91988736
+                                                         }
+                                 },
+                                 {
+                                     "id":  "M011",
+                                     "title":  "combat_time 업타임 기록",
+                                     "status":  "complete",
+                                     "summary":  "무기·버프·Trailblazing Star 업타임을 combat_time 축으로 통일. 시정지 후 세트 활성화 시 업타임 0 문제 수정."
+                                 }
+                             ],
+    "current_in_progress_task":  {
+                                     "title":  "범용 예약 효과·자동 피해 스케줄러 인프라",
+                                     "started_from_baseline":  "84",
+                                     "status":  "implemented_tests_passed_pending_external_review",
+                                     "goal":  "combat_time_cost 축에서 주기 효과를 예약하고, 비정책 자동 피해를 오프필드 소스 캐릭터 스탯으로 실행하는 범용 엔진",
+                                     "must_support":  [
+                                                          "ScheduledEffect 직렬화·복사·리셋",
+                                                          "replace / refresh_duration / keep_existing",
+                                                          "한 호스트 행동 중 0회·1회·다중 틱",
+                                                          "완전 시정지 중 진행 0",
+                                                          "같은 시각의 결정론적 순서",
+                                                          "정책 행동과 분리된 scheduled damage 실행 경로",
+                                                          "소스 캐릭터가 대기 중이어도 해당 캐릭터 스탯 사용",
+                                                          "피해·조화도·RL 스텝 보상 1회만 반영",
+                                                          "일반 행동 자원·쿨다운·콤보·교대 부작용 없음"
+                                                      ],
+                                     "must_not_do_yet":  [
+                                                             "모니에 Syntony Field를 실제 메커니즘에 연결",
+                                                             "린네 Spray Paint를 실제 메커니즘에 연결",
+                                                             "에이메스 30스택 구현",
+                                                             "관측 버전 변경",
+                                                             "PPO 학습"
+                                                         ],
+                                     "review_required_after_codex":  true,
+                                     "scheduler_fix_notes":  [
+                                                                 "zero-phase activation-boundary duplicate fixed",
+                                                                 "trigger-on-apply boundary duplication prevented",
+                                                                 "exact-expiration boundary protected",
+                                                                 "progress JSON normalized to UTF-8 without BOM",
+                                                                 "production Mornye and Lynae scheduler integrations still not started",
+                                                                 "external review is still required"
+                                                             ]
+                                 },
+    "manual_cycle_reference":  {
+                                   "status":  "user_researched_reference_cycle",
+                                   "purpose":  "학습 모델이 최소한 재현해야 하는 인간 기준선. 모델이 반드시 초과해야 하는 전역 최적 증명은 아님.",
+                                   "opening":  {
+                                                   "aemeath":  [
+                                                                   "aemeath_basic_attack x4",
+                                                                   "aemeath_resonance_skill",
+                                                                   "swap_to_mornye"
+                                                               ],
+                                                   "mornye_no_counter":  [
+                                                                             "mornye_resonance_skill",
+                                                                             "mornye_basic_attack x3",
+                                                                             "mornye_heavy_attack",
+                                                                             "mornye_resonance_liberation",
+                                                                             "mornye_resonance_skill",
+                                                                             "mornye_basic_attack x3",
+                                                                             "mornye_heavy_attack",
+                                                                             "swap_to_lynae"
+                                                                         ],
+                                                   "lynae":  [
+                                                                 "Lynae real Intro",
+                                                                 "lynae_resonance_skill",
+                                                                 "lynae_spark_collision",
+                                                                 "lynae_polychrome_leap x3",
+                                                                 "lynae_visual_impact",
+                                                                 "lynae_resonance_liberation",
+                                                                 "lynae_echo_hyvatia",
+                                                                 "swap_to_aemeath"
+                                                             ],
+                                                   "aemeath_pre_break":  [
+                                                                             "Aemeath real Intro",
+                                                                             "aemeath_basic_attack x2",
+                                                                             "manual aemeath_tune_break"
+                                                                         ]
+                                               },
+                                   "aemeath_burst_after_break":  {
+                                                                     "status":  "partially_verified_requires_30_stack_and_resource_review",
+                                                                     "user_reference":  [
+                                                                                            "resonance_liberation",
+                                                                                            "resonance_skill / Seraphic Duet sequence",
+                                                                                            "basic_attack x3",
+                                                                                            "resonance_skill",
+                                                                                            "heavy_attack",
+                                                                                            "resonance_skill or second liberation",
+                                                                                            "echo",
+                                                                                            "basic_attack x4",
+                                                                                            "resonance_skill"
+                                                                                        ]
+                                                                 },
+                                   "comparison_policy":  {
+                                                             "manual_reference":  "사람이 지정한 상태 머신 기준선",
+                                                             "search_from_scratch":  "인간 사이클 보너스 없이 총 피해만 최적화",
+                                                             "bc_warm_start":  "인간 사이클 모방 후 총 피해 기준 개선",
+                                                             "final_candidate":  "동일 조건 120초 총 피해 최대값"
+                                                         }
+                               },
+    "known_unresolved_or_missing":  [
+                                        {
+                                            "id":  "U001",
+                                            "item":  "lynae_echo_hyvatia Off-Tune",
+                                            "status":  "unresolved",
+                                            "runtime_value":  0.0,
+                                            "note":  "声骸!371에서 피해는 확인되지만 偏谐值 근거 없음. 0은 확정값이 아님."
+                                        },
+                                        {
+                                            "id":  "U002",
+                                            "item":  "모니에 Syntony/High Syntony Field 자동 피해",
+                                            "status":  "not_implemented",
+                                            "note":  "데이터 액션은 있으나 생산 메커니즘에서 예약되지 않음."
+                                        },
+                                        {
+                                            "id":  "U003",
+                                            "item":  "린네 Spray Paint 자동 피해",
+                                            "status":  "not_implemented",
+                                            "note":  "창 상태만 존재하며 주기 피해·조화도 이벤트 미구현."
+                                        },
+                                        {
+                                            "id":  "U004",
+                                            "item":  "에이메스 조화도 파괴 후 최대 30스택 메커니즘",
+                                            "status":  "not_implemented",
+                                            "note":  "현재 2회 강화 사용권 단순화와 다름. 원본 엑셀·중국어 스킬 설명 직접 검수 필요."
+                                        },
+                                        {
+                                            "id":  "U005",
+                                            "item":  "모니에·에이메스 액티브 에코 행동",
+                                            "status":  "not_implemented",
+                                            "note":  "스크린샷 근거는 확보했으나 타이밍·조화도 원본 매핑과 런타임 액션 구현 미완료."
+                                        },
+                                        {
+                                            "id":  "U006",
+                                            "item":  "모니에 Expectation Error 실제 적 공격 반격 판정",
+                                            "status":  "simplified",
+                                            "note":  "기본 no-counter opener는 BA3로 성립. always_success는 진단용이며 실제 적 공격 시뮬레이션은 없음."
+                                        },
+                                        {
+                                            "id":  "U007",
+                                            "item":  "120초 수동 기준선",
+                                            "status":  "not_built",
+                                            "note":  "자동 피해·30스택·실제 에코 등 핵심 메커니즘 정리 후 상태 머신으로 구현."
+                                        },
+                                        {
+                                            "id":  "U008",
+                                            "item":  "기존 PPO 모델 체크포인트",
+                                            "status":  "missing",
+                                            "note":  "과거 평가 JSON/CSV는 있으나 실제 models/*.zip 없음."
+                                        },
+                                        {
+                                            "id":  "U009",
+                                            "item":  "모니에 진단 소스 9개",
+                                            "status":  "lost",
+                                            "note":  "pyc만 남음. 핵심 런타임·학습에는 필수 아님. 필요 시 새 구조 기준 재작성."
+                                        },
+                                        {
+                                            "id":  "U010",
+                                            "item":  "기존 BC 데모",
+                                            "status":  "obsolete",
+                                            "note":  "관측 v4 312차원 및 수정된 액션 데이터와 비호환. 재생성 필요."
+                                        }
+                                    ],
+    "next_planned_tasks":  [
+                               {
+                                   "order":  1,
+                                   "task":  "현재 Codex가 구현 중인 범용 scheduler 결과 검수",
+                                   "prerequisite":  "새 ZIP 업로드",
+                                   "acceptance":  [
+                                                      "combat_time_cost=0에서 진행·틱 0",
+                                                      "한 행동 중 다중 틱",
+                                                      "오프필드 소스 캐릭터 스탯",
+                                                      "일반 행동 부작용 없음",
+                                                      "조화도·보상 1회 반영",
+                                                      "생산 캐릭터 메커니즘은 아직 연결되지 않음"
+                                                  ]
+                               },
+                               {
+                                   "order":  2,
+                                   "task":  "모니에 Syntony/High Syntony Field 원본 데이터 직접 검수 후 scheduler 연결",
+                                   "needs":  [
+                                                 "원본 엑셀",
+                                                 "필요 시 중국어 웹 스킬 설명"
+                                             ],
+                                   "do_not_guess":  true
+                               },
+                               {
+                                   "order":  3,
+                                   "task":  "린네 Spray Paint 원본 데이터 직접 검수 후 scheduler 연결",
+                                   "needs":  [
+                                                 "원본 엑셀",
+                                                 "필요 시 중국어 웹 스킬 설명"
+                                             ],
+                                   "do_not_guess":  true
+                               },
+                               {
+                                   "order":  4,
+                                   "task":  "에이메스 30스택 메커니즘 직접 검수·구현",
+                                   "needs":  [
+                                                 "원본 엑셀",
+                                                 "중국어 웹 스킬·패시브 설명"
+                                             ],
+                                   "likely_observation_change":  "v5 필요 가능성"
+                               },
+                               {
+                                   "order":  5,
+                                   "task":  "모니에·에이메스 액티브 에코 구현",
+                                   "needs":  [
+                                                 "스크린샷",
+                                                 "원본 엑셀 타이밍·조화도"
+                                             ]
+                               },
+                               {
+                                   "order":  6,
+                                   "task":  "실전 전체 사이클 1회 통합 테스트",
+                                   "acceptance":  "자원·조화도 주입 없이 유저 기준 사이클 완주"
+                               },
+                               {
+                                   "order":  7,
+                                   "task":  "120초 수동 기준선 상태 머신",
+                                   "variants":  [
+                                                    "린네 미사용",
+                                                    "유저 연구 사이클",
+                                                    "순서 변형"
+                                                ],
+                                   "outputs":  [
+                                                   "총 피해",
+                                                   "DPS",
+                                                   "캐릭터별 피해",
+                                                   "버프 가동률",
+                                                   "조화도 파괴 시각",
+                                                   "행동 로그"
+                                               ]
+                               },
+                               {
+                                   "order":  8,
+                                   "task":  "BC 데모 재생성과 PPO 재학습",
+                                   "requirements":  [
+                                                        "관측 최신 버전",
+                                                        "고유 상태 중심 데모",
+                                                        "return-to-go/value 사전학습",
+                                                        "gamma/gae_lambda 재검토",
+                                                        "수동 기준선 99% 이상 재현 여부 평가"
+                                                    ]
+                               },
+                               {
+                                   "order":  9,
+                                   "task":  "Beam Search 또는 MCTS 보조 탐색",
+                                   "rule":  "120초 최종 총 피해만 목적함수로 사용. 린네 사용·버프에 임의 가중치 금지."
+                               }
+                           ],
+    "validation_invariants":  [
+                                  "scripts/apply_direct_action_data_v61.py --check --fail-on-diff 는 차이 0이어야 한다.",
+                                  "액션 ID·transition ID·policy-selectable action 순서는 변경하지 않는다.",
+                                  "관측 v4 작업 범위가 아닌 한 observation shape 312를 유지한다.",
+                                  "보상 공식과 캐릭터 사용 보너스를 임의로 바꾸지 않는다.",
+                                  "확정 데이터 수정 시 매니페스트 두 복사본을 함께 갱신하고 재적용·멱등성 테스트를 추가한다.",
+                                  "테스트가 기존 잘못된 수치를 정답으로 고정했다면 테스트를 새 근거에 맞게 수정하되 약화하지 않는다.",
+                                  "자동 피해는 정책 행동으로 실행하지 않으며 일반 행동 자원·쿨다운·콤보·교대 부작용이 없어야 한다.",
+                                  "버프·디버프·필드 지속시간과 업타임은 combat_time_cost 기준이다.",
+                                  "행동 시작 시 활성 효과는 해당 행동 전체에 적용되고 다음 행동 전 만료된다.",
+                                  "알 수 없는 값은 0을 확정값처럼 취급하지 않고 unresolved 상태를 유지한다."
+                              ],
+    "codex_progress_file_protocol":  {
+                                         "canonical_path":  "PROJECT_PROGRESS_STATE.json",
+                                         "instruction_for_every_future_codex_prompt":  [
+                                                                                           "작업 시작 전에 저장소 루트의 PROJECT_PROGRESS_STATE.json을 읽는다.",
+                                                                                           "파일에 기록된 latest_verified_baseline과 current_in_progress_task를 확인한다.",
+                                                                                           "확정값·미해결값·금지 범위를 임의로 재해석하지 않는다.",
+                                                                                           "작업 완료 후 테스트 결과를 근거로 이 파일을 갱신한다.",
+                                                                                           "last_updated, latest_verified_archive 또는 baseline label, current task status, completed milestones, unresolved items, next tasks, validation history를 갱신한다.",
+                                                                                           "완료하지 못한 작업은 complete로 표시하지 않는다.",
+                                                                                           "실패한 테스트·부분 구현·새 미해결 항목을 숨기지 않는다.",
+                                                                                           "기존 completed_milestones와 validation_history는 삭제하지 않고 append/update 한다.",
+                                                                                           "진행상황 JSON만 갱신하기 위해 런타임 파일을 불필요하게 재포맷하지 않는다.",
+                                                                                           "자동 커밋하지 않는다."
+                                                                                       ],
+                                         "required_final_report_addition":  "최종 응답에 PROJECT_PROGRESS_STATE.json의 변경 요약을 포함한다."
+                                     },
+    "validation_history":  [
+                               {
+                                   "baseline":  "84",
+                                   "status":  "verified",
+                                   "summary":  "Trailblazing Star 동일 행동 활성화 업타임 시작 시각을 visual current_time이 아닌 combat_time으로 수정. 관련 회귀 테스트 통과.",
+                                   "known_good_for_next_task":  true
+                               },
+                               {
+                                   "baseline":  "scheduler_task_after_84",
+                                   "status":  "in_progress",
+                                   "summary":  "범용 예약 효과·자동 피해 scheduler Codex 프롬프트 실행 중. 아직 검수되지 않음.",
+                                   "known_good_for_next_task":  false
+                               },
+                               {
+                                   "baseline":  "scheduler_fix_after_85",
+                                   "status":  "candidate_pending_external_review",
+                                   "summary":  "Fixed scheduled-effect trigger_on_apply refresh/keep duplication and made activation_combat_time control activation, duration, and tick phase. New and existing scheduler, damage, environment, time/snapshot, and action-data checks passed with bundled Python.",
+                                   "known_good_for_next_task":  false,
+                                   "tests":  [
+                                                 "scheduled_effect_refresh_trigger_on_apply_smoke_test.py passed",
+                                                 "scheduled_effect_activation_time_smoke_test.py passed",
+                                                 "scheduled_effect_activation_determinism_smoke_test.py passed",
+                                                 "scheduled_effect_runtime_guard_smoke_test.py passed",
+                                                 "all scheduled_effect*_smoke_test.py passed",
+                                                 "scheduled_damage_execution_smoke_test.py passed",
+                                                 "scheduled_effect_source_character_smoke_test.py passed",
+                                                 "scheduled_effect_off_tune_smoke_test.py passed",
+                                                 "aemeath_mornye_lynae_short_rollout_smoke_test.py passed",
+                                                 "env_smoke_test.py passed",
+                                                 "combat_time_effect_duration_smoke_test.py passed",
+                                                 "action_start_effect_snapshot_smoke_test.py passed",
+                                                 "trailblazing_star_combat_time_uptime_smoke_test.py passed",
+                                                 "apply_direct_action_data_v61.py --check --fail-on-diff passed"
+                                             ]
+                               },
+                               {
+                                   "baseline":  "scheduler_boundary_fix_after_86",
+                                   "status":  "candidate_pending_external_review",
+                                   "summary":  "Fixed zero-phase activation-boundary replay, trigger-on-apply boundary duplication, and exact-expiration replay protection; normalized progress JSON to UTF-8 without BOM. Required scheduler, environment, time/snapshot, and action-data validations passed with bundled Python.",
+                                   "known_good_for_next_task":  false,
+                                   "tests":  [
+                                                 "scheduled_effect_boundary_zero_phase_smoke_test.py passed",
+                                                 "scheduled_effect_activation_time_smoke_test.py passed",
+                                                 "scheduled_effect_activation_determinism_smoke_test.py passed",
+                                                 "scheduled_effect_refresh_trigger_on_apply_smoke_test.py passed",
+                                                 "scheduled_effect_runtime_guard_smoke_test.py passed",
+                                                 "all scheduled_effect*_smoke_test.py passed",
+                                                 "scheduled_damage_execution_smoke_test.py passed",
+                                                 "scheduled_effect_source_character_smoke_test.py passed",
+                                                 "scheduled_effect_off_tune_smoke_test.py passed",
+                                                 "aemeath_mornye_lynae_short_rollout_smoke_test.py passed",
+                                                 "env_smoke_test.py passed",
+                                                 "combat_time_effect_duration_smoke_test.py passed",
+                                                 "action_start_effect_snapshot_smoke_test.py passed",
+                                                 "trailblazing_star_combat_time_uptime_smoke_test.py passed",
+                                                 "apply_direct_action_data_v61.py --check --fail-on-diff passed",
+                                                 "PROJECT_PROGRESS_STATE.json ordinary utf-8 and no BOM checks passed"
+                                             ]
+                               }
+                           ]
+}

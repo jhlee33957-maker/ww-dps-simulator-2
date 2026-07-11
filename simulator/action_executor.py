@@ -33,7 +33,7 @@ from simulator.echo_sets import (
 from simulator.generated_damage import calculate_generated_damage_packet
 from simulator.lynae_tune_strain import apply_lynae_tune_strain_damage_amp
 from simulator.mechanic_events import preview_mechanic_event_trigger, process_mechanic_event_triggers
-from simulator.models import ActionData, ActionResult, BuffData, CharacterData, CombatState, HitData, TimelineEntry
+from simulator.models import ActionData, ActionResult, BuffData, CharacterData, CombatState, HitData, ScheduledEffectState, TimelineEntry
 from simulator.resource_system import apply_resource_changes, can_pay_resources
 from simulator.tune_break import (
     INTERFERED_MARKER_AMP_SOURCE,
@@ -906,6 +906,7 @@ def execute_action(
     combat_duration: float | None = None,
     pre_action_echo_set_log_fields: dict[str, Any] | None = None,
     weapon_definitions: dict[str, Any] | None = None,
+    scheduled_effect_runner: Any | None = None,
 ) -> ActionResult:
     valid, reason = is_action_valid(action, state)
     start_time = state.current_time
@@ -1203,10 +1204,23 @@ def execute_action(
             }
         )
 
+    scheduled_effect_result = (
+        scheduled_effect_runner(
+            combat_start_time=combat_start_time,
+            combat_elapsed=effective_combat_time_cost,
+            action_start_snapshot=action_start_snapshot,
+            force_active_buff_ids=set(force_active_buff_ids),
+        )
+        if scheduled_effect_runner is not None
+        else {}
+    )
+    scheduled_damage = float(scheduled_effect_result.get("scheduled_damage", 0.0) or 0.0)
+    scheduled_damage_events = list(scheduled_effect_result.get("scheduled_damage_events", []))
+
     if action.action_type == "swap" and action.character_id is not None:
         state.active_character_id = action.character_id
 
-    state.total_damage += direct_damage + generated_mechanic_damage
+    state.total_damage += direct_damage + generated_mechanic_damage + scheduled_damage
     resource_change = None if truncated_by_combat_limit else apply_resource_changes(state, action, characters)
 
     state.current_time += action_time
@@ -1220,7 +1234,7 @@ def execute_action(
         anomaly_damage_by_type = {}
     state.total_damage += anomaly_tick_damage
 
-    total_action_damage = direct_damage + generated_mechanic_damage + anomaly_tick_damage
+    total_action_damage = direct_damage + generated_mechanic_damage + scheduled_damage + anomaly_tick_damage
 
     if not truncated_by_combat_limit:
         for buff_id in action.applies_buffs:
@@ -1342,6 +1356,9 @@ def execute_action(
         damage=total_action_damage,
         normal_damage=normal_damage,
         tune_break_damage=tune_break_damage,
+        direct_action_damage=direct_damage + generated_mechanic_damage + anomaly_tick_damage,
+        scheduled_damage=scheduled_damage,
+        scheduled_damage_events=scheduled_damage_events,
         direct_damage_taken_amp_total_bonus_damage=float(
             direct_amp_summary.get("direct_damage_taken_amp_total_bonus_damage", 0.0) or 0.0
         ),
@@ -1598,6 +1615,8 @@ def execute_action(
                 "damage_after_cutoff_excluded": damage_after_cutoff_excluded,
                 "generated_mechanic_damage": generated_mechanic_damage,
                 "generated_mechanic_damage_events": generated_mechanic_events,
+                "scheduled_damage": scheduled_damage,
+                "scheduled_damage_events": scheduled_damage_events,
                 **action_damage_bonus_context,
                 **mechanic_event_log_fields,
                 **echo_set_log_fields,
@@ -1614,6 +1633,99 @@ def execute_action(
             }
         )
     return result
+
+
+def execute_scheduled_damage_event(
+    *,
+    effect: ScheduledEffectState,
+    payload_action: ActionData,
+    state: CombatState,
+    characters: dict[str, CharacterData],
+    buffs: dict[str, BuffData],
+    host_action_id: str,
+    combat_time: float,
+    host_action_combat_offset: float,
+    trigger_index: int,
+    action_start_snapshot: ActionStartEffectSnapshot | None = None,
+    force_active_buff_ids: set[str] | None = None,
+    weapon_definitions: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if effect.source_character_id not in characters:
+        raise ValueError(f"Scheduled effect source character {effect.source_character_id!r} is unavailable")
+    action = payload_action.model_copy(update={"character_id": effect.source_character_id})
+    action_time = action.effective_action_time
+    (
+        normal_damage,
+        tune_break_damage,
+        hit_details,
+        hit_damage_by_category,
+        _damage_after_cutoff_excluded,
+        action_damage_bonus_context,
+        direct_amp_summary,
+    ) = _calculate_hit_damage_totals(
+        action,
+        state,
+        characters,
+        buffs,
+        action_time=action_time,
+        combat_time_cost=0.0,
+        combat_start_time=combat_time,
+        combat_duration=None,
+        truncated_by_combat_limit=False,
+        force_active_buff_ids=force_active_buff_ids,
+        action_start_snapshot=action_start_snapshot,
+        weapon_definitions=weapon_definitions,
+    )
+    damage = normal_damage + tune_break_damage
+    event = {
+        "event_type": "scheduled_damage",
+        "scheduled_effect_instance_id": effect.instance_id,
+        "scheduled_effect_id": effect.effect_id,
+        "source_character_id": effect.source_character_id,
+        "source_action_id": effect.source_action_id,
+        "payload_action_id": action.id,
+        "payload_action_name": action.name,
+        "host_action_id": host_action_id,
+        "trigger_index": trigger_index,
+        "combat_time": combat_time,
+        "host_action_combat_offset": host_action_combat_offset,
+        "damage": damage,
+        "normal_damage": normal_damage,
+        "tune_break_damage": tune_break_damage,
+        "hit_details": hit_details,
+        "hit_damage_by_category": hit_damage_by_category,
+        "source_status": effect.source_status,
+        "source_ref": effect.source_ref,
+        "metadata": dict(effect.metadata or {}),
+        "direct_damage_taken_amp_total_bonus_damage": float(
+            direct_amp_summary.get("direct_damage_taken_amp_total_bonus_damage", 0.0) or 0.0
+        ),
+        "interfered_marker_direct_damage_amp_applied_count": int(
+            direct_amp_summary.get("interfered_marker_direct_damage_amp_applied_count", 0) or 0
+        ),
+        "interfered_marker_direct_damage_amp_bonus_damage": float(
+            direct_amp_summary.get("interfered_marker_direct_damage_amp_bonus_damage", 0.0) or 0.0
+        ),
+        **action_damage_bonus_context,
+    }
+    state.scheduled_effect_event_log.append(event)
+    if damage > 0.0:
+        state.damage_log.append(
+            {
+                "event_type": "scheduled_damage",
+                "action_id": action.id,
+                "actor_character_id": effect.source_character_id,
+                "scheduled_effect_instance_id": effect.instance_id,
+                "scheduled_effect_id": effect.effect_id,
+                "host_action_id": host_action_id,
+                "damage_before_cutoff": damage,
+                "damage_after_cutoff_excluded": 0.0,
+                "combat_time_start": combat_time,
+                "combat_time_end": combat_time,
+                **action_damage_bonus_context,
+            }
+        )
+    return event
 
 
 def timeline_entry(result: ActionResult, active_character_name: str) -> TimelineEntry:
@@ -1646,6 +1758,9 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         damage=result.damage,
         normal_damage=result.normal_damage,
         tune_break_damage=result.tune_break_damage,
+        direct_action_damage=result.direct_action_damage,
+        scheduled_damage=result.scheduled_damage,
+        scheduled_damage_events=result.scheduled_damage_events,
         direct_damage_taken_amp_total_bonus_damage=result.direct_damage_taken_amp_total_bonus_damage,
         interfered_marker_direct_damage_amp_applied_count=result.interfered_marker_direct_damage_amp_applied_count,
         interfered_marker_direct_damage_amp_bonus_damage=result.interfered_marker_direct_damage_amp_bonus_damage,

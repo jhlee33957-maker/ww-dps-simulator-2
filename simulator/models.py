@@ -21,6 +21,7 @@ BuffModifierType = Literal["attack", "damage_bonus", "boost", "dmg_taken", "dama
 BuffTarget = Literal["self", "active", "team", "party", "next_active", "specific_character", "enemy"]
 ScalingStat = Literal["atk", "def", "hp", "none", "unresolved"]
 HitTimeMode = Literal["source_time", "resolved_action_end"]
+ScheduledEffectRefreshRule = Literal["replace", "refresh_duration", "keep_existing"]
 
 
 class CharacterData(BaseModel):
@@ -312,6 +313,26 @@ class ResourceChange(BaseModel):
     concerto_ready_after: bool = False
 
 
+class ScheduledEffectState(BaseModel):
+    instance_id: str
+    effect_id: str
+    source_character_id: str
+    source_action_id: str | None = None
+    payload_action_id: str
+    activation_combat_time: float = Field(default=0.0, ge=0)
+    remaining_duration: float = Field(gt=0)
+    tick_interval: float = Field(gt=0)
+    time_until_next_tick: float = Field(ge=0)
+    trigger_on_apply_pending: bool = False
+    trigger_count: int = Field(default=0, ge=0)
+    max_trigger_count: int | None = Field(default=None, gt=0)
+    refresh_rule: ScheduledEffectRefreshRule = "replace"
+    source_status: str
+    source_ref: str | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    insertion_order: int = Field(default=0, ge=0)
+
+
 class CombatState(BaseModel):
     current_time: float = 0.0
     combat_time: float = 0.0
@@ -338,6 +359,9 @@ class CombatState(BaseModel):
     echo_set_trigger_counts: dict[str, int] = Field(default_factory=dict)
     echo_set_buff_windows: list[dict[str, Any]] = Field(default_factory=list)
     high_syntony_field_buff_windows: list[dict[str, Any]] = Field(default_factory=list)
+    scheduled_effects: list[ScheduledEffectState] = Field(default_factory=list)
+    scheduled_effect_next_order: int = 0
+    scheduled_effect_event_log: list[dict[str, Any]] = Field(default_factory=list)
     action_log: list[dict[str, Any]] = Field(default_factory=list)
     damage_log: list[dict[str, Any]] = Field(default_factory=list)
     resonance_energy: dict[str, float] = Field(default_factory=dict)
@@ -443,6 +467,9 @@ class ActionResult(BaseModel):
     damage: float
     normal_damage: float = 0.0
     tune_break_damage: float = 0.0
+    direct_action_damage: float = 0.0
+    scheduled_damage: float = 0.0
+    scheduled_damage_events: list[dict[str, Any]] = Field(default_factory=list)
     direct_damage_taken_amp_total_bonus_damage: float = 0.0
     interfered_marker_direct_damage_amp_applied_count: int = 0
     interfered_marker_direct_damage_amp_bonus_damage: float = 0.0
@@ -874,6 +901,9 @@ class TimelineEntry(BaseModel):
     damage: float
     normal_damage: float = 0.0
     tune_break_damage: float = 0.0
+    direct_action_damage: float = 0.0
+    scheduled_damage: float = 0.0
+    scheduled_damage_events: list[dict[str, Any]] = Field(default_factory=list)
     direct_damage_taken_amp_total_bonus_damage: float = 0.0
     interfered_marker_direct_damage_amp_applied_count: int = 0
     interfered_marker_direct_damage_amp_bonus_damage: float = 0.0
