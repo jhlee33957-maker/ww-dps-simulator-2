@@ -37,17 +37,24 @@ def main() -> None:
     profile = profiles["profiles"]["mornye"]["mornye_user_real_01"]
     weapon = profile["weapon"]
     before_components = json.dumps(profile["stat_components"], sort_keys=True)
-    assert weapon["weapon_id"] == "starfield_calibrator"
+    assert weapon["weapon_id"] == "discord"
+    assert weapon["rank"] == 5
     assert weapon["static_stats_already_in_profile"] is True
-    assert weapon["def_percent_passive_already_in_profile"] is True
+    assert weapon["energy_regen_substat_already_in_profile"] is True
+    assert "def_percent_passive_already_in_profile" not in weapon
+    assert weapons["discord"]["base_attack_level_90"] == 337
+    assert weapons["discord"]["secondary_stat"] == {"type": "energy_regen", "value_level_90": 0.518}
+    assert weapons["discord"]["static_stats_already_in_profile_supported"] is True
 
     characters = json.loads((DATA_DIR / "characters.json").read_text(encoding="utf-8-sig"))
     base = CharacterData.model_validate(next(item for item in characters if item["id"] == "mornye"))
     effective = resolve_character_build_stats(base, "mornye_user_real_01", profiles)
-    assert effective.weapon["weapon_id"] == "starfield_calibrator"
+    assert effective.weapon["weapon_id"] == "discord"
+    assert effective.weapon["rank"] == 5
     assert json.dumps(profile["stat_components"], sort_keys=True) == before_components
     assert effective.static_def_percent == profile["stat_components"]["def"]["percent"]
     assert effective.weapon_base_def == profile["stat_components"]["def"]["weapon_base"]
+    assert effective.energy_regen == 2.5424
 
     damage_formula = (ROOT / "simulator" / "damage_formula.py").read_text(encoding="utf-8")
     tree = ast.parse(damage_formula)

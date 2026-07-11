@@ -11,6 +11,7 @@ from simulator.buff_system import (
     support_stat_context,
 )
 from simulator.mechanic_events import aemeath_resonance_mode_from_config
+from simulator.weapon_effects import weapon_effect_cooldown_key
 
 
 OBSERVATION_VERSION = "slot_generic_mechanics_v4"
@@ -178,6 +179,7 @@ def build_observation_channel_mapping(simulation: Any, max_party_slots: int = MA
                 }
             )
         elif character_id == "mornye":
+            weapon_effect_0, weapon_effect_1 = _mornye_weapon_channel_mapping(simulation, slot_index)
             mapping.update(
                 {
                     f"slot_{slot_index}.mechanic_state_0": "mornye_syntony_field",
@@ -185,8 +187,8 @@ def build_observation_channel_mapping(simulation: Any, max_party_slots: int = MA
                     f"slot_{slot_index}.mechanic_state_2": "mornye_relative_momentum",
                     f"slot_{slot_index}.mechanic_state_3": "mornye_rest_mass_energy_wide_field_observation",
                     f"slot_{slot_index}.echo_effect_0": "mornye_halo_of_starry_radiance_5set",
-                    f"slot_{slot_index}.weapon_effect_0": "starfield_calibrator_concerto_restore",
-                    f"slot_{slot_index}.weapon_effect_1": "starfield_calibrator_party_crit_damage",
+                    f"slot_{slot_index}.weapon_effect_0": weapon_effect_0,
+                    f"slot_{slot_index}.weapon_effect_1": weapon_effect_1,
                     f"slot_{slot_index}.tune_response_0": "mornye_particle_jet",
                 }
             )
@@ -571,14 +573,28 @@ def _weapon_channel_values(simulation: Any, character_id: str) -> list[float]:
         return [0.0 for _ in range(8)]
     weapon = getattr(simulation.characters.get(character_id), "weapon", {}) or {}
     weapon_id = weapon.get("weapon_id")
-    starfield_equipped = weapon_id == "starfield_calibrator"
-    restore_amount = _weapon_rank_value(simulation, weapon_id, int(weapon.get("rank", 1) or 1), "concerto_restore_on_resonance_skill")
-    active_starfield = _active_buff(simulation.state, "starfield_calibrator_party_crit_damage")
+    restore_effect_id, restore_effect = _concerto_restore_weapon_effect(simulation, weapon_id)
+    restore_amount = 0.0
+    restore_cooldown_ratio = 0.0
+    if restore_effect_id is not None and restore_effect is not None:
+        restore_amount = _weapon_rank_value(
+            simulation,
+            weapon_id,
+            int(weapon.get("rank", 1) or 1),
+            str(restore_effect.get("rank_value_key") or ""),
+        )
+        cooldown_seconds = float(restore_effect.get("cooldown_seconds", 0.0) or 0.0)
+        cooldown_key = weapon_effect_cooldown_key(character_id, str(weapon_id), restore_effect_id)
+        remaining = float(getattr(simulation.state, "weapon_effect_cooldowns", {}).get(cooldown_key, 0.0) or 0.0)
+        restore_cooldown_ratio = _ratio(remaining, cooldown_seconds)
+
+    starfield_crit_buff_id = _starfield_party_crit_buff_id(simulation, weapon_id)
+    active_starfield = _active_buff(simulation.state, starfield_crit_buff_id) if starfield_crit_buff_id else None
     return [
-        _bool(starfield_equipped),
+        _bool(restore_effect_id is not None),
         0.0,
         _ratio(restore_amount, 16.0),
-        _ratio(_starfield_concerto_restore_cooldown(simulation.state), 20.0),
+        restore_cooldown_ratio,
         _bool(active_starfield is not None),
         _ratio(_remaining(active_starfield), 4.0),
         _ratio(_dynamic_value(active_starfield), 0.40),
@@ -721,20 +737,46 @@ def _trailblazing_value(active_buff: Any | None, buffs: dict[str, Any]) -> float
 
 
 def _weapon_rank_value(simulation: Any, weapon_id: str | None, rank: int, key: str) -> float:
-    weapon_def = (getattr(simulation, "weapon_definitions", {}) or {}).get(weapon_id or "")
+    weapon_def = _equipped_weapon_definition(simulation, weapon_id)
     rank_values = (weapon_def or {}).get("rank_values", {})
     return float((rank_values.get(str(rank)) or {}).get(key, 0.0) or 0.0)
 
 
-def _starfield_concerto_restore_cooldown(state: Any) -> float:
-    return max(
-        (
-            float(remaining or 0.0)
-            for key, remaining in (getattr(state, "weapon_effect_cooldowns", {}) or {}).items()
-            if ":starfield_calibrator:resonance_skill_concerto_restore" in str(key)
-        ),
-        default=0.0,
-    )
+def _equipped_weapon_definition(simulation: Any, weapon_id: str | None) -> dict[str, Any]:
+    return dict(((getattr(simulation, "weapon_definitions", {}) or {}).get("weapons") or {}).get(weapon_id or "") or {})
+
+
+def _concerto_restore_weapon_effect(simulation: Any, weapon_id: str | None) -> tuple[str | None, dict[str, Any] | None]:
+    weapon_def = _equipped_weapon_definition(simulation, weapon_id)
+    for effect_id, effect in (weapon_def.get("effects") or {}).items():
+        if effect.get("effect_type") != "resource_restore":
+            continue
+        if effect.get("trigger") != "resonance_skill_cast":
+            continue
+        if effect.get("resource") != "concerto_energy":
+            continue
+        return str(effect_id), dict(effect)
+    return None, None
+
+
+def _starfield_party_crit_buff_id(simulation: Any, weapon_id: str | None) -> str | None:
+    weapon_def = _equipped_weapon_definition(simulation, weapon_id)
+    if (weapon_def.get("id") or weapon_id) != "starfield_calibrator":
+        return None
+    for effect in (weapon_def.get("effects") or {}).values():
+        if effect.get("effect_type") == "party_stat_buff" and effect.get("stat") == "crit_damage":
+            return str(effect.get("buff_id") or "")
+    return None
+
+
+def _mornye_weapon_channel_mapping(simulation: Any, slot_index: int) -> tuple[str, str]:
+    del slot_index
+    weapon = getattr(simulation.characters.get("mornye"), "weapon", {}) or {}
+    weapon_id = str(weapon.get("weapon_id") or "")
+    restore_effect_id, _restore_effect = _concerto_restore_weapon_effect(simulation, weapon_id)
+    effect_0 = f"{weapon_id}_concerto_restore" if restore_effect_id is not None else "mornye_weapon_concerto_restore_unavailable"
+    effect_1 = "starfield_calibrator_party_crit_damage" if _starfield_party_crit_buff_id(simulation, weapon_id) else "mornye_weapon_party_crit_damage_unavailable"
+    return effect_0, effect_1
 
 
 def _current_off_tune_buildup_rate(simulation: Any) -> float:

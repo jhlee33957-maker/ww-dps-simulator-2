@@ -28,6 +28,12 @@ def make_sim(*, heal_mode: str = "field_creation_only", rank: int = 1) -> Simula
         },
         transition_config={"mechanics": {"mornye": {"mornye_heal_event_mode": heal_mode}}},
     )
+    sim.characters["mornye"].weapon = {
+        "weapon_id": "starfield_calibrator",
+        "weapon_type": "broadblade",
+        "rank": rank,
+        "static_stats_already_in_profile": True,
+    }
     sim.characters["mornye"].weapon["rank"] = rank
     sim.state.active_character_id = "mornye"
     return sim

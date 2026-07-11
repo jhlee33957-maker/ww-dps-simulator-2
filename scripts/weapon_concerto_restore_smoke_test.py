@@ -17,7 +17,7 @@ def assert_close(actual: float, expected: float, label: str, tol: float = 1e-8) 
     assert abs(actual - expected) <= tol, f"{label}: expected {expected}, got {actual}"
 
 
-def make_sim() -> Simulation:
+def make_sim(*, weapon_id: str = "discord", rank: int = 5) -> Simulation:
     sim = Simulation.from_json(
         DATA_DIR,
         party="aemeath_mornye_test_party",
@@ -30,6 +30,12 @@ def make_sim() -> Simulation:
     sim.state.concerto_energy["mornye"] = 0.0
     sim.state.character_states.setdefault("mornye", {})["concerto_energy"] = 0.0
     sync_concerto_state(sim.state, "mornye")
+    sim.characters["mornye"].weapon = {
+        "weapon_id": weapon_id,
+        "weapon_type": "broadblade",
+        "rank": rank,
+        "static_stats_already_in_profile": True,
+    }
     return sim
 
 
@@ -41,7 +47,7 @@ def execute_skill(sim: Simulation):
 
 
 def test_starfield_r1_restore_and_cooldown() -> None:
-    sim = make_sim()
+    sim = make_sim(weapon_id="starfield_calibrator", rank=1)
     resonance_before = sim.state.resonance_energy["mornye"]
     row = execute_skill(sim)
     assert row.weapon_effect_triggered is True
@@ -69,23 +75,19 @@ def test_starfield_r1_restore_and_cooldown() -> None:
 
 
 def test_discord_and_rank_scaling() -> None:
-    discord = make_sim()
-    discord.characters["mornye"].weapon = {
-        "weapon_id": "discord",
-        "weapon_type": "broadblade",
-        "rank": 1,
-        "static_stats_already_in_profile": True,
-    }
+    discord = make_sim(weapon_id="discord", rank=1)
     row = execute_skill(discord)
     assert row.weapon_id == "discord"
+    assert row.weapon_rank == 1
     assert row.weapon_effect_source_status == "user_supplied_weapon_tooltip"
     assert_close(row.concerto_energy_restored_by_weapon, 8.0, "Discord R1 restore")
 
-    rank5 = make_sim()
-    rank5.characters["mornye"].weapon["rank"] = 5
+    rank5 = make_sim(weapon_id="discord", rank=5)
     row = execute_skill(rank5)
+    assert row.weapon_id == "discord"
     assert row.weapon_rank == 5
-    assert_close(row.concerto_energy_restored_by_weapon, 16.0, "Starfield R5 restore")
+    assert_close(row.concerto_energy_restored_by_weapon, 16.0, "Discord R5 restore")
+    assert_close(row.weapon_effect_cooldown_seconds, 20.0, "Discord cooldown")
 
 
 def test_non_resonance_skill_does_not_trigger() -> None:

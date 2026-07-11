@@ -393,9 +393,9 @@
           "def": {
             "character_base": 1356,
             "weapon_base": 0,
-            "percent": 1.2006,
+            "percent": 1.0406,
             "flat": 230,
-            "final_reference": 3214
+            "final_reference": 2997.0536
           },
           "hp": {
             "character_base": null,
@@ -422,7 +422,7 @@
         "combat_stats": {
           "crit_rate": 0.113,
           "crit_damage": 1.752,
-          "energy_regen": 2.7944
+          "energy_regen": 2.5424
         },
         "support_stats": {
           "off_tune_buildup_rate": 1.0,
@@ -447,13 +447,13 @@
           }
         },
         "weapon": {
-          "weapon_id": "starfield_calibrator",
+          "weapon_id": "discord",
           "weapon_type": "broadblade",
-          "rank": 1,
+          "rank": 5,
           "static_stats_already_in_profile": true,
-          "def_percent_passive_already_in_profile": true,
+          "energy_regen_substat_already_in_profile": true,
           "source_status": "user_supplied_weapon_tooltip",
-          "notes": "Weapon base/static stats and Starfield Calibrator DEF% passive are assumed already reflected in user-entered real stat profile. Runtime effects are applied separately."
+          "notes": "Discord R5 is equipped. Discord's 51.8% Energy Regen substat is included in combat_stats.energy_regen, and its base ATK does not affect Mornye's current DEF-scaling actions. Discord's cooldown-gated Concerto restore is applied at runtime. No Starfield Calibrator DEF passive or party Crit DMG buff is included in this profile."
         },
         "echo_sets": {
           "halo_of_starry_radiance": {
