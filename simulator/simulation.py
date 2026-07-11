@@ -16,7 +16,7 @@ from simulator.build_profiles import (
     resolve_party_build_profiles,
     validate_effective_build_profiles,
 )
-from simulator.buff_system import add_team_buff, apply_buff, support_stat_context
+from simulator.buff_system import add_team_buff, apply_buff, buffed_combat_stats, support_stat_context
 from simulator.echo_sets import (
     AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID,
     HIGH_SYNTONY_SAME_ACTION_TIMING_MODE,
@@ -98,8 +98,12 @@ class Simulation:
     )
     MORNYE_SYNTONY_FIELD_DAMAGE_1_INSTANCE_ID = "mornye_syntony_field_damage_1:mornye"
     MORNYE_SYNTONY_FIELD_DAMAGE_2_INSTANCE_ID = "mornye_syntony_field_damage_2:mornye"
+    MORNYE_SYNTONY_FIELD_HEAL_INSTANCE_ID = "mornye_syntony_field_heal:mornye"
+    MORNYE_HIGH_SYNTONY_FIELD_HEAL_INSTANCE_ID = "mornye_high_syntony_field_heal:mornye"
     MORNYE_SYNTONY_FIELD_DAMAGE_1_ACTION_ID = "mornye_syntony_field_damage"
     MORNYE_SYNTONY_FIELD_DAMAGE_2_ACTION_ID = "mornye_syntony_field_target_damage"
+    MORNYE_SYNTONY_FIELD_HEAL_ACTION_ID = "mornye_syntony_field_heal"
+    MORNYE_HIGH_SYNTONY_FIELD_HEAL_ACTION_ID = "mornye_high_syntony_field_heal"
 
     def __init__(
         self,
@@ -332,6 +336,7 @@ class Simulation:
         trigger_count: int = 0,
         max_trigger_count: int | None = None,
         refresh_rule: str = "replace",
+        payload_event_type: str = "damage",
         scheduled_resource_policy: str = "none",
         source_status: str = "scheduler_test_fixture",
         source_ref: str | None = None,
@@ -361,6 +366,7 @@ class Simulation:
             trigger_count=trigger_count,
             max_trigger_count=max_trigger_count,
             refresh_rule=refresh_rule,
+            payload_event_type=payload_event_type,
             scheduled_resource_policy=scheduled_resource_policy,
             source_status=source_status,
             source_ref=source_ref,
@@ -373,9 +379,12 @@ class Simulation:
             and activation_time <= float(self.state.combat_time) + 1e-9
         ):
             trigger_index = int(effect.trigger_count) + 1
-            event = self.execute_scheduled_damage_event(
+            event = self.execute_scheduled_effect_event(
                 effect=effect,
                 host_action_id=source_action_id or "__schedule_effect__",
+                host_actor_character_id=source_character_id,
+                host_combat_start_time=activation_time,
+                host_combat_end_time=activation_time,
                 combat_time=activation_time,
                 host_action_combat_offset=0.0,
                 trigger_index=trigger_index,
@@ -409,20 +418,86 @@ class Simulation:
         action_start_snapshot: Any | None = None,
         force_active_buff_ids: set[str] | None = None,
     ) -> dict[str, Any]:
+        transition_actor_character_id = (host_action.mechanic_effects or {}).get("transition_actor_character_id")
+        outgoing_character_id = self.state.active_character_id
+        incoming_character_id = (
+            str(transition_actor_character_id)
+            if transition_actor_character_id
+            else str(host_action.character_id)
+            if host_action.action_type == "swap" and host_action.character_id
+            else None
+        )
+        host_actor_character_id = (
+            str(transition_actor_character_id)
+            if transition_actor_character_id
+            else incoming_character_id
+            if incoming_character_id
+            else self.state.active_character_id
+            if host_action.action_type == "wait"
+            else host_action.character_id
+        )
+        host_actor_character_id = host_actor_character_id or self.state.active_character_id
         return advance_scheduled_effect_states(
             self.state,
             combat_start_time=combat_start_time,
             combat_elapsed=combat_elapsed,
             host_action_id=host_action.id,
-            execute_tick=lambda effect, combat_time, offset, trigger_index: self.execute_scheduled_damage_event(
+            execute_tick=lambda effect, combat_time, offset, trigger_index: self.execute_scheduled_effect_event(
                 effect=effect,
                 host_action_id=host_action.id,
+                host_actor_character_id=host_actor_character_id,
+                host_action_type=host_action.action_type,
+                outgoing_character_id=outgoing_character_id,
+                incoming_character_id=incoming_character_id,
+                host_combat_start_time=combat_start_time,
+                host_combat_end_time=combat_start_time + combat_elapsed,
                 combat_time=combat_time,
                 host_action_combat_offset=offset,
                 trigger_index=trigger_index,
                 action_start_snapshot=action_start_snapshot,
                 force_active_buff_ids=force_active_buff_ids,
             ),
+        )
+
+    def execute_scheduled_effect_event(
+        self,
+        *,
+        effect,
+        host_action_id: str,
+        combat_time: float,
+        host_action_combat_offset: float,
+        trigger_index: int,
+        host_actor_character_id: str | None = None,
+        host_action_type: str | None = None,
+        outgoing_character_id: str | None = None,
+        incoming_character_id: str | None = None,
+        host_combat_start_time: float | None = None,
+        host_combat_end_time: float | None = None,
+        action_start_snapshot: Any | None = None,
+        force_active_buff_ids: set[str] | None = None,
+    ) -> dict[str, Any]:
+        if getattr(effect, "payload_event_type", "damage") == "healing":
+            return self.execute_scheduled_healing_event(
+                effect=effect,
+                host_action_id=host_action_id,
+                host_actor_character_id=host_actor_character_id,
+                host_action_type=host_action_type,
+                outgoing_character_id=outgoing_character_id,
+                incoming_character_id=incoming_character_id,
+                host_combat_start_time=host_combat_start_time,
+                host_combat_end_time=host_combat_end_time,
+                combat_time=combat_time,
+                host_action_combat_offset=host_action_combat_offset,
+                trigger_index=trigger_index,
+            )
+        return self.execute_scheduled_damage_event(
+            effect=effect,
+            host_action_id=host_action_id,
+            combat_time=combat_time,
+            host_action_combat_offset=host_action_combat_offset,
+            trigger_index=trigger_index,
+            action_start_snapshot=action_start_snapshot,
+            force_active_buff_ids=force_active_buff_ids,
         )
 
     def execute_scheduled_damage_event(
@@ -455,6 +530,111 @@ class Simulation:
         )
         self._apply_scheduled_off_tune_accumulation(payload, event, effect.source_character_id)
         self._apply_scheduled_resource_policy(payload, event, effect.source_character_id, effect.scheduled_resource_policy)
+        return event
+
+    def execute_scheduled_healing_event(
+        self,
+        *,
+        effect,
+        host_action_id: str,
+        combat_time: float,
+        host_action_combat_offset: float,
+        trigger_index: int,
+        host_actor_character_id: str | None = None,
+        host_action_type: str | None = None,
+        outgoing_character_id: str | None = None,
+        incoming_character_id: str | None = None,
+        host_combat_start_time: float | None = None,
+        host_combat_end_time: float | None = None,
+    ) -> dict[str, Any]:
+        payload = self.actions.get(effect.payload_action_id)
+        if payload is None:
+            raise ValueError(f"Unknown scheduled-effect payload action {effect.payload_action_id!r}")
+        if effect.source_character_id not in self.characters:
+            raise ValueError(f"Scheduled healing source character {effect.source_character_id!r} is unavailable")
+        metadata = dict(effect.metadata or {})
+        healing = dict((payload.mechanic_effects or {}).get("healing_metadata") or {})
+        source_character = self.characters[effect.source_character_id]
+        stats = buffed_combat_stats(source_character, self.state, self.buffs)
+        source_runtime_def = float(stats.get("effective_def", source_character.effective_def) or 0.0)
+        base_heal = float(healing.get("base_heal", metadata.get("base_heal", 0.0)) or 0.0)
+        scaling_multiplier = float(
+            healing.get("scaling_multiplier", metadata.get("scaling_multiplier", 0.0)) or 0.0
+        )
+        field_multiplier = float(
+            healing.get("field_healing_multiplier", metadata.get("field_healing_multiplier", 1.0)) or 1.0
+        )
+        healing_bonus_applied = float(metadata.get("healing_bonus_applied", 0.0) or 0.0)
+        calculated = (base_heal + source_runtime_def * scaling_multiplier) * field_multiplier
+        calculated *= 1.0 + healing_bonus_applied
+        target_character_id = host_actor_character_id or self.state.active_character_id
+        if not target_character_id or target_character_id not in self.characters:
+            raise ValueError(
+                "Scheduled healing could not resolve a valid target character "
+                f"for host action {host_action_id!r}"
+            )
+        halo_log = apply_mornye_halo_of_starry_radiance_5set_event_buff(
+            source_character_id=effect.source_character_id,
+            emitted_event_tags=[TEAM_HEAL_EVENT_TAG],
+            characters=self.characters,
+            state=self.state,
+            buffs=self.buffs,
+            application_time=combat_time,
+            event_source="scheduled_180f_exact",
+        )
+        weapon_log = self._apply_team_heal_weapon_effects(
+            halo_log,
+            source_character_id=effect.source_character_id,
+            application_time=combat_time,
+            event_source="scheduled_180f_exact",
+        )
+        halo_log.update(weapon_log)
+        event = {
+            "event_type": "scheduled_heal",
+            "scheduled_effect_instance_id": effect.instance_id,
+            "scheduled_effect_id": effect.effect_id,
+            "source_character_id": effect.source_character_id,
+            "source_action_id": effect.source_action_id,
+            "payload_action_id": payload.id,
+            "payload_action_name": payload.name,
+            "host_action_id": host_action_id,
+            "host_action_type": host_action_type,
+            "outgoing_character_id": outgoing_character_id,
+            "incoming_character_id": incoming_character_id,
+            "host_actor_character_id": target_character_id,
+            "host_combat_start_time": host_combat_start_time,
+            "host_combat_end_time": host_combat_end_time,
+            "trigger_index": trigger_index,
+            "combat_time": combat_time,
+            "host_action_combat_offset": host_action_combat_offset,
+            "damage": 0.0,
+            "off_tune_value": 0.0,
+            "off_tune_gain": 0.0,
+            "resonance_energy_gain": 0.0,
+            "concerto_energy_gain": 0.0,
+            "target_character_id": target_character_id,
+            "base_heal": base_heal,
+            "source_runtime_def": source_runtime_def,
+            "def_scaling_multiplier": scaling_multiplier,
+            "field_healing_multiplier": field_multiplier,
+            "healing_bonus_applied": healing_bonus_applied,
+            "healing_bonus_source_status": metadata.get("healing_bonus_source_status", "metadata_only_not_applied"),
+            "calculated_heal_amount": calculated,
+            "hp_application_mode": "diagnostic_no_hp_state",
+            "effective_hp_restored": None,
+            "source_status": effect.source_status,
+            "source_ref": effect.source_ref,
+            "metadata": metadata,
+            "team_heal_event_emitted": bool(halo_log.get("team_heal_event_triggered", False)),
+            "applied_echo_set_effect_ids": list(halo_log.get("echo_set_triggered_buff_ids", [])),
+            "applied_weapon_effect_ids": [
+                str(log.get("weapon_effect_id"))
+                for log in halo_log.get("weapon_effect_logs", [])
+                if log.get("weapon_effect_id")
+            ],
+            **halo_log,
+        }
+        self.state.scheduled_effect_event_log.append(event)
         return event
 
     def _apply_scheduled_resource_policy(
@@ -1742,13 +1922,19 @@ class Simulation:
         return max(0, int(self._lynae_mechanics_config().get("lynae_constellation", 0) or 0))
 
     def _mornye_heal_event_mode(self) -> str:
-        mode = str(self._mornye_mechanics_config().get("mornye_heal_event_mode", "simplified_syntony_field_uptime"))
-        return mode if mode in {"disabled", "field_creation_only", "simplified_syntony_field_uptime"} else "disabled"
+        mode = str(self._mornye_mechanics_config().get("mornye_heal_event_mode", "scheduled_180f_exact"))
+        return (
+            mode
+            if mode in {"disabled", "field_creation_only", "simplified_syntony_field_uptime", "scheduled_180f_exact"}
+            else "disabled"
+        )
 
     def _apply_mornye_syntony_field_uptime_heal_proxy(self, action: ActionData) -> dict[str, Any]:
         if "mornye" not in self.characters:
             return {}
         mode = self._mornye_heal_event_mode()
+        if mode == "scheduled_180f_exact":
+            return {}
         if mode != "simplified_syntony_field_uptime":
             return {}
         data = self.state.character_mechanics_state.get("mornye") or {}
@@ -1820,6 +2006,7 @@ class Simulation:
         data["high_syntony_field_source_action_id"] = action.id
         data["high_syntony_field_created_count"] = int(data.get("high_syntony_field_created_count", 0) or 0) + 1
         cancelled_effect_ids = self._cancel_mornye_normal_syntony_deployment_damage()
+        cancelled_heal_ids = self._cancel_mornye_normal_syntony_healing()
 
         window = {
             "field_id": "high_syntony_field",
@@ -1859,10 +2046,18 @@ class Simulation:
             "high_syntony_field_unavailable_reason": None,
             "normal_syntony_field_deployment_damage_cancelled": bool(cancelled_effect_ids),
             "normal_syntony_field_deployment_damage_cancelled_instance_ids": cancelled_effect_ids,
+            "normal_syntony_field_healing_cancelled": bool(cancelled_heal_ids),
+            "normal_syntony_field_healing_cancelled_instance_ids": cancelled_heal_ids,
             "high_syntony_field_deployment_damage_scheduled": False,
             "halo_atk_buff_does_not_affect_mornye_def_damage": True,
         }
         log_updates.update(high_syntony_log_fields)
+
+        if self._mornye_heal_event_mode() == "scheduled_180f_exact":
+            heal_schedule = self._schedule_mornye_high_syntony_field_healing(action, self.state.combat_time)
+            log_updates.update(heal_schedule)
+            log_updates["high_syntony_field_heal_proxy_active"] = False
+            return log_updates
 
         mode = self._mornye_heal_event_mode()
         if mode == "disabled":
@@ -1917,6 +2112,93 @@ class Simulation:
                 cancelled.append(instance_id)
         return cancelled
 
+    def _cancel_mornye_normal_syntony_healing(self) -> list[str]:
+        removed = self.remove_scheduled_effect(self.MORNYE_SYNTONY_FIELD_HEAL_INSTANCE_ID)
+        return [self.MORNYE_SYNTONY_FIELD_HEAL_INSTANCE_ID] if removed is not None else []
+
+    def _schedule_mornye_normal_syntony_field_healing(
+        self,
+        action: ActionData,
+        activation_time: float,
+        activation_timing_status: str,
+    ) -> dict[str, Any]:
+        if self._mornye_heal_event_mode() != "scheduled_180f_exact":
+            return {}
+        self.remove_scheduled_effect(self.MORNYE_HIGH_SYNTONY_FIELD_HEAL_INSTANCE_ID)
+        result = self.schedule_effect(
+            instance_id=self.MORNYE_SYNTONY_FIELD_HEAL_INSTANCE_ID,
+            effect_id="mornye_syntony_field_heal",
+            source_character_id="mornye",
+            source_action_id=action.id,
+            payload_action_id=self.MORNYE_SYNTONY_FIELD_HEAL_ACTION_ID,
+            activation_combat_time=activation_time,
+            remaining_duration=1500.0 / 60.0,
+            tick_interval=180.0 / 60.0,
+            time_until_next_tick=1.0 / 60.0,
+            max_trigger_count=9,
+            refresh_rule="replace",
+            payload_event_type="healing",
+            scheduled_resource_policy="none",
+            source_status="workbook_confirmed_scheduled_heal",
+            source_ref="角色-女!4120 / 角色技能类型!533",
+            metadata={
+                "field_id": "normal_syntony_field",
+                "activation_timing_status": activation_timing_status,
+                "relative_tick_frames": [1, 181, 361, 541, 721, 901, 1081, 1261, 1441],
+                "base_heal": 1805.0,
+                "scaling_stat": "def",
+                "scaling_multiplier": 0.945,
+                "field_healing_multiplier": 1.0,
+                "target_scope": "host_action_actor_else_active_character",
+                "healing_bonus_applied": 0.0,
+                "healing_bonus_source_status": "metadata_only_not_applied",
+            },
+        )
+        return {
+            "mornye_syntony_field_healing_scheduled": True,
+            "mornye_syntony_field_healing_schedule_operation": result.get("operation"),
+            "mornye_syntony_field_healing_implementation_status": "scheduled_180f_exact",
+            "mornye_syntony_field_healing_relative_tick_frames": [1, 181, 361, 541, 721, 901, 1081, 1261, 1441],
+        }
+
+    def _schedule_mornye_high_syntony_field_healing(self, action: ActionData, activation_time: float) -> dict[str, Any]:
+        result = self.schedule_effect(
+            instance_id=self.MORNYE_HIGH_SYNTONY_FIELD_HEAL_INSTANCE_ID,
+            effect_id="mornye_high_syntony_field_heal",
+            source_character_id="mornye",
+            source_action_id=action.id,
+            payload_action_id=self.MORNYE_HIGH_SYNTONY_FIELD_HEAL_ACTION_ID,
+            activation_combat_time=activation_time,
+            remaining_duration=1500.0 / 60.0,
+            tick_interval=180.0 / 60.0,
+            time_until_next_tick=1.0 / 60.0,
+            max_trigger_count=9,
+            refresh_rule="replace",
+            payload_event_type="healing",
+            scheduled_resource_policy="none",
+            source_status="workbook_confirmed_scheduled_heal",
+            source_ref="角色-女!4121 / 角色技能类型!533",
+            metadata={
+                "field_id": "high_syntony_field",
+                "relative_tick_frames": [1, 181, 361, 541, 721, 901, 1081, 1261, 1441],
+                "base_heal": 1805.0,
+                "scaling_stat": "def",
+                "scaling_multiplier": 0.945,
+                "field_healing_multiplier": 1.4,
+                "target_scope": "host_action_actor_else_active_character",
+                "healing_bonus_applied": 0.0,
+                "healing_bonus_source_status": "metadata_only_not_applied",
+                "c4_healing_bonus_status": "excluded_c0_task",
+            },
+        )
+        return {
+            "mornye_high_syntony_field_healing_scheduled": True,
+            "mornye_high_syntony_field_healing_schedule_operation": result.get("operation"),
+            "mornye_high_syntony_field_healing_implementation_status": "scheduled_180f_exact",
+            "mornye_high_syntony_field_healing_relative_tick_frames": [1, 181, 361, 541, 721, 901, 1081, 1261, 1441],
+            "high_syntony_field_healing_multiplier_metadata_only": False,
+        }
+
     def _schedule_mornye_syntony_field_deployment_damage(self, action: ActionData) -> dict[str, Any]:
         effects = action.mechanic_effects or {}
         actor_character_id = str(effects.get("transition_actor_character_id") or action.character_id or "")
@@ -1940,8 +2222,15 @@ class Simulation:
             "field_duration": 25.0,
             "activation_timing_status": activation_timing_status,
             "activation_timing_note": timing_note,
-            "healing_implementation_status": "simplified_action_boundary_proxy_unchanged",
+            "healing_implementation_status": "scheduled_180f_exact"
+            if self._mornye_heal_event_mode() == "scheduled_180f_exact"
+            else "simplified_action_boundary_proxy_unchanged",
         }
+        heal_schedule = self._schedule_mornye_normal_syntony_field_healing(
+            action,
+            activation_time,
+            activation_timing_status,
+        )
         damage_1 = self.schedule_effect(
             instance_id=self.MORNYE_SYNTONY_FIELD_DAMAGE_1_INSTANCE_ID,
             effect_id="mornye_syntony_field_damage_1",
@@ -1999,7 +2288,8 @@ class Simulation:
             "mornye_syntony_field_damage_2_qte_restricted": not schedule_damage_2,
             "mornye_syntony_field_damage_1_relative_tick_frames": [1, 28, 55, 82, 109],
             "mornye_syntony_field_damage_2_relative_tick_frames": [23] if schedule_damage_2 else [],
-            "mornye_syntony_field_healing_implementation_status": "simplified_action_boundary_proxy_unchanged",
+            "mornye_syntony_field_healing_implementation_status": common_metadata["healing_implementation_status"],
+            **heal_schedule,
         }
 
     def _apply_mornye_same_action_field_creation_halo(self, action: ActionData) -> dict[str, Any]:
@@ -2010,6 +2300,24 @@ class Simulation:
         if not self._action_deals_damage(action):
             return {}
         mode = self._mornye_heal_event_mode()
+        if mode == "scheduled_180f_exact":
+            log_updates: dict[str, Any] = {
+                "mornye_heal_event_mode": mode,
+                "halo_of_starry_radiance_5set_unavailable_reason": "scheduled_heal_pending_first_1f_tick",
+                "mornye_syntony_field_proxy_heal_suppressed": True,
+            }
+            syntony_duration = effects.get("syntony_field_duration", effects.get("set_syntony_field_remaining"))
+            if syntony_duration is not None:
+                log_updates.update(
+                    apply_syntony_field_off_tune_buff(
+                        state=self.state,
+                        source_character_id="mornye",
+                        duration=float(syntony_duration),
+                        constellation=self._mornye_constellation(),
+                        application_time=self.state.combat_time,
+                    )
+                )
+            return log_updates
         if mode not in {"field_creation_only", "simplified_syntony_field_uptime"}:
             return {
                 "mornye_heal_event_mode": mode,
@@ -2017,8 +2325,6 @@ class Simulation:
             }
         heal_mode_support = set(str(item) for item in effects.get("heal_event_mode_support", []))
         if heal_mode_support and mode not in heal_mode_support:
-            return {}
-        if TEAM_HEAL_EVENT_TAG not in set(action.mechanic_event_tags or []) and effects.get("team_heal_event_tag") != TEAM_HEAL_EVENT_TAG:
             return {}
         if not halo_of_starry_radiance_enabled(self.characters.get("mornye")):
             log_updates = {
@@ -2104,7 +2410,11 @@ class Simulation:
             "mornye_heal_event_mode": mode,
         }
         syntony_duration = effects.get("syntony_field_duration", effects.get("set_syntony_field_remaining"))
-        if syntony_duration is not None and not same_action_halo_applied:
+        same_action_syntony_off_tune_applied = bool(
+            getattr(result, "syntony_field_off_tune_bonus_active", False)
+            and getattr(result, "syntony_field_off_tune_bonus_application_time", None) == result.combat_time_start
+        )
+        if syntony_duration is not None and not same_action_halo_applied and not same_action_syntony_off_tune_applied:
             syntony_log = apply_syntony_field_off_tune_buff(
                 state=self.state,
                 source_character_id="mornye",
@@ -2118,6 +2428,8 @@ class Simulation:
             mode in {"field_creation_only", "simplified_syntony_field_uptime"}
             and syntony_duration is not None
         )
+        if mode == "scheduled_180f_exact":
+            emits_creation_heal = False
         if mode == "disabled":
             log_updates["halo_of_starry_radiance_5set_unavailable_reason"] = "mornye_heal_event_mode_disabled"
         elif emits_creation_heal and not same_action_halo_applied:

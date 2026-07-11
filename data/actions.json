@@ -563,9 +563,7 @@
       "source:excel"
     ],
     "policy_selectable": false,
-    "mechanic_event_tags": [
-      "team_heal"
-    ],
+    "mechanic_event_tags": [],
     "mechanic_effects": {
       "consume_rest_mass_energy": true,
       "wide_field_observation_duration": 30,
@@ -573,14 +571,31 @@
       "syntony_field_off_tune_buildup_rate_add": 0.5,
       "syntony_field_off_tune_bonus_source": "角色-女!D4122",
       "heal_event_mode_support": [
+        "scheduled_180f_exact",
         "field_creation_only",
         "simplified_syntony_field_uptime"
       ],
-      "team_heal_event_tag": "team_heal",
-      "healing_proxy_source": "角色-女!D4120",
-      "healing_proxy_implementation_status": "simplified_field_uptime_heal_proxy",
       "set_wfo_combo_stage": 1,
-      "source_character_name": "莫宁"
+      "source_character_name": "莫宁",
+      "healing_implementation_status": "scheduled_180f_exact",
+      "scheduled_healing_first_tick_frames": 1,
+      "scheduled_healing_interval_frames": 180,
+      "scheduled_healing_duration_frames": 1500,
+      "scheduled_healing_max_trigger_count": 9,
+      "scheduled_healing_relative_tick_frames": [
+        1,
+        181,
+        361,
+        541,
+        721,
+        901,
+        1081,
+        1261,
+        1441
+      ],
+      "scheduled_healing_target_scope": "host_action_actor_else_active_character",
+      "scheduled_healing_payload_action_id": "mornye_syntony_field_heal",
+      "scheduled_healing_source_ref": "角色-女!4120 / 角色技能类型!533"
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame row 4117 and skill rows 2654/2656. Enters Wide Field Observation and generates Syntony Field.",
@@ -848,21 +863,18 @@
       "source:excel"
     ],
     "policy_selectable": false,
-    "mechanic_event_tags": [
-      "team_heal"
-    ],
+    "mechanic_event_tags": [],
     "mechanic_effects": {
       "upgrade_syntony_to_high": true,
       "high_syntony_field_duration": 25,
       "high_syntony_field_healing_metadata_present": true,
-      "high_syntony_field_healing_source": "角色-女!D4121",
+      "high_syntony_field_healing_source": "角色-女!4121",
       "high_syntony_field_def_percent_bonus": 0.2,
       "high_syntony_field_def_bonus_source": "角色-女!D4124",
       "high_syntony_field_off_tune_bonus_status": "implemented_simplified_inheritance",
       "high_syntony_field_off_tune_buildup_rate_add": 0.5,
       "high_syntony_field_healing_multiplier_bonus": 0.4,
       "implementation_timing_mode": "same_action_high_syntony_field_creation_approximation",
-      "team_heal_event_tag": "team_heal",
       "energy_regen_scaling_metadata_only": true,
       "source_character_name": "莫宁",
       "source_sheet": "角色-女",
@@ -875,7 +887,31 @@
       "global_time_stop_frames": 300,
       "damage_end_frame": 296,
       "combat_time_cost_source": "大招-全局时停 covers damage end frame",
-      "has_global_time_stop": true
+      "has_global_time_stop": true,
+      "healing_implementation_status": "scheduled_180f_exact",
+      "scheduled_healing_first_tick_frames": 1,
+      "scheduled_healing_interval_frames": 180,
+      "scheduled_healing_duration_frames": 1500,
+      "scheduled_healing_max_trigger_count": 9,
+      "scheduled_healing_relative_tick_frames": [
+        1,
+        181,
+        361,
+        541,
+        721,
+        901,
+        1081,
+        1261,
+        1441
+      ],
+      "scheduled_healing_target_scope": "host_action_actor_else_active_character",
+      "scheduled_healing_payload_action_id": "mornye_high_syntony_field_heal",
+      "scheduled_healing_source_ref": "角色-女!4121 / 角色技能类型!533",
+      "heal_event_mode_support": [
+        "scheduled_180f_exact",
+        "field_creation_only",
+        "simplified_syntony_field_uptime"
+      ]
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame rows 4150-4154 and skill row 2671. Energy Regen crit scaling is metadata-only in v1.",
@@ -1023,6 +1059,131 @@
     "off_tune_value_source_ref": "角色-女!4127 / dmg/角色技能类型!2656",
     "damage_multiplier": 0.9902,
     "tune_break_multiplier": 0.0
+  },
+  {
+    "id": "mornye_syntony_field_heal",
+    "name": "Mornye Syntony Field Scheduled Heal Payload",
+    "character_id": "mornye",
+    "action_type": "resonance_liberation",
+    "scheduled_event_type": "healing",
+    "duration": 0.016666666666666666,
+    "action_time": 0.016666666666666666,
+    "combat_time_cost": 0.0,
+    "cooldown": 0,
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 0.0,
+    "resonance_energy_cost": 0.0,
+    "damage_multiplier": 0.0,
+    "tune_break_multiplier": 0.0,
+    "hits": [],
+    "tags": [
+      "field",
+      "healing",
+      "mornye",
+      "scheduled_payload",
+      "source:excel"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "scheduled_payload": true,
+      "payload_event_type": "healing",
+      "scheduled_event_type": "healing",
+      "source_status": "workbook_confirmed_scheduled_heal",
+      "source_ref": "角色-女!4120 / 角色技能类型!533",
+      "relative_tick_frames": [
+        1,
+        181,
+        361,
+        541,
+        721,
+        901,
+        1081,
+        1261,
+        1441
+      ],
+      "first_tick_frames": 1,
+      "tick_interval_frames": 180,
+      "field_duration_frames": 1500,
+      "max_trigger_count": 9,
+      "target_scope": "host_action_actor_else_active_character",
+      "healing_metadata": {
+        "base_heal": 1805.0,
+        "scaling_stat": "def",
+        "scaling_multiplier": 0.945,
+        "field_healing_multiplier": 1.0,
+        "healing_bonus_applied": 0.0,
+        "healing_bonus_source_status": "metadata_only_not_applied",
+        "hp_application_mode": "diagnostic_no_hp_state"
+      }
+    },
+    "data_status": "workbook_confirmed_scheduled_heal",
+    "notes": "Payload for exact scheduled normal Syntony Field healing. Scheduler supplies nine executions at relative frames 1, 181, 361, 541, 721, 901, 1081, 1261, and 1441; this record intentionally deals no damage and grants no Off-Tune/resources.",
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "workbook_confirmed_zero_for_healing_payload",
+    "off_tune_value_source_ref": "角色-女!4120 / 角色技能类型!533"
+  },
+  {
+    "id": "mornye_high_syntony_field_heal",
+    "name": "Mornye High Syntony Field Scheduled Heal Payload",
+    "character_id": "mornye",
+    "action_type": "resonance_liberation",
+    "scheduled_event_type": "healing",
+    "duration": 0.016666666666666666,
+    "action_time": 0.016666666666666666,
+    "combat_time_cost": 0.0,
+    "cooldown": 0,
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 0.0,
+    "resonance_energy_cost": 0.0,
+    "damage_multiplier": 0.0,
+    "tune_break_multiplier": 0.0,
+    "hits": [],
+    "tags": [
+      "field",
+      "healing",
+      "mornye",
+      "scheduled_payload",
+      "source:excel"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "scheduled_payload": true,
+      "payload_event_type": "healing",
+      "scheduled_event_type": "healing",
+      "source_status": "workbook_confirmed_scheduled_heal",
+      "source_ref": "角色-女!4121 / 角色技能类型!533",
+      "relative_tick_frames": [
+        1,
+        181,
+        361,
+        541,
+        721,
+        901,
+        1081,
+        1261,
+        1441
+      ],
+      "first_tick_frames": 1,
+      "tick_interval_frames": 180,
+      "field_duration_frames": 1500,
+      "max_trigger_count": 9,
+      "target_scope": "host_action_actor_else_active_character",
+      "healing_metadata": {
+        "base_heal": 1805.0,
+        "scaling_stat": "def",
+        "scaling_multiplier": 0.945,
+        "field_healing_multiplier": 1.4,
+        "healing_bonus_applied": 0.0,
+        "healing_bonus_source_status": "metadata_only_not_applied",
+        "hp_application_mode": "diagnostic_no_hp_state",
+        "c4_healing_bonus_status": "excluded_c0_task"
+      }
+    },
+    "data_status": "workbook_confirmed_scheduled_heal",
+    "notes": "Payload for exact scheduled High Syntony Field healing. Scheduler supplies nine executions at relative frames 1, 181, 361, 541, 721, 901, 1081, 1261, and 1441; this C0 record applies the inherited 1.40 High Field healing multiplier and intentionally deals no damage and grants no Off-Tune/resources.",
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "workbook_confirmed_zero_for_healing_payload",
+    "off_tune_value_source_ref": "角色-女!4121 / 角色技能类型!533"
   },
   {
     "id": "mornye_high_syntony_field_state",

@@ -14,8 +14,9 @@ MANIFEST_PATH = PROJECT_ROOT / "data" / "source" / "direct_action_data_patch_man
 ACTIONS_PATH = PROJECT_ROOT / "data" / "actions.json"
 TRANSITIONS_PATH = PROJECT_ROOT / "data" / "transition_actions.json"
 CHANGE_LOG_PATH = PROJECT_ROOT / "data" / "extracted" / "direct_action_data_v61_applied_changes.json"
-EXPECTED_MANIFEST_SHA256 = "63e8c9accc2ac4081a736fa8b736cac44da1fedb8e9a88c1958b354c93c5c4d6"
+EXPECTED_MANIFEST_SHA256 = "de172243cd0d4af65bbe30c361bf75db9e0d0035829251ae681fff1ac89ce0c9"
 MORNYE_SYNTONY_FIELD_PAYLOAD_SECTION = "mornye_syntony_field_payload_patches"
+MORNYE_SYNTONY_FIELD_HEALING_SECTION = "mornye_syntony_field_healing_patches"
 
 ACTION_VALUE_FIELDS = (
     "duration",
@@ -440,6 +441,139 @@ def apply_mornye_syntony_field_payload_patches(
     return added_ids
 
 
+def apply_mornye_syntony_field_healing_patches(
+    actions: list[dict[str, Any]],
+    action_records: dict[str, dict[str, Any]],
+    transition_records: dict[str, dict[str, Any]],
+    manifest: dict[str, Any],
+    changes: list[dict[str, Any]],
+) -> set[str]:
+    section = manifest.get(MORNYE_SYNTONY_FIELD_HEALING_SECTION, {})
+    if not section:
+        return set()
+    if not isinstance(section, dict):
+        raise AlignmentError(f"{MORNYE_SYNTONY_FIELD_HEALING_SECTION} must be an object")
+
+    expected_new_ids = {"mornye_syntony_field_heal", "mornye_high_syntony_field_heal"}
+    allowed_new_ids = set(section.get("allowed_new_non_policy_action_ids") or [])
+    if allowed_new_ids != expected_new_ids:
+        raise AlignmentError(
+            "Mornye Syntony healing patches may only create exact scheduled heal payloads"
+        )
+
+    payloads = section.get("payloads")
+    if not isinstance(payloads, list):
+        raise AlignmentError(f"{MORNYE_SYNTONY_FIELD_HEALING_SECTION}.payloads must be a list")
+
+    added_ids: set[str] = set()
+    for patch in payloads:
+        if not isinstance(patch, dict):
+            raise AlignmentError("Mornye Syntony healing payload patch must be an object")
+        operation = patch.get("operation")
+        action_id = patch.get("action_id")
+        record = patch.get("record")
+        if not isinstance(action_id, str):
+            raise AlignmentError("Mornye Syntony healing payload patch missing action_id")
+        if action_id not in expected_new_ids:
+            raise AlignmentError(f"unexpected Mornye Syntony healing payload id: {action_id}")
+        if not isinstance(record, dict):
+            raise AlignmentError(f"{action_id} missing replacement record")
+        if record.get("id") != action_id:
+            raise AlignmentError(f"{action_id} replacement record id mismatch")
+        if record.get("policy_selectable") is not False:
+            raise AlignmentError(f"{action_id} scheduled healing payload must be non-policy")
+        if record.get("scheduled_event_type") != "healing":
+            raise AlignmentError(f"{action_id} scheduled_event_type must be healing")
+        if record.get("hits") != []:
+            raise AlignmentError(f"{action_id} scheduled healing payload must not contain damage hits")
+        if float(record.get("damage_multiplier", 0.0)) != 0.0:
+            raise AlignmentError(f"{action_id} scheduled healing payload must deal zero damage")
+        if float(record.get("off_tune_value", 0.0)) != 0.0:
+            raise AlignmentError(f"{action_id} scheduled healing payload must add zero Off-Tune")
+
+        if operation not in {"create", "replace"}:
+            raise AlignmentError(f"{action_id} has unsupported healing payload operation {operation!r}")
+        if operation == "replace" and action_id not in action_records:
+            raise AlignmentError(f"manifest action id missing from data/actions.json: {action_id}")
+        if operation == "create" and action_id not in allowed_new_ids:
+            raise AlignmentError(f"creation of undeclared action id is not allowed: {action_id}")
+
+        if action_id in action_records:
+            index = next(index for index, item in enumerate(actions) if item.get("id") == action_id)
+            before = copy.deepcopy(actions[index])
+            after = copy.deepcopy(record)
+            if before != after:
+                actions[index] = after
+                action_records[action_id] = actions[index]
+                record_change(
+                    changes,
+                    target_file="data/actions.json",
+                    action_id=action_id,
+                    field="record",
+                    before=before,
+                    after=after,
+                    patch=patch,
+                )
+            continue
+
+        insert_after = patch.get("insert_after")
+        if not isinstance(insert_after, str):
+            raise AlignmentError(f"{action_id} create patch missing insert_after")
+        if insert_after not in action_records:
+            raise AlignmentError(f"{action_id} insert_after target is missing: {insert_after}")
+        insert_index = next(index for index, item in enumerate(actions) if item.get("id") == insert_after) + 1
+        actions.insert(insert_index, copy.deepcopy(record))
+        action_records[action_id] = actions[insert_index]
+        added_ids.add(action_id)
+        record_change(
+            changes,
+            target_file="data/actions.json",
+            action_id=action_id,
+            field="record",
+            before=None,
+            after=copy.deepcopy(record),
+            patch=patch,
+        )
+
+    for patch in section.get("action_metadata_records", []):
+        action_id = patch.get("action_id")
+        fields = patch.get("fields")
+        if not isinstance(action_id, str) or action_id not in action_records:
+            raise AlignmentError(f"healing metadata action patch references missing action {action_id!r}")
+        if not isinstance(fields, dict):
+            raise AlignmentError(f"{action_id} healing metadata patch missing fields object")
+        for field, value in fields.items():
+            set_field(
+                action_records[action_id],
+                field,
+                value,
+                changes,
+                target_file="data/actions.json",
+                action_id=action_id,
+                patch=patch,
+            )
+
+    for patch in section.get("transition_metadata_records", []):
+        action_id = patch.get("action_id")
+        fields = patch.get("fields")
+        if not isinstance(action_id, str) or action_id not in transition_records:
+            raise AlignmentError(f"healing metadata transition patch references missing action {action_id!r}")
+        if not isinstance(fields, dict):
+            raise AlignmentError(f"{action_id} healing transition metadata patch missing fields object")
+        for field, value in fields.items():
+            set_field(
+                transition_records[action_id],
+                field,
+                value,
+                changes,
+                target_file="data/transition_actions.json",
+                action_id=action_id,
+                patch=patch,
+            )
+
+    return added_ids
+
+
 def apply_manifest_documents(
     manifest: dict[str, Any],
     actions: list[dict[str, Any]],
@@ -496,6 +630,13 @@ def apply_manifest_documents(
     added_non_policy_action_ids = apply_mornye_syntony_field_payload_patches(
         actions,
         action_records,
+        manifest,
+        changes,
+    )
+    added_non_policy_action_ids |= apply_mornye_syntony_field_healing_patches(
+        actions,
+        action_records,
+        transition_records,
         manifest,
         changes,
     )

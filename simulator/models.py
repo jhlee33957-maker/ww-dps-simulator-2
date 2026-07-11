@@ -23,6 +23,7 @@ ScalingStat = Literal["atk", "def", "hp", "none", "unresolved"]
 HitTimeMode = Literal["source_time", "resolved_action_end"]
 ScheduledEffectRefreshRule = Literal["replace", "refresh_duration", "keep_existing"]
 ScheduledResourcePolicy = Literal["none", "source_confirmed_positive_gains"]
+ScheduledPayloadEventType = Literal["damage", "healing"]
 
 
 class CharacterData(BaseModel):
@@ -194,6 +195,7 @@ class ActionData(BaseModel):
     scaling_stat_note: str | None = None
     raw_skill_category: str | None = None
     raw_damage_type: str | None = None
+    scheduled_event_type: ScheduledPayloadEventType | None = None
     damage_bonus_category_source: str | None = None
     damage_multiplier: float = Field(default=0.0, ge=0)
     tune_break_multiplier: float = Field(default=0.0, ge=0)
@@ -330,6 +332,7 @@ class ScheduledEffectState(BaseModel):
     refresh_rule: ScheduledEffectRefreshRule = "replace"
     source_status: str
     source_ref: str | None = None
+    payload_event_type: ScheduledPayloadEventType = "damage"
     scheduled_resource_policy: ScheduledResourcePolicy = "none"
     metadata: dict[str, Any] = Field(default_factory=dict)
     insertion_order: int = Field(default=0, ge=0)
@@ -472,6 +475,7 @@ class ActionResult(BaseModel):
     direct_action_damage: float = 0.0
     scheduled_damage: float = 0.0
     scheduled_damage_events: list[dict[str, Any]] = Field(default_factory=list)
+    scheduled_healing_events: list[dict[str, Any]] = Field(default_factory=list)
     direct_damage_taken_amp_total_bonus_damage: float = 0.0
     interfered_marker_direct_damage_amp_applied_count: int = 0
     interfered_marker_direct_damage_amp_bonus_damage: float = 0.0
@@ -906,6 +910,7 @@ class TimelineEntry(BaseModel):
     direct_action_damage: float = 0.0
     scheduled_damage: float = 0.0
     scheduled_damage_events: list[dict[str, Any]] = Field(default_factory=list)
+    scheduled_healing_events: list[dict[str, Any]] = Field(default_factory=list)
     direct_damage_taken_amp_total_bonus_damage: float = 0.0
     interfered_marker_direct_damage_amp_applied_count: int = 0
     interfered_marker_direct_damage_amp_bonus_damage: float = 0.0

@@ -5301,7 +5301,8 @@
     ],
     "action_ids_changed": 0,
     "policy_order_changed": false,
-    "mornye_syntony_field_payload_patches": 2
+    "mornye_syntony_field_payload_patches": 2,
+    "mornye_syntony_field_healing_patches": 5
   },
   "lynae_off_tune_source": {
     "mapping_file": "data/source/lynae_off_tune_direct_mapping_v80.json",
@@ -6111,6 +6112,426 @@
           "trigger_on_apply": false,
           "refresh_rule": "replace"
         }
+      }
+    ]
+  },
+  "mornye_syntony_field_healing_patches": {
+    "allowed_new_non_policy_action_ids": [
+      "mornye_syntony_field_heal",
+      "mornye_high_syntony_field_heal"
+    ],
+    "source_rows": {
+      "normal_field": [
+        "角色-女!4118"
+      ],
+      "normal_healing": [
+        "角色-女!4120",
+        "角色技能类型!533"
+      ],
+      "high_field": [
+        "角色-女!4119"
+      ],
+      "high_healing": [
+        "角色-女!4121",
+        "角色技能类型!533"
+      ]
+    },
+    "scheduler_timing_metadata": {
+      "payload_event_type": "healing",
+      "first_tick_frames": 1,
+      "tick_interval_frames": 180,
+      "field_duration_frames": 1500,
+      "field_duration_seconds": 25.0,
+      "max_trigger_count": 9,
+      "relative_tick_frames": [
+        1,
+        181,
+        361,
+        541,
+        721,
+        901,
+        1081,
+        1261,
+        1441
+      ],
+      "refresh_rule": "replace",
+      "trigger_on_apply": false,
+      "normal_instance_id": "mornye_syntony_field_heal:mornye",
+      "high_instance_id": "mornye_high_syntony_field_heal:mornye",
+      "geopotential_shift_activation_frame": 48,
+      "geopotential_shift_first_heal_frame": 49,
+      "intro_activation": "transition combat end",
+      "intro_first_heal": "transition combat end + 1 frame",
+      "high_field_zero_combat_time_rule": "Critical Protocol schedules High healing, but no tick occurs until positive combat time reaches +1 frame"
+    },
+    "formula": {
+      "base_heal": 1805.0,
+      "scaling_stat": "def",
+      "scaling_stat_source": "source_character_runtime_effective_def_at_tick",
+      "def_scaling_multiplier": 0.945,
+      "normal_field_healing_multiplier": 1.0,
+      "high_field_healing_multiplier": 1.4,
+      "normal_formula": "1805 + Mornye runtime DEF * 0.945",
+      "high_formula": "(1805 + Mornye runtime DEF * 0.945) * 1.40",
+      "target_scope": "host_action_actor_else_active_character",
+      "healing_bonus_applied": 0.0,
+      "healing_bonus_source_status": "metadata_only_not_applied",
+      "hp_application_mode": "diagnostic_no_hp_state",
+      "effective_hp_restored": null,
+      "c4_healing_bonus_status": "excluded_c0_task"
+    },
+    "proxy_replacement": {
+      "exact_mode": "scheduled_180f_exact",
+      "field_creation_team_heal_tags_removed_from": [
+        "mornye_heavy_geopotential_shift",
+        "mornye_liberation_critical_protocol",
+        "mornye_intro_convergence"
+      ],
+      "disabled_in_exact_mode": [
+        "field_creation_team_heal_proxy",
+        "action_boundary_simplified_syntony_field_uptime_proxy",
+        "same_action_field_creation_halo_proxy"
+      ],
+      "legacy_modes_retained_as_deprecated_diagnostics": [
+        "field_creation_only",
+        "simplified_syntony_field_uptime"
+      ]
+    },
+    "side_effect_limits": {
+      "damage": 0.0,
+      "off_tune": 0.0,
+      "resonance_energy": 0.0,
+      "concerto_energy": 0.0,
+      "direct_rl_reward": 0.0,
+      "policy_selectable": false,
+      "ordinary_action_api": "not_used"
+    },
+    "payloads": [
+      {
+        "operation": "create",
+        "action_id": "mornye_syntony_field_heal",
+        "insert_after": "mornye_syntony_field_target_damage",
+        "record": {
+          "id": "mornye_syntony_field_heal",
+          "name": "Mornye Syntony Field Scheduled Heal Payload",
+          "character_id": "mornye",
+          "action_type": "resonance_liberation",
+          "scheduled_event_type": "healing",
+          "duration": 0.016666666666666666,
+          "action_time": 0.016666666666666666,
+          "combat_time_cost": 0.0,
+          "cooldown": 0,
+          "resonance_energy_gain": 0.0,
+          "concerto_energy_gain": 0.0,
+          "resonance_energy_cost": 0.0,
+          "damage_multiplier": 0.0,
+          "tune_break_multiplier": 0.0,
+          "hits": [],
+          "tags": [
+            "field",
+            "healing",
+            "mornye",
+            "scheduled_payload",
+            "source:excel"
+          ],
+          "policy_selectable": false,
+          "mechanic_effects": {
+            "scheduled_payload": true,
+            "payload_event_type": "healing",
+            "scheduled_event_type": "healing",
+            "source_status": "workbook_confirmed_scheduled_heal",
+            "source_ref": "角色-女!4120 / 角色技能类型!533",
+            "relative_tick_frames": [
+              1,
+              181,
+              361,
+              541,
+              721,
+              901,
+              1081,
+              1261,
+              1441
+            ],
+            "first_tick_frames": 1,
+            "tick_interval_frames": 180,
+            "field_duration_frames": 1500,
+            "max_trigger_count": 9,
+            "target_scope": "host_action_actor_else_active_character",
+            "healing_metadata": {
+              "base_heal": 1805.0,
+              "scaling_stat": "def",
+              "scaling_multiplier": 0.945,
+              "field_healing_multiplier": 1.0,
+              "healing_bonus_applied": 0.0,
+              "healing_bonus_source_status": "metadata_only_not_applied",
+              "hp_application_mode": "diagnostic_no_hp_state"
+            }
+          },
+          "data_status": "workbook_confirmed_scheduled_heal",
+          "notes": "Payload for exact scheduled normal Syntony Field healing. Scheduler supplies nine executions at relative frames 1, 181, 361, 541, 721, 901, 1081, 1261, and 1441; this record intentionally deals no damage and grants no Off-Tune/resources.",
+          "off_tune_value": 0.0,
+          "off_tune_value_source_status": "workbook_confirmed_zero_for_healing_payload",
+          "off_tune_value_source_ref": "角色-女!4120 / 角色技能类型!533"
+        },
+        "source_rows": [
+          "角色-女!4120",
+          "角色技能类型!533"
+        ],
+        "scheduler_timing": {
+          "time_until_next_tick": 0.016666666666666666,
+          "tick_interval": 3.0,
+          "remaining_duration": 25.0,
+          "max_trigger_count": 9,
+          "trigger_on_apply": false,
+          "refresh_rule": "replace"
+        }
+      },
+      {
+        "operation": "create",
+        "action_id": "mornye_high_syntony_field_heal",
+        "insert_after": "mornye_syntony_field_heal",
+        "record": {
+          "id": "mornye_high_syntony_field_heal",
+          "name": "Mornye High Syntony Field Scheduled Heal Payload",
+          "character_id": "mornye",
+          "action_type": "resonance_liberation",
+          "scheduled_event_type": "healing",
+          "duration": 0.016666666666666666,
+          "action_time": 0.016666666666666666,
+          "combat_time_cost": 0.0,
+          "cooldown": 0,
+          "resonance_energy_gain": 0.0,
+          "concerto_energy_gain": 0.0,
+          "resonance_energy_cost": 0.0,
+          "damage_multiplier": 0.0,
+          "tune_break_multiplier": 0.0,
+          "hits": [],
+          "tags": [
+            "field",
+            "healing",
+            "mornye",
+            "scheduled_payload",
+            "source:excel"
+          ],
+          "policy_selectable": false,
+          "mechanic_effects": {
+            "scheduled_payload": true,
+            "payload_event_type": "healing",
+            "scheduled_event_type": "healing",
+            "source_status": "workbook_confirmed_scheduled_heal",
+            "source_ref": "角色-女!4121 / 角色技能类型!533",
+            "relative_tick_frames": [
+              1,
+              181,
+              361,
+              541,
+              721,
+              901,
+              1081,
+              1261,
+              1441
+            ],
+            "first_tick_frames": 1,
+            "tick_interval_frames": 180,
+            "field_duration_frames": 1500,
+            "max_trigger_count": 9,
+            "target_scope": "host_action_actor_else_active_character",
+            "healing_metadata": {
+              "base_heal": 1805.0,
+              "scaling_stat": "def",
+              "scaling_multiplier": 0.945,
+              "field_healing_multiplier": 1.4,
+              "healing_bonus_applied": 0.0,
+              "healing_bonus_source_status": "metadata_only_not_applied",
+              "hp_application_mode": "diagnostic_no_hp_state",
+              "c4_healing_bonus_status": "excluded_c0_task"
+            }
+          },
+          "data_status": "workbook_confirmed_scheduled_heal",
+          "notes": "Payload for exact scheduled High Syntony Field healing. Scheduler supplies nine executions at relative frames 1, 181, 361, 541, 721, 901, 1081, 1261, and 1441; this C0 record applies the inherited 1.40 High Field healing multiplier and intentionally deals no damage and grants no Off-Tune/resources.",
+          "off_tune_value": 0.0,
+          "off_tune_value_source_status": "workbook_confirmed_zero_for_healing_payload",
+          "off_tune_value_source_ref": "角色-女!4121 / 角色技能类型!533"
+        },
+        "source_rows": [
+          "角色-女!4121",
+          "角色技能类型!533"
+        ],
+        "scheduler_timing": {
+          "time_until_next_tick": 0.016666666666666666,
+          "tick_interval": 3.0,
+          "remaining_duration": 25.0,
+          "max_trigger_count": 9,
+          "trigger_on_apply": false,
+          "refresh_rule": "replace"
+        }
+      }
+    ],
+    "action_metadata_records": [
+      {
+        "operation": "update_fields",
+        "action_id": "mornye_heavy_geopotential_shift",
+        "fields": {
+          "mechanic_event_tags": [],
+          "mechanic_effects": {
+            "consume_rest_mass_energy": true,
+            "wide_field_observation_duration": 30,
+            "syntony_field_duration": 25,
+            "syntony_field_off_tune_buildup_rate_add": 0.5,
+            "syntony_field_off_tune_bonus_source": "角色-女!D4122",
+            "heal_event_mode_support": [
+              "scheduled_180f_exact",
+              "field_creation_only",
+              "simplified_syntony_field_uptime"
+            ],
+            "set_wfo_combo_stage": 1,
+            "source_character_name": "莫宁",
+            "healing_implementation_status": "scheduled_180f_exact",
+            "scheduled_healing_first_tick_frames": 1,
+            "scheduled_healing_interval_frames": 180,
+            "scheduled_healing_duration_frames": 1500,
+            "scheduled_healing_max_trigger_count": 9,
+            "scheduled_healing_relative_tick_frames": [
+              1,
+              181,
+              361,
+              541,
+              721,
+              901,
+              1081,
+              1261,
+              1441
+            ],
+            "scheduled_healing_target_scope": "host_action_actor_else_active_character",
+            "scheduled_healing_payload_action_id": "mornye_syntony_field_heal",
+            "scheduled_healing_source_ref": "角色-女!4120 / 角色技能类型!533"
+          }
+        },
+        "source_rows": [
+          "角色-女!4118",
+          "角色-女!4120",
+          "角色技能类型!533"
+        ]
+      },
+      {
+        "operation": "update_fields",
+        "action_id": "mornye_liberation_critical_protocol",
+        "fields": {
+          "mechanic_event_tags": [],
+          "mechanic_effects": {
+            "upgrade_syntony_to_high": true,
+            "high_syntony_field_duration": 25,
+            "high_syntony_field_healing_metadata_present": true,
+            "high_syntony_field_healing_source": "角色-女!4121",
+            "high_syntony_field_def_percent_bonus": 0.2,
+            "high_syntony_field_def_bonus_source": "角色-女!D4124",
+            "high_syntony_field_off_tune_bonus_status": "implemented_simplified_inheritance",
+            "high_syntony_field_off_tune_buildup_rate_add": 0.5,
+            "high_syntony_field_healing_multiplier_bonus": 0.4,
+            "implementation_timing_mode": "same_action_high_syntony_field_creation_approximation",
+            "energy_regen_scaling_metadata_only": true,
+            "source_character_name": "莫宁",
+            "source_sheet": "角色-女",
+            "source_rows": [
+              4150,
+              4151,
+              4153,
+              4154
+            ],
+            "global_time_stop_frames": 300,
+            "damage_end_frame": 296,
+            "combat_time_cost_source": "大招-全局时停 covers damage end frame",
+            "has_global_time_stop": true,
+            "healing_implementation_status": "scheduled_180f_exact",
+            "scheduled_healing_first_tick_frames": 1,
+            "scheduled_healing_interval_frames": 180,
+            "scheduled_healing_duration_frames": 1500,
+            "scheduled_healing_max_trigger_count": 9,
+            "scheduled_healing_relative_tick_frames": [
+              1,
+              181,
+              361,
+              541,
+              721,
+              901,
+              1081,
+              1261,
+              1441
+            ],
+            "scheduled_healing_target_scope": "host_action_actor_else_active_character",
+            "scheduled_healing_payload_action_id": "mornye_high_syntony_field_heal",
+            "scheduled_healing_source_ref": "角色-女!4121 / 角色技能类型!533",
+            "heal_event_mode_support": [
+              "scheduled_180f_exact",
+              "field_creation_only",
+              "simplified_syntony_field_uptime"
+            ]
+          }
+        },
+        "source_rows": [
+          "角色-女!4119",
+          "角色-女!4121",
+          "角色技能类型!533"
+        ]
+      }
+    ],
+    "transition_metadata_records": [
+      {
+        "operation": "update_fields",
+        "action_id": "mornye_intro_convergence",
+        "fields": {
+          "mechanic_event_tags": [],
+          "mechanic_effects": {
+            "clear_rest_mass_energy": true,
+            "set_mode": "wide_field_observation",
+            "set_wide_field_observation_remaining": 30.0,
+            "set_syntony_field_remaining": 25.0,
+            "syntony_field_off_tune_buildup_rate_add": 0.5,
+            "syntony_field_off_tune_bonus_source": "角色-女!D4122",
+            "heal_event_mode_support": [
+              "scheduled_180f_exact",
+              "field_creation_only",
+              "simplified_syntony_field_uptime"
+            ],
+            "set_wfo_combo_stage": 1,
+            "source_sheet": "角色-女",
+            "source_rows": [
+              4148,
+              4149,
+              4164
+            ],
+            "has_global_time_stop": false,
+            "time_dilation_type": "时停",
+            "base_concerto_gain": 10,
+            "passive_concerto_gain": 20,
+            "final_concerto_gain": 30,
+            "passive_concerto_source": "角色-女!4164",
+            "combat_time_cost_source": "102F base ready + 8F self hitstop = 110F; no 全局时停, so combat_time_cost is 110F / 60.",
+            "healing_implementation_status": "scheduled_180f_exact",
+            "scheduled_healing_payload_action_id": "mornye_syntony_field_heal",
+            "scheduled_healing_source_ref": "角色-女!4120 / 角色技能类型!533",
+            "scheduled_healing_first_tick_frames": 1,
+            "scheduled_healing_interval_frames": 180,
+            "scheduled_healing_duration_frames": 1500,
+            "scheduled_healing_max_trigger_count": 9,
+            "scheduled_healing_relative_tick_frames": [
+              1,
+              181,
+              361,
+              541,
+              721,
+              901,
+              1081,
+              1261,
+              1441
+            ],
+            "scheduled_healing_target_scope": "host_action_actor_else_active_character"
+          }
+        },
+        "source_rows": [
+          "角色-女!4120",
+          "角色技能类型!533"
+        ]
       }
     ]
   }

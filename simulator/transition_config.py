@@ -17,6 +17,7 @@ VALID_MORNYE_HEAL_EVENT_MODES = {
     "disabled",
     "field_creation_only",
     "simplified_syntony_field_uptime",
+    "scheduled_180f_exact",
 }
 VALID_AEMEATH_RESONANCE_MODES = {"fusion_burst", "tune_rupture", "unresolved"}
 SUPPORTED_CHARACTER_TRANSITIONS = (
@@ -173,7 +174,7 @@ def mechanics_mode_summary(config: dict[str, Any]) -> dict[str, Any]:
         expectation_error_mode = "expectation_error_only"
     marker_config = mornye_config.get("interfered_marker") or {}
     tune_break_config = (config.get("mechanics") or {}).get("tune_break_system", {})
-    heal_event_mode = str(mornye_config.get("mornye_heal_event_mode", "simplified_syntony_field_uptime"))
+    heal_event_mode = str(mornye_config.get("mornye_heal_event_mode", "scheduled_180f_exact"))
     if heal_event_mode not in VALID_MORNYE_HEAL_EVENT_MODES:
         heal_event_mode = "disabled"
     return {

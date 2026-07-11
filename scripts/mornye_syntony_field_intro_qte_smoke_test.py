@@ -54,13 +54,17 @@ def main() -> None:
         assert sim.execute_action("mornye_basic_attack")
 
     events = list(sim.state.scheduled_effect_event_log)
-    assert [event["payload_action_id"] for event in events] == ["mornye_syntony_field_damage"] * 5
-    assert [round((event["combat_time"] - activation_time) * 60) for event in events] == [1, 28, 55, 82, 109]
+    damage_events = [event for event in events if event.get("event_type") == "scheduled_damage"]
+    heal_events = [event for event in events if event.get("event_type") == "scheduled_heal"]
+    assert [event["payload_action_id"] for event in damage_events] == ["mornye_syntony_field_damage"] * 5
+    assert [round((event["combat_time"] - activation_time) * 60) for event in damage_events] == [1, 28, 55, 82, 109]
+    assert [event["payload_action_id"] for event in heal_events] == ["mornye_syntony_field_heal"]
+    assert [round((event["combat_time"] - activation_time) * 60) for event in heal_events] == [1]
     assert_close(sum(float(event.get("off_tune_value", 0.0)) for event in events), 0.0, "Intro raw Off-Tune")
     assert_close(sum(float(event.get("off_tune_gain", 0.0)) for event in events), 0.0, "Intro applied Off-Tune")
     assert_close(sum(float(event.get("base_resonance_energy_gain", 0.0)) for event in events), 0.0, "Intro base RE")
     assert_close(sum(float(event.get("concerto_energy_gained", 0.0)) for event in events), 0.0, "Intro CE")
-    assert all(event["scheduled_resource_policy"] == "none" for event in events)
+    assert all(event["scheduled_resource_policy"] == "none" for event in damage_events)
 
     print("mornye_syntony_field_intro_qte_smoke_test ok")
 

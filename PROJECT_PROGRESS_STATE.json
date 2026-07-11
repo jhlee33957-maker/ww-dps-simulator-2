@@ -13,11 +13,11 @@
     "language_preference": "설명은 한국어, Codex 프롬프트와 코드 식별자는 영어 가능"
   },
   "status": {
-    "last_updated": "2026-07-11T20:02:28+09:00",
-    "latest_verified_archive": "ww-dps-simulator-2(87).zip",
-    "latest_verified_baseline_label": "87",
+    "last_updated": "2026-07-12T03:05:15+09:00",
+    "latest_verified_archive": "ww-dps-simulator-2(91).zip",
+    "latest_verified_baseline_label": "91",
     "current_task_status": "complete_pending_external_review",
-    "current_task": "Mornye manifest hash and Off-Tune audit idempotence repair",
+    "current_task": "exact Mornye Syntony/High Syntony 180-frame healing events",
     "current_task_expected_next_archive": "미정",
     "do_not_treat_current_task_as_complete_until_reviewed": true
   },
@@ -247,9 +247,9 @@
     }
   ],
   "current_in_progress_task": {
-    "task": "Mornye Syntony Field deployment-damage integration",
+    "task": "exact Mornye Syntony/High Syntony 180-frame healing events",
     "status": "implemented_tests_passed_pending_external_review",
-    "latest_externally_verified_baseline": "87",
+    "latest_externally_verified_baseline": "91",
     "damage_1_mapping": {
       "action_id": "mornye_syntony_field_damage",
       "multiplier": 0.3977,
@@ -311,13 +311,11 @@
       "liberation_unclamped_attempt": 4436.1,
       "theoretical_overflow": 516.1
     },
-    "remaining_limitation": "Exact 180-frame Syntony/High Syntony healing remains simplified and out of scope.",
+    "remaining_limitation": "HP/overheal/survival simulation remains out of scope; scheduled_damage_events remains a broad scheduled event collection that can include healing events and consumers should filter by event_type.",
     "external_review_required": true,
-    "notes": "Canonical Unicode traceability remains correct. Manifest hash guard now matches the canonical manifest bytes; patch check succeeds with field_level_change_count=0. Off-Tune audit generation is deterministic and idempotent; duplicated Syntony notes were removed and replaced by exactly one generator-owned Damage 1 note and one Damage 2 note. Runtime deployment-damage behavior was not changed. Exact 180-frame healing remains the next task; external review is still required.",
-    "title": "Fix manifest-integrity and Off-Tune audit-idempotence defects after (90) review",
+    "notes": "Intro targeting externally reviewed as correct; generic-swap incoming target implemented candidate; every exact-heal metadata location now uses host_action_actor_else_active_character; Mornye remains the source-stat owner; proxy healing remains disabled; no HP-state simulation added; next archive value is deliberately 미정; external review remains required.",
     "manifest_hash_guard": {
-      "previous_expected_sha256": "c59c3584d5c09aa106f643b1546957b471a9e841398cc9e0cba046f93e53bf8b",
-      "verified_canonical_sha256": "63e8c9accc2ac4081a736fa8b736cac44da1fedb8e9a88c1958b354c93c5c4d6",
+      "verified_canonical_sha256": "de172243cd0d4af65bbe30c361bf75db9e0d0035829251ae681fff1ac89ce0c9",
       "manifest_copies_byte_identical": true
     },
     "off_tune_audit_idempotence": {
@@ -326,6 +324,60 @@
       "damage_1_note_count": 1,
       "damage_2_note_count": 1,
       "legacy_note_variant_count": 0
+    },
+    "normal_syntony_field_healing": {
+      "implementation_status": "scheduled_180f_exact_candidate_pending_external_review_metadata_aligned",
+      "payload_action_id": "mornye_syntony_field_heal",
+      "instance_id": "mornye_syntony_field_heal:mornye",
+      "source_ref": "角色-女!4120 / 角色技能类型!533",
+      "relative_tick_frames": [
+        1,
+        181,
+        361,
+        541,
+        721,
+        901,
+        1081,
+        1261,
+        1441
+      ],
+      "formula": "1805 + Mornye runtime DEF * 0.945",
+      "current_reference_def": 2997.0536,
+      "current_reference_heal": 4637.215652,
+      "target_scope": "host_action_actor_else_active_character"
+    },
+    "high_syntony_field_healing": {
+      "implementation_status": "scheduled_180f_exact_candidate_pending_external_review_metadata_aligned",
+      "payload_action_id": "mornye_high_syntony_field_heal",
+      "instance_id": "mornye_high_syntony_field_heal:mornye",
+      "source_ref": "角色-女!4121 / 角色技能类型!533",
+      "relative_tick_frames": [
+        1,
+        181,
+        361,
+        541,
+        721,
+        901,
+        1081,
+        1261,
+        1441
+      ],
+      "formula": "(1805 + Mornye runtime DEF * 0.945) * 1.40",
+      "current_reference_def": 3268.2536,
+      "current_reference_heal": 6850.8995128,
+      "replacement_rule": "Critical Protocol cancels normal healing schedule; High heal waits for next positive combat-time +1F tick.",
+      "target_scope": "host_action_actor_else_active_character"
+    },
+    "transition_target_resolution": {
+      "status": "implemented_tests_passed_pending_external_review",
+      "target_scope": "host_action_actor_else_active_character",
+      "rule": "scheduled heal targets host_action_actor_character_id when available; otherwise active character",
+      "intro_targeting": "incoming transition actor externally reviewed as correct",
+      "generic_swap_targeting": "incoming destination character implemented candidate",
+      "ordinary_action_targeting": "host action actor / active character",
+      "wait_targeting": "current active character fallback",
+      "source_stat_owner": "mornye",
+      "transition_state_timing": "unchanged; active character still updates through existing lifecycle"
     }
   },
   "manual_cycle_reference": {
@@ -395,8 +447,8 @@
     {
       "id": "U002",
       "item": "Mornye Syntony/High Syntony Field deployment damage and exact healing",
-      "status": "deployment_damage_implemented_candidate_canonical_source_traceability_repaired_candidate",
-      "note": "Deployment damage implemented candidate; canonical source traceability repaired candidate; exact 180-frame Syntony/High Syntony healing remains simplified; external review required."
+      "status": "deployment_damage_externally_verified_exact_180f_healing_intro_generic_swap_targeting_metadata_aligned_candidate",
+      "note": "Deployment damage externally verified; exact 180-frame healing implemented candidate; Intro and generic-swap host-actor targeting implemented candidate; target-scope metadata aligned candidate; HP/overheal simulation remains out of scope; external review required."
     },
     {
       "id": "U003",
@@ -450,26 +502,16 @@
   "next_planned_tasks": [
     {
       "order": 1,
-      "task": "exact Mornye Syntony/High Syntony 180-frame healing events and replacement of the action-boundary healing proxy",
-      "prerequisite": "external review of deployment-damage audit cleanup candidate",
-      "acceptance": [
-        "normal Syntony exact 180-frame healing cadence",
-        "High Syntony exact 180-frame healing cadence",
-        "simplified action-boundary heal proxy removed or explicitly disabled by exact mode"
-      ]
-    },
-    {
-      "order": 2,
       "task": "Lynae Spray Paint source audit and scheduler integration",
       "do_not_guess": true
     },
     {
-      "order": 3,
+      "order": 2,
       "task": "Aemeath 30-stack source audit and implementation",
       "likely_observation_change": "v5 may be required"
     },
     {
-      "order": 4,
+      "order": 3,
       "task": "Mornye/Aemeath active Echo actions",
       "needs": [
         "source screenshots",
@@ -477,12 +519,12 @@
       ]
     },
     {
-      "order": 5,
+      "order": 4,
       "task": "full real-cycle integration",
       "acceptance": "stable full-cycle run without resource or Off-Tune injection"
     },
     {
-      "order": 6,
+      "order": 5,
       "task": "120-second manual baseline",
       "outputs": [
         "total damage",
@@ -494,7 +536,7 @@
       ]
     },
     {
-      "order": 7,
+      "order": 6,
       "task": "BC/PPO regeneration and training",
       "requirements": [
         "latest observation version",
@@ -503,7 +545,7 @@
       ]
     },
     {
-      "order": 8,
+      "order": 7,
       "task": "Beam Search/MCTS comparison",
       "rule": "Use only final 120-second total damage as the objective; no arbitrary character-use or buff bonuses."
     }
@@ -714,7 +756,100 @@
         "generator double-run SHA-256 idempotence check",
         "UTF-8 no-BOM check"
       ]
+    },
+    {
+      "baseline": "91",
+      "status": "verified",
+      "summary": "External review verified archive ww-dps-simulator-2(91).zip before exact Mornye Syntony/High Syntony 180-frame healing implementation.",
+      "known_good_for_next_task": true
+    },
+    {
+      "baseline": "exact_mornye_syntony_healing_after_91",
+      "status": "candidate_pending_external_review",
+      "summary": "Implemented exact source-backed 180-frame scheduled healing for Mornye normal and High Syntony Field after externally verified baseline 91. Runtime healing uses Mornye DEF at tick, active-character targeting, no HP-state model, and no damage/resource/reward contribution.",
+      "known_good_for_next_task": false,
+      "tests": [
+        "bundled python -m compileall -q simulator scripts characters env rl",
+        "mornye_syntony_field_heal_* smoke tests",
+        "scheduled_healing_execution_smoke_test.py",
+        "mornye_syntony_field_healing_manifest_reapply_smoke_test.py",
+        "scheduled_effect*_smoke_test.py suite",
+        "mornye_syntony_field_scheduler_smoke_test.py",
+        "mornye_syntony_field_intro_qte_smoke_test.py",
+        "mornye_high_syntony_field_scheduler_cancel_smoke_test.py",
+        "scheduled_source_resource_gain_smoke_test.py",
+        "mornye_discord_r5_no_counter_opener_smoke_test.py",
+        "mornye_heal_event_trigger_smoke_test.py",
+        "mornye_halo_5set_same_action_timing_smoke_test.py",
+        "starfield_party_crit_damage_buff_smoke_test.py",
+        "direct_action_manifest_hash_guard_smoke_test.py",
+        "combat_time_effect_duration_smoke_test.py",
+        "action_start_effect_snapshot_smoke_test.py",
+        "trailblazing_star_combat_time_uptime_smoke_test.py",
+        "lynae_off_tune_real_cycle_smoke_test.py",
+        "aemeath_mornye_lynae_short_rollout_smoke_test.py",
+        "env_smoke_test.py",
+        "apply_direct_action_data_v61.py --check --fail-on-diff"
+      ]
+    },
+    {
+      "baseline": "mornye_healing_traceability_and_transition_target_fix_after_93",
+      "status": "candidate_pending_external_review",
+      "summary": "Repaired canonical Mornye scheduled-healing source references and fixed transition-host actor target resolution while preserving 180F cadence, formulas, Mornye DEF source ownership, no proxy healing, and no HP-state model.",
+      "known_good_for_next_task": false,
+      "tests": [
+        "mornye_syntony_field_healing_source_traceability_smoke_test.py",
+        "mornye_syntony_field_heal_transition_target_smoke_test.py",
+        "mornye_syntony_field_heal_payload_data_smoke_test.py",
+        "mornye_syntony_field_heal_target_switch_smoke_test.py",
+        "mornye_syntony_field_healing_manifest_reapply_smoke_test.py",
+        "scheduled_effect*_smoke_test.py suite",
+        "Mornye Syntony field regressions",
+        "Halo/Starfield/Discord regressions",
+        "cycle/environment regressions",
+        "apply_direct_action_data_v61.py --check --fail-on-diff"
+      ]
+    },
+    {
+      "baseline": "mornye_healing_generic_swap_target_and_metadata_fix_after_94",
+      "status": "candidate_pending_external_review",
+      "summary": "Fixed generic non-Intro swap scheduled-heal target resolution to use the incoming destination and aligned healing target-scope metadata to host_action_actor_else_active_character while preserving Intro targeting, formulas, cadence, source refs, and proxy suppression.",
+      "known_good_for_next_task": false,
+      "tests": [
+        "mornye_syntony_field_heal_generic_swap_target_smoke_test.py",
+        "scheduled_healing_host_actor_metadata_smoke_test.py",
+        "mornye_syntony_field_heal_transition_target_smoke_test.py",
+        "mornye_syntony_field_heal_target_switch_smoke_test.py",
+        "mornye_syntony_field_heal_payload_data_smoke_test.py",
+        "mornye_syntony_field_healing_manifest_reapply_smoke_test.py",
+        "all heal smoke tests",
+        "scheduled_effect*_smoke_test.py suite",
+        "Syntony/Halo/weapon/cycle/environment regressions",
+        "apply_direct_action_data_v61.py --check --fail-on-diff"
+      ]
+    },
+    {
+      "baseline": "mornye_healing_metadata_and_progress_cleanup_after_95",
+      "status": "candidate_pending_external_review",
+      "summary": "Cleaned remaining exact Mornye Syntony scheduled-healing target-scope metadata to host_action_actor_else_active_character and repaired PROJECT_PROGRESS_STATE current_task_expected_next_archive to real Korean 미정 while preserving runtime targeting, cadence, formulas, source-stat ownership, proxy suppression, observation v4/312, and policy ordering.",
+      "known_good_for_next_task": false,
+      "tests": [
+        "bundled python -m compileall -q simulator scripts characters env rl",
+        "mornye_syntony_field_healing_metadata_consistency_smoke_test.py",
+        "scheduled_healing_host_actor_metadata_smoke_test.py",
+        "mornye_syntony_field_healing_manifest_reapply_smoke_test.py",
+        "mornye_syntony_field_heal_payload_data_smoke_test.py",
+        "generic swap/Intro/wait target regression tests",
+        "all heal smoke tests",
+        "scheduled_effect*_smoke_test.py suite",
+        "Mornye Syntony scheduler regressions",
+        "cycle/environment regressions",
+        "direct_action_manifest_hash_guard_smoke_test.py",
+        "apply_direct_action_data_v61.py --check --fail-on-diff",
+        "manifest byte/hash verification",
+        "UTF-8 no-BOM and Korean code-point checks"
+      ]
     }
   ],
-  "next_planned_task": "exact Mornye Syntony/High Syntony 180-frame healing events"
+  "next_planned_task": "Lynae Spray Paint source audit and scheduler integration"
 }

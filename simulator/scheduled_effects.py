@@ -20,6 +20,7 @@ def validate_scheduled_effect_request(
     time_until_next_tick: float,
     trigger_count: int = 0,
     max_trigger_count: int | None = None,
+    payload_event_type: str = "damage",
     scheduled_resource_policy: str = "none",
 ) -> None:
     if source_character_id not in selected_character_ids:
@@ -39,6 +40,10 @@ def validate_scheduled_effect_request(
         raise ValueError("Scheduled-effect trigger_count must be >= 0")
     if max_trigger_count is not None and max_trigger_count <= 0:
         raise ValueError("Scheduled-effect max_trigger_count must be > 0 when present")
+    if payload_event_type not in {"damage", "healing"}:
+        raise ValueError(f"Unsupported scheduled payload event type {payload_event_type!r}")
+    if payload_event_type == "healing" and scheduled_resource_policy != "none":
+        raise ValueError("Scheduled healing payloads must not grant scheduled resources")
     if scheduled_resource_policy not in {"none", "source_confirmed_positive_gains"}:
         raise ValueError(f"Unsupported scheduled_resource_policy {scheduled_resource_policy!r}")
 
@@ -61,6 +66,7 @@ def schedule_effect(
     trigger_count: int = 0,
     max_trigger_count: int | None = None,
     refresh_rule: str = "replace",
+    payload_event_type: str = "damage",
     scheduled_resource_policy: str = "none",
     source_status: str,
     source_ref: str | None = None,
@@ -81,6 +87,7 @@ def schedule_effect(
         time_until_next_tick=time_until_next_tick,
         trigger_count=trigger_count,
         max_trigger_count=max_trigger_count,
+        payload_event_type=payload_event_type,
         scheduled_resource_policy=scheduled_resource_policy,
     )
 
@@ -127,6 +134,7 @@ def schedule_effect(
         refresh_rule=refresh_rule,  # type: ignore[arg-type]
         source_status=source_status,
         source_ref=source_ref,
+        payload_event_type=payload_event_type,  # type: ignore[arg-type]
         scheduled_resource_policy=scheduled_resource_policy,  # type: ignore[arg-type]
         metadata=dict(metadata or {}),
         insertion_order=insertion_order,
@@ -222,6 +230,7 @@ def advance_scheduled_effects(
 
     total_damage = 0.0
     events: list[dict[str, Any]] = []
+    healing_events: list[dict[str, Any]] = []
     for offset, _order, instance_id, trigger_kind, local_index in sorted(due_events, key=lambda item: (item[0], item[1], item[2], item[3])):
         effect = scheduled_effect_by_instance_id(state, instance_id)
         if effect is None:
@@ -243,6 +252,8 @@ def advance_scheduled_effects(
             effect.time_until_next_tick = float(effect.tick_interval)
         total_damage += float(event.get("damage", 0.0) or 0.0)
         events.append(event)
+        if event.get("event_type") == "scheduled_heal":
+            healing_events.append(event)
 
     for effect in list(state.scheduled_effects):
         active_elapsed = float(active_elapsed_by_instance.get(effect.instance_id, 0.0) or 0.0)
@@ -262,4 +273,4 @@ def advance_scheduled_effects(
         if effect.remaining_duration > SCHEDULER_EPSILON
         and (effect.max_trigger_count is None or effect.trigger_count < effect.max_trigger_count)
     ]
-    return {"scheduled_damage": total_damage, "scheduled_damage_events": events}
+    return {"scheduled_damage": total_damage, "scheduled_damage_events": events, "scheduled_healing_events": healing_events}

@@ -37,11 +37,14 @@ def execute_to_geopotential(sim: Simulation):
 def main() -> None:
     sim = Simulation.from_json(DATA_DIR, party=PARTY_ID, initial_active_character="mornye")
     heavy = execute_to_geopotential(sim)
-    assert [event["payload_action_id"] for event in heavy.scheduled_damage_events] == [
+    damage_events = [event for event in heavy.scheduled_damage_events if event.get("event_type") == "scheduled_damage"]
+    heal_events = [event for event in heavy.scheduled_damage_events if event.get("event_type") == "scheduled_heal"]
+    assert [event["payload_action_id"] for event in damage_events] == [
         "mornye_syntony_field_damage",
         "mornye_syntony_field_target_damage",
         "mornye_syntony_field_damage",
     ]
+    assert [event["payload_action_id"] for event in heal_events] == ["mornye_syntony_field_heal"]
     damage_1 = sim.scheduled_effect_by_instance_id("mornye_syntony_field_damage_1:mornye")
     assert damage_1 is not None
     assert damage_1.trigger_count == 2
@@ -59,8 +62,9 @@ def main() -> None:
     before_log_count = len(sim.state.scheduled_effect_event_log)
     assert sim.execute_action("mornye_basic_attack")
     later = sim.timeline[-1]
-    assert later.scheduled_damage_events == []
-    assert len(sim.state.scheduled_effect_event_log) == before_log_count
+    assert [event["event_type"] for event in later.scheduled_damage_events] == ["scheduled_heal"]
+    assert later.scheduled_healing_events[0]["payload_action_id"] == "mornye_high_syntony_field_heal"
+    assert len(sim.state.scheduled_effect_event_log) == before_log_count + 1
 
     print("mornye_high_syntony_field_scheduler_cancel_smoke_test ok")
 

@@ -42,6 +42,14 @@ def event_frames(row, combat_start: float) -> list[int]:
     return [round((event["combat_time"] - combat_start) * 60) for event in row.scheduled_damage_events]
 
 
+def damage_events(row) -> list[dict]:
+    return [event for event in row.scheduled_damage_events if event.get("event_type") == "scheduled_damage"]
+
+
+def heal_events(row) -> list[dict]:
+    return [event for event in row.scheduled_damage_events if event.get("event_type") == "scheduled_heal"]
+
+
 def source_multiplier(events: list[dict]) -> float:
     return sum(float(event["hit_details"][0]["damage_multiplier"]) for event in events)
 
@@ -53,13 +61,23 @@ def test_heavy_host_activation_timing() -> None:
     activation_time = row.combat_time_start + 48.0 / 60.0
     assert_close(row.combat_time_end - row.combat_time_start, 80.0 / 60.0, "heavy combat frames")
 
-    assert event_frames(row, row.combat_time_start) == [49, 71, 76]
-    assert [event["payload_action_id"] for event in row.scheduled_damage_events] == [
+    damage = damage_events(row)
+    heals = heal_events(row)
+    assert event_frames(row, row.combat_time_start) == [49, 49, 71, 76]
+    assert [event["payload_action_id"] for event in row.scheduled_damage_events[:2]] == [
+        "mornye_syntony_field_heal",
+        "mornye_syntony_field_damage",
+    ]
+    assert [round((event["combat_time"] - row.combat_time_start) * 60) for event in damage] == [49, 71, 76]
+    assert [event["payload_action_id"] for event in damage] == [
         "mornye_syntony_field_damage",
         "mornye_syntony_field_target_damage",
         "mornye_syntony_field_damage",
     ]
-    assert_close(source_multiplier(row.scheduled_damage_events), 1.7856, "heavy-host source multiplier")
+    assert len(heals) == 1
+    assert heals[0]["payload_action_id"] == "mornye_syntony_field_heal"
+    assert row.scheduled_healing_events == heals
+    assert_close(source_multiplier(damage), 1.7856, "heavy-host source multiplier")
 
     damage_1 = sim.scheduled_effect_by_instance_id("mornye_syntony_field_damage_1:mornye")
     damage_2 = sim.scheduled_effect_by_instance_id("mornye_syntony_field_damage_2:mornye")

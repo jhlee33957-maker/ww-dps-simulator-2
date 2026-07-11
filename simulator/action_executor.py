@@ -1216,6 +1216,7 @@ def execute_action(
     )
     scheduled_damage = float(scheduled_effect_result.get("scheduled_damage", 0.0) or 0.0)
     scheduled_damage_events = list(scheduled_effect_result.get("scheduled_damage_events", []))
+    scheduled_healing_events = list(scheduled_effect_result.get("scheduled_healing_events", []))
 
     if action.action_type == "swap" and action.character_id is not None:
         state.active_character_id = action.character_id
@@ -1359,6 +1360,7 @@ def execute_action(
         direct_action_damage=direct_damage + generated_mechanic_damage + anomaly_tick_damage,
         scheduled_damage=scheduled_damage,
         scheduled_damage_events=scheduled_damage_events,
+        scheduled_healing_events=scheduled_healing_events,
         direct_damage_taken_amp_total_bonus_damage=float(
             direct_amp_summary.get("direct_damage_taken_amp_total_bonus_damage", 0.0) or 0.0
         ),
@@ -1617,6 +1619,7 @@ def execute_action(
                 "generated_mechanic_damage_events": generated_mechanic_events,
                 "scheduled_damage": scheduled_damage,
                 "scheduled_damage_events": scheduled_damage_events,
+                "scheduled_healing_events": scheduled_healing_events,
                 **action_damage_bonus_context,
                 **mechanic_event_log_fields,
                 **echo_set_log_fields,
@@ -1761,6 +1764,7 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         direct_action_damage=result.direct_action_damage,
         scheduled_damage=result.scheduled_damage,
         scheduled_damage_events=result.scheduled_damage_events,
+        scheduled_healing_events=result.scheduled_healing_events,
         direct_damage_taken_amp_total_bonus_damage=result.direct_damage_taken_amp_total_bonus_damage,
         interfered_marker_direct_damage_amp_applied_count=result.interfered_marker_direct_damage_amp_applied_count,
         interfered_marker_direct_damage_amp_bonus_damage=result.interfered_marker_direct_damage_amp_bonus_damage,

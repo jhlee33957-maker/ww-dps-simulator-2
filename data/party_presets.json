@@ -54,8 +54,8 @@
         "aemeath_resonance_mode_source": "party_preset"
       },
       "mornye": {
-        "mornye_heal_event_mode": "simplified_syntony_field_uptime",
-        "mornye_heal_event_mode_source": "party_preset",
+        "mornye_heal_event_mode": "scheduled_180f_exact",
+        "mornye_heal_event_mode_source": "party_preset_source_exact_180f",
         "interfered_marker": {
           "mode": "tune_break_triggered"
         }
@@ -116,8 +116,8 @@
         "aemeath_resonance_mode_source": "party_preset"
       },
       "mornye": {
-        "mornye_heal_event_mode": "simplified_syntony_field_uptime",
-        "mornye_heal_event_mode_source": "party_preset",
+        "mornye_heal_event_mode": "scheduled_180f_exact",
+        "mornye_heal_event_mode_source": "party_preset_source_exact_180f",
         "interfered_marker": {
           "mode": "tune_break_triggered"
         }
@@ -189,8 +189,8 @@
         "aemeath_resonance_mode_source": "party_preset"
       },
       "mornye": {
-        "mornye_heal_event_mode": "simplified_syntony_field_uptime",
-        "mornye_heal_event_mode_source": "party_preset",
+        "mornye_heal_event_mode": "scheduled_180f_exact",
+        "mornye_heal_event_mode_source": "party_preset_source_exact_180f",
         "interfered_marker": {
           "mode": "tune_break_triggered"
         }
@@ -252,8 +252,8 @@
         "aemeath_resonance_mode_source": "party_preset"
       },
       "mornye": {
-        "mornye_heal_event_mode": "simplified_syntony_field_uptime",
-        "mornye_heal_event_mode_source": "party_preset",
+        "mornye_heal_event_mode": "scheduled_180f_exact",
+        "mornye_heal_event_mode_source": "party_preset_source_exact_180f",
         "interfered_marker": {
           "mode": "tune_break_triggered"
         },

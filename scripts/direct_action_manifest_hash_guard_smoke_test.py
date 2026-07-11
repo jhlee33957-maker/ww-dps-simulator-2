@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = ROOT / "direct_action_data_patch_manifest_v61.json"
 SOURCE_MANIFEST_PATH = ROOT / "data" / "source" / "direct_action_data_patch_manifest_v61.json"
 APPLY_SCRIPT_PATH = ROOT / "scripts" / "apply_direct_action_data_v61.py"
-EXPECTED_MANIFEST_SHA256 = "63e8c9accc2ac4081a736fa8b736cac44da1fedb8e9a88c1958b354c93c5c4d6"
+EXPECTED_MANIFEST_SHA256 = "de172243cd0d4af65bbe30c361bf75db9e0d0035829251ae681fff1ac89ce0c9"
 
 
 def load_apply_module():
