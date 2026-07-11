@@ -56,6 +56,18 @@ class CharacterMechanic:
     def after_action(self, state: Any, action: Any, result: Any) -> None:
         pass
 
+    def apply_scheduled_status_effect(
+        self,
+        state: Any,
+        payload_action: Any,
+        effect_metadata: dict[str, Any],
+        event_context: dict[str, Any],
+    ) -> dict[str, Any]:
+        raise NotImplementedError(
+            f"{self.character_id} does not support scheduled status effect "
+            f"{getattr(payload_action, 'id', '<unknown>')!r}"
+        )
+
     def apply_character_mechanics(self, resolved_action: Any, character_state: Any, party_state: Any) -> None:
         pass
 

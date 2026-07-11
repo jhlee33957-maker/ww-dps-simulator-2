@@ -23,7 +23,7 @@ ScalingStat = Literal["atk", "def", "hp", "none", "unresolved"]
 HitTimeMode = Literal["source_time", "resolved_action_end"]
 ScheduledEffectRefreshRule = Literal["replace", "refresh_duration", "keep_existing"]
 ScheduledResourcePolicy = Literal["none", "source_confirmed_positive_gains"]
-ScheduledPayloadEventType = Literal["damage", "healing"]
+ScheduledPayloadEventType = Literal["damage", "healing", "status_application"]
 
 
 class CharacterData(BaseModel):
@@ -476,6 +476,7 @@ class ActionResult(BaseModel):
     scheduled_damage: float = 0.0
     scheduled_damage_events: list[dict[str, Any]] = Field(default_factory=list)
     scheduled_healing_events: list[dict[str, Any]] = Field(default_factory=list)
+    scheduled_status_application_events: list[dict[str, Any]] = Field(default_factory=list)
     direct_damage_taken_amp_total_bonus_damage: float = 0.0
     interfered_marker_direct_damage_amp_applied_count: int = 0
     interfered_marker_direct_damage_amp_bonus_damage: float = 0.0
@@ -755,6 +756,11 @@ class ActionResult(BaseModel):
     lynae_target_tune_shift_state: str | None = None
     lynae_target_tune_shift_remaining: float = 0.0
     lynae_spray_paint_window_remaining: float = 0.0
+    lynae_spray_paint_scheduled: bool = False
+    lynae_spray_paint_schedule_operation: str | None = None
+    lynae_spray_paint_mode_snapshot: str | None = None
+    lynae_spray_paint_target_shift_state_snapshot: str | None = None
+    lynae_spray_paint_source_ref: str | None = None
     lynae_visual_impact_cooldown_remaining: float = 0.0
     lynae_visual_impact_tune_break_boost_buff_active: bool = False
     lynae_visual_impact_tune_break_boost_value: float = 0.0
@@ -911,6 +917,7 @@ class TimelineEntry(BaseModel):
     scheduled_damage: float = 0.0
     scheduled_damage_events: list[dict[str, Any]] = Field(default_factory=list)
     scheduled_healing_events: list[dict[str, Any]] = Field(default_factory=list)
+    scheduled_status_application_events: list[dict[str, Any]] = Field(default_factory=list)
     direct_damage_taken_amp_total_bonus_damage: float = 0.0
     interfered_marker_direct_damage_amp_applied_count: int = 0
     interfered_marker_direct_damage_amp_bonus_damage: float = 0.0
@@ -1188,6 +1195,11 @@ class TimelineEntry(BaseModel):
     lynae_target_tune_shift_state: str | None = None
     lynae_target_tune_shift_remaining: float = 0.0
     lynae_spray_paint_window_remaining: float = 0.0
+    lynae_spray_paint_scheduled: bool = False
+    lynae_spray_paint_schedule_operation: str | None = None
+    lynae_spray_paint_mode_snapshot: str | None = None
+    lynae_spray_paint_target_shift_state_snapshot: str | None = None
+    lynae_spray_paint_source_ref: str | None = None
     lynae_visual_impact_cooldown_remaining: float = 0.0
     lynae_visual_impact_tune_break_boost_buff_active: bool = False
     lynae_visual_impact_tune_break_boost_value: float = 0.0

@@ -51,7 +51,7 @@ LYNAE_ACTION_ALIGNMENT = [
     ("lynae_resonance_skill_palette", "Lynae-Style Palettes", [2662, 2663, 2664, 2665, 2666], [2454, 2455, 2456, 2457], "implemented_v2"),
     ("lynae_resonance_skill_additive_color", "Additive Color", [2672, 2673, 2674], [2458, 2459], "implemented_v2"),
     ("lynae_iridescent_splash", "Iridescent Splash C0", [2675, 2676, 2677, 2678], [2460, 2461], "implemented_v2"),
-    ("lynae_visual_impact", "Visual Impact C0", [2679, 2680, 2681, 2682], [2464, 2465], "implemented_v2_periodic_spray_metadata_only"),
+    ("lynae_visual_impact", "Visual Impact C0", [2679, 2680, 2681, 2682], [2464, 2465], "implemented_v3_spray_paint_scheduled_status_application"),
     ("lynae_polychrome_leap_stage_1", "Polychrome Leap Stage 1 C0", [2641, 2642, 2643, 2644, 2645], [2468, 2469, 2470], "implemented_v2"),
     ("lynae_polychrome_leap_stage_2", "Polychrome Leap Stage 2 C0", [2647, 2648, 2649, 2650, 2651], [2474], "implemented_v2"),
     ("lynae_polychrome_leap_stage_3", "Polychrome Leap Stage 3 C0", [2653, 2654, 2660, 2661], [2476, 2477], "implemented_v2"),
@@ -201,12 +201,6 @@ LYNAE_UNRESOLVED_ROWS = [
         "reason": "Simulator is action-step based and has no continuous movement/skating state.",
     },
     {
-        "topic": "spray_paint_periodic_ticks",
-        "source_rows": ["角色-女!2683:2688"],
-        "implementation_status": "metadata_only_window_recorded",
-        "reason": "Visual Impact records the 5s window and immediate Flux; periodic 2s field scheduling is not added.",
-    },
-    {
         "topic": "constellation_variants",
         "source_rows": ["dmg!2462:2463", "dmg!2466:2467", "dmg!2471:2473", "dmg!2475", "dmg!2478:2479", "dmg!2483", "dmg!2490"],
         "implementation_status": "constellation_gated_disabled_by_default",
@@ -220,6 +214,17 @@ LYNAE_UNRESOLVED_ROWS = [
     },
 ]
 LYNAE_IMPLEMENTED_SINGLE_TARGET_ROWS = [
+    {
+        "topic": "spray_paint_scheduled_flux_application",
+        "source_rows": ["角色-女!2683", "角色-女!2684"],
+        "implementation_status": "implemented_scheduled_status_application_single_target",
+        "notes": (
+            "Visual Impact schedules Spray Paint as periodic status application checks at +1F, +121F, and +241F "
+            "over a 300F combat-time field. The event reapplies Photocromic Flux with the resonance mode "
+            "snapshotted when the field was created and assumes the current single target remains inside the area. "
+            "C1 rows 角色-女!2685:2688 are constellation-gated, out of scope, and not enabled for the C0 party."
+        ),
+    },
     {
         "topic": "tune_strain_stack_limit_and_per_stack_damage",
         "source_rows": ["角色-女!2728"],
@@ -619,6 +624,12 @@ def build_audit() -> dict[str, Any]:
             "label": "Lumiflow / skating / hold movement branches",
             "source_ref": "角色-女!2577:2738",
             "classification": "metadata_only",
+        },
+        {
+            "id": "lynae_spray_paint_scheduled_flux_application",
+            "label": "Spray Paint Photocromic Flux field checks",
+            "source_ref": "角色-女!2683:2684",
+            "classification": "implemented_scheduled_status_application_single_target",
         },
     ]
 

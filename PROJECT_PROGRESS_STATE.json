@@ -13,11 +13,11 @@
     "language_preference": "설명은 한국어, Codex 프롬프트와 코드 식별자는 영어 가능"
   },
   "status": {
-    "last_updated": "2026-07-12T03:05:15+09:00",
-    "latest_verified_archive": "ww-dps-simulator-2(91).zip",
-    "latest_verified_baseline_label": "91",
+    "last_updated": "2026-07-12T05:15:49+09:00",
+    "latest_verified_archive": "ww-dps-simulator-2(96).zip",
+    "latest_verified_baseline_label": "96",
     "current_task_status": "complete_pending_external_review",
-    "current_task": "exact Mornye Syntony/High Syntony 180-frame healing events",
+    "current_task": "Lynae Spray Paint source audit and scheduler integration",
     "current_task_expected_next_archive": "미정",
     "do_not_treat_current_task_as_complete_until_reviewed": true
   },
@@ -247,138 +247,58 @@
     }
   ],
   "current_in_progress_task": {
-    "task": "exact Mornye Syntony/High Syntony 180-frame healing events",
+    "task": "Lynae Spray Paint source audit and scheduler integration",
     "status": "implemented_tests_passed_pending_external_review",
-    "latest_externally_verified_baseline": "91",
-    "damage_1_mapping": {
-      "action_id": "mornye_syntony_field_damage",
-      "multiplier": 0.3977,
-      "category": "Resonance Liberation damage",
-      "element": "Fusion",
-      "off_tune": 0,
-      "resonance_energy": 0,
-      "concerto_energy": 0,
-      "relative_tick_frames": [
-        1,
-        28,
-        55,
-        82,
-        109
-      ],
-      "off_tune_source_status": "workbook_confirmed_zero_for_damage_1",
-      "source_ref": "角色-女!4126 / dmg/角色技能类型!2655"
-    },
-    "damage_2_mapping": {
-      "action_id": "mornye_syntony_field_target_damage",
-      "multiplier": 0.9902,
-      "category": "Heavy Attack damage",
-      "element": "Fusion",
-      "off_tune": 66.4,
-      "resonance_energy": 2.08,
-      "concerto_energy": 6.65,
-      "relative_tick_frames": [
-        23
-      ],
-      "scheduled_resource_policy": "source_confirmed_positive_gains",
-      "off_tune_source_status": "workbook_confirmed",
-      "source_ref": "角色-女!4127 / dmg/角色技能类型!2656"
-    },
-    "activation_timing": {
-      "geopotential_shift": "host combat start + 48 / 60",
-      "intro_qte": "transition combat end approximation",
-      "intro_status": [
-        "source_confirmed_creation",
-        "activation_timing_approximation_action_end"
-      ]
-    },
-    "qte_restriction": "Intro/QTE schedules Damage 1 only; Damage 2 is non-QTE only.",
-    "high_field_rule": "Critical Protocol cancels pending normal-field deployment damage and schedules no High Syntony deployment damage.",
-    "opener_concerto": {
-      "unclamped": 108.09,
-      "clamped": 100,
-      "wasted": 8.09
-    },
-    "off_tune_checkpoints": {
-      "after_mornye_opener": 1926.27,
-      "after_lynae_intro": 2085.87,
-      "after_lynae_resonance_skill": 2216.7,
-      "after_spark_collision_lv3": 2611.2,
-      "after_leap_stage_1": 2683.2,
-      "after_leap_stage_2": 2755.2,
-      "after_leap_stage_3": 2801.7,
-      "after_visual_impact": 3716.1,
-      "lynae_liberation_clamped": 3920,
-      "liberation_unclamped_attempt": 4436.1,
-      "theoretical_overflow": 516.1
-    },
-    "remaining_limitation": "HP/overheal/survival simulation remains out of scope; scheduled_damage_events remains a broad scheduled event collection that can include healing events and consumers should filter by event_type.",
+    "latest_externally_verified_baseline": "96",
     "external_review_required": true,
-    "notes": "Intro targeting externally reviewed as correct; generic-swap incoming target implemented candidate; every exact-heal metadata location now uses host_action_actor_else_active_character; Mornye remains the source-stat owner; proxy healing remains disabled; no HP-state simulation added; next archive value is deliberately 미정; external review remains required.",
+    "implementation_status": "implemented_candidate_pending_external_review",
+    "spray_paint_semantics": "periodic status application, not damage",
+    "canonical_unicode_source_refs_restored": true,
+    "scheduled_status_application": {
+      "host_action_id": "lynae_visual_impact",
+      "payload_action_id": "lynae_spray_paint_flux_application",
+      "instance_id": "lynae_spray_paint_flux:lynae",
+      "payload_event_type": "status_application",
+      "relative_application_frames": [
+        1,
+        121,
+        241
+      ],
+      "field_duration_frames": 300,
+      "first_check_frames": 1,
+      "check_interval_frames": 120,
+      "max_application_count": 3,
+      "remove_on_max_trigger_count": false,
+      "target_presence_assumption": "single_target_remains_inside_paint_area",
+      "zero_damage_resources_off_tune_reward": true
+    },
+    "mode_snapshot_mapping": {
+      "tune_strain": {
+        "target_shift_state": "tune_strain_shifting",
+        "source_ref": "角色-女!2683"
+      },
+      "tune_rupture": {
+        "target_shift_state": "tune_rupture_shifting",
+        "source_ref": "角色-女!2684"
+      }
+    },
+    "c1_out_of_scope_refs": [
+      "角色-女!2685",
+      "角色-女!2686",
+      "角色-女!2687",
+      "角色-女!2688"
+    ],
+    "remaining_limitations": [
+      "C1 600F field extension and attraction remain out of scope",
+      "spatial target-presence simulation remains approximated"
+    ],
     "manifest_hash_guard": {
-      "verified_canonical_sha256": "de172243cd0d4af65bbe30c361bf75db9e0d0035829251ae681fff1ac89ce0c9",
+      "verified_canonical_sha256": "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d",
       "manifest_copies_byte_identical": true
     },
-    "off_tune_audit_idempotence": {
-      "json_sha256": "83fd7fd399c07820e0330d5185912c3c5af93f5134fa7b1b5a763ec88c38de0b",
-      "markdown_sha256": "8bf92eb56d6f93bc280d57e2139b4f0f06ff4a344e45fa35c58d98c710cd5e56",
-      "damage_1_note_count": 1,
-      "damage_2_note_count": 1,
-      "legacy_note_variant_count": 0
-    },
-    "normal_syntony_field_healing": {
-      "implementation_status": "scheduled_180f_exact_candidate_pending_external_review_metadata_aligned",
-      "payload_action_id": "mornye_syntony_field_heal",
-      "instance_id": "mornye_syntony_field_heal:mornye",
-      "source_ref": "角色-女!4120 / 角色技能类型!533",
-      "relative_tick_frames": [
-        1,
-        181,
-        361,
-        541,
-        721,
-        901,
-        1081,
-        1261,
-        1441
-      ],
-      "formula": "1805 + Mornye runtime DEF * 0.945",
-      "current_reference_def": 2997.0536,
-      "current_reference_heal": 4637.215652,
-      "target_scope": "host_action_actor_else_active_character"
-    },
-    "high_syntony_field_healing": {
-      "implementation_status": "scheduled_180f_exact_candidate_pending_external_review_metadata_aligned",
-      "payload_action_id": "mornye_high_syntony_field_heal",
-      "instance_id": "mornye_high_syntony_field_heal:mornye",
-      "source_ref": "角色-女!4121 / 角色技能类型!533",
-      "relative_tick_frames": [
-        1,
-        181,
-        361,
-        541,
-        721,
-        901,
-        1081,
-        1261,
-        1441
-      ],
-      "formula": "(1805 + Mornye runtime DEF * 0.945) * 1.40",
-      "current_reference_def": 3268.2536,
-      "current_reference_heal": 6850.8995128,
-      "replacement_rule": "Critical Protocol cancels normal healing schedule; High heal waits for next positive combat-time +1F tick.",
-      "target_scope": "host_action_actor_else_active_character"
-    },
-    "transition_target_resolution": {
-      "status": "implemented_tests_passed_pending_external_review",
-      "target_scope": "host_action_actor_else_active_character",
-      "rule": "scheduled heal targets host_action_actor_character_id when available; otherwise active character",
-      "intro_targeting": "incoming transition actor externally reviewed as correct",
-      "generic_swap_targeting": "incoming destination character implemented candidate",
-      "ordinary_action_targeting": "host action actor / active character",
-      "wait_targeting": "current active character fallback",
-      "source_stat_owner": "mornye",
-      "transition_state_timing": "unchanged; active character still updates through existing lifecycle"
-    }
+    "observation_status": "slot_generic_mechanics_v4 shape 312 unchanged",
+    "reward_and_training_status": "reward settings, PPO, curriculum, BC demonstrations, and route demonstrations unchanged",
+    "notes": "Runtime Spray Paint behavior was externally reviewed in candidate 97 and not changed except canonical source-reference metadata literals."
   },
   "manual_cycle_reference": {
     "status": "user_researched_reference_cycle",
@@ -452,9 +372,9 @@
     },
     {
       "id": "U003",
-      "item": "린네 Spray Paint 자동 피해",
-      "status": "not_implemented",
-      "note": "창 상태만 존재하며 주기 피해·조화도 이벤트 미구현."
+      "item": "Lynae Spray Paint periodic status application and out-of-scope C1 behavior",
+      "status": "implemented_candidate_pending_external_review_with_c1_and_spatial_limits",
+      "note": "Spray Paint confirmed as periodic status application, not damage; C0 exact +1F/+121F/+241F status schedule, mode snapshot, and recast replacement implemented candidate; C1 600F field extension and attraction remain out of scope; spatial target-presence simulation remains approximated; external review required."
     },
     {
       "id": "U004",
@@ -502,16 +422,11 @@
   "next_planned_tasks": [
     {
       "order": 1,
-      "task": "Lynae Spray Paint source audit and scheduler integration",
-      "do_not_guess": true
-    },
-    {
-      "order": 2,
-      "task": "Aemeath 30-stack source audit and implementation",
+      "task": "Aemeath post-Tune-Break 30-stack source audit and implementation",
       "likely_observation_change": "v5 may be required"
     },
     {
-      "order": 3,
+      "order": 2,
       "task": "Mornye/Aemeath active Echo actions",
       "needs": [
         "source screenshots",
@@ -519,12 +434,12 @@
       ]
     },
     {
-      "order": 4,
+      "order": 3,
       "task": "full real-cycle integration",
       "acceptance": "stable full-cycle run without resource or Off-Tune injection"
     },
     {
-      "order": 5,
+      "order": 4,
       "task": "120-second manual baseline",
       "outputs": [
         "total damage",
@@ -536,7 +451,7 @@
       ]
     },
     {
-      "order": 6,
+      "order": 5,
       "task": "BC/PPO regeneration and training",
       "requirements": [
         "latest observation version",
@@ -545,7 +460,7 @@
       ]
     },
     {
-      "order": 7,
+      "order": 6,
       "task": "Beam Search/MCTS comparison",
       "rule": "Use only final 120-second total damage as the objective; no arbitrary character-use or buff bonuses."
     }
@@ -849,7 +764,30 @@
         "manifest byte/hash verification",
         "UTF-8 no-BOM and Korean code-point checks"
       ]
+    },
+    {
+      "baseline": "96",
+      "status": "verified",
+      "summary": "External review verified archive ww-dps-simulator-2(96).zip before Lynae Spray Paint source audit and scheduler integration.",
+      "known_good_for_next_task": true
+    },
+    {
+      "baseline": "lynae_spray_paint_unicode_and_manifest_fix_after_97",
+      "status": "candidate_pending_external_review",
+      "summary": "Repaired Lynae Spray Paint canonical Unicode source references, final manifest hash guard, source traceability tests, and progress-state wording without changing verified runtime behavior.",
+      "known_good_for_next_task": false,
+      "tests": [
+        "lynae_spray_paint_source_traceability_smoke_test.py",
+        "lynae_source_ref_encoding_guard_smoke_test.py",
+        "lynae_utf8_source_ref_guard_smoke_test.py",
+        "Spray Paint smoke suite",
+        "scheduled_effect*_smoke_test.py suite",
+        "Lynae and environment regressions",
+        "direct_action_manifest_hash_guard_smoke_test.py",
+        "apply_direct_action_data_v61.py --check --fail-on-diff",
+        "manifest byte/hash and no-BOM verification"
+      ]
     }
   ],
-  "next_planned_task": "Lynae Spray Paint source audit and scheduler integration"
+  "next_planned_task": "Aemeath post-Tune-Break 30-stack source audit and implementation"
 }

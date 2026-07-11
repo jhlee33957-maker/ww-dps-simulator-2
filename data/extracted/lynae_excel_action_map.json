@@ -2701,7 +2701,7 @@
       }
     ],
     "source_status": "workbook_confirmed",
-    "implementation_status": "implemented_v2_periodic_spray_metadata_only"
+    "implementation_status": "implemented_v3_spray_paint_scheduled_status_application"
   },
   {
     "action_id": "lynae_polychrome_leap_stage_1",

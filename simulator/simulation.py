@@ -104,6 +104,8 @@ class Simulation:
     MORNYE_SYNTONY_FIELD_DAMAGE_2_ACTION_ID = "mornye_syntony_field_target_damage"
     MORNYE_SYNTONY_FIELD_HEAL_ACTION_ID = "mornye_syntony_field_heal"
     MORNYE_HIGH_SYNTONY_FIELD_HEAL_ACTION_ID = "mornye_high_syntony_field_heal"
+    LYNAE_SPRAY_PAINT_INSTANCE_ID = "lynae_spray_paint_flux:lynae"
+    LYNAE_SPRAY_PAINT_PAYLOAD_ACTION_ID = "lynae_spray_paint_flux_application"
 
     def __init__(
         self,
@@ -490,6 +492,20 @@ class Simulation:
                 host_action_combat_offset=host_action_combat_offset,
                 trigger_index=trigger_index,
             )
+        if getattr(effect, "payload_event_type", "damage") == "status_application":
+            return self.execute_scheduled_status_application_event(
+                effect=effect,
+                host_action_id=host_action_id,
+                host_actor_character_id=host_actor_character_id,
+                host_action_type=host_action_type,
+                outgoing_character_id=outgoing_character_id,
+                incoming_character_id=incoming_character_id,
+                host_combat_start_time=host_combat_start_time,
+                host_combat_end_time=host_combat_end_time,
+                combat_time=combat_time,
+                host_action_combat_offset=host_action_combat_offset,
+                trigger_index=trigger_index,
+            )
         return self.execute_scheduled_damage_event(
             effect=effect,
             host_action_id=host_action_id,
@@ -595,6 +611,7 @@ class Simulation:
             "scheduled_effect_id": effect.effect_id,
             "source_character_id": effect.source_character_id,
             "source_action_id": effect.source_action_id,
+            "payload_event_type": getattr(effect, "payload_event_type", "status_application"),
             "payload_action_id": payload.id,
             "payload_action_name": payload.name,
             "host_action_id": host_action_id,
@@ -633,6 +650,82 @@ class Simulation:
                 if log.get("weapon_effect_id")
             ],
             **halo_log,
+        }
+        self.state.scheduled_effect_event_log.append(event)
+        return event
+
+    def execute_scheduled_status_application_event(
+        self,
+        *,
+        effect,
+        host_action_id: str,
+        combat_time: float,
+        host_action_combat_offset: float,
+        trigger_index: int,
+        host_actor_character_id: str | None = None,
+        host_action_type: str | None = None,
+        outgoing_character_id: str | None = None,
+        incoming_character_id: str | None = None,
+        host_combat_start_time: float | None = None,
+        host_combat_end_time: float | None = None,
+    ) -> dict[str, Any]:
+        payload = self.actions.get(effect.payload_action_id)
+        if payload is None:
+            raise ValueError(f"Unknown scheduled-effect payload action {effect.payload_action_id!r}")
+        mechanic = self._mechanic_for_character(effect.source_character_id)
+        metadata = dict(effect.metadata or {})
+        event_context = {
+            "host_action_id": host_action_id,
+            "host_action_type": host_action_type,
+            "host_actor_character_id": host_actor_character_id,
+            "outgoing_character_id": outgoing_character_id,
+            "incoming_character_id": incoming_character_id,
+            "host_combat_start_time": host_combat_start_time,
+            "host_combat_end_time": host_combat_end_time,
+            "combat_time": combat_time,
+            "host_action_combat_offset": host_action_combat_offset,
+            "trigger_index": trigger_index,
+        }
+        application_log = mechanic.apply_scheduled_status_effect(
+            self.state,
+            payload,
+            metadata,
+            event_context,
+        )
+        event = {
+            "event_type": "scheduled_status_application",
+            "scheduled_effect_instance_id": effect.instance_id,
+            "scheduled_effect_id": effect.effect_id,
+            "source_character_id": effect.source_character_id,
+            "source_action_id": effect.source_action_id,
+            "payload_event_type": getattr(effect, "payload_event_type", "status_application"),
+            "payload_action_id": payload.id,
+            "payload_action_name": payload.name,
+            "host_action_id": host_action_id,
+            "host_action_type": host_action_type,
+            "host_actor_character_id": host_actor_character_id,
+            "outgoing_character_id": outgoing_character_id,
+            "incoming_character_id": incoming_character_id,
+            "host_combat_start_time": host_combat_start_time,
+            "host_combat_end_time": host_combat_end_time,
+            "trigger_index": trigger_index,
+            "combat_time": combat_time,
+            "host_action_combat_offset": host_action_combat_offset,
+            "damage": 0.0,
+            "normal_damage": 0.0,
+            "off_tune_value": 0.0,
+            "off_tune_gain": 0.0,
+            "resonance_energy_gain": 0.0,
+            "concerto_energy_gain": 0.0,
+            "reward_contribution": 0.0,
+            "resource_cost_applied": False,
+            "cooldown_applied": False,
+            "combo_state_changed": False,
+            "ordinary_player_action_side_effects_applied": False,
+            "source_status": application_log.get("source_status", effect.source_status),
+            "source_ref": application_log.get("source_ref", effect.source_ref),
+            "metadata": metadata,
+            **application_log,
         }
         self.state.scheduled_effect_event_log.append(event)
         return event
@@ -895,9 +988,11 @@ class Simulation:
             )
         if not result.truncated_by_combat_limit and not (action.mechanic_effects or {}).get("skip_character_after_action"):
             actor_mechanic.after_action(self.state, action, result)
+            self._schedule_lynae_spray_paint_status_field(action, result)
         if not result.truncated_by_combat_limit:
             self._apply_mornye_post_action_support_events(action, result)
         self._sync_weapon_result_fields(result)
+        self._sync_lynae_spray_paint_window_mirror(result)
         result.mechanic_debug_after = {
             character_id: mechanic.get_debug_state(self.state)
             for character_id, mechanic in self.character_mechanics.items()
@@ -2198,6 +2293,85 @@ class Simulation:
             "mornye_high_syntony_field_healing_relative_tick_frames": [1, 181, 361, 541, 721, 901, 1081, 1261, 1441],
             "high_syntony_field_healing_multiplier_metadata_only": False,
         }
+
+    def _lynae_spray_paint_snapshot_metadata(self) -> dict[str, Any]:
+        lynae_state = self.state.character_mechanics_state.setdefault("lynae", {})
+        mode = str(lynae_state.get("lynae_resonance_mode", "tune_rupture") or "tune_rupture")
+        if mode == "tune_strain":
+            shift_state = "tune_strain_shifting"
+            source_row = "角色-女!2683"
+        elif mode == "tune_rupture":
+            shift_state = "tune_rupture_shifting"
+            source_row = "角色-女!2684"
+        else:
+            raise ValueError(f"Unsupported Lynae Spray Paint resonance mode snapshot {mode!r}")
+        return {
+            "paint_mode_snapshot": mode,
+            "target_shift_state_snapshot": shift_state,
+            "source_row": source_row,
+            "source_ref": source_row,
+            "source_status": "workbook_confirmed_scheduled_status_application",
+            "scheduled_status_effect_id": "lynae_photocromic_flux",
+            "effect_duration": 25.0,
+            "target_scope": "current_single_enemy",
+            "mode_source": "scheduled_effect_metadata_snapshot",
+            "target_presence_assumption": "single_target_remains_inside_paint_area",
+            "activation_timing_status": [
+                "source_confirmed_field_generation",
+                "activation_timing_approximation_action_end",
+            ],
+            "first_check_frames": 1,
+            "check_interval_frames": 120,
+            "field_duration_frames": 300,
+            "relative_application_frames": [1, 121, 241],
+            "max_application_count": 3,
+            "remove_on_max_trigger_count": False,
+            "zero_damage_resources_off_tune": True,
+            "c1_rows_excluded": ["角色-女!2685", "角色-女!2686", "角色-女!2687", "角色-女!2688"],
+        }
+
+    def _schedule_lynae_spray_paint_status_field(self, action: ActionData, result: Any) -> dict[str, Any]:
+        if action.id != "lynae_visual_impact" or "lynae" not in self.characters:
+            return {}
+        metadata = self._lynae_spray_paint_snapshot_metadata()
+        schedule_result = self.schedule_effect(
+            instance_id=self.LYNAE_SPRAY_PAINT_INSTANCE_ID,
+            effect_id="lynae_spray_paint",
+            source_character_id="lynae",
+            source_action_id="lynae_visual_impact",
+            payload_action_id=self.LYNAE_SPRAY_PAINT_PAYLOAD_ACTION_ID,
+            activation_combat_time=float(result.combat_time_end),
+            remaining_duration=300.0 / 60.0,
+            tick_interval=120.0 / 60.0,
+            time_until_next_tick=1.0 / 60.0,
+            max_trigger_count=3,
+            trigger_on_apply=False,
+            refresh_rule="replace",
+            payload_event_type="status_application",
+            scheduled_resource_policy="none",
+            source_status="workbook_confirmed_scheduled_status_application",
+            source_ref=metadata["source_ref"],
+            metadata=metadata,
+        )
+        lynae_state = self.state.character_mechanics_state.setdefault("lynae", {})
+        lynae_state["spray_paint_window_remaining"] = 300.0 / 60.0
+        result.lynae_spray_paint_window_remaining = 300.0 / 60.0
+        result.lynae_spray_paint_scheduled = True
+        result.lynae_spray_paint_schedule_operation = schedule_result.get("operation")
+        result.lynae_spray_paint_mode_snapshot = metadata["paint_mode_snapshot"]
+        result.lynae_spray_paint_target_shift_state_snapshot = metadata["target_shift_state_snapshot"]
+        result.lynae_spray_paint_source_ref = metadata["source_ref"]
+        return dict(schedule_result)
+
+    def _sync_lynae_spray_paint_window_mirror(self, result: Any | None = None) -> None:
+        lynae_state = self.state.character_mechanics_state.get("lynae")
+        if lynae_state is None:
+            return
+        effect = self.scheduled_effect_by_instance_id(self.LYNAE_SPRAY_PAINT_INSTANCE_ID)
+        remaining = float(effect.remaining_duration) if effect is not None else 0.0
+        lynae_state["spray_paint_window_remaining"] = max(0.0, remaining)
+        if result is not None:
+            result.lynae_spray_paint_window_remaining = lynae_state["spray_paint_window_remaining"]
 
     def _schedule_mornye_syntony_field_deployment_damage(self, action: ActionData) -> dict[str, Any]:
         effects = action.mechanic_effects or {}

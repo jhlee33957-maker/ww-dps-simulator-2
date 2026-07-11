@@ -11,6 +11,7 @@ if str(ROOT) not in sys.path:
 
 from simulator.buff_system import apply_buff
 from simulator.simulation import Simulation
+from lynae_spray_paint_test_helpers import TUNE_RUPTURE_REF
 
 
 DATA_DIR = ROOT / "data"
@@ -155,6 +156,28 @@ def test_simultaneous_effects_and_persistent_windows() -> None:
     mornye_state = sim.state.character_mechanics_state["mornye"]
     lynae_state = sim.state.character_mechanics_state["lynae"]
     mornye_state["syntony_field_remaining"] = 25.0
+    sim.schedule_effect(
+        instance_id="lynae_spray_paint_flux:lynae",
+        effect_id="lynae_spray_paint",
+        source_character_id="lynae",
+        source_action_id="lynae_visual_impact",
+        payload_action_id="lynae_spray_paint_flux_application",
+        remaining_duration=5.0,
+        tick_interval=10.0,
+        time_until_next_tick=10.0,
+        payload_event_type="status_application",
+        scheduled_resource_policy="none",
+        source_status="combat_time_duration_test",
+        source_ref="combat_time_duration_test",
+        metadata={
+            "scheduled_status_effect_id": "lynae_photocromic_flux",
+            "paint_mode_snapshot": "tune_rupture",
+            "target_shift_state_snapshot": "tune_rupture_shifting",
+            "source_row": TUNE_RUPTURE_REF,
+            "source_ref": TUNE_RUPTURE_REF,
+            "target_presence_assumption": "single_target_remains_inside_paint_area",
+        },
+    )
     lynae_state["spray_paint_window_remaining"] = 5.0
 
     buff_ids = [

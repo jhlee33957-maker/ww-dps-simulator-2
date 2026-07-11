@@ -6534,5 +6534,148 @@
         ]
       }
     ]
+  },
+  "lynae_spray_paint_status_patches": {
+    "description": "Source-backed Lynae Spray Paint scheduled status application payload and Visual Impact scheduler metadata.",
+    "allowed_new_non_policy_action_ids": [
+      "lynae_spray_paint_flux_application"
+    ],
+    "payloads": [
+      {
+        "operation": "create",
+        "action_id": "lynae_spray_paint_flux_application",
+        "insert_after": "lynae_resonance_liberation_prismatic_overblast_c5",
+        "record": {
+          "id": "lynae_spray_paint_flux_application",
+          "name": "Lynae Spray Paint Flux Application",
+          "character_id": "lynae",
+          "action_type": "basic_attack",
+          "duration": 0.001,
+          "action_time": 0.001,
+          "combat_time_cost": 0.0,
+          "cooldown": 0.0,
+          "damage_category": "normal",
+          "damage_bonus_category": null,
+          "damage_element": "spectro",
+          "scaling_stat": "none",
+          "scheduled_event_type": "status_application",
+          "damage_multiplier": 0.0,
+          "tune_break_multiplier": 0.0,
+          "tune_break_boost_points": 0.0,
+          "off_tune_value": 0.0,
+          "off_tune_value_source_status": "workbook_confirmed_none_for_spray_paint_status_application",
+          "off_tune_value_source_ref": "角色-女!2683; 角色-女!2684",
+          "hits": [],
+          "resonance_energy_gain": 0.0,
+          "concerto_energy_gain": 0.0,
+          "resonance_energy_cost": 0.0,
+          "applies_buffs": [],
+          "required_buffs": [],
+          "tags": [
+            "lynae",
+            "spray_paint",
+            "status_application"
+          ],
+          "policy_selectable": false,
+          "mechanic_effects": {
+            "scheduled_payload": true,
+            "scheduled_event_type": "status_application",
+            "payload_event_type": "status_application",
+            "scheduled_status_effect_id": "lynae_photocromic_flux",
+            "effect_duration": 25.0,
+            "target_scope": "current_single_enemy",
+            "mode_source": "scheduled_effect_metadata_snapshot",
+            "source_status": "workbook_confirmed_scheduled_status_application",
+            "source_refs": [
+              "角色-女!2683",
+              "角色-女!2684"
+            ],
+            "tune_strain_source_row": "角色-女!2683",
+            "tune_rupture_source_row": "角色-女!2684",
+            "target_presence_assumption": "single_target_remains_inside_paint_area",
+            "damage": "none",
+            "off_tune": "none",
+            "resonance_energy": "none",
+            "concerto_energy": "none"
+          },
+          "source_rows": [
+            2683,
+            2684
+          ],
+          "source_status": "workbook_confirmed_scheduled_status_application",
+          "data_status": "workbook_confirmed_scheduled_status_application",
+          "notes": "Non-policy scheduled status payload. Applies/refreshes Photocromic Flux and snapshotted target Tune Shift; no damage, Off-Tune, resources, reward, cooldown, or combo progression."
+        },
+        "source_evidence": {
+          "source_rows": [
+            "角色-女!2683",
+            "角色-女!2684"
+          ],
+          "source_status": "workbook_confirmed_scheduled_status_application",
+          "implementation": "scheduled_status_application_not_periodic_damage"
+        }
+      }
+    ],
+    "action_metadata_records": [
+      {
+        "action_id": "lynae_visual_impact",
+        "fields": {
+          "mechanic_effects": {
+            "spray_paint_status_schedule": {
+              "implementation_status": "scheduled_status_application_exact_c0_candidate",
+              "payload_action_id": "lynae_spray_paint_flux_application",
+              "effect_id": "lynae_spray_paint",
+              "instance_id": "lynae_spray_paint_flux:lynae",
+              "payload_event_type": "status_application",
+              "activation_combat_time": "visual_impact_final_combat_end",
+              "activation_timing_status": [
+                "source_confirmed_field_generation",
+                "activation_timing_approximation_action_end"
+              ],
+              "first_check_frames": 1,
+              "check_interval_frames": 120,
+              "field_duration_frames": 300,
+              "relative_application_frames": [
+                1,
+                121,
+                241
+              ],
+              "max_application_count": 3,
+              "refresh_rule": "replace",
+              "trigger_on_apply": false,
+              "mode_snapshot_source": "lynae_resonance_mode_at_field_creation",
+              "mode_mapping": {
+                "tune_strain": {
+                  "target_shift_state": "tune_strain_shifting",
+                  "source_row": "角色-女!2683"
+                },
+                "tune_rupture": {
+                  "target_shift_state": "tune_rupture_shifting",
+                  "source_row": "角色-女!2684"
+                }
+              },
+              "target_presence_assumption": "single_target_remains_inside_paint_area",
+              "scheduler_backed_window_mirror": "spray_paint_window_remaining",
+              "c1_rows_excluded": [
+                "角色-女!2685",
+                "角色-女!2686",
+                "角色-女!2687",
+                "角色-女!2688"
+              ],
+              "no_damage_resources_off_tune_reward": true,
+              "remove_on_max_trigger_count": false
+            }
+          }
+        },
+        "source_evidence": {
+          "source_rows": [
+            "角色-女!2683",
+            "角色-女!2684"
+          ],
+          "source_status": "workbook_confirmed_scheduled_status_application",
+          "timing": "first_check_1F_interval_120F_duration_300F_max_3_checks"
+        }
+      }
+    ]
   }
 }

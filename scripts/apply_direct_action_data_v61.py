@@ -14,9 +14,10 @@ MANIFEST_PATH = PROJECT_ROOT / "data" / "source" / "direct_action_data_patch_man
 ACTIONS_PATH = PROJECT_ROOT / "data" / "actions.json"
 TRANSITIONS_PATH = PROJECT_ROOT / "data" / "transition_actions.json"
 CHANGE_LOG_PATH = PROJECT_ROOT / "data" / "extracted" / "direct_action_data_v61_applied_changes.json"
-EXPECTED_MANIFEST_SHA256 = "de172243cd0d4af65bbe30c361bf75db9e0d0035829251ae681fff1ac89ce0c9"
+EXPECTED_MANIFEST_SHA256 = "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d"
 MORNYE_SYNTONY_FIELD_PAYLOAD_SECTION = "mornye_syntony_field_payload_patches"
 MORNYE_SYNTONY_FIELD_HEALING_SECTION = "mornye_syntony_field_healing_patches"
+LYNAE_SPRAY_PAINT_STATUS_SECTION = "lynae_spray_paint_status_patches"
 
 ACTION_VALUE_FIELDS = (
     "duration",
@@ -574,6 +575,124 @@ def apply_mornye_syntony_field_healing_patches(
     return added_ids
 
 
+def apply_lynae_spray_paint_status_patches(
+    actions: list[dict[str, Any]],
+    action_records: dict[str, dict[str, Any]],
+    manifest: dict[str, Any],
+    changes: list[dict[str, Any]],
+) -> set[str]:
+    section = manifest.get(LYNAE_SPRAY_PAINT_STATUS_SECTION, {})
+    if not section:
+        return set()
+    if not isinstance(section, dict):
+        raise AlignmentError(f"{LYNAE_SPRAY_PAINT_STATUS_SECTION} must be an object")
+
+    expected_new_ids = {"lynae_spray_paint_flux_application"}
+    allowed_new_ids = set(section.get("allowed_new_non_policy_action_ids") or [])
+    if allowed_new_ids != expected_new_ids:
+        raise AlignmentError("Lynae Spray Paint patches may only create the status payload action")
+
+    payloads = section.get("payloads")
+    if not isinstance(payloads, list):
+        raise AlignmentError(f"{LYNAE_SPRAY_PAINT_STATUS_SECTION}.payloads must be a list")
+
+    added_ids: set[str] = set()
+    for patch in payloads:
+        if not isinstance(patch, dict):
+            raise AlignmentError("Lynae Spray Paint payload patch must be an object")
+        operation = patch.get("operation")
+        action_id = patch.get("action_id")
+        record = patch.get("record")
+        if not isinstance(action_id, str):
+            raise AlignmentError("Lynae Spray Paint payload patch missing action_id")
+        if action_id not in expected_new_ids:
+            raise AlignmentError(f"unexpected Lynae Spray Paint payload id: {action_id}")
+        if not isinstance(record, dict):
+            raise AlignmentError(f"{action_id} missing replacement record")
+        if record.get("id") != action_id:
+            raise AlignmentError(f"{action_id} replacement record id mismatch")
+        if record.get("policy_selectable") is not False:
+            raise AlignmentError(f"{action_id} scheduled status payload must be non-policy")
+        if record.get("scheduled_event_type") != "status_application":
+            raise AlignmentError(f"{action_id} scheduled_event_type must be status_application")
+        if record.get("hits") != []:
+            raise AlignmentError(f"{action_id} scheduled status payload must not contain damage hits")
+        for field in (
+            "damage_multiplier",
+            "tune_break_multiplier",
+            "off_tune_value",
+            "resonance_energy_gain",
+            "concerto_energy_gain",
+            "cooldown",
+        ):
+            if float(record.get(field, 0.0) or 0.0) != 0.0:
+                raise AlignmentError(f"{action_id} scheduled status payload must have zero {field}")
+
+        if operation not in {"create", "replace"}:
+            raise AlignmentError(f"{action_id} has unsupported status payload operation {operation!r}")
+        if operation == "replace" and action_id not in action_records:
+            raise AlignmentError(f"manifest action id missing from data/actions.json: {action_id}")
+        if operation == "create" and action_id not in allowed_new_ids:
+            raise AlignmentError(f"creation of undeclared action id is not allowed: {action_id}")
+
+        if action_id in action_records:
+            index = next(index for index, item in enumerate(actions) if item.get("id") == action_id)
+            before = copy.deepcopy(actions[index])
+            after = copy.deepcopy(record)
+            if before != after:
+                actions[index] = after
+                action_records[action_id] = actions[index]
+                record_change(
+                    changes,
+                    target_file="data/actions.json",
+                    action_id=action_id,
+                    field="record",
+                    before=before,
+                    after=after,
+                    patch=patch,
+                )
+            continue
+
+        insert_after = patch.get("insert_after")
+        if not isinstance(insert_after, str):
+            raise AlignmentError(f"{action_id} create patch missing insert_after")
+        if insert_after not in action_records:
+            raise AlignmentError(f"{action_id} insert_after target is missing: {insert_after}")
+        insert_index = next(index for index, item in enumerate(actions) if item.get("id") == insert_after) + 1
+        actions.insert(insert_index, copy.deepcopy(record))
+        action_records[action_id] = actions[insert_index]
+        added_ids.add(action_id)
+        record_change(
+            changes,
+            target_file="data/actions.json",
+            action_id=action_id,
+            field="record",
+            before=None,
+            after=copy.deepcopy(record),
+            patch=patch,
+        )
+
+    for patch in section.get("action_metadata_records", []):
+        action_id = patch.get("action_id")
+        fields = patch.get("fields")
+        if not isinstance(action_id, str) or action_id not in action_records:
+            raise AlignmentError(f"Spray Paint metadata patch references missing action {action_id!r}")
+        if not isinstance(fields, dict):
+            raise AlignmentError(f"{action_id} Spray Paint metadata patch missing fields object")
+        for field, value in fields.items():
+            set_field(
+                action_records[action_id],
+                field,
+                value,
+                changes,
+                target_file="data/actions.json",
+                action_id=action_id,
+                patch=patch,
+            )
+
+    return added_ids
+
+
 def apply_manifest_documents(
     manifest: dict[str, Any],
     actions: list[dict[str, Any]],
@@ -640,6 +759,12 @@ def apply_manifest_documents(
         manifest,
         changes,
     )
+    added_non_policy_action_ids |= apply_lynae_spray_paint_status_patches(
+        actions,
+        action_records,
+        manifest,
+        changes,
+    )
 
     action_ids_after = [record["id"] for record in actions]
     policy_ids_after = [record["id"] for record in actions if record.get("policy_selectable", True)]
@@ -661,6 +786,11 @@ def apply_manifest_documents(
         "lynae_off_tune_action_patch_count": len(lynae_off_tune_action_patches),
         "lynae_off_tune_transition_patch_count": len(lynae_off_tune_transition_patches),
         "field_level_change_count": len(changes),
+        "lynae_spray_paint_status_payload_count": len(
+            manifest.get(LYNAE_SPRAY_PAINT_STATUS_SECTION, {}).get("payloads", [])
+            if isinstance(manifest.get(LYNAE_SPRAY_PAINT_STATUS_SECTION, {}), dict)
+            else []
+        ),
         "action_id_order_unchanged": True,
         "declared_non_policy_action_ids_added": sorted(added_non_policy_action_ids),
         "policy_selectable_action_id_order_unchanged": True,

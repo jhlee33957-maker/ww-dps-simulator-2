@@ -16,6 +16,12 @@ HIGH_HEAL_ACTION_REF = f"{ROLE_FEMALE_SHEET}!4121"
 HEAL_SKILL_REF = f"{SKILL_TYPE_SHEET}!533"
 NORMAL_HEAL_COMBINED_REF = f"{NORMAL_HEAL_ACTION_REF} / {HEAL_SKILL_REF}"
 HIGH_HEAL_COMBINED_REF = f"{HIGH_HEAL_ACTION_REF} / {HEAL_SKILL_REF}"
+BAD_HEALING_SOURCE_MARKERS = [
+    chr(0x6B32) + chr(0xB000) + chr(0x3F) + chr(0x3F) + chr(0x3F),
+    chr(0x963F) + chr(0x3F),
+    chr(0x3F) + chr(0xBC34) + chr(0xB3A8),
+    chr(0xFFFD),
+]
 
 
 RELEVANT_FILES = [
@@ -67,7 +73,7 @@ def main() -> None:
         text = raw.decode("utf-8")
         texts.append(text)
     merged = "\n".join(texts)
-    for bad in ("欲뀀???", "阿?", "?밴뎨", "\ufffd"):
+    for bad in BAD_HEALING_SOURCE_MARKERS:
         assert bad not in merged, f"corrupted healing source reference remains: {bad!r}"
 
     actions = {row["id"]: row for row in load_json(DATA_DIR / "actions.json")}

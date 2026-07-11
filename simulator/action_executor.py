@@ -1217,6 +1217,9 @@ def execute_action(
     scheduled_damage = float(scheduled_effect_result.get("scheduled_damage", 0.0) or 0.0)
     scheduled_damage_events = list(scheduled_effect_result.get("scheduled_damage_events", []))
     scheduled_healing_events = list(scheduled_effect_result.get("scheduled_healing_events", []))
+    scheduled_status_application_events = list(
+        scheduled_effect_result.get("scheduled_status_application_events", [])
+    )
 
     if action.action_type == "swap" and action.character_id is not None:
         state.active_character_id = action.character_id
@@ -1361,6 +1364,7 @@ def execute_action(
         scheduled_damage=scheduled_damage,
         scheduled_damage_events=scheduled_damage_events,
         scheduled_healing_events=scheduled_healing_events,
+        scheduled_status_application_events=scheduled_status_application_events,
         direct_damage_taken_amp_total_bonus_damage=float(
             direct_amp_summary.get("direct_damage_taken_amp_total_bonus_damage", 0.0) or 0.0
         ),
@@ -1620,6 +1624,7 @@ def execute_action(
                 "scheduled_damage": scheduled_damage,
                 "scheduled_damage_events": scheduled_damage_events,
                 "scheduled_healing_events": scheduled_healing_events,
+                "scheduled_status_application_events": scheduled_status_application_events,
                 **action_damage_bonus_context,
                 **mechanic_event_log_fields,
                 **echo_set_log_fields,
@@ -1765,6 +1770,7 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         scheduled_damage=result.scheduled_damage,
         scheduled_damage_events=result.scheduled_damage_events,
         scheduled_healing_events=result.scheduled_healing_events,
+        scheduled_status_application_events=result.scheduled_status_application_events,
         direct_damage_taken_amp_total_bonus_damage=result.direct_damage_taken_amp_total_bonus_damage,
         interfered_marker_direct_damage_amp_applied_count=result.interfered_marker_direct_damage_amp_applied_count,
         interfered_marker_direct_damage_amp_bonus_damage=result.interfered_marker_direct_damage_amp_bonus_damage,
@@ -1947,6 +1953,11 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         lynae_target_tune_shift_state=result.lynae_target_tune_shift_state,
         lynae_target_tune_shift_remaining=result.lynae_target_tune_shift_remaining,
         lynae_spray_paint_window_remaining=result.lynae_spray_paint_window_remaining,
+        lynae_spray_paint_scheduled=result.lynae_spray_paint_scheduled,
+        lynae_spray_paint_schedule_operation=result.lynae_spray_paint_schedule_operation,
+        lynae_spray_paint_mode_snapshot=result.lynae_spray_paint_mode_snapshot,
+        lynae_spray_paint_target_shift_state_snapshot=result.lynae_spray_paint_target_shift_state_snapshot,
+        lynae_spray_paint_source_ref=result.lynae_spray_paint_source_ref,
         lynae_visual_impact_cooldown_remaining=result.lynae_visual_impact_cooldown_remaining,
         lynae_visual_impact_tune_break_boost_buff_active=result.lynae_visual_impact_tune_break_boost_buff_active,
         lynae_visual_impact_tune_break_boost_value=result.lynae_visual_impact_tune_break_boost_value,

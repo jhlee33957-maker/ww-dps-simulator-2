@@ -1662,6 +1662,41 @@
       "source_status": "workbook_confirmed"
     },
     {
+      "action_id": "lynae_spray_paint_flux_application",
+      "policy_selector_id": null,
+      "resolved_concrete_id": [
+        "lynae_spray_paint_flux_application"
+      ],
+      "source_action_rows": [
+        2683,
+        2684
+      ],
+      "source_damage_rows": [],
+      "damage_multiplier": 0.0,
+      "tune_break_multiplier": 0,
+      "hit_count": 0,
+      "hit_repeat_rule": [],
+      "hit_offsets": [],
+      "decision_cancel_frame_source": {},
+      "action_time": 0.001,
+      "combat_time_cost": 0.0,
+      "global_time_stop_rows": [],
+      "global_time_stop_frames": 0,
+      "cooldown": 0.0,
+      "cooldown_group": null,
+      "resource_cost": 0.0,
+      "resonance_energy_gain": 0.0,
+      "concerto_energy_gain": 0.0,
+      "special_resource_gate": {},
+      "state_resource_gates": "non_policy_concrete_not_direct_policy_spammable",
+      "immediate_repeat_possible": false,
+      "immediate_repeat_allowed": false,
+      "immediate_repeat_reason": "non_policy_concrete_not_direct_policy_spammable",
+      "policy_selectable": false,
+      "action_type": "basic_attack",
+      "source_status": "workbook_confirmed_scheduled_status_application"
+    },
+    {
       "action_id": "lynae_to_a_vivid_tomorrow",
       "policy_selector_id": "lynae_basic_attack",
       "resolved_concrete_id": [

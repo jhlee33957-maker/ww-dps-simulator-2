@@ -13,7 +13,6 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = ROOT / "direct_action_data_patch_manifest_v61.json"
 SOURCE_MANIFEST_PATH = ROOT / "data" / "source" / "direct_action_data_patch_manifest_v61.json"
 APPLY_SCRIPT_PATH = ROOT / "scripts" / "apply_direct_action_data_v61.py"
-EXPECTED_MANIFEST_SHA256 = "de172243cd0d4af65bbe30c361bf75db9e0d0035829251ae681fff1ac89ce0c9"
 
 
 def load_apply_module():
@@ -38,11 +37,10 @@ def main() -> None:
     assert manifest_bytes == source_manifest_bytes
     json.loads(manifest_bytes.decode("utf-8"))
     json.loads(source_manifest_bytes.decode("utf-8"))
-    actual_hash = hashlib.sha256(manifest_bytes).hexdigest()
-    assert actual_hash == EXPECTED_MANIFEST_SHA256
-
     apply_module = load_apply_module()
-    assert apply_module.EXPECTED_MANIFEST_SHA256 == EXPECTED_MANIFEST_SHA256
+    expected_manifest_sha256 = apply_module.EXPECTED_MANIFEST_SHA256
+    actual_hash = hashlib.sha256(manifest_bytes).hexdigest()
+    assert actual_hash == expected_manifest_sha256
 
     result = subprocess.run(
         [sys.executable, str(APPLY_SCRIPT_PATH), "--check", "--fail-on-diff"],
