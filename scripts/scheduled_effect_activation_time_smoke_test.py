@@ -12,13 +12,14 @@ def schedule_activation(
     interval: float = 0.25,
     phase: float = 0.1,
     trigger_on_apply: bool = False,
+    payload_action_id: str = "mornye_syntony_field_damage",
 ):
     return sim.schedule_effect(
         instance_id=instance_id,
         effect_id="activation_time_fixture",
         source_character_id="mornye",
         source_action_id="activation_time_source",
-        payload_action_id="mornye_syntony_field_damage",
+        payload_action_id=payload_action_id,
         remaining_duration=duration,
         tick_interval=interval,
         time_until_next_tick=phase,
@@ -79,6 +80,7 @@ def test_mid_action_activation_with_trigger_on_apply() -> None:
         interval=0.125,
         phase=0.125,
         trigger_on_apply=True,
+        payload_action_id="mornye_syntony_field_target_damage",
     )
     assert sim.execute_action("short_wait")
     row = sim.timeline[-1]

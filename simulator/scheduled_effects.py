@@ -20,6 +20,7 @@ def validate_scheduled_effect_request(
     time_until_next_tick: float,
     trigger_count: int = 0,
     max_trigger_count: int | None = None,
+    scheduled_resource_policy: str = "none",
 ) -> None:
     if source_character_id not in selected_character_ids:
         raise ValueError(f"Unknown scheduled-effect source character {source_character_id!r}")
@@ -38,6 +39,8 @@ def validate_scheduled_effect_request(
         raise ValueError("Scheduled-effect trigger_count must be >= 0")
     if max_trigger_count is not None and max_trigger_count <= 0:
         raise ValueError("Scheduled-effect max_trigger_count must be > 0 when present")
+    if scheduled_resource_policy not in {"none", "source_confirmed_positive_gains"}:
+        raise ValueError(f"Unsupported scheduled_resource_policy {scheduled_resource_policy!r}")
 
 
 def schedule_effect(
@@ -58,6 +61,7 @@ def schedule_effect(
     trigger_count: int = 0,
     max_trigger_count: int | None = None,
     refresh_rule: str = "replace",
+    scheduled_resource_policy: str = "none",
     source_status: str,
     source_ref: str | None = None,
     metadata: dict[str, Any] | None = None,
@@ -77,6 +81,7 @@ def schedule_effect(
         time_until_next_tick=time_until_next_tick,
         trigger_count=trigger_count,
         max_trigger_count=max_trigger_count,
+        scheduled_resource_policy=scheduled_resource_policy,
     )
 
     existing_index = next(
@@ -122,6 +127,7 @@ def schedule_effect(
         refresh_rule=refresh_rule,  # type: ignore[arg-type]
         source_status=source_status,
         source_ref=source_ref,
+        scheduled_resource_policy=scheduled_resource_policy,  # type: ignore[arg-type]
         metadata=dict(metadata or {}),
         insertion_order=insertion_order,
     )

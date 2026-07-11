@@ -22,6 +22,7 @@ BuffTarget = Literal["self", "active", "team", "party", "next_active", "specific
 ScalingStat = Literal["atk", "def", "hp", "none", "unresolved"]
 HitTimeMode = Literal["source_time", "resolved_action_end"]
 ScheduledEffectRefreshRule = Literal["replace", "refresh_duration", "keep_existing"]
+ScheduledResourcePolicy = Literal["none", "source_confirmed_positive_gains"]
 
 
 class CharacterData(BaseModel):
@@ -329,6 +330,7 @@ class ScheduledEffectState(BaseModel):
     refresh_rule: ScheduledEffectRefreshRule = "replace"
     source_status: str
     source_ref: str | None = None
+    scheduled_resource_policy: ScheduledResourcePolicy = "none"
     metadata: dict[str, Any] = Field(default_factory=dict)
     insertion_order: int = Field(default=0, ge=0)
 

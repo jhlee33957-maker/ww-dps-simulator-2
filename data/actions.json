@@ -897,66 +897,38 @@
   },
   {
     "id": "mornye_syntony_field_damage",
-    "name": "Mornye Syntony Field Damage",
+    "name": "Mornye Syntony Field Damage 1 Payload",
     "character_id": "mornye",
     "action_type": "resonance_liberation",
-    "duration": 2.0,
-    "action_time": 2.0,
-    "combat_time_cost": 2.0,
+    "duration": 0.016666666666666666,
+    "action_time": 0.016666666666666666,
+    "combat_time_cost": 0.0,
     "cooldown": 0,
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
-    "resonance_energy_cost": 0,
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 0.0,
+    "resonance_energy_cost": 0.0,
+    "damage_bonus_category": "resonance_liberation",
+    "damage_element": "fusion",
+    "raw_skill_category": "Resonance Liberation",
+    "raw_damage_type": "Resonance Liberation damage",
+    "scaling_stat": "def",
+    "scaling_stat_source": "user_supplied_skill_screenshot",
+    "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
     "hits": [
       {
-        "time": 0.45,
+        "time": 0.0,
+        "damage_category": "normal",
         "damage_multiplier": 0.3977,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "fusion",
           "field",
-          "resonance_liberation"
+          "resonance_liberation",
+          "mornye",
+          "scheduled_payload"
         ],
-        "name": "Syntony Field hit 1"
-      },
-      {
-        "time": 0.9,
-        "damage_multiplier": 0.3977,
-        "tags": [
-          "fusion",
-          "field",
-          "resonance_liberation"
-        ],
-        "name": "Syntony Field hit 2"
-      },
-      {
-        "time": 1.35,
-        "damage_multiplier": 0.3977,
-        "tags": [
-          "fusion",
-          "field",
-          "resonance_liberation"
-        ],
-        "name": "Syntony Field hit 3"
-      },
-      {
-        "time": 1.8,
-        "damage_multiplier": 0.3977,
-        "tags": [
-          "fusion",
-          "field",
-          "resonance_liberation"
-        ],
-        "name": "Syntony Field hit 4"
-      },
-      {
-        "time": 2.0,
-        "damage_multiplier": 0.3977,
-        "tags": [
-          "fusion",
-          "field",
-          "resonance_liberation"
-        ],
-        "name": "Syntony Field hit 5"
+        "name": "Syntony Field Damage 1 scheduled tick"
       }
     ],
     "tags": [
@@ -964,18 +936,93 @@
       "field",
       "resonance_liberation",
       "mornye",
-      "metadata_optional"
+      "scheduled_payload",
+      "source:excel"
     ],
     "policy_selectable": false,
-    "data_status": "review_optional_v1",
-    "notes": "Syntony Field damage is available as reviewed data but is not auto-scheduled by v1 mechanics.",
+    "mechanic_effects": {
+      "scheduled_payload": true,
+      "scheduled_resource_policy": "none",
+      "source_status": "workbook_confirmed_scheduled_tick",
+      "source_ref": "鰲믦돯-也?4126 / dmg!2655",
+      "relative_tick_frames": [
+        1,
+        28,
+        55,
+        82,
+        109
+      ]
+    },
+    "data_status": "workbook_confirmed_scheduled_tick",
+    "notes": "Payload for scheduler-supplied Syntony Field Damage 1 ticks. Scheduler supplies five executions at relative frames 1, 28, 55, 82, and 109; this record intentionally contains one 0.3977 hit and no Off-Tune/resources.",
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "workbook_confirmed_zero_for_damage_1",
+    "off_tune_value_source_ref": "鰲믦돯-也?4126 / dmg!2655",
+    "damage_multiplier": 0.3977,
+    "tune_break_multiplier": 0.0
+  },
+  {
+    "id": "mornye_syntony_field_target_damage",
+    "name": "Mornye Syntony Field Damage 2 Target Payload",
+    "character_id": "mornye",
+    "action_type": "heavy_attack",
+    "duration": 0.016666666666666666,
+    "action_time": 0.016666666666666666,
+    "combat_time_cost": 0.0,
+    "cooldown": 0,
+    "resonance_energy_gain": 2.08,
+    "concerto_energy_gain": 6.65,
+    "resonance_energy_cost": 0.0,
+    "damage_bonus_category": "heavy_attack",
+    "damage_element": "fusion",
+    "raw_skill_category": "Heavy Attack",
+    "raw_damage_type": "Heavy Attack damage",
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
     "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
+    "hits": [
+      {
+        "time": 0.0,
+        "damage_category": "normal",
+        "damage_multiplier": 0.9902,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "fusion",
+          "field",
+          "heavy",
+          "mornye",
+          "scheduled_payload"
+        ],
+        "name": "Syntony Field Damage 2 scheduled target hit"
+      }
+    ],
+    "tags": [
+      "fusion",
+      "field",
+      "heavy",
+      "mornye",
+      "scheduled_payload",
+      "source:excel"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "scheduled_payload": true,
+      "scheduled_resource_policy": "source_confirmed_positive_gains",
+      "source_status": "workbook_confirmed_scheduled_target_damage",
+      "source_ref": "鰲믦돯-也?4127 / dmg!2656",
+      "relative_tick_frames": [
+        23
+      ],
+      "qte_restricted": true
+    },
+    "data_status": "workbook_confirmed_scheduled_target_damage",
+    "notes": "Payload for the non-QTE Syntony Field Damage 2 deployment event. Scheduled once at relative frame 23 for Geopotential Shift-created normal fields only; grants source-confirmed positive resources through the scheduled-resource opt-in path.",
     "off_tune_value": 66.4,
     "off_tune_value_source_status": "workbook_confirmed",
-    "off_tune_value_source_ref": "角色-女!S4127"
+    "off_tune_value_source_ref": "鰲믦돯-也?4127 / dmg!2656",
+    "damage_multiplier": 0.9902,
+    "tune_break_multiplier": 0.0
   },
   {
     "id": "mornye_high_syntony_field_state",

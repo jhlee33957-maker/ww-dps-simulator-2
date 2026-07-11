@@ -14,7 +14,8 @@ MANIFEST_PATH = PROJECT_ROOT / "data" / "source" / "direct_action_data_patch_man
 ACTIONS_PATH = PROJECT_ROOT / "data" / "actions.json"
 TRANSITIONS_PATH = PROJECT_ROOT / "data" / "transition_actions.json"
 CHANGE_LOG_PATH = PROJECT_ROOT / "data" / "extracted" / "direct_action_data_v61_applied_changes.json"
-EXPECTED_MANIFEST_SHA256 = "cc68addf7dcd33ab1f27ff9083933b86724aa1c2753a831a31c4b49505b49613"
+EXPECTED_MANIFEST_SHA256 = "5cde6d11c9c36c6fbd209f9f24b656b5d02ddd092419efd34e87548189662a6c"
+MORNYE_SYNTONY_FIELD_PAYLOAD_SECTION = "mornye_syntony_field_payload_patches"
 
 ACTION_VALUE_FIELDS = (
     "duration",
@@ -341,6 +342,104 @@ def apply_off_tune_transition_patch(record: dict[str, Any], patch: dict[str, Any
         )
 
 
+def apply_mornye_syntony_field_payload_patches(
+    actions: list[dict[str, Any]],
+    action_records: dict[str, dict[str, Any]],
+    manifest: dict[str, Any],
+    changes: list[dict[str, Any]],
+) -> set[str]:
+    section = manifest.get(MORNYE_SYNTONY_FIELD_PAYLOAD_SECTION, {})
+    if not section:
+        return set()
+    if not isinstance(section, dict):
+        raise AlignmentError(f"{MORNYE_SYNTONY_FIELD_PAYLOAD_SECTION} must be an object")
+
+    allowed_new_ids = set(section.get("allowed_new_non_policy_action_ids") or [])
+    if allowed_new_ids != {"mornye_syntony_field_target_damage"}:
+        raise AlignmentError(
+            "Mornye Syntony payload patches may only create mornye_syntony_field_target_damage"
+        )
+    payloads = section.get("payloads")
+    if not isinstance(payloads, list):
+        raise AlignmentError(f"{MORNYE_SYNTONY_FIELD_PAYLOAD_SECTION}.payloads must be a list")
+
+    added_ids: set[str] = set()
+    for patch in payloads:
+        if not isinstance(patch, dict):
+            raise AlignmentError("Mornye Syntony payload patch must be an object")
+        operation = patch.get("operation")
+        action_id = patch.get("action_id")
+        record = patch.get("record")
+        if not isinstance(action_id, str):
+            raise AlignmentError("Mornye Syntony payload patch missing action_id")
+        if not isinstance(record, dict):
+            raise AlignmentError(f"{action_id} missing replacement record")
+        if record.get("id") != action_id:
+            raise AlignmentError(f"{action_id} replacement record id mismatch")
+        if record.get("policy_selectable") is not False:
+            raise AlignmentError(f"{action_id} scheduled payload must be non-policy")
+
+        if operation == "replace":
+            if action_id not in action_records:
+                raise AlignmentError(f"manifest action id missing from data/actions.json: {action_id}")
+            index = next(index for index, item in enumerate(actions) if item.get("id") == action_id)
+            before = copy.deepcopy(actions[index])
+            after = copy.deepcopy(record)
+            if before != after:
+                actions[index] = after
+                action_records[action_id] = actions[index]
+                record_change(
+                    changes,
+                    target_file="data/actions.json",
+                    action_id=action_id,
+                    field="record",
+                    before=before,
+                    after=after,
+                    patch=patch,
+                )
+        elif operation == "create":
+            if action_id not in allowed_new_ids:
+                raise AlignmentError(f"creation of undeclared action id is not allowed: {action_id}")
+            insert_after = patch.get("insert_after")
+            if not isinstance(insert_after, str):
+                raise AlignmentError(f"{action_id} create patch missing insert_after")
+            if insert_after not in action_records:
+                raise AlignmentError(f"{action_id} insert_after target is missing: {insert_after}")
+            if action_id in action_records:
+                before = copy.deepcopy(action_records[action_id])
+                after = copy.deepcopy(record)
+                if before != after:
+                    index = next(index for index, item in enumerate(actions) if item.get("id") == action_id)
+                    actions[index] = after
+                    action_records[action_id] = actions[index]
+                    record_change(
+                        changes,
+                        target_file="data/actions.json",
+                        action_id=action_id,
+                        field="record",
+                        before=before,
+                        after=after,
+                        patch=patch,
+                    )
+                continue
+            insert_index = next(index for index, item in enumerate(actions) if item.get("id") == insert_after) + 1
+            actions.insert(insert_index, copy.deepcopy(record))
+            action_records[action_id] = actions[insert_index]
+            added_ids.add(action_id)
+            record_change(
+                changes,
+                target_file="data/actions.json",
+                action_id=action_id,
+                field="record",
+                before=None,
+                after=copy.deepcopy(record),
+                patch=patch,
+            )
+        else:
+            raise AlignmentError(f"{action_id} has unsupported payload operation {operation!r}")
+    return added_ids
+
+
 def apply_manifest_documents(
     manifest: dict[str, Any],
     actions: list[dict[str, Any]],
@@ -394,12 +493,21 @@ def apply_manifest_documents(
         apply_off_tune_action_patch(action_records[patch["action_id"]], patch, changes)
     for patch in manifest["lynae_off_tune_transition_patches"]:
         apply_off_tune_transition_patch(transition_records[patch["action_id"]], patch, changes)
+    added_non_policy_action_ids = apply_mornye_syntony_field_payload_patches(
+        actions,
+        action_records,
+        manifest,
+        changes,
+    )
 
     action_ids_after = [record["id"] for record in actions]
     policy_ids_after = [record["id"] for record in actions if record.get("policy_selectable", True)]
     transition_ids_after = [record["id"] for record in transitions]
-    if action_ids_after != action_ids_before:
-        raise AlignmentError("data/actions.json action id order changed")
+    action_ids_after_without_allowed_additions = [
+        action_id for action_id in action_ids_after if action_id not in added_non_policy_action_ids
+    ]
+    if action_ids_after_without_allowed_additions != action_ids_before:
+        raise AlignmentError("data/actions.json action id order changed outside declared non-policy additions")
     if policy_ids_after != policy_ids_before:
         raise AlignmentError("data/actions.json policy-selectable action id order changed")
     if transition_ids_after != transition_ids_before:
@@ -413,6 +521,7 @@ def apply_manifest_documents(
         "lynae_off_tune_transition_patch_count": len(lynae_off_tune_transition_patches),
         "field_level_change_count": len(changes),
         "action_id_order_unchanged": True,
+        "declared_non_policy_action_ids_added": sorted(added_non_policy_action_ids),
         "policy_selectable_action_id_order_unchanged": True,
         "transition_action_id_order_unchanged": True,
     }
@@ -462,8 +571,11 @@ def main() -> int:
         return 0
 
     if changes:
-        ACTIONS_PATH.write_text(dump_json(actions), encoding="utf-8")
-        TRANSITIONS_PATH.write_text(dump_json(transitions), encoding="utf-8")
+        changed_targets = {str(change.get("target_file")) for change in changes}
+        if "data/actions.json" in changed_targets:
+            ACTIONS_PATH.write_text(dump_json(actions), encoding="utf-8")
+        if "data/transition_actions.json" in changed_targets:
+            TRANSITIONS_PATH.write_text(dump_json(transitions), encoding="utf-8")
         CHANGE_LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
         CHANGE_LOG_PATH.write_text(
             dump_json(

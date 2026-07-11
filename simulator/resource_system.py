@@ -137,3 +137,53 @@ def apply_resource_changes(
         concerto_after=concerto_capped,
         concerto_ready_after=concerto_ready_after,
     )
+
+
+def apply_source_confirmed_scheduled_resource_gains(
+    state: CombatState,
+    action: ActionData,
+    characters: dict[str, CharacterData],
+    *,
+    recipient_character_id: str,
+) -> ResourceChange:
+    if recipient_character_id not in characters:
+        raise KeyError(f"Unknown scheduled resource recipient {recipient_character_id!r}")
+
+    character = characters[recipient_character_id]
+    base_resonance_energy_gain = max(0.0, float(action.resonance_energy_gain or 0.0))
+    energy_regen = float(character.energy_regen)
+    final_resonance_energy_gain = base_resonance_energy_gain * energy_regen
+
+    resonance_before = state.resonance_energy.get(recipient_character_id, 0.0)
+    resonance_uncapped = resonance_before + final_resonance_energy_gain
+    resonance_capped = min(character.resonance_energy_max, resonance_uncapped)
+    resonance_wasted = max(0.0, resonance_uncapped - resonance_capped)
+    resonance_gained = max(0.0, final_resonance_energy_gain - resonance_wasted)
+
+    character_state = sync_concerto_state(state, recipient_character_id)
+    concerto_before, concerto_gained, concerto_capped, concerto_ready_after, concerto_wasted = add_concerto_energy(
+        character_state,
+        max(0.0, float(action.concerto_energy_gain or 0.0)),
+    )
+
+    state.resonance_energy[recipient_character_id] = resonance_capped
+    state.concerto_energy[recipient_character_id] = concerto_capped
+    state.wasted_resonance_energy[recipient_character_id] = (
+        state.wasted_resonance_energy.get(recipient_character_id, 0.0) + resonance_wasted
+    )
+    state.wasted_concerto_energy[recipient_character_id] = (
+        state.wasted_concerto_energy.get(recipient_character_id, 0.0) + concerto_wasted
+    )
+
+    return ResourceChange(
+        base_resonance_energy_gain=base_resonance_energy_gain,
+        energy_regen=energy_regen,
+        final_resonance_energy_gain=final_resonance_energy_gain,
+        resonance_gained=resonance_gained,
+        resonance_wasted=resonance_wasted,
+        concerto_before=concerto_before,
+        concerto_gained=concerto_gained,
+        concerto_wasted=concerto_wasted,
+        concerto_after=concerto_capped,
+        concerto_ready_after=concerto_ready_after,
+    )

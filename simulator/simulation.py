@@ -52,7 +52,7 @@ from simulator.party_transition import (
     fallback_swap_timing,
     resolve_party_transition,
 )
-from simulator.resource_system import initialize_concerto_states
+from simulator.resource_system import apply_source_confirmed_scheduled_resource_gains, initialize_concerto_states
 from simulator.roster import (
     get_initial_active_character,
     get_swap_target_character_id,
@@ -84,6 +84,11 @@ from simulator.weapon_effects import (
 
 
 class Simulation:
+    MORNYE_SYNTONY_FIELD_DAMAGE_1_INSTANCE_ID = "mornye_syntony_field_damage_1:mornye"
+    MORNYE_SYNTONY_FIELD_DAMAGE_2_INSTANCE_ID = "mornye_syntony_field_damage_2:mornye"
+    MORNYE_SYNTONY_FIELD_DAMAGE_1_ACTION_ID = "mornye_syntony_field_damage"
+    MORNYE_SYNTONY_FIELD_DAMAGE_2_ACTION_ID = "mornye_syntony_field_target_damage"
+
     def __init__(
         self,
         characters: dict[str, CharacterData],
@@ -315,6 +320,7 @@ class Simulation:
         trigger_count: int = 0,
         max_trigger_count: int | None = None,
         refresh_rule: str = "replace",
+        scheduled_resource_policy: str = "none",
         source_status: str = "scheduler_test_fixture",
         source_ref: str | None = None,
         metadata: dict[str, Any] | None = None,
@@ -343,6 +349,7 @@ class Simulation:
             trigger_count=trigger_count,
             max_trigger_count=max_trigger_count,
             refresh_rule=refresh_rule,
+            scheduled_resource_policy=scheduled_resource_policy,
             source_status=source_status,
             source_ref=source_ref,
             metadata=metadata,
@@ -435,7 +442,64 @@ class Simulation:
             weapon_definitions=self.weapon_definitions,
         )
         self._apply_scheduled_off_tune_accumulation(payload, event, effect.source_character_id)
+        self._apply_scheduled_resource_policy(payload, event, effect.source_character_id, effect.scheduled_resource_policy)
         return event
+
+    def _apply_scheduled_resource_policy(
+        self,
+        action: ActionData,
+        event: dict[str, Any],
+        recipient_character_id: str,
+        scheduled_resource_policy: str,
+    ) -> None:
+        event["scheduled_resource_policy"] = scheduled_resource_policy
+        if scheduled_resource_policy == "none":
+            event.update(
+                {
+                    "base_resonance_energy_gain": 0.0,
+                    "energy_regen": 1.0,
+                    "final_resonance_energy_gain": 0.0,
+                    "resonance_energy_gained": 0.0,
+                    "resonance_energy_wasted": 0.0,
+                    "concerto_before": self.state.concerto_energy.get(recipient_character_id, 0.0),
+                    "concerto_energy_gained": 0.0,
+                    "concerto_after": self.state.concerto_energy.get(recipient_character_id, 0.0),
+                    "concerto_energy_wasted": 0.0,
+                }
+            )
+            if self.state.scheduled_effect_event_log:
+                self.state.scheduled_effect_event_log[-1].update(event)
+            return
+        if scheduled_resource_policy != "source_confirmed_positive_gains":
+            raise ValueError(f"Unsupported scheduled_resource_policy {scheduled_resource_policy!r}")
+
+        change = apply_source_confirmed_scheduled_resource_gains(
+            self.state,
+            action,
+            self.characters,
+            recipient_character_id=recipient_character_id,
+        )
+        event.update(
+            {
+                "base_resonance_energy_gain": change.base_resonance_energy_gain,
+                "energy_regen": change.energy_regen,
+                "final_resonance_energy_gain": change.final_resonance_energy_gain,
+                "resonance_energy_gained": change.resonance_gained,
+                "resonance_energy_wasted": change.resonance_wasted,
+                "concerto_before": change.concerto_before,
+                "concerto_energy_gained": change.concerto_gained,
+                "concerto_after": change.concerto_after,
+                "concerto_energy_wasted": change.concerto_wasted,
+                "concerto_ready_after": change.concerto_ready_after,
+                "resource_recipient_character_id": recipient_character_id,
+                "resource_cost_applied": False,
+                "cooldown_applied": False,
+                "combo_state_changed": False,
+                "ordinary_player_action_side_effects_applied": False,
+            }
+        )
+        if self.state.scheduled_effect_event_log:
+            self.state.scheduled_effect_event_log[-1].update(event)
 
     def _apply_scheduled_off_tune_accumulation(
         self,
@@ -551,6 +615,10 @@ class Simulation:
         pre_action_echo_set_log_fields = merge_echo_set_logs(
             pre_action_echo_set_log_fields,
             self._apply_mornye_same_action_field_creation_halo(action),
+        )
+        pre_action_echo_set_log_fields = merge_echo_set_logs(
+            pre_action_echo_set_log_fields,
+            self._schedule_mornye_syntony_field_deployment_damage(action),
         )
         transition_actor_character_id = (action.mechanic_effects or {}).get("transition_actor_character_id")
         actor_character_id = (
@@ -1739,6 +1807,7 @@ class Simulation:
         data["high_syntony_field_remaining"] = duration
         data["high_syntony_field_source_action_id"] = action.id
         data["high_syntony_field_created_count"] = int(data.get("high_syntony_field_created_count", 0) or 0) + 1
+        cancelled_effect_ids = self._cancel_mornye_normal_syntony_deployment_damage()
 
         window = {
             "field_id": "high_syntony_field",
@@ -1776,6 +1845,9 @@ class Simulation:
             "high_syntony_field_same_action_application": True,
             "high_syntony_field_application_timing": HIGH_SYNTONY_SAME_ACTION_TIMING_MODE,
             "high_syntony_field_unavailable_reason": None,
+            "normal_syntony_field_deployment_damage_cancelled": bool(cancelled_effect_ids),
+            "normal_syntony_field_deployment_damage_cancelled_instance_ids": cancelled_effect_ids,
+            "high_syntony_field_deployment_damage_scheduled": False,
             "halo_atk_buff_does_not_affect_mornye_def_damage": True,
         }
         log_updates.update(high_syntony_log_fields)
@@ -1821,6 +1893,102 @@ class Simulation:
             log_updates.update(high_syntony_log_fields)
             log_updates["high_syntony_field_heal_proxy_active"] = True
         return log_updates
+
+    def _cancel_mornye_normal_syntony_deployment_damage(self) -> list[str]:
+        cancelled: list[str] = []
+        for instance_id in (
+            self.MORNYE_SYNTONY_FIELD_DAMAGE_1_INSTANCE_ID,
+            self.MORNYE_SYNTONY_FIELD_DAMAGE_2_INSTANCE_ID,
+        ):
+            removed = self.remove_scheduled_effect(instance_id)
+            if removed is not None:
+                cancelled.append(instance_id)
+        return cancelled
+
+    def _schedule_mornye_syntony_field_deployment_damage(self, action: ActionData) -> dict[str, Any]:
+        effects = action.mechanic_effects or {}
+        actor_character_id = str(effects.get("transition_actor_character_id") or action.character_id or "")
+        if actor_character_id != "mornye" or "mornye" not in self.characters:
+            return {}
+        if action.id == "mornye_heavy_geopotential_shift":
+            activation_time = float(self.state.combat_time) + 48.0 / 60.0
+            schedule_damage_2 = True
+            activation_timing_status = "source_confirmed_frame_48"
+            timing_note = "Wide Field Observation is obtained at action frame 48."
+        elif action.id == "transition:mornye_intro_convergence":
+            activation_time = float(self.state.combat_time) + action.effective_combat_time_cost
+            schedule_damage_2 = False
+            activation_timing_status = "source_confirmed_creation;activation_timing_approximation_action_end"
+            timing_note = "Intro creates Syntony Field, but supplied frame rows do not isolate field creation; use transition combat end."
+        else:
+            return {}
+
+        common_metadata = {
+            "field_id": "normal_syntony_field",
+            "field_duration": 25.0,
+            "activation_timing_status": activation_timing_status,
+            "activation_timing_note": timing_note,
+            "healing_implementation_status": "simplified_action_boundary_proxy_unchanged",
+        }
+        damage_1 = self.schedule_effect(
+            instance_id=self.MORNYE_SYNTONY_FIELD_DAMAGE_1_INSTANCE_ID,
+            effect_id="mornye_syntony_field_damage_1",
+            source_character_id="mornye",
+            source_action_id=action.id,
+            payload_action_id=self.MORNYE_SYNTONY_FIELD_DAMAGE_1_ACTION_ID,
+            activation_combat_time=activation_time,
+            remaining_duration=120.0 / 60.0,
+            tick_interval=27.0 / 60.0,
+            time_until_next_tick=1.0 / 60.0,
+            max_trigger_count=5,
+            refresh_rule="replace",
+            scheduled_resource_policy="none",
+            source_status="workbook_confirmed_scheduled_tick",
+            source_ref="鰲믦돯-也?4126 / dmg!2655",
+            metadata={
+                **common_metadata,
+                "relative_tick_frames": [1, 28, 55, 82, 109],
+                "qte_allowed": True,
+                "scheduled_resource_policy": "none",
+            },
+        )
+        damage_2 = None
+        if schedule_damage_2:
+            damage_2 = self.schedule_effect(
+                instance_id=self.MORNYE_SYNTONY_FIELD_DAMAGE_2_INSTANCE_ID,
+                effect_id="mornye_syntony_field_damage_2",
+                source_character_id="mornye",
+                source_action_id=action.id,
+                payload_action_id=self.MORNYE_SYNTONY_FIELD_DAMAGE_2_ACTION_ID,
+                activation_combat_time=activation_time,
+                remaining_duration=23.0 / 60.0,
+                tick_interval=23.0 / 60.0,
+                time_until_next_tick=23.0 / 60.0,
+                max_trigger_count=1,
+                refresh_rule="replace",
+                scheduled_resource_policy="source_confirmed_positive_gains",
+                source_status="workbook_confirmed_scheduled_target_damage",
+                source_ref="鰲믦돯-也?4127 / dmg!2656",
+                metadata={
+                    **common_metadata,
+                    "relative_tick_frames": [23],
+                    "qte_allowed": False,
+                    "qte_restriction_source": "鰲믦돯-也?4127",
+                    "scheduled_resource_policy": "source_confirmed_positive_gains",
+                },
+            )
+
+        return {
+            "mornye_syntony_field_deployment_damage_scheduled": True,
+            "mornye_syntony_field_activation_combat_time": activation_time,
+            "mornye_syntony_field_activation_timing_status": activation_timing_status,
+            "mornye_syntony_field_damage_1_schedule_operation": damage_1.get("operation"),
+            "mornye_syntony_field_damage_2_schedule_operation": damage_2.get("operation") if damage_2 else None,
+            "mornye_syntony_field_damage_2_qte_restricted": not schedule_damage_2,
+            "mornye_syntony_field_damage_1_relative_tick_frames": [1, 28, 55, 82, 109],
+            "mornye_syntony_field_damage_2_relative_tick_frames": [23] if schedule_damage_2 else [],
+            "mornye_syntony_field_healing_implementation_status": "simplified_action_boundary_proxy_unchanged",
+        }
 
     def _apply_mornye_same_action_field_creation_halo(self, action: ActionData) -> dict[str, Any]:
         effects = action.mechanic_effects or {}

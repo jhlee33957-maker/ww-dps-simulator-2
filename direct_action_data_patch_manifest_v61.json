@@ -5216,7 +5216,7 @@
   "explicitly_unchanged_or_out_of_scope": [
     {
       "id": "mornye_syntony_field_damage",
-      "reason": "Separate automatic field event; coefficient 1.9885 retained, exact scheduling/timing is not represented as a player action in v6.1."
+      "reason": "Refactored by mornye_syntony_field_payload_patches into a one-hit scheduled payload; target Damage 2 is a separate non-policy payload."
     },
     {
       "id": "lynae_echo_hyvatia",
@@ -5300,7 +5300,8 @@
       }
     ],
     "action_ids_changed": 0,
-    "policy_order_changed": false
+    "policy_order_changed": false,
+    "mornye_syntony_field_payload_patches": 2
   },
   "lynae_off_tune_source": {
     "mapping_file": "data/source/lynae_off_tune_direct_mapping_v80.json",
@@ -5884,5 +5885,233 @@
       "formula": "10.64 × 10 (choose current mode)",
       "confidence": "confirmed"
     }
-  ]
+  ],
+  "mornye_syntony_field_payload_patches": {
+    "allowed_new_non_policy_action_ids": [
+      "mornye_syntony_field_target_damage"
+    ],
+    "source_rows": {
+      "normal_field_creation": [
+        "鰲믦돯-也?4117",
+        "鰲믦돯-也?4118",
+        "鰲믦돯-也?4125",
+        "鰲믦돯-也?4126",
+        "鰲믦돯-也?4127"
+      ],
+      "damage_1": [
+        "dmg/鰲믦돯??썹굳??2655"
+      ],
+      "damage_2": [
+        "dmg/鰲믦돯??썹굳??2656"
+      ]
+    },
+    "scheduler_timing_metadata": {
+      "geopotential_shift_activation_frame": 48,
+      "geopotential_shift_activation": "host action combat start + 48 / 60",
+      "intro_activation": "transition combat end",
+      "intro_activation_timing_status": [
+        "source_confirmed_creation",
+        "activation_timing_approximation_action_end"
+      ],
+      "damage_1_relative_tick_frames": [
+        1,
+        28,
+        55,
+        82,
+        109
+      ],
+      "damage_2_relative_tick_frames": [
+        23
+      ],
+      "damage_1_interval_frames": 27,
+      "damage_1_max_trigger_count": 5,
+      "damage_2_max_trigger_count": 1,
+      "refresh_rule": "replace"
+    },
+    "qte_restriction": {
+      "mornye_intro_convergence": "schedule_damage_1_only",
+      "damage_2": "non_qte_only",
+      "source_row": "鰲믦돯-也?4127"
+    },
+    "high_syntony_rule": "Critical Protocol cancels pending normal Syntony Field deployment-damage instances and schedules no High Syntony deployment damage.",
+    "scheduled_resource_policy": {
+      "default": "none",
+      "mornye_syntony_field_target_damage": "source_confirmed_positive_gains",
+      "applies": [
+        "positive Resonance Energy gain",
+        "positive Concerto Energy gain"
+      ],
+      "does_not_apply": [
+        "Resonance Energy cost",
+        "ordinary cooldown",
+        "weapon cast triggers",
+        "combo state",
+        "active-character changes"
+      ]
+    },
+    "payloads": [
+      {
+        "operation": "replace",
+        "action_id": "mornye_syntony_field_damage",
+        "record": {
+          "id": "mornye_syntony_field_damage",
+          "name": "Mornye Syntony Field Damage 1 Payload",
+          "character_id": "mornye",
+          "action_type": "resonance_liberation",
+          "duration": 0.016666666666666666,
+          "action_time": 0.016666666666666666,
+          "combat_time_cost": 0.0,
+          "cooldown": 0,
+          "resonance_energy_gain": 0.0,
+          "concerto_energy_gain": 0.0,
+          "resonance_energy_cost": 0.0,
+          "damage_bonus_category": "resonance_liberation",
+          "damage_element": "fusion",
+          "raw_skill_category": "Resonance Liberation",
+          "raw_damage_type": "Resonance Liberation damage",
+          "scaling_stat": "def",
+          "scaling_stat_source": "user_supplied_skill_screenshot",
+          "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+          "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
+          "hits": [
+            {
+              "time": 0.0,
+              "damage_category": "normal",
+              "damage_multiplier": 0.3977,
+              "tune_break_multiplier": 0.0,
+              "tags": [
+                "fusion",
+                "field",
+                "resonance_liberation",
+                "mornye",
+                "scheduled_payload"
+              ],
+              "name": "Syntony Field Damage 1 scheduled tick"
+            }
+          ],
+          "tags": [
+            "fusion",
+            "field",
+            "resonance_liberation",
+            "mornye",
+            "scheduled_payload",
+            "source:excel"
+          ],
+          "policy_selectable": false,
+          "mechanic_effects": {
+            "scheduled_payload": true,
+            "scheduled_resource_policy": "none",
+            "source_status": "workbook_confirmed_scheduled_tick",
+            "source_ref": "鰲믦돯-也?4126 / dmg!2655",
+            "relative_tick_frames": [
+              1,
+              28,
+              55,
+              82,
+              109
+            ]
+          },
+          "data_status": "workbook_confirmed_scheduled_tick",
+          "notes": "Payload for scheduler-supplied Syntony Field Damage 1 ticks. Scheduler supplies five executions at relative frames 1, 28, 55, 82, and 109; this record intentionally contains one 0.3977 hit and no Off-Tune/resources.",
+          "off_tune_value": 0.0,
+          "off_tune_value_source_status": "workbook_confirmed_zero_for_damage_1",
+          "off_tune_value_source_ref": "鰲믦돯-也?4126 / dmg!2655",
+          "damage_multiplier": 0.3977,
+          "tune_break_multiplier": 0.0
+        },
+        "source_rows": [
+          "鰲믦돯-也?4126",
+          "dmg!2655"
+        ],
+        "scheduler_timing": {
+          "time_until_next_tick": 0.016666666666666666,
+          "tick_interval": 0.45,
+          "max_trigger_count": 5,
+          "remaining_duration": 2.0,
+          "trigger_on_apply": false,
+          "refresh_rule": "replace"
+        }
+      },
+      {
+        "operation": "create",
+        "action_id": "mornye_syntony_field_target_damage",
+        "insert_after": "mornye_syntony_field_damage",
+        "record": {
+          "id": "mornye_syntony_field_target_damage",
+          "name": "Mornye Syntony Field Damage 2 Target Payload",
+          "character_id": "mornye",
+          "action_type": "heavy_attack",
+          "duration": 0.016666666666666666,
+          "action_time": 0.016666666666666666,
+          "combat_time_cost": 0.0,
+          "cooldown": 0,
+          "resonance_energy_gain": 2.08,
+          "concerto_energy_gain": 6.65,
+          "resonance_energy_cost": 0.0,
+          "damage_bonus_category": "heavy_attack",
+          "damage_element": "fusion",
+          "raw_skill_category": "Heavy Attack",
+          "raw_damage_type": "Heavy Attack damage",
+          "scaling_stat": "def",
+          "scaling_stat_source": "user_supplied_skill_screenshot",
+          "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+          "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
+          "hits": [
+            {
+              "time": 0.0,
+              "damage_category": "normal",
+              "damage_multiplier": 0.9902,
+              "tune_break_multiplier": 0.0,
+              "tags": [
+                "fusion",
+                "field",
+                "heavy",
+                "mornye",
+                "scheduled_payload"
+              ],
+              "name": "Syntony Field Damage 2 scheduled target hit"
+            }
+          ],
+          "tags": [
+            "fusion",
+            "field",
+            "heavy",
+            "mornye",
+            "scheduled_payload",
+            "source:excel"
+          ],
+          "policy_selectable": false,
+          "mechanic_effects": {
+            "scheduled_payload": true,
+            "scheduled_resource_policy": "source_confirmed_positive_gains",
+            "source_status": "workbook_confirmed_scheduled_target_damage",
+            "source_ref": "鰲믦돯-也?4127 / dmg!2656",
+            "relative_tick_frames": [
+              23
+            ],
+            "qte_restricted": true
+          },
+          "data_status": "workbook_confirmed_scheduled_target_damage",
+          "notes": "Payload for the non-QTE Syntony Field Damage 2 deployment event. Scheduled once at relative frame 23 for Geopotential Shift-created normal fields only; grants source-confirmed positive resources through the scheduled-resource opt-in path.",
+          "off_tune_value": 66.4,
+          "off_tune_value_source_status": "workbook_confirmed",
+          "off_tune_value_source_ref": "鰲믦돯-也?4127 / dmg!2656",
+          "damage_multiplier": 0.9902,
+          "tune_break_multiplier": 0.0
+        },
+        "source_rows": [
+          "鰲믦돯-也?4127",
+          "dmg!2656"
+        ],
+        "scheduler_timing": {
+          "time_until_next_tick": 0.38333333333333336,
+          "tick_interval": 0.38333333333333336,
+          "max_trigger_count": 1,
+          "remaining_duration": 0.38333333333333336,
+          "trigger_on_apply": false,
+          "refresh_rule": "replace"
+        }
+      }
+    ]
+  }
 }

@@ -79,10 +79,10 @@ def main() -> None:
     assert sim.state.weapon_effect_trigger_counts.get(DISCORD_COOLDOWN_KEY) == 1
     assert sim.state.weapon_effect_cooldown_blocked_counts.get(DISCORD_COOLDOWN_KEY) == 1
     assert_close(sim.state.concerto_energy["mornye"], 100.0, "clamped Mornye Concerto")
-    assert_close(sim.state.wasted_concerto_energy["mornye"], 1.44, "wasted Mornye Concerto")
+    assert_close(sim.state.wasted_concerto_energy["mornye"], 8.09, "wasted Mornye Concerto")
     assert_close(
         sim.state.concerto_energy["mornye"] + sim.state.wasted_concerto_energy["mornye"],
-        101.44,
+        108.09,
         "pre-clamp Mornye Concerto",
     )
 

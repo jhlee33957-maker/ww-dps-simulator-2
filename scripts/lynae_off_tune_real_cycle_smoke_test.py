@@ -34,12 +34,12 @@ MORNYE_OPENER = [
     "mornye_heavy_attack",
 ]
 LYNAE_CHECKPOINTS = [
-    ("lynae_resonance_skill", "lynae_resonance_skill_palette", 2117.10, 130.83),
-    ("lynae_spark_collision", "lynae_spark_collision_lv3", 2511.60, 394.50),
-    ("lynae_polychrome_leap", "lynae_polychrome_leap_stage_1", 2583.60, 72.00),
-    ("lynae_polychrome_leap", "lynae_polychrome_leap_stage_2", 2655.60, 72.00),
-    ("lynae_polychrome_leap", "lynae_polychrome_leap_stage_3", 2702.10, 46.50),
-    ("lynae_visual_impact", "lynae_visual_impact", 3616.50, 914.40),
+    ("lynae_resonance_skill", "lynae_resonance_skill_palette", 2216.70, 130.83),
+    ("lynae_spark_collision", "lynae_spark_collision_lv3", 2611.20, 394.50),
+    ("lynae_polychrome_leap", "lynae_polychrome_leap_stage_1", 2683.20, 72.00),
+    ("lynae_polychrome_leap", "lynae_polychrome_leap_stage_2", 2755.20, 72.00),
+    ("lynae_polychrome_leap", "lynae_polychrome_leap_stage_3", 2801.70, 46.50),
+    ("lynae_visual_impact", "lynae_visual_impact", 3716.10, 914.40),
     ("lynae_resonance_liberation", "lynae_resonance_liberation_prismatic_overblast", 3920.00, 720.00),
 ]
 
@@ -60,7 +60,7 @@ def main() -> None:
     assert sim.execute_action("swap_to_mornye")
     for action_id in MORNYE_OPENER:
         assert sim.execute_action(action_id), action_id
-    assert_close(sim.state.enemy_off_tune_current, 1826.67, "after Mornye opener")
+    assert_close(sim.state.enemy_off_tune_current, 1926.27, "after Mornye opener")
 
     assert sim.execute_action("swap_to_lynae")
     intro = sim.timeline[-1]
@@ -68,7 +68,7 @@ def main() -> None:
     assert_close(intro.off_tune_value, 106.4, "Lynae Intro base Off-Tune")
     assert_close(intro.off_tune_buildup_rate_used, 1.5, "Lynae Intro Off-Tune rate")
     assert_close(intro.off_tune_added, 159.6, "Lynae Intro Off-Tune added")
-    assert_close(sim.state.enemy_off_tune_current, 1986.27, "after Lynae Intro")
+    assert_close(sim.state.enemy_off_tune_current, 2085.87, "after Lynae Intro")
 
     for action_id, resolved_id, expected_off_tune, expected_added in LYNAE_CHECKPOINTS:
         assert sim.execute_action(action_id), action_id
@@ -80,9 +80,9 @@ def main() -> None:
 
     liberation = sim.timeline[-1]
     assert sim.state.enemy_tune_break_available is True
-    assert_close(liberation.enemy_off_tune_current_before, 3616.5, "liberation before Off-Tune")
+    assert_close(liberation.enemy_off_tune_current_before, 3716.1, "liberation before Off-Tune")
     assert_close(liberation.enemy_off_tune_current_after, 3920.0, "liberation capped Off-Tune")
-    assert_close(sim.state.off_tune_overflow, 416.5, "liberation overflow")
+    assert_close(sim.state.off_tune_overflow, 516.1, "liberation overflow")
 
     assert sim.execute_action("lynae_echo_hyvatia")
     hyvatia = sim.timeline[-1]
