@@ -9,9 +9,12 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2(107).zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-108.zip"
 EXCLUDED_DIRS = {".git", ".venv", "__pycache__", ".pytest_cache", ".mypy_cache", "bc_eval_bundle"}
-REQUIRED_ZIP_FILES = {"models/maskable_ppo_bc_v105.zip"}
+REQUIRED_ZIP_FILES = {
+    "models/maskable_ppo_bc_v105.zip",
+    "models/maskable_ppo_candidate_after_bc_v105.zip",
+}
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -28,7 +31,12 @@ def main() -> None:
 
 def build_archive(output: Path) -> dict[str, Any]:
     output = output.resolve()
+    root = ROOT.resolve()
+    if output == root:
+        raise ValueError(f"Archive output must be a ZIP file path, not the project root: {output}")
     if output.exists():
+        if output.is_dir():
+            raise ValueError(f"Archive output path is a directory, not a ZIP file: {output}")
         output.unlink()
     output.parent.mkdir(parents=True, exist_ok=True)
     excluded_cache_count = 0

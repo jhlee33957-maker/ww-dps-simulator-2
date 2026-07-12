@@ -28,8 +28,9 @@ from rl.demo_contract import (  # noqa: E402
 )
 
 
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2(107).zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-108.zip"
 EXPECTED_BC_MODEL_SHA256 = "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e"
+EXPECTED_PPO_MODEL_SHA256 = "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513"
 EXPECTED_EVAL_SELECTED_SEQUENCE_SHA256 = "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1"
 EXPECTED_EVAL_RESOLVED_SEQUENCE_SHA256 = "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229"
 EXPECTED_EVAL_TOTAL_DAMAGE = 5165134.682363356
@@ -40,6 +41,16 @@ EXPECTED_DAMAGE_BY_CHARACTER = {
     "mornye": 268807.92005964793,
     "lynae": 1162391.9084385103,
 }
+EXPECTED_PPO_SELECTED_SEQUENCE_SHA256 = "0bba8688b3a085fde3a842901f659b24fdefd009102cc1ccba5a0d971a27c11d"
+EXPECTED_PPO_RESOLVED_SEQUENCE_SHA256 = "9650b6e4d1b8f9ba616c26293f60c8cc4a5d6ea57dcf7153305aa085f84ad6e1"
+EXPECTED_PPO_TOTAL_DAMAGE = 3600637.129626801
+EXPECTED_PPO_DPS = 30005.309413556675
+EXPECTED_PPO_SCHEDULED_DAMAGE = 140026.5111366104
+EXPECTED_PPO_DAMAGE_BY_CHARACTER = {
+    "aemeath": 2674131.053725695,
+    "mornye": 201528.93426401448,
+    "lynae": 724977.1416370921,
+}
 REQUIRED_FILES = (
     "PROJECT_PROGRESS_STATE.json",
     "data/manual_120s_baseline_routes_v104.json",
@@ -47,9 +58,14 @@ REQUIRED_FILES = (
     "results/manual_120s_bc_demonstration_v105_summary.json",
     "results/ppo_evaluation_summary.json",
     "results/ppo_timeline.csv",
+    "results/ppo_100k_evaluation_summary.json",
+    "results/ppo_100k_timeline.csv",
+    "results/manual_bc_ppo_comparison_v108.json",
+    "results/training_metadata.json",
     "reports/manual_120s_bc_demonstration_v105.md",
     "models/maskable_ppo_bc_v105.zip",
     "models/maskable_ppo_bc_v105.zip.bc_metadata.json",
+    "models/maskable_ppo_candidate_after_bc_v105.zip",
     "rl/damage_attribution.py",
     "rl/demo_contract.py",
     "rl/evaluation_report.py",
@@ -64,9 +80,13 @@ REQUIRED_FILES = (
     "scripts/project_progress_active_echo_alignment_smoke_test.py",
     "scripts/project_progress_manual_120s_baseline_alignment_smoke_test.py",
     "scripts/project_progress_bc_demo_alignment_smoke_test.py",
+    "scripts/project_progress_ppo_100k_alignment_smoke_test.py",
     "scripts/evaluation_event_source_damage_attribution_smoke_test.py",
     "scripts/evaluation_scheduled_damage_role_breakdown_smoke_test.py",
     "scripts/bc_evaluation_manual_baseline_parity_smoke_test.py",
+    "scripts/ppo_100k_evaluation_contract_smoke_test.py",
+    "scripts/manual_bc_ppo_comparison_smoke_test.py",
+    "scripts/build_candidate_archive_output_guard_smoke_test.py",
 )
 TEXT_SUFFIXES = (".py", ".json", ".md", ".txt")
 AUTHORITATIVE_SOURCE_FILES = (
@@ -115,10 +135,16 @@ def validate_archive(archive: Path) -> dict[str, Any]:
 
         summary = json.loads(zf.read("results/manual_120s_bc_demonstration_v105_summary.json").decode("utf-8"))
         evaluation_summary = json.loads(zf.read("results/ppo_evaluation_summary.json").decode("utf-8"))
+        ppo_summary = json.loads(zf.read("results/ppo_100k_evaluation_summary.json").decode("utf-8"))
+        comparison = json.loads(zf.read("results/manual_bc_ppo_comparison_v108.json").decode("utf-8"))
         progress = json.loads(zf.read("PROJECT_PROGRESS_STATE.json").decode("utf-8"))
         model_bytes = zf.read("models/maskable_ppo_bc_v105.zip")
         assert bytes_sha256(model_bytes) == EXPECTED_BC_MODEL_SHA256
+        ppo_model_bytes = zf.read("models/maskable_ppo_candidate_after_bc_v105.zip")
+        assert bytes_sha256(ppo_model_bytes) == EXPECTED_PPO_MODEL_SHA256
         _assert_evaluation_summary(evaluation_summary)
+        _assert_ppo_evaluation_summary(ppo_summary)
+        _assert_comparison(comparison)
         npz_bytes = zf.read("data/generated/manual_120s_bc_demonstration_v105.npz")
         npz_sha = bytes_sha256(npz_bytes)
         assert summary["dataset_sha256"] == npz_sha
@@ -153,6 +179,7 @@ def validate_archive(archive: Path) -> dict[str, Any]:
         "route_sha256": SOURCE_ROUTE_FILE_SHA256,
         "npz_sha256": npz_sha,
         "bc_model_sha256": EXPECTED_BC_MODEL_SHA256,
+        "ppo_model_sha256": EXPECTED_PPO_MODEL_SHA256,
         "direct_action_manifest_sha256": DIRECT_ACTION_MANIFEST_SHA256,
         **text_stats,
         "fresh_extraction_checks": fresh_extraction_results,
@@ -194,6 +221,7 @@ def run_fresh_extraction_checks(archive: Path) -> list[dict[str, Any]]:
         [sys.executable, "scripts/project_progress_active_echo_alignment_smoke_test.py"],
         [sys.executable, "scripts/project_progress_manual_120s_baseline_alignment_smoke_test.py"],
         [sys.executable, "scripts/project_progress_bc_demo_alignment_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_ppo_100k_alignment_smoke_test.py"],
         [sys.executable, "scripts/manual_120s_bc_demo_contract_smoke_test.py"],
         [sys.executable, "scripts/manual_120s_bc_packaged_generation_parity_smoke_test.py"],
         [sys.executable, "scripts/manual_120s_bc_report_portability_smoke_test.py"],
@@ -201,6 +229,9 @@ def run_fresh_extraction_checks(archive: Path) -> list[dict[str, Any]]:
         [sys.executable, "scripts/evaluation_event_source_damage_attribution_smoke_test.py"],
         [sys.executable, "scripts/evaluation_scheduled_damage_role_breakdown_smoke_test.py"],
         [sys.executable, "scripts/bc_evaluation_manual_baseline_parity_smoke_test.py"],
+        [sys.executable, "scripts/ppo_100k_evaluation_contract_smoke_test.py"],
+        [sys.executable, "scripts/manual_bc_ppo_comparison_smoke_test.py"],
+        [sys.executable, "scripts/build_candidate_archive_output_guard_smoke_test.py"],
         [
             sys.executable,
             "rl/pretrain_maskable_ppo_bc.py",
@@ -213,6 +244,20 @@ def run_fresh_extraction_checks(archive: Path) -> list[dict[str, Any]]:
             "--model-path",
             "models/maskable_ppo_bc_v105.zip",
             "--dry-run",
+        ],
+        [
+            sys.executable,
+            "rl/evaluate_maskable_ppo.py",
+            "--model-path",
+            "models/maskable_ppo_candidate_after_bc_v105.zip",
+            "--party",
+            "aemeath_mornye_lynae_enabled_test_party",
+            "--initial-active-character",
+            "aemeath",
+            "--summary-path",
+            "results/ppo_100k_evaluation_summary.json",
+            "--timeline-path",
+            "results/ppo_100k_timeline.csv",
         ],
         [
             sys.executable,
@@ -262,6 +307,47 @@ def _assert_evaluation_summary(summary: dict[str, Any]) -> None:
     role_breakdown = summary["effective_damage_role_breakdown"]
     _assert_close(role_breakdown["scheduled_damage"], EXPECTED_SCHEDULED_DAMAGE)
     _assert_close(role_breakdown["total_damage_delta"], 0.0)
+
+
+def _assert_ppo_evaluation_summary(summary: dict[str, Any]) -> None:
+    assert summary["selected_action_count"] == 152
+    assert summary["resolved_action_count"] == 152
+    assert summary["selected_sequence_sha256"] == EXPECTED_PPO_SELECTED_SEQUENCE_SHA256
+    assert summary["resolved_sequence_sha256"] == EXPECTED_PPO_RESOLVED_SEQUENCE_SHA256
+    assert summary["manual_baseline_selected_sequence_match"] is False
+    assert summary["manual_baseline_resolved_sequence_match"] is False
+    assert summary["manual_baseline_character_damage_match"] is False
+    assert summary["model_metadata_mismatches"] == {}
+    assert summary["model_space_mismatches"] == {}
+    _assert_close(summary["total_damage"], EXPECTED_PPO_TOTAL_DAMAGE)
+    _assert_close(summary["dps"], EXPECTED_PPO_DPS)
+    _assert_close(summary["final_time"], 120.0)
+    _assert_close(summary["manual_baseline_total_damage"], 5165134.682363359)
+    _assert_close(summary["manual_baseline_damage_ratio"], 0.6971042094839032)
+    _assert_close(summary["manual_baseline_damage_delta"], -1564497.5527365585)
+    for character_id, expected_damage in EXPECTED_PPO_DAMAGE_BY_CHARACTER.items():
+        _assert_close(summary["damage_by_character"][character_id], expected_damage)
+    role_breakdown = summary["effective_damage_role_breakdown"]
+    _assert_close(role_breakdown["scheduled_damage"], EXPECTED_PPO_SCHEDULED_DAMAGE)
+    _assert_close(role_breakdown["total_damage_delta"], 0.0)
+
+
+def _assert_comparison(comparison: dict[str, Any]) -> None:
+    assert comparison["schema_version"] == "manual_bc_ppo_comparison_v108"
+    assert comparison["objective"] == "final_120_second_total_damage_only"
+    assert comparison["winner"] == "bc_model"
+    assert comparison["winner_model"] == "models/maskable_ppo_bc_v105.zip"
+    assert comparison["ppo_candidate_classification"] == "valid_but_regressed"
+    assert comparison["models"]["bc_model"]["sha256"] == EXPECTED_BC_MODEL_SHA256
+    assert comparison["models"]["ppo_100k_candidate"]["sha256"] == EXPECTED_PPO_MODEL_SHA256
+    results = comparison["results"]
+    _assert_close(results["bc_model"]["total_damage"], EXPECTED_EVAL_TOTAL_DAMAGE)
+    _assert_close(results["ppo_100k"]["total_damage"], EXPECTED_PPO_TOTAL_DAMAGE)
+    assert results["ppo_100k"]["first_selected_action_divergence"] == {
+        "zero_based_step": 4,
+        "baseline": "aemeath_resonance_skill",
+        "ppo": "swap_to_mornye",
+    }
 
 
 def _assert_close(actual: float, expected: float, *, tolerance: float = 1e-6) -> None:

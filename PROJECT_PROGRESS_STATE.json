@@ -14,13 +14,13 @@
   },
   "status": {
     "last_updated": "2026-07-13T00:00:00+09:00",
-    "latest_verified_archive": "ww-dps-simulator-2(106).zip",
-    "latest_verified_baseline_label": "106",
+    "latest_verified_archive": "ww-dps-simulator-2(107).zip",
+    "latest_verified_baseline_label": "107",
     "current_task_status": "implemented_tests_passed_pending_external_review",
-    "current_task": "full BC warm-start artifact verification and deterministic evaluation reporting correction",
-    "current_task_expected_next_archive": "107",
+    "current_task": "100000-step PPO continuation result ingestion, deterministic evaluation, and best-checkpoint comparison",
+    "current_task_expected_next_archive": "108",
     "do_not_treat_current_task_as_complete_until_reviewed": true,
-    "candidate_expected_next_archive": "ww-dps-simulator-2(107).zip"
+    "candidate_expected_next_archive": "ww-dps-simulator-2-108.zip"
   },
   "source_of_truth": {
     "raw_action_workbook": "鸣潮动作数据汇总(5).xlsx",
@@ -556,84 +556,126 @@
       ],
       "external_verification_label": "106",
       "baseline_archive": "ww-dps-simulator-2(106).zip"
+    },
+    {
+      "id": "M017",
+      "title": "BC warm-start artifact verification and deterministic evaluation reporting correction",
+      "status": "externally_verified_complete",
+      "candidate": "107",
+      "external_review_status": "passed",
+      "external_verification_claimed": true,
+      "external_verification_label": "107",
+      "latest_externally_verified_baseline": "107",
+      "baseline_archive": "ww-dps-simulator-2(107).zip",
+      "summary": "External review promoted candidate 107 to verified baseline 107. The full BC warm-start model remained byte-identical and event-aware deterministic reporting was accepted; no PPO training was part of candidate 107.",
+      "model_path": "models/maskable_ppo_bc_v105.zip",
+      "model_sha256": "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e",
+      "total_damage": 5165134.682363356,
+      "dps": 43042.78901969464,
+      "selected_sequence_sha256": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
+      "resolved_sequence_sha256": "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229"
     }
   ],
   "current_in_progress_task": {
-    "task": "full BC warm-start artifact verification and deterministic evaluation reporting correction",
+    "task": "100000-step PPO continuation result ingestion, deterministic evaluation, and best-checkpoint comparison",
     "status": "implemented_tests_passed_pending_external_review",
-    "candidate": "107",
+    "candidate": "108",
     "external_review_required": true,
     "external_verification_claimed": false,
-    "latest_externally_verified_baseline": "106",
-    "baseline_archive": "ww-dps-simulator-2(106).zip",
-    "candidate_expected_next_archive": "ww-dps-simulator-2(107).zip",
+    "latest_externally_verified_baseline": "107",
+    "baseline_archive": "ww-dps-simulator-2(107).zip",
+    "candidate_expected_next_archive": "ww-dps-simulator-2-108.zip",
+    "bc_training_executed": true,
     "full_bc_training_executed": true,
-    "ppo_training_executed": false,
-    "model_path": "models/maskable_ppo_bc_v105.zip",
-    "model_sha256": "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e",
-    "model_sidecar_path": "models/maskable_ppo_bc_v105.zip.bc_metadata.json",
-    "bc_hyperparameters": {
-      "epochs": 300,
-      "batch_size": 148,
-      "learning_rate": 0.003,
-      "seed": 11,
-      "device": "cpu",
+    "ppo_training_executed": true,
+    "ppo_training": {
+      "source_bc_model": "models/maskable_ppo_bc_v105.zip",
+      "source_bc_model_sha256": "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e",
+      "ppo_model_path": "models/maskable_ppo_candidate_after_bc_v105.zip",
+      "ppo_model_sha256": "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513",
+      "timesteps": 100000,
+      "seed": 42,
+      "learning_rate": 0.0003,
+      "entropy_coefficient": 0.01,
+      "ent_coef": 0.01,
+      "n_steps": 512,
+      "batch_size": 64,
+      "gamma": 0.999,
       "initial_active_character": "aemeath",
-      "curriculum_reset": "none",
-      "final_loss": 0.0069569493643939495
+      "curriculum_reset_mode": "none",
+      "elapsed_seconds": 321.1551833000267,
+      "training_started_at": "2026-07-12T16:33:45.564697+00:00",
+      "training_finished_at": "2026-07-12T16:39:06.719900+00:00"
     },
-    "evaluation_summary": "results/ppo_evaluation_summary.json",
-    "evaluation_timeline": "results/ppo_timeline.csv",
-    "selected_action_count": 148,
-    "resolved_action_count": 148,
-    "selected_sequence_sha256": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
-    "resolved_sequence_sha256": "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229",
-    "final_combat_time": 120.0,
-    "total_damage": 5165134.682363356,
-    "dps": 43042.78901969464,
-    "manual_baseline_total_damage": 5165134.682363359,
-    "manual_baseline_dps": 43042.78901969466,
-    "manual_baseline_damage_ratio": 0.9999999999999994,
-    "manual_baseline_damage_delta": -2.7939677238464355e-09,
-    "manual_baseline_selected_sequence_match": true,
-    "manual_baseline_resolved_sequence_match": true,
-    "manual_baseline_character_damage_match": true,
-    "damage_by_character": {
-      "aemeath": 3733934.8538652016,
-      "mornye": 268807.92005964793,
-      "lynae": 1162391.9084385103
+    "ppo_deterministic_evaluation": {
+      "summary_path": "results/ppo_100k_evaluation_summary.json",
+      "timeline_path": "results/ppo_100k_timeline.csv",
+      "total_damage": 3600637.129626801,
+      "dps": 30005.309413556675,
+      "final_combat_time": 120.0,
+      "selected_action_count": 152,
+      "resolved_action_count": 152,
+      "selected_sequence_sha256": "0bba8688b3a085fde3a842901f659b24fdefd009102cc1ccba5a0d971a27c11d",
+      "resolved_sequence_sha256": "9650b6e4d1b8f9ba616c26293f60c8cc4a5d6ea57dcf7153305aa085f84ad6e1",
+      "manual_baseline_total_damage": 5165134.682363359,
+      "manual_baseline_damage_ratio": 0.6971042094839032,
+      "manual_baseline_damage_delta": -1564497.5527365585,
+      "loss_vs_manual_percent": 30.28957905160968,
+      "manual_baseline_selected_sequence_match": false,
+      "manual_baseline_resolved_sequence_match": false,
+      "manual_baseline_character_damage_match": false,
+      "damage_by_character": {
+        "aemeath": 2674131.053725695,
+        "mornye": 201528.93426401448,
+        "lynae": 724977.1416370921
+      },
+      "scheduled_damage": 140026.5111366104,
+      "effective_damage_role_breakdown_delta": 0.0,
+      "first_selected_action_divergence": {
+        "zero_based_step": 4,
+        "baseline": "aemeath_resonance_skill",
+        "ppo": "swap_to_mornye"
+      },
+      "model_metadata_mismatches": {},
+      "model_space_mismatches": {}
     },
-    "scheduled_damage": 205987.4042873791,
-    "effective_damage_role_breakdown_delta": 0.0,
-    "model_metadata_mismatches": {},
-    "model_space_mismatches": {},
+    "ppo_candidate_status": "valid_but_regressed",
+    "current_best_model": "models/maskable_ppo_bc_v105.zip",
+    "current_best_result": 5165134.682363356,
+    "comparison_artifact": "results/manual_bc_ppo_comparison_v108.json",
+    "winner": "bc_model",
+    "winner_model": "models/maskable_ppo_bc_v105.zip",
     "observation_version": "slot_generic_mechanics_v5",
     "observation_shape": 314,
     "policy_action_count": 25,
     "max_policy_action_slots": 32,
-    "sample_count": 148,
     "source_route_file_sha256": "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a",
     "dataset_sha256": "b020a1b9309b46bd87eb3fff4837aead53035c4c84620962f47feb9fc11846ff",
     "action_data_hash": "d6377d54a1abb985dc5f58866321c61c7b904a6b73ddc1538be7e38d36a99ff1",
     "party_config_hash": "bd106ba1c0f5581436c35fea736a00fd6ad92b131f8b43ba8cf1e3dc89cbcb11",
     "manifest_sha256": "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d",
-    "reporting_correction": "event-aware character/source attribution now separates direct residual, scheduled damage, Tune Break response damage, and generated mechanic damage; scheduled damage is included in effective role breakdown with zero total delta.",
-    "runtime_changes": "none; runtime action data and executor were not modified",
+    "manual_bc_selected_sequence_sha256": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
+    "manual_bc_resolved_sequence_sha256": "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229",
+    "manual_uploaded_archive_finding": {
+      "zip_sha256": "57f0c10a72b0fcff71c9a8da196329e317902b572c49344682504ea0f5c6300e",
+      "entry_count": 641,
+      "cache_entries": 0,
+      "archive_integrity_checker": "passed",
+      "externally_verified": false,
+      "not_final_candidate_reasons": [
+        "dedicated PPO evaluation outputs absent",
+        "progress metadata stale",
+        "builder could not include the PPO model",
+        "explicit best-result comparison absent"
+      ]
+    },
     "notes": [
-      "Candidate 107 is pending external review and must not be treated as verified.",
-      "The existing full BC model artifact was preserved byte-identical while deterministic evaluation reporting was corrected.",
-      "Closed-loop BC evaluation reproduces the 148/148 selected and resolved route parity with no metadata/model-space mismatch.",
-      "The reporting defect was host-row-biased attribution only; event source fields now own scheduled, Tune response, and generated mechanic damage."
+      "Candidate 108 is pending external review and must not be treated as verified.",
+      "The PPO 100k candidate is structurally valid but materially regressed versus the verified BC/manual result.",
+      "The BC checkpoint remains the current best model and was not overwritten or demoted.",
+      "No combat formulas, action data, reward formula, observation schema, route, BC NPZ, BC model, or PPO model were modified."
     ],
-    "tests": [
-      "evaluation_event_source_damage_attribution_smoke_test.py passed",
-      "evaluation_scheduled_damage_role_breakdown_smoke_test.py passed",
-      "bc_evaluation_manual_baseline_parity_smoke_test.py passed",
-      "official evaluate_maskable_ppo.py regenerated results/ppo_evaluation_summary.json and results/ppo_timeline.csv"
-    ],
-    "next_after_external_verification": "run 100000-step PPO continuation from the verified BC model",
-    "final_archive_integrity": "pending exact candidate-107 ZIP validation; final SHA is reported outside the archive to avoid self-reference",
-    "archive_path": "../ww-dps-simulator-2(107).zip"
+    "next_after_external_verification": "implement guarded PPO continuation with periodic deterministic evaluation and best-model retention"
   },
   "manual_cycle_reference": {
     "status": "externally_verified_complete",
@@ -731,27 +773,19 @@
   ],
   "next_planned_tasks": [
     {
-      "task": "external review of candidate 107 deterministic BC evaluation reporting correction",
-      "status": "current",
-      "note": "Candidate 107 remains pending external review; no external verification is claimed."
+      "task": "implement guarded PPO continuation with periodic deterministic evaluation and best-model retention",
+      "status": "after_candidate_108_external_verification",
+      "note": "Do not overwrite or demote the verified BC checkpoint; retain the best deterministic 120-second model by total damage."
     },
     {
-      "task": "100000-step PPO continuation from the verified BC model",
-      "status": "after_candidate_107_external_verification",
-      "model_source": "models/maskable_ppo_bc_v105.zip",
-      "initial_active_character": "aemeath",
-      "reset_mode": "none",
-      "note": "Run only after candidate 107 is externally verified."
+      "task": "verify guarded PPO continuation infrastructure before allocating another PPO budget",
+      "status": "after_guard_implementation",
+      "note": "No unguarded PPO continuation should be launched from this candidate."
     },
     {
-      "task": "deterministic normal-reset evaluation of the PPO candidate",
-      "status": "after_ppo_100k",
-      "note": "Evaluate the PPO continuation candidate deterministically before allocating more search or training budget."
-    },
-    {
-      "task": "compare manual baseline, BC model, and PPO result before any additional PPO/search budget",
-      "status": "after_ppo_evaluation",
-      "note": "Compare the verified manual baseline, preserved BC model evaluation, and PPO candidate result before further optimization."
+      "task": "compare against Beam Search and MCTS after guarded PPO workflow is verified",
+      "status": "after_guarded_ppo_verification",
+      "note": "Use final 120-second total damage as the comparison objective unless a later reviewed contract changes it."
     }
   ],
   "validation_invariants": [
@@ -1291,7 +1325,7 @@
       }
     }
   ],
-  "next_planned_task": "external review of candidate 107 deterministic BC evaluation reporting correction; after external verification run 100000-step PPO continuation from the verified BC model",
+  "next_planned_task": "after candidate 108 external review, implement guarded PPO continuation with periodic deterministic evaluation and best-model retention; do not run immediate unguarded PPO training",
   "candidate_history": [
     {
       "candidate": "106",
@@ -1338,7 +1372,7 @@
     {
       "candidate": "107",
       "task": "full BC warm-start artifact verification and deterministic evaluation reporting correction",
-      "status": "implemented_tests_passed_pending_external_review",
+      "status": "externally_verified_complete",
       "latest_externally_verified_baseline": "106",
       "full_bc_training_executed": true,
       "ppo_training_executed": false,
@@ -1359,8 +1393,31 @@
       "scheduled_damage": 205987.4042873791,
       "reporting_correction": "event-aware character/source attribution now separates direct residual, scheduled damage, Tune Break response damage, and generated mechanic damage; scheduled damage is included in effective role breakdown with zero total delta.",
       "archive_path": "../ww-dps-simulator-2(107).zip",
+      "external_review_status": "passed",
+      "external_verification_claimed": true,
+      "external_verification_label": "107",
+      "baseline_archive": "ww-dps-simulator-2(107).zip"
+    },
+    {
+      "candidate": "108",
+      "task": "100000-step PPO continuation result ingestion, deterministic evaluation, and best-checkpoint comparison",
+      "status": "implemented_tests_passed_pending_external_review",
+      "latest_externally_verified_baseline": "107",
       "external_review_status": "pending",
-      "external_verification_claimed": false
+      "external_verification_claimed": false,
+      "full_bc_training_executed": true,
+      "ppo_training_executed": true,
+      "ppo_timesteps": 100000,
+      "ppo_model_path": "models/maskable_ppo_candidate_after_bc_v105.zip",
+      "ppo_model_sha256": "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513",
+      "ppo_candidate_status": "valid_but_regressed",
+      "ppo_total_damage": 3600637.129626801,
+      "ppo_dps": 30005.309413556675,
+      "winner": "bc_model",
+      "winner_model": "models/maskable_ppo_bc_v105.zip",
+      "current_best_result": 5165134.682363356,
+      "comparison_artifact": "results/manual_bc_ppo_comparison_v108.json",
+      "archive_path": "../ww-dps-simulator-2-108.zip"
     }
   ]
 }
