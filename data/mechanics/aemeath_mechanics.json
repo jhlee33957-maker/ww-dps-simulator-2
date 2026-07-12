@@ -27,8 +27,8 @@
       "Excel-based Aemeath Tune Break action",
       "Tune Rupture Response - Starburst off-field party response",
       "source-gated generated mechanic damage infrastructure",
-      "Aemeath Forte Circuit trail state scaffolding",
-      "Seraphic Duet follow-up source audit with unresolved runtime damage gate",
+      "Aemeath C0 Rupturous Trail source-confirmed target mechanic",
+      "Seraphic Duet source-confirmed Tune Rupture follow-up damage and target-stack multiplier",
       "QTE / Intro transition metadata and reviewed transition action candidates"
     ],
     "excluded": [
@@ -106,8 +106,9 @@
       "name": "Trail No-cost",
       "modeled_behavior": [
         "Granted by Overdrive / 大招1 for 30 seconds.",
-        "Consumed by Seraphic Duet.",
-        "While consumed by Seraphic Duet, existing single-target trail scaffold stacks are preserved; unresolved S0 trail removal rules are not invented."
+        "Overdrive grants one preservation use for the next actual Seraphic Duet.",
+        "The first actual Seraphic Duet while preservation is active snapshots target Rupturous Trail stacks, preserves the target stacks, then consumes preservation.",
+        "Enhanced-use charges, preservation state, and target Rupturous Trail stacks are separate state concepts."
       ]
     },
     {
@@ -176,10 +177,19 @@
       "CombatState.rupturous_trail_event_log"
     ],
     "modeled_behavior": [
-      "Single-target enemy state gains 10 stacks per successful actual party Tune Rupture response damage event.",
-      "C0 stack cap is 30 and aggregate duration refreshes to 30 combat seconds on each application.",
-      "Tune Strain, cooldown-blocked, missing, and zero-damage responses do not grant stacks.",
-      "Seraphic Duet snapshots current target stacks for its extra Tune Rupture multiplier, then consumes all stacks unless one-use trail preservation is active.",
+      "Rupturous Trail is a source-confirmed C0 Tune Rupture target mechanic.",
+      "Each successfully executed party Tune Rupture response damage event grants 10 target stacks.",
+      "A response blocked by its response cooldown grants no stacks.",
+      "C0 maximum is 30 stacks.",
+      "Duration is 30 combat seconds and uses the combat_time clock.",
+      "Each successful application refreshes the aggregate target duration to 30 combat seconds.",
+      "Seraphic Duet snapshots the target stack count when committed.",
+      "Each stack increases the extra Tune Rupture multiplier by 4%.",
+      "Normal Seraphic Duet uses 5 repeats; Enhanced Seraphic Duet uses 10 repeats.",
+      "Overdrive grants two enhanced-use charges and one preservation use.",
+      "The first actual Seraphic Duet while preservation is active snapshots and preserves target stacks, then consumes preservation.",
+      "The next actual Seraphic Duet snapshots and removes the target stacks.",
+      "Enhanced-use charges, preservation state, and target trail stacks are separate state concepts.",
       "Observation schema v5 exposes target stack and remaining ratios as fixed global channels.",
       "Legacy character_mechanics_state[\"aemeath\"] personal Rupturous Trail keys are ignored and removed during Aemeath state normalization."
     ],
@@ -200,10 +210,10 @@
         "角色-女!2932"
       ],
       "extra_tune_damage_rows": [
-        "dmg/角色女DamageData!2578",
-        "dmg/角色女DamageData!2579",
-        "dmg/角色女DamageData!2628",
-        "dmg/角色女DamageData!2629"
+        "dmg!2578",
+        "dmg!2579",
+        "dmg!2628",
+        "dmg!2629"
       ]
     },
     "debug_fields": [
@@ -217,7 +227,14 @@
     "max_stacks": 30,
     "duration_seconds": 30.0,
     "duration_clock": "combat_time",
-    "stack_bonus_per_stack": 0.04
+    "stack_bonus_per_stack": 0.04,
+    "duration_refresh_rule": "refresh aggregate target duration to 30 combat seconds on each successful application",
+    "normal_repeat_count": 5,
+    "enhanced_repeat_count": 10,
+    "preservation_uses": 1,
+    "owner_state": "CombatState.rupturous_trail_stacks",
+    "remaining_state": "CombatState.rupturous_trail_remaining",
+    "event_log_state": "CombatState.rupturous_trail_event_log"
   },
   "fusion_trail": {
     "title": "Fusion Trail",
@@ -452,7 +469,8 @@
         "Costs 100 Synchronization Rate.",
         "Adds Resonance Rate.",
         "Switches to Mech.",
-        "Uses resonance_liberation damage_bonus_category from source damage type."
+        "Uses resonance_liberation damage_bonus_category from source damage type.",
+        "In Tune Rupture mode, source-confirmed Seraphic Duet follow-up damage snapshots target Rupturous Trail stacks and applies the C0 4% per-stack extra Tune Rupture multiplier."
       ]
     },
     {
@@ -463,7 +481,8 @@
         "Costs 100 Synchronization Rate.",
         "Adds Resonance Rate.",
         "Switches to Human.",
-        "Uses resonance_liberation damage_bonus_category from source damage type."
+        "Uses resonance_liberation damage_bonus_category from source damage type.",
+        "In Tune Rupture mode, source-confirmed Seraphic Duet follow-up damage snapshots target Rupturous Trail stacks and applies the C0 4% per-stack extra Tune Rupture multiplier."
       ]
     },
     {
