@@ -9,9 +9,9 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2(106).zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2(107).zip"
 EXCLUDED_DIRS = {".git", ".venv", "__pycache__", ".pytest_cache", ".mypy_cache", "bc_eval_bundle"}
-EXCLUDED_SUFFIXES = {".pyc", ".pyo", ".zip"}
+REQUIRED_ZIP_FILES = {"models/maskable_ppo_bc_v105.zip"}
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -50,7 +50,7 @@ def build_archive(output: Path) -> dict[str, Any]:
             if parts & {".git", ".venv", ".mypy_cache", "bc_eval_bundle"}:
                 excluded_venv_or_git_count += 1
                 continue
-            if path.suffix == ".zip":
+            if path.suffix == ".zip" and rel.as_posix() not in REQUIRED_ZIP_FILES:
                 excluded_zip_count += 1
                 continue
             zf.write(path, rel.as_posix())

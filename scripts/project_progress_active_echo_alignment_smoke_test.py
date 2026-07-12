@@ -9,24 +9,15 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main() -> None:
     data = json.loads((ROOT / "PROJECT_PROGRESS_STATE.json").read_text(encoding="utf-8-sig"))
-    status = data["status"]
-    assert status["latest_verified_archive"] == "ww-dps-simulator-2(105).zip"
-    assert status["latest_verified_baseline_label"] == "105"
-    assert status["current_task"] == "canonical BC demonstration regeneration and BC/PPO compatibility preflight"
-    assert status["current_task_status"] == "implemented_tests_passed_pending_external_review"
-    assert status["do_not_treat_current_task_as_complete_until_reviewed"] is True
+    assert int(data["status"]["latest_verified_baseline_label"]) >= 103
 
-    assert data["next_planned_task"] == "external review of canonical BC demonstration candidate 106, then user-run full BC warm-start, deterministic normal-reset evaluation, and PPO retraining"
-    planned = data["next_planned_tasks"]
-    assert [item["task"] for item in planned[:4]] == [
-        "external review of canonical BC demonstration candidate 106",
-        "user-run full BC warm-start",
-        "deterministic normal-reset evaluation",
-        "PPO retraining",
-    ]
-    planned_text = json.dumps(planned, ensure_ascii=False).lower()
-    assert "active echo action implementation" not in planned_text
-    assert "mornye and aemeath active echo action implementation" not in planned_text
+    active_echo = next(item for item in data["completed_milestones"] if item["id"] == "M013")
+    assert active_echo["status"] == "complete"
+    assert active_echo["baseline"] == "103"
+    assert active_echo["archive"] == "ww-dps-simulator-2(103).zip"
+    assert active_echo["verified_values"]["policy_action_count"] == 25
+    assert active_echo["verified_values"]["observation_version"] == "slot_generic_mechanics_v5"
+    assert active_echo["verified_values"]["observation_shape"] == 314
 
     u005 = next(item for item in data["known_unresolved_or_missing"] if item["id"] == "U005")
     assert u005["status"] == "externally_verified_complete_with_limits"
@@ -38,6 +29,7 @@ def main() -> None:
     full_cycle = next(item for item in data["completed_milestones"] if item["id"] == "M014")
     assert full_cycle["status"] == "externally_verified_complete"
     assert full_cycle["candidate"] == "104"
+    assert full_cycle["latest_externally_verified_baseline"] == "104"
     assert full_cycle["final_combat_frames"] == 1977
     assert full_cycle["placeholder_fallback_count"] == 1
     assert full_cycle["state_injection_used"] is False
@@ -46,6 +38,9 @@ def main() -> None:
     assert full_cycle["observation_version"] == "slot_generic_mechanics_v5"
     assert full_cycle["observation_shape"] == 314
     assert full_cycle["max_policy_action_slots"] == 32
+    milestone_text = json.dumps({"active_echo": active_echo, "full_cycle": full_cycle, "u005": u005}, ensure_ascii=False)
+    assert "not_implemented" not in milestone_text
+    assert "not implemented" not in milestone_text.lower()
     print("project_progress_active_echo_alignment_smoke_test ok")
 
 

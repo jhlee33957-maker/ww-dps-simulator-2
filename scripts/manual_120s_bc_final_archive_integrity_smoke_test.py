@@ -28,14 +28,31 @@ from rl.demo_contract import (  # noqa: E402
 )
 
 
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2(106).zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2(107).zip"
+EXPECTED_BC_MODEL_SHA256 = "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e"
+EXPECTED_EVAL_SELECTED_SEQUENCE_SHA256 = "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1"
+EXPECTED_EVAL_RESOLVED_SEQUENCE_SHA256 = "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229"
+EXPECTED_EVAL_TOTAL_DAMAGE = 5165134.682363356
+EXPECTED_EVAL_DPS = 43042.78901969464
+EXPECTED_SCHEDULED_DAMAGE = 205987.4042873791
+EXPECTED_DAMAGE_BY_CHARACTER = {
+    "aemeath": 3733934.8538652016,
+    "mornye": 268807.92005964793,
+    "lynae": 1162391.9084385103,
+}
 REQUIRED_FILES = (
     "PROJECT_PROGRESS_STATE.json",
     "data/manual_120s_baseline_routes_v104.json",
     "data/generated/manual_120s_bc_demonstration_v105.npz",
     "results/manual_120s_bc_demonstration_v105_summary.json",
+    "results/ppo_evaluation_summary.json",
+    "results/ppo_timeline.csv",
     "reports/manual_120s_bc_demonstration_v105.md",
+    "models/maskable_ppo_bc_v105.zip",
+    "models/maskable_ppo_bc_v105.zip.bc_metadata.json",
+    "rl/damage_attribution.py",
     "rl/demo_contract.py",
+    "rl/evaluation_report.py",
     "rl/evaluate_maskable_ppo.py",
     "rl/pretrain_maskable_ppo_bc.py",
     "scripts/manual_120s_bc_demo_contract_smoke_test.py",
@@ -44,6 +61,12 @@ REQUIRED_FILES = (
     "scripts/bc_pretrain_evaluator_contract_smoke_test.py",
     "scripts/evaluate_bc_sidecar_compatibility_smoke_test.py",
     "scripts/pretrain_bc_initial_active_contract_smoke_test.py",
+    "scripts/project_progress_active_echo_alignment_smoke_test.py",
+    "scripts/project_progress_manual_120s_baseline_alignment_smoke_test.py",
+    "scripts/project_progress_bc_demo_alignment_smoke_test.py",
+    "scripts/evaluation_event_source_damage_attribution_smoke_test.py",
+    "scripts/evaluation_scheduled_damage_role_breakdown_smoke_test.py",
+    "scripts/bc_evaluation_manual_baseline_parity_smoke_test.py",
 )
 TEXT_SUFFIXES = (".py", ".json", ".md", ".txt")
 AUTHORITATIVE_SOURCE_FILES = (
@@ -91,7 +114,11 @@ def validate_archive(archive: Path) -> dict[str, Any]:
         _assert_json(zf.read("data/manual_120s_baseline_routes_v104.json"))
 
         summary = json.loads(zf.read("results/manual_120s_bc_demonstration_v105_summary.json").decode("utf-8"))
+        evaluation_summary = json.loads(zf.read("results/ppo_evaluation_summary.json").decode("utf-8"))
         progress = json.loads(zf.read("PROJECT_PROGRESS_STATE.json").decode("utf-8"))
+        model_bytes = zf.read("models/maskable_ppo_bc_v105.zip")
+        assert bytes_sha256(model_bytes) == EXPECTED_BC_MODEL_SHA256
+        _assert_evaluation_summary(evaluation_summary)
         npz_bytes = zf.read("data/generated/manual_120s_bc_demonstration_v105.npz")
         npz_sha = bytes_sha256(npz_bytes)
         assert summary["dataset_sha256"] == npz_sha
@@ -125,6 +152,7 @@ def validate_archive(archive: Path) -> dict[str, Any]:
         "obsolete_bc_eval_bundle_entry_count": len(obsolete_bundle_entries),
         "route_sha256": SOURCE_ROUTE_FILE_SHA256,
         "npz_sha256": npz_sha,
+        "bc_model_sha256": EXPECTED_BC_MODEL_SHA256,
         "direct_action_manifest_sha256": DIRECT_ACTION_MANIFEST_SHA256,
         **text_stats,
         "fresh_extraction_checks": fresh_extraction_results,
@@ -163,10 +191,16 @@ def scan_archive_text(zf: zipfile.ZipFile, names: list[str]) -> dict[str, int]:
 
 def run_fresh_extraction_checks(archive: Path) -> list[dict[str, Any]]:
     checks = [
+        [sys.executable, "scripts/project_progress_active_echo_alignment_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_manual_120s_baseline_alignment_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_bc_demo_alignment_smoke_test.py"],
         [sys.executable, "scripts/manual_120s_bc_demo_contract_smoke_test.py"],
         [sys.executable, "scripts/manual_120s_bc_packaged_generation_parity_smoke_test.py"],
         [sys.executable, "scripts/manual_120s_bc_report_portability_smoke_test.py"],
         [sys.executable, "scripts/bc_pretrain_evaluator_contract_smoke_test.py"],
+        [sys.executable, "scripts/evaluation_event_source_damage_attribution_smoke_test.py"],
+        [sys.executable, "scripts/evaluation_scheduled_damage_role_breakdown_smoke_test.py"],
+        [sys.executable, "scripts/bc_evaluation_manual_baseline_parity_smoke_test.py"],
         [
             sys.executable,
             "rl/pretrain_maskable_ppo_bc.py",
@@ -179,6 +213,16 @@ def run_fresh_extraction_checks(archive: Path) -> list[dict[str, Any]]:
             "--model-path",
             "models/maskable_ppo_bc_v105.zip",
             "--dry-run",
+        ],
+        [
+            sys.executable,
+            "rl/evaluate_maskable_ppo.py",
+            "--model-path",
+            "models/maskable_ppo_bc_v105.zip",
+            "--party",
+            "aemeath_mornye_lynae_enabled_test_party",
+            "--initial-active-character",
+            "aemeath",
         ],
     ]
     passed: list[dict[str, Any]] = []
@@ -199,6 +243,29 @@ def run_fresh_extraction_checks(archive: Path) -> list[dict[str, Any]]:
 
 def _assert_json(data: bytes) -> None:
     json.loads(data.decode("utf-8"))
+
+
+def _assert_evaluation_summary(summary: dict[str, Any]) -> None:
+    assert summary["selected_action_count"] == 148
+    assert summary["resolved_action_count"] == 148
+    assert summary["selected_sequence_sha256"] == EXPECTED_EVAL_SELECTED_SEQUENCE_SHA256
+    assert summary["resolved_sequence_sha256"] == EXPECTED_EVAL_RESOLVED_SEQUENCE_SHA256
+    assert summary["manual_baseline_selected_sequence_match"] is True
+    assert summary["manual_baseline_resolved_sequence_match"] is True
+    assert summary["manual_baseline_character_damage_match"] is True
+    assert summary["model_metadata_mismatches"] == {}
+    assert summary["model_space_mismatches"] == {}
+    _assert_close(summary["total_damage"], EXPECTED_EVAL_TOTAL_DAMAGE)
+    _assert_close(summary["dps"], EXPECTED_EVAL_DPS)
+    for character_id, expected_damage in EXPECTED_DAMAGE_BY_CHARACTER.items():
+        _assert_close(summary["damage_by_character"][character_id], expected_damage)
+    role_breakdown = summary["effective_damage_role_breakdown"]
+    _assert_close(role_breakdown["scheduled_damage"], EXPECTED_SCHEDULED_DAMAGE)
+    _assert_close(role_breakdown["total_damage_delta"], 0.0)
+
+
+def _assert_close(actual: float, expected: float, *, tolerance: float = 1e-6) -> None:
+    assert abs(float(actual) - expected) <= tolerance, (actual, expected)
 
 
 def _is_cache_entry(name: str) -> bool:

@@ -3,8 +3,13 @@ from __future__ import annotations
 from collections import Counter
 from typing import Any, Iterable
 
+from rl.damage_attribution import (
+    damage_by_character_and_source as event_aware_damage_by_character_and_source,
+    effective_damage_role_breakdown as event_aware_effective_damage_role_breakdown,
+)
 
-REPORT_GENERATION_VERSION = "generated_damage_reporting_v2"
+
+REPORT_GENERATION_VERSION = "generated_damage_reporting_v3_event_source_attribution"
 GENERATED_DAMAGE_FIELDS = (
     "generated_mechanic_damage",
     "aemeath_forte_generated_damage",
@@ -112,7 +117,8 @@ def build_generated_damage_summary(
         "damage_by_action_damage_category": _damage_by_action_damage_category(rows),
         "damage_by_hit_formula_type": _damage_by_hit_formula_type(rows),
         "damage_by_generated_mechanic_source": _damage_by_generated_mechanic_source(rows),
-        "damage_by_character_and_source": _damage_by_character_and_source(rows),
+        "damage_by_character_and_source_schema_version": "event_source_attribution_v2",
+        "damage_by_character_and_source": _damage_by_character_and_source(rows, resolved_total_damage),
         "legacy_damage_by_source_action_category": _legacy_damage_by_source_action_category(rows),
         "legacy_damage_by_source_action_category_note": (
             "Backward-compatible source action category totals include generated mechanic damage attached to "
@@ -289,15 +295,8 @@ def _damage_by_generated_mechanic_source(rows: list[dict[str, Any]]) -> dict[str
     return dict(damage_by_source)
 
 
-def _damage_by_character_and_source(rows: list[dict[str, Any]]) -> dict[str, float]:
-    damage_by_character_source: Counter[str] = Counter()
-    for row in rows:
-        character_id = str(row.get("actor_character_id") or row.get("character_id") or "unknown")
-        character_label = _character_label(character_id)
-        generated_total = _float(row, "generated_mechanic_damage")
-        damage_by_character_source[f"{character_label} direct action damage"] += _direct_damage(row)
-        damage_by_character_source[f"{character_label} generated mechanic damage"] += generated_total
-    return dict(damage_by_character_source)
+def _damage_by_character_and_source(rows: list[dict[str, Any]], total_damage: float) -> dict[str, float]:
+    return event_aware_damage_by_character_and_source(rows, total_damage=total_damage)
 
 
 def _damage_by_action_damage_category(rows: list[dict[str, Any]]) -> dict[str, float]:
@@ -340,32 +339,11 @@ def _generated_damage_by_source_action_category(rows: list[dict[str, Any]]) -> d
 
 
 def _effective_damage_role_breakdown(rows: list[dict[str, Any]], total_damage: float) -> dict[str, float]:
-    generated_total = sum(_float(row, "generated_mechanic_damage") for row in rows)
+    result = event_aware_effective_damage_role_breakdown(rows, total_damage)
     aemeath_forte_total = sum(_float(row, "aemeath_forte_generated_damage") for row in rows)
-    tune_break_total = sum(_float(row, "tune_break_damage") for row in rows)
-    tune_response_total = sum(_float(row, "tune_response_damage") for row in rows)
-    normal_total = 0.0
-    for row in rows:
-        explicit_normal = _float(row, "normal_damage")
-        if explicit_normal > 0.0:
-            normal_total += explicit_normal
-        else:
-            normal_total += max(
-                0.0,
-                _direct_damage(row) - _float(row, "tune_break_damage") - _float(row, "tune_response_damage"),
-            )
-    role_total = normal_total + tune_break_total + tune_response_total + generated_total
-    return {
-        "direct_normal_action_damage": normal_total,
-        "direct_tune_break_damage": tune_break_total,
-        "direct_tune_response_damage": tune_response_total,
-        "generated_mechanic_damage": generated_total,
-        "aemeath_forte_generated_damage": aemeath_forte_total,
-        "other_generated_mechanic_damage": max(0.0, generated_total - aemeath_forte_total),
-        "total_damage_check": role_total,
-        "reported_total_damage": total_damage,
-        "total_damage_delta": role_total - total_damage,
-    }
+    result["aemeath_forte_generated_damage"] = aemeath_forte_total
+    result["other_generated_mechanic_damage"] = max(0.0, result["generated_mechanic_damage"] - aemeath_forte_total)
+    return result
 
 
 def _source_action_category(row: dict[str, Any]) -> str:

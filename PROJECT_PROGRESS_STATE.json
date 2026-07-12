@@ -13,14 +13,14 @@
     "language_preference": "설명은 한국어, Codex 프롬프트와 코드 식별자는 영어 가능"
   },
   "status": {
-    "last_updated": "2026-07-12T12:00:00+09:00",
-    "latest_verified_archive": "ww-dps-simulator-2(105).zip",
-    "latest_verified_baseline_label": "105",
+    "last_updated": "2026-07-13T00:00:00+09:00",
+    "latest_verified_archive": "ww-dps-simulator-2(106).zip",
+    "latest_verified_baseline_label": "106",
     "current_task_status": "implemented_tests_passed_pending_external_review",
-    "current_task": "canonical BC demonstration regeneration and BC/PPO compatibility preflight",
-    "current_task_expected_next_archive": "106",
+    "current_task": "full BC warm-start artifact verification and deterministic evaluation reporting correction",
+    "current_task_expected_next_archive": "107",
     "do_not_treat_current_task_as_complete_until_reviewed": true,
-    "candidate_expected_next_archive": "ww-dps-simulator-2(106).zip"
+    "candidate_expected_next_archive": "ww-dps-simulator-2(107).zip"
   },
   "source_of_truth": {
     "raw_action_workbook": "鸣潮动作数据汇总(5).xlsx",
@@ -495,11 +495,11 @@
       "title": "Canonical BC demonstration and compatibility preflight",
       "baseline": "105",
       "candidate": "106",
-      "status": "implemented_tests_passed_pending_external_review",
-      "external_review_status": "pending",
-      "external_verification_claimed": false,
-      "latest_externally_verified_baseline": "105",
-      "summary": "Generated the single-episode canonical manual 120s BC demonstration dataset from verified baseline 105 and added strict contract, replay, alias, legacy-incompatibility, and BC small-overfit preflight checks. Candidate 106 is pending external review; no full BC/PPO training has been executed.",
+      "status": "externally_verified_complete",
+      "external_review_status": "passed",
+      "external_verification_claimed": true,
+      "latest_externally_verified_baseline": "106",
+      "summary": "External review promoted the canonical manual 120s BC demonstration and compatibility preflight to baseline 106. The dataset and v5/314 contracts are verified; candidate 107 corrects evaluation reporting only after full BC warm-start artifact verification.",
       "dataset": "data/generated/manual_120s_bc_demonstration_v105.npz",
       "summary_json": "results/manual_120s_bc_demonstration_v105_summary.json",
       "report": "reports/manual_120s_bc_demonstration_v105.md",
@@ -553,119 +553,87 @@
         "legacy_bc_demo_incompatibility_smoke_test.py passed",
         "project_progress_bc_demo_alignment_smoke_test.py passed",
         "manual_120s_bc_small_overfit_smoke_test.py passed"
-      ]
+      ],
+      "external_verification_label": "106",
+      "baseline_archive": "ww-dps-simulator-2(106).zip"
     }
   ],
   "current_in_progress_task": {
-    "task": "canonical BC demonstration regeneration and BC/PPO compatibility preflight",
+    "task": "full BC warm-start artifact verification and deterministic evaluation reporting correction",
     "status": "implemented_tests_passed_pending_external_review",
-    "candidate": "106",
+    "candidate": "107",
     "external_review_required": true,
     "external_verification_claimed": false,
-    "latest_externally_verified_baseline": "105",
-    "baseline_archive": "ww-dps-simulator-2(105).zip",
-    "candidate_expected_next_archive": "ww-dps-simulator-2(106).zip",
-    "dataset": "data/generated/manual_120s_bc_demonstration_v105.npz",
-    "summary_json": "results/manual_120s_bc_demonstration_v105_summary.json",
-    "report": "reports/manual_120s_bc_demonstration_v105.md",
-    "source_route_file": "data/manual_120s_baseline_routes_v104.json",
-    "source_route_verified_as_baseline": "105",
-    "route_id": "manual_120s_primary_v105",
-    "episode_count": 1,
-    "sample_count": 148,
+    "latest_externally_verified_baseline": "106",
+    "baseline_archive": "ww-dps-simulator-2(106).zip",
+    "candidate_expected_next_archive": "ww-dps-simulator-2(107).zip",
+    "full_bc_training_executed": true,
+    "ppo_training_executed": false,
+    "model_path": "models/maskable_ppo_bc_v105.zip",
+    "model_sha256": "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e",
+    "model_sidecar_path": "models/maskable_ppo_bc_v105.zip.bc_metadata.json",
+    "bc_hyperparameters": {
+      "epochs": 300,
+      "batch_size": 148,
+      "learning_rate": 0.003,
+      "seed": 11,
+      "device": "cpu",
+      "initial_active_character": "aemeath",
+      "curriculum_reset": "none",
+      "final_loss": 0.0069569493643939495
+    },
+    "evaluation_summary": "results/ppo_evaluation_summary.json",
+    "evaluation_timeline": "results/ppo_timeline.csv",
+    "selected_action_count": 148,
+    "resolved_action_count": 148,
+    "selected_sequence_sha256": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
+    "resolved_sequence_sha256": "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229",
+    "final_combat_time": 120.0,
+    "total_damage": 5165134.682363356,
+    "dps": 43042.78901969464,
+    "manual_baseline_total_damage": 5165134.682363359,
+    "manual_baseline_dps": 43042.78901969466,
+    "manual_baseline_damage_ratio": 0.9999999999999994,
+    "manual_baseline_damage_delta": -2.7939677238464355e-09,
+    "manual_baseline_selected_sequence_match": true,
+    "manual_baseline_resolved_sequence_match": true,
+    "manual_baseline_character_damage_match": true,
+    "damage_by_character": {
+      "aemeath": 3733934.8538652016,
+      "mornye": 268807.92005964793,
+      "lynae": 1162391.9084385103
+    },
+    "scheduled_damage": 205987.4042873791,
+    "effective_damage_role_breakdown_delta": 0.0,
+    "model_metadata_mismatches": {},
+    "model_space_mismatches": {},
     "observation_version": "slot_generic_mechanics_v5",
     "observation_shape": 314,
     "policy_action_count": 25,
     "max_policy_action_slots": 32,
-    "reward_formula": "damage_this_action / 10000.0",
-    "no_character_specific_usage_reward_bonus": true,
-    "reward_shaping": false,
-    "future_information_used_as_policy_input": false,
-    "full_bc_training_executed": false,
-    "ppo_training_executed": false,
-    "old_204_23_and_312_era_models_demos_incompatible": true,
-    "selected_sequence_sha256": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
-    "resolved_sequence_sha256": "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229",
-    "final_combat_time": 120.0,
-    "total_damage": 5165134.682363359,
-    "dps": 43042.78901969466,
-    "notes": [
-      "Candidate 106 is pending external review and must not be treated as verified.",
-      "The canonical BC dataset contains one deterministic episode and 148 samples, not repeated copies.",
-      "Remaining return, remaining damage, step index, episode ID, route ID, and resolved action ID are diagnostics only and are not model inputs.",
-      "No simulator combat mechanics, reward formula, action data, action order, observation schema, build profiles, or 120-second route were changed.",
-      "BC pretraining now resolves the Aemeath initial active character and no-reset curriculum from canonical demo metadata, and rejects an explicit mismatched initial active character before writing a model.",
-      "BC evaluation now validates sidecar initial_active_character compatibility; Aemeath dry-run compatibility passes and Mornye dry-run compatibility fails on that key."
-    ],
-    "next_after_external_verification": "user-run full BC warm-start, deterministic normal-reset evaluation, then PPO retraining",
+    "sample_count": 148,
+    "source_route_file_sha256": "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a",
     "dataset_sha256": "b020a1b9309b46bd87eb3fff4837aead53035c4c84620962f47feb9fc11846ff",
     "action_data_hash": "d6377d54a1abb985dc5f58866321c61c7b904a6b73ddc1538be7e38d36a99ff1",
     "party_config_hash": "bd106ba1c0f5581436c35fea736a00fd6ad92b131f8b43ba8cf1e3dc89cbcb11",
-    "source_route_file_sha256": "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a",
-    "bc_small_overfit_smoke_metrics": {
-      "status": "ok",
-      "seed": 11,
-      "epochs": 300,
-      "device": "cpu",
-      "initial_masked_nll": 1.755488395690918,
-      "final_masked_nll": 0.006889711134135723,
-      "nll_decrease": 1.7485986845567822,
-      "initial_top1_accuracy": 0.054054055362939835,
-      "final_top1_accuracy": 1.0,
-      "invalid_top1_count": 0,
-      "temporary_artifacts_only": true,
-      "canonical_artifacts_mutated": false,
-      "runtime_seconds": 1.448802
-    },
-    "tests": [
-      "generate_manual_120s_bc_demonstration.py --output data/generated/manual_120s_bc_demonstration_v105.npz passed",
-      "pretrain_maskable_ppo_bc.py --dry-run --initial-active-character aemeath passed",
-      "train_maskable_ppo.py --dry-run-train-config passed",
-      "manual_120s_bc_demo_generation_smoke_test.py passed",
-      "manual_120s_bc_demo_contract_smoke_test.py passed",
-      "manual_120s_bc_demo_replay_smoke_test.py passed",
-      "manual_120s_bc_demo_hash_guard_smoke_test.py passed",
-      "manual_120s_bc_demo_alias_smoke_test.py passed",
-      "legacy_bc_demo_incompatibility_smoke_test.py passed",
-      "project_progress_bc_demo_alignment_smoke_test.py passed",
-      "manual_120s_bc_small_overfit_smoke_test.py passed",
-      "manual_120s_baseline.py --write-results restored canonical route bytes",
-      "manual_120s_baseline_smoke_test.py passed",
-      "generate_manual_120s_bc_demonstration.py passed",
-      "manual_120s_bc_packaged_generation_parity_smoke_test.py passed",
-      "evaluate_bc_sidecar_compatibility_smoke_test.py passed",
-      "pretrain_bc_initial_active_contract_smoke_test.py passed",
-      "bc_pretrain_evaluator_contract_smoke_test.py passed with one temporary BC model lifecycle",
-      "manual_120s_bc_report_portability_smoke_test.py passed",
-      "manual_120s_bc_small_overfit_smoke_test.py passed without canonical side effects",
-      "rl_observation_shape_guard_smoke_test.py passed",
-      "aemeath_mornye_lynae_rl_action_space_smoke_test.py passed",
-      "mornye_aemeath_active_echo_policy_order_smoke_test.py passed",
-      "apply_direct_action_data_v61.py --check passed",
-      "python -m compileall -q . passed with bundled Python",
-      "manual_120s_bc_final_archive_integrity_smoke_test.py passed on exact final ZIP with unified fresh-extraction compatibility smoke",
-      "manual_120s_bc_mojibake_archive_guard_smoke_test.py passed",
-      "evaluate_bc_sidecar_compatibility_smoke_test.py passed with CPU thread bounds and Mornye mismatch rejection",
-      "pretrain_bc_initial_active_contract_smoke_test.py passed with CPU thread bounds",
-      "manual_cycle_reference marked externally_verified_complete for baseline 105",
-      "final archive integrity completed on exact candidate ZIP; external verification still not claimed"
+    "manifest_sha256": "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d",
+    "reporting_correction": "event-aware character/source attribution now separates direct residual, scheduled damage, Tune Break response damage, and generated mechanic damage; scheduled damage is included in effective role breakdown with zero total delta.",
+    "runtime_changes": "none; runtime action data and executor were not modified",
+    "notes": [
+      "Candidate 107 is pending external review and must not be treated as verified.",
+      "The existing full BC model artifact was preserved byte-identical while deterministic evaluation reporting was corrected.",
+      "Closed-loop BC evaluation reproduces the 148/148 selected and resolved route parity with no metadata/model-space mismatch.",
+      "The reporting defect was host-row-biased attribution only; event source fields now own scheduled, Tune response, and generated mechanic damage."
     ],
-    "post_review_remediation_status": "implemented_tests_passed_pending_external_review",
-    "reporting_portability": "canonical reports use project-relative paths only",
-    "evaluator_metadata_policy": "model sidecar bc_metadata is preferred over legacy global metadata",
-    "route_byte_contract": "UTF-8 without BOM, CRLF, trailing CRLF",
-    "final_archive_integrity": "exact final ZIP validation completed with unified fresh-extraction compatibility smoke; final SHA is reported outside the archive to avoid self-reference",
-    "archive_path": "../ww-dps-simulator-2(106).zip",
-    "final_archive_expected_cache_entry_count": 0,
-    "final_archive_expected_raw_corrupted_sheet_occurrence_count": 0,
-    "final_archive_expected_correct_sheet_check": "authoritative source contains U+58F0 U+9AB8 sheet name",
-    "final_archive_expected_fresh_extraction_checks": [
-      "manual_120s_bc_demo_contract_smoke_test.py",
-      "manual_120s_bc_packaged_generation_parity_smoke_test.py",
-      "manual_120s_bc_report_portability_smoke_test.py",
-      "bc_pretrain_evaluator_contract_smoke_test.py",
-      "pretrain_maskable_ppo_bc.py --dry-run --initial-active-character aemeath"
-    ]
+    "tests": [
+      "evaluation_event_source_damage_attribution_smoke_test.py passed",
+      "evaluation_scheduled_damage_role_breakdown_smoke_test.py passed",
+      "bc_evaluation_manual_baseline_parity_smoke_test.py passed",
+      "official evaluate_maskable_ppo.py regenerated results/ppo_evaluation_summary.json and results/ppo_timeline.csv"
+    ],
+    "next_after_external_verification": "run 100000-step PPO continuation from the verified BC model",
+    "final_archive_integrity": "pending exact candidate-107 ZIP validation; final SHA is reported outside the archive to avoid self-reference",
+    "archive_path": "../ww-dps-simulator-2(107).zip"
   },
   "manual_cycle_reference": {
     "status": "externally_verified_complete",
@@ -763,24 +731,27 @@
   ],
   "next_planned_tasks": [
     {
-      "task": "external review of canonical BC demonstration candidate 106",
-      "status": "next",
-      "note": "Review dataset contract, replay validator, alias audit, legacy rejection, dry-run compatibility, and small-overfit smoke metrics."
+      "task": "external review of candidate 107 deterministic BC evaluation reporting correction",
+      "status": "current",
+      "note": "Candidate 107 remains pending external review; no external verification is claimed."
     },
     {
-      "task": "user-run full BC warm-start",
-      "status": "after_candidate_106_external_verification",
-      "note": "Use the canonical v105 demo to train a full BC warm-start model; this candidate does not execute it."
+      "task": "100000-step PPO continuation from the verified BC model",
+      "status": "after_candidate_107_external_verification",
+      "model_source": "models/maskable_ppo_bc_v105.zip",
+      "initial_active_character": "aemeath",
+      "reset_mode": "none",
+      "note": "Run only after candidate 107 is externally verified."
     },
     {
-      "task": "deterministic normal-reset evaluation",
-      "status": "after_full_bc_warm_start",
-      "note": "Evaluate the full BC warm-start under normal reset before PPO retraining."
+      "task": "deterministic normal-reset evaluation of the PPO candidate",
+      "status": "after_ppo_100k",
+      "note": "Evaluate the PPO continuation candidate deterministically before allocating more search or training budget."
     },
     {
-      "task": "PPO retraining",
-      "status": "future_after_bc_evaluation",
-      "note": "Run long PPO training only after candidate 106 is externally verified and BC warm-start is produced."
+      "task": "compare manual baseline, BC model, and PPO result before any additional PPO/search budget",
+      "status": "after_ppo_evaluation",
+      "note": "Compare the verified manual baseline, preserved BC model evaluation, and PPO candidate result before further optimization."
     }
   ],
   "validation_invariants": [
@@ -1320,12 +1291,12 @@
       }
     }
   ],
-  "next_planned_task": "external review of canonical BC demonstration candidate 106, then user-run full BC warm-start, deterministic normal-reset evaluation, and PPO retraining",
+  "next_planned_task": "external review of candidate 107 deterministic BC evaluation reporting correction; after external verification run 100000-step PPO continuation from the verified BC model",
   "candidate_history": [
     {
       "candidate": "106",
       "task": "canonical BC demonstration regeneration and BC/PPO compatibility preflight",
-      "status": "implemented_tests_passed_pending_external_review",
+      "status": "externally_verified_complete",
       "dataset": "data/generated/manual_120s_bc_demonstration_v105.npz",
       "full_bc_training_executed": false,
       "ppo_training_executed": false,
@@ -1346,19 +1317,50 @@
         "runtime_seconds": 1.448802
       },
       "source_route_file_sha256": "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a",
-      "post_review_remediation_status": "implemented_tests_passed_pending_external_review",
+      "post_review_remediation_status": "externally_verified_complete",
       "final_archive_integrity": "exact final ZIP validation completed with unified fresh-extraction compatibility smoke; final SHA is reported outside the archive to avoid self-reference",
       "archive_path": "../ww-dps-simulator-2(106).zip",
       "final_archive_expected_cache_entry_count": 0,
       "final_archive_expected_raw_corrupted_sheet_occurrence_count": 0,
       "final_archive_expected_correct_sheet_check": "authoritative source contains U+58F0 U+9AB8 sheet name",
       "final_archive_expected_fresh_extraction_checks": [
-      "manual_120s_bc_demo_contract_smoke_test.py",
-      "manual_120s_bc_packaged_generation_parity_smoke_test.py",
-      "manual_120s_bc_report_portability_smoke_test.py",
-      "bc_pretrain_evaluator_contract_smoke_test.py",
-      "pretrain_maskable_ppo_bc.py --dry-run --initial-active-character aemeath"
-      ]
+        "manual_120s_bc_demo_contract_smoke_test.py",
+        "manual_120s_bc_packaged_generation_parity_smoke_test.py",
+        "manual_120s_bc_report_portability_smoke_test.py",
+        "bc_pretrain_evaluator_contract_smoke_test.py",
+        "pretrain_maskable_ppo_bc.py --dry-run --initial-active-character aemeath"
+      ],
+      "external_review_status": "passed",
+      "external_verification_label": "106",
+      "baseline_archive": "ww-dps-simulator-2(106).zip",
+      "external_verification_claimed": true
+    },
+    {
+      "candidate": "107",
+      "task": "full BC warm-start artifact verification and deterministic evaluation reporting correction",
+      "status": "implemented_tests_passed_pending_external_review",
+      "latest_externally_verified_baseline": "106",
+      "full_bc_training_executed": true,
+      "ppo_training_executed": false,
+      "model_path": "models/maskable_ppo_bc_v105.zip",
+      "model_sha256": "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e",
+      "model_sidecar_path": "models/maskable_ppo_bc_v105.zip.bc_metadata.json",
+      "selected_action_count": 148,
+      "resolved_action_count": 148,
+      "selected_sequence_sha256": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
+      "resolved_sequence_sha256": "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229",
+      "total_damage": 5165134.682363356,
+      "dps": 43042.78901969464,
+      "damage_by_character": {
+        "aemeath": 3733934.8538652016,
+        "mornye": 268807.92005964793,
+        "lynae": 1162391.9084385103
+      },
+      "scheduled_damage": 205987.4042873791,
+      "reporting_correction": "event-aware character/source attribution now separates direct residual, scheduled damage, Tune Break response damage, and generated mechanic damage; scheduled damage is included in effective role breakdown with zero total delta.",
+      "archive_path": "../ww-dps-simulator-2(107).zip",
+      "external_review_status": "pending",
+      "external_verification_claimed": false
     }
   ]
 }

@@ -26,6 +26,7 @@ from simulator.transition_config import (
     transition_mode_summary,
 )
 from rl.evaluation_report import build_generated_damage_summary
+from rl.damage_attribution import damage_by_character as event_aware_damage_by_character
 from rl.demo_contract import (
     OBSERVATION_SHAPE,
     OBSERVATION_VERSION,
@@ -33,10 +34,12 @@ from rl.demo_contract import (
     action_data_hash,
     json_safe,
     party_config_hash,
+    sequence_hash,
 )
 
 
 METHODOLOGY_PATH = PROJECT_ROOT / "data" / "rl_training_methodology.json"
+MANUAL_BASELINE_SUMMARY_PATH = PROJECT_ROOT / "results" / "manual_120s_baseline_v104_summary.json"
 OBSERVATION_METADATA_KEYS = (
     "observation_shape",
     "observation_version",
@@ -187,6 +190,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
         type=Path,
         default=PROJECT_ROOT / "reports" / "aemeath_mornye_lynae_policy_probability_report.json",
     )
+    parser.add_argument("--summary-path", type=Path, default=PROJECT_ROOT / "results" / "ppo_evaluation_summary.json")
+    parser.add_argument("--timeline-path", type=Path, default=PROJECT_ROOT / "results" / "ppo_timeline.csv")
     return parser
 
 
@@ -323,20 +328,26 @@ def main() -> None:
     )
     damage_by_action: Counter[str] = Counter()
     damage_by_resolved: Counter[str] = Counter()
-    damage_by_character: Counter[str] = Counter()
     damage_by_category: Counter[str] = Counter()
     damage_by_action_type: Counter[str] = Counter()
     damage_by_damage_bonus_category: Counter[str] = Counter()
     for selected_id, resolved_id, row in zip(action_sequence, resolved_action_sequence, summary.timeline):
         damage_by_action[selected_id] += row.total_action_damage
         damage_by_resolved[resolved_id] += row.total_action_damage
-        damage_by_character[row.actor_character_id or row.character_id or "unknown"] += row.total_action_damage
         damage_by_category[row.damage_category] += row.total_action_damage
         damage_by_action_type[row.action_type or "other"] += row.total_action_damage
         damage_by_damage_bonus_category[row.damage_bonus_category or row.damage_category] += row.total_action_damage
+    damage_by_character = event_aware_damage_by_character(summary.timeline, total_damage=summary.total_damage)
     generated_damage_summary = build_generated_damage_summary(
         summary.timeline,
         total_damage=summary.total_damage,
+    )
+    manual_baseline_parity = _manual_baseline_parity(
+        action_sequence=action_sequence,
+        resolved_action_sequence=resolved_action_sequence,
+        total_damage=summary.total_damage,
+        dps=summary.dps,
+        damage_by_character=damage_by_character,
     )
     training_methodology_summary = _load_training_methodology_summary()
     unused_party_members = [
@@ -390,12 +401,13 @@ def main() -> None:
     print("Resource summary:", summary.resources)
     print("Timeline:")
     for row in summary.timeline:
-        print(row.model_dump())
+        print(json.dumps(json_safe(row.model_dump()), ensure_ascii=True))
 
-    results_dir = PROJECT_ROOT / "results"
+    results_dir = args.summary_path.parent
     results_dir.mkdir(parents=True, exist_ok=True)
-    summary_path = results_dir / "ppo_evaluation_summary.json"
-    timeline_path = results_dir / "ppo_timeline.csv"
+    args.timeline_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_path = args.summary_path
+    timeline_path = args.timeline_path
 
     summary_payload = {
         "total_damage": summary.total_damage,
@@ -544,6 +556,9 @@ def main() -> None:
         **transition_event_counts(summary.timeline),
         "action_sequence": action_sequence,
         "resolved_action_sequence": resolved_action_sequence,
+        "selected_action_count": len(action_sequence),
+        "resolved_action_count": len(resolved_action_sequence),
+        **manual_baseline_parity,
         "action_counts": counts,
         "selected_action_counts": counts,
         "resolved_action_counts": resolved_counts,
@@ -698,6 +713,49 @@ def _action_character_prefix(action_id: str) -> str:
 
 def _action_counts_by_character_prefix(action_sequence: list[str]) -> dict[str, int]:
     return dict(Counter(_action_character_prefix(action_id) for action_id in action_sequence))
+
+
+def _manual_baseline_parity(
+    *,
+    action_sequence: list[str],
+    resolved_action_sequence: list[str],
+    total_damage: float,
+    dps: float,
+    damage_by_character: dict[str, float],
+) -> dict[str, Any]:
+    if not MANUAL_BASELINE_SUMMARY_PATH.exists():
+        raise FileNotFoundError(f"Manual baseline summary not found: {MANUAL_BASELINE_SUMMARY_PATH}")
+    baseline = json.loads(MANUAL_BASELINE_SUMMARY_PATH.read_text(encoding="utf-8"))
+    for key in (
+        "selected_sequence_sha256",
+        "resolved_sequence_sha256",
+        "total_damage",
+        "dps",
+        "damage_by_character",
+    ):
+        if key not in baseline:
+            raise ValueError(f"Manual baseline summary is missing required key {key!r}")
+    selected_sha = sequence_hash(action_sequence)
+    resolved_sha = sequence_hash(resolved_action_sequence)
+    baseline_total_damage = float(baseline["total_damage"])
+    baseline_dps = float(baseline["dps"])
+    damage_delta = float(total_damage) - baseline_total_damage
+    baseline_damage = {str(key): float(value) for key, value in baseline["damage_by_character"].items()}
+    character_damage_match = set(damage_by_character) == set(baseline_damage) and all(
+        abs(float(damage_by_character[key]) - baseline_damage[key]) <= 1e-6
+        for key in baseline_damage
+    )
+    return {
+        "selected_sequence_sha256": selected_sha,
+        "resolved_sequence_sha256": resolved_sha,
+        "manual_baseline_total_damage": baseline_total_damage,
+        "manual_baseline_dps": baseline_dps,
+        "manual_baseline_damage_ratio": float(total_damage) / baseline_total_damage if baseline_total_damage else None,
+        "manual_baseline_damage_delta": damage_delta,
+        "manual_baseline_selected_sequence_match": selected_sha == baseline["selected_sequence_sha256"],
+        "manual_baseline_resolved_sequence_match": resolved_sha == baseline["resolved_sequence_sha256"],
+        "manual_baseline_character_damage_match": character_damage_match,
+    }
 
 
 def _policy_actions_exposed_by_character(

@@ -15,6 +15,11 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from rl.damage_attribution import (  # noqa: E402
+    DamageAttributionError,
+    event_identity,
+    row_damage_attribution,
+)
 from simulator.simulation import Simulation
 
 
@@ -242,25 +247,7 @@ def _compact_event(event: dict[str, Any]) -> dict[str, Any]:
 
 
 def _event_identity(collection_name: str, event: dict[str, Any]) -> tuple[Any, ...]:
-    if event.get("event_id"):
-        return ("event_id", event["event_id"])
-    if event.get("id"):
-        return ("id", event["id"], event.get("source_action_id"), event.get("damage"))
-    stable_fields = (
-        "scheduled_effect_instance_id",
-        "scheduled_effect_id",
-        "payload_action_id",
-        "source_action_id",
-        "source_character_id",
-        "combat_time",
-        "trigger_index",
-        "scheduled_effect_local_trigger_index",
-        "damage",
-    )
-    stable_key = tuple(event.get(field) for field in stable_fields)
-    if any(value is not None for value in stable_key):
-        return ("stable",) + stable_key
-    return ("object", collection_name, id(event))
+    return event_identity(collection_name, event)
 
 
 def _sourced_damage_collections(row: Any) -> list[tuple[str, list[dict[str, Any]]]]:
@@ -279,68 +266,10 @@ def _row_actor_id(row: Any) -> str:
 
 
 def _row_damage_attribution(row: Any) -> dict[str, Any]:
-    explicit_by_source: defaultdict[str, float] = defaultdict(float)
-    explicit_events: list[dict[str, Any]] = []
-    seen_events: set[tuple[Any, ...]] = set()
-    for collection_name, events in _sourced_damage_collections(row):
-        for event in events:
-            event_key = _event_identity(collection_name, event)
-            if event_key in seen_events:
-                continue
-            seen_events.add(event_key)
-            damage = float(event.get("damage", 0.0) or 0.0)
-            if damage == 0.0:
-                continue
-            source = str(event.get("source_character_id") or _row_actor_id(row))
-            explicit_by_source[source] += damage
-            explicit_events.append(
-                {
-                    "collection": collection_name,
-                    "source_character_id": source,
-                    "damage": damage,
-                    "event_id": event.get("event_id") or event.get("id"),
-                    "payload_action_id": event.get("payload_action_id"),
-                    "source_action_id": event.get("source_action_id"),
-                    "combat_time": event.get("combat_time"),
-                }
-            )
-    row_damage = float(row.damage or 0.0)
-    explicit_total = sum(explicit_by_source.values())
-    residual = row_damage - explicit_total
-    if residual < -FLOAT_TOLERANCE:
-        raise IntegrationFailure(
-            json.dumps(
-                {
-                    "reason": "negative residual damage after sourced event attribution",
-                    "selected_action_id": row.selected_action_id,
-                    "resolved_action_id": row.resolved_action_id,
-                    "row_damage": row_damage,
-                    "explicit_event_damage_total": explicit_total,
-                    "residual": residual,
-                    "explicit_events": explicit_events,
-                },
-                ensure_ascii=False,
-                indent=2,
-            )
-        )
-    if residual < 0.0:
-        residual = 0.0
-    actor = _row_actor_id(row)
-    totals: defaultdict[str, float] = defaultdict(float)
-    if residual:
-        totals[actor] += residual
-    for source, damage in explicit_by_source.items():
-        totals[source] += damage
-    return {
-        "selected_action_id": row.selected_action_id,
-        "resolved_action_id": row.resolved_action_id,
-        "actor_character_id": actor,
-        "row_damage": row_damage,
-        "explicit_event_damage_total": explicit_total,
-        "residual_actor_damage": residual,
-        "explicit_events": explicit_events,
-        "damage_by_character": dict(sorted(totals.items())),
-    }
+    try:
+        return row_damage_attribution(row, tolerance=FLOAT_TOLERANCE)
+    except DamageAttributionError as exc:
+        raise IntegrationFailure(str(exc)) from exc
 
 
 def _per_character_damage(sim: Simulation) -> dict[str, float]:
