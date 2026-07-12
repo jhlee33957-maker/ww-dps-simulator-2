@@ -13,12 +13,12 @@
     "language_preference": "설명은 한국어, Codex 프롬프트와 코드 식별자는 영어 가능"
   },
   "status": {
-    "last_updated": "2026-07-12T10:55:00+09:00",
-    "latest_verified_archive": "ww-dps-simulator-2(102).zip",
-    "latest_verified_baseline_label": "102",
-    "current_task_status": "complete_pending_external_review",
-    "current_task": "Mornye and Aemeath active Echo source audit and implementation",
-    "current_task_expected_next_archive": "103",
+    "last_updated": "2026-07-12T12:00:00+09:00",
+    "latest_verified_archive": "ww-dps-simulator-2(103).zip",
+    "latest_verified_baseline_label": "103",
+    "current_task_status": "implemented_tests_passed_pending_external_review",
+    "current_task": "full real-cycle integration with active Echoes",
+    "current_task_expected_next_archive": "104",
     "do_not_treat_current_task_as_complete_until_reviewed": true
   },
   "source_of_truth": {
@@ -257,26 +257,85 @@
       "baseline": "98",
       "observation_version": "slot_generic_mechanics_v5",
       "shape": 314
+    },
+    {
+      "id": "M013",
+      "title": "Mornye and Aemeath active Echo implementation externally verified",
+      "status": "complete",
+      "baseline": "103",
+      "archive": "ww-dps-simulator-2(103).zip",
+      "summary": "External review promoted the active-Echo candidate to baseline 103. Mornye Reactor Husk, Aemeath Sigillum zero-time auxiliary activation, scheduled +25F/+55F payloads, Echo Ability category, canonical 声骸 source refs, 25-action policy order, observation v5/314, and the Mornye ATK profile correction are verified.",
+      "verified_values": {
+        "policy_action_count": 25,
+        "observation_version": "slot_generic_mechanics_v5",
+        "observation_shape": 314,
+        "mornye_reactor_husk_static_atk": 1159.1645,
+        "mornye_reactor_husk_no_buff_damage": 2071.3932654700507
+      }
+    },
+    {
+      "id": "M014",
+      "title": "Full real-cycle integration with active Echoes",
+      "status": "candidate_pending_external_review",
+      "baseline": "103",
+      "candidate": "104",
+      "summary": "Implemented a deterministic strict Simulation route from Aemeath opening through Mornye Reactor Husk, Lynae core route/Hyvatia, Aemeath real Tune Break, Overdrive, Sigillum, and both enhanced Seraphic Duets. External re-execution passed route/runtime checks; candidate 104 remains pending after correcting reporting artifacts for source-aware damage attribution and CSV scheduler order. This is not the 120-second baseline.",
+      "final_combat_time": 32.949999999999996,
+      "final_combat_frames": 1977,
+      "total_damage": 1792244.9381157316,
+      "route_duration_dps_not_120_second_baseline": 54392.86610366409,
+      "placeholder_fallback_count": 1,
+      "external_review_status": "pending",
+      "damage_by_character": {
+        "aemeath": 1404246.4250625486,
+        "lynae": 319145.0773344416,
+        "mornye": 68853.43571874128
+      }
     }
   ],
   "current_in_progress_task": {
-    "task": "Mornye and Aemeath active Echo source audit and implementation",
+    "task": "full real-cycle integration with active Echoes",
     "status": "implemented_tests_passed_pending_external_review",
-    "latest_externally_verified_baseline": "102",
+    "latest_externally_verified_baseline": "103",
     "external_review_required": true,
-    "baseline_archive": "ww-dps-simulator-2(102).zip",
-    "baseline_zip_sha256": "ca2c64e2a408737f0c407a10b9c44071fe5cc01d64f538af541bdebfd525a99c",
-    "source_workbook_sha256": "81604978551989b5575e2d637ad4dfeb8c3b3b34d48e00a9ea79e9008c62f1f9",
-    "source_audit": "data/source/mornye_aemeath_active_echo_source_audit_v102.json",
-    "report": "reports/mornye_aemeath_active_echo_source_audit.md",
-    "implemented_policy_actions": [
-      "mornye_echo_reactor_husk",
-      "aemeath_echo_sigillum"
+    "external_verification_claimed": false,
+    "baseline_archive": "ww-dps-simulator-2(103).zip",
+    "candidate_expected_next_archive": "ww-dps-simulator-2(104).zip",
+    "route_script": "scripts/full_real_cycle_integration.py",
+    "smoke_tests": [
+      "scripts/full_real_cycle_integration_smoke_test.py",
+      "scripts/full_real_cycle_scheduled_events_smoke_test.py",
+      "scripts/full_real_cycle_no_injection_guard_smoke_test.py",
+      "scripts/full_real_cycle_damage_attribution_smoke_test.py",
+      "scripts/full_real_cycle_timeline_csv_order_smoke_test.py"
     ],
-    "implemented_payload_actions": [
-      "aemeath_echo_sigillum_hit_1",
-      "aemeath_echo_sigillum_hit_2"
+    "result_json": "results/full_real_cycle_integration_v103_summary.json",
+    "timeline_csv": "results/full_real_cycle_integration_v103_timeline.csv",
+    "report": "reports/full_real_cycle_integration_v103.md",
+    "selected_action_count": 41,
+    "resolved_action_count": 41,
+    "final_combat_time": 32.949999999999996,
+    "final_combat_frames": 1977,
+    "total_damage": 1792244.9381157316,
+    "route_duration_dps_not_120_second_baseline": 54392.86610366409,
+    "damage_by_character": {
+      "aemeath": 1404246.4250625486,
+      "lynae": 319145.0773344416,
+      "mornye": 68853.43571874128
+    },
+    "placeholder_fallback_count": 1,
+    "placeholder_fallback_locations": [
+      {
+        "step": 6,
+        "selected_action_id": "swap_to_mornye",
+        "resolved_action_id": "swap_to_mornye",
+        "fallback_swap_used": true,
+        "swap_timing_is_placeholder": true,
+        "transition_type": "normal_swap"
+      }
     ],
+    "all_selected_actions_available": true,
+    "state_injection_used": false,
     "policy_action_count": 25,
     "policy_action_order_tail": [
       "swap_to_mornye",
@@ -287,47 +346,65 @@
     "observation_version": "slot_generic_mechanics_v5",
     "observation_shape": 314,
     "max_policy_action_slots": 32,
+    "direct_action_manifest_sha256": "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d",
     "notes": [
-      "Implemented Mornye Reactor Husk as a 66-frame combat-time Echo action with one frame-49 hit and source-confirmed resource gain.",
-      "Implemented Aemeath Sigillum as a zero-time auxiliary activation that schedules two combat-time one-shot damage/resource events at +25F and +55F.",
-      "Aemeath Sigillum source frame 80 is preserved as metadata/lifetime only and is not used as player action time.",
-      "Echo Off-Tune values remain 0.0 unresolved; no inferred Echo Off-Tune was added.",
-      "Mornye Energy Regen remains 2.5424 with the Reactor Husk passive marked already in profile; no runtime +0.10 passive was added.",
-      "Aemeath Resonance Liberation bonus remains 0.688 with the Sigillum passive marked already in profile; no runtime +0.25 passive was added.",
-      "Observation schema remains slot_generic_mechanics_v5, shape 314, MAX_POLICY_ACTION_SLOTS 32; old 23-action BC/PPO artifacts are incompatible with the 25-action policy list.",
-      "External-review findings fixed without claiming external verification.",
-      "Auxiliary zero-time actions bypass ordinary character after_action state transitions.",
-      "Echo Ability damage category now resolves as echo_ability instead of other.",
-      "Active-Echo source references normalized to 声骸 (U+58F0 U+9AB8).",
-      "Progress-state pending-work lists no longer list active-Echo implementation as pending.",
-      "User-supplied Mornye ATK components were added to mornye_user_real_01 for ATK-scaling Reactor Husk.",
-      "Reactor Husk now resolves nonzero ATK-scaling damage through the normal build-profile system.",
-      "Mornye selected-party build-profile validation is complete and ok.",
-      "Candidate still has not been externally verified; latest externally verified baseline remains 102."
+      "Active-Echo baseline 103 is externally verified; candidate 104 is not externally verified.",
+      "Full-cycle route uses Simulation directly with strict availability checks and no short_wait substitution.",
+      "The route is mechanically complete but not fully source-exact in absolute timing because opening swap_to_mornye uses the known 0.50-second normal-swap placeholder.",
+      "Mornye Reactor Husk preserves the verified static ATK profile; in the integrated route its hit snapshots the existing Halo ATK runtime buff.",
+      "This candidate is not the 120-second manual baseline and is not a global optimum claim.",
+      "Candidate 104 external re-execution passed route/runtime checks, but reporting artifacts were corrected for source-aware damage attribution and deterministic same-time scheduled-event CSV ordering."
+    ],
+    "unresolved_limits": [
+      "Opening Aemeath -> Mornye normal-swap exact timing is unresolved; current route uses the known 0.50s placeholder.",
+      "Mornye exact dodge-cancel next-input frame remains unresolved; Reactor Husk uses the verified uncancelled 66F route.",
+      "Mornye/Aemeath/Lynae active Echo Off-Tune values are source-unconfirmed and remain runtime zero where unresolved."
     ],
     "tests": [
-      "scripts/mornye_aemeath_active_echo_source_audit_smoke_test.py passed",
-      "scripts/mornye_active_echo_runtime_smoke_test.py passed",
-      "scripts/aemeath_sigillum_zero_time_activation_smoke_test.py passed",
-      "scripts/aemeath_sigillum_scheduler_smoke_test.py passed",
-      "scripts/aemeath_sigillum_combat_cutoff_smoke_test.py passed",
-      "scripts/mornye_aemeath_active_echo_policy_order_smoke_test.py passed",
-      "scripts/mornye_aemeath_active_echo_profile_passive_guard_smoke_test.py passed",
-      "scripts/mornye_aemeath_active_echo_ui_action_list_smoke_test.py passed",
-      "scripts/mornye_aemeath_active_echo_reapply_guard_smoke_test.py passed",
-      "scripts/zero_time_auxiliary_action_guard_smoke_test.py passed",
-      "scripts/scheduled_damage_execution_smoke_test.py passed",
-      "scripts/scheduled_source_resource_gain_smoke_test.py passed",
-      "data JSON parse passed",
-      "touched-area Python syntax check passed"
+      ".venv\\Scripts\\python.exe -m compileall . failed before Python start: unable to create process",
+      "bundled python -m compileall -q . passed",
+      "bundled python scripts/full_real_cycle_integration.py --write-results passed",
+      "bundled python scripts/full_real_cycle_integration_smoke_test.py passed",
+      "bundled python scripts/full_real_cycle_scheduled_events_smoke_test.py passed",
+      "bundled python scripts/full_real_cycle_damage_attribution_smoke_test.py passed",
+      "bundled python scripts/full_real_cycle_timeline_csv_order_smoke_test.py passed",
+      "bundled python scripts/full_real_cycle_no_injection_guard_smoke_test.py passed",
+      "bundled python scripts/project_progress_active_echo_alignment_smoke_test.py passed",
+      "bundled python scripts/lynae_off_tune_real_cycle_smoke_test.py passed",
+      "bundled python scripts/lynae_real_cycle_concerto_smoke_test.py passed",
+      "bundled python scripts/aemeath_rupturous_trail_real_tune_break_smoke_test.py passed",
+      "bundled python scripts/aemeath_overdrive_forte_enhancement_state_smoke_test.py passed",
+      "bundled python scripts/aemeath_seraphic_duet_trail_multiplier_smoke_test.py passed",
+      "bundled python scripts/aemeath_seraphic_duet_trail_consumption_smoke_test.py passed",
+      "bundled python scripts/mornye_active_echo_runtime_smoke_test.py passed",
+      "bundled python scripts/aemeath_sigillum_zero_time_activation_smoke_test.py passed",
+      "bundled python scripts/aemeath_sigillum_auxiliary_state_isolation_smoke_test.py passed",
+      "bundled python scripts/aemeath_sigillum_scheduler_smoke_test.py passed",
+      "bundled python scripts/aemeath_sigillum_combat_cutoff_smoke_test.py passed",
+      "bundled python scripts/echo_ability_damage_category_runtime_smoke_test.py passed",
+      "bundled python scripts/mornye_syntony_field_scheduler_smoke_test.py passed",
+      "bundled python scripts/mornye_syntony_field_healing_scheduler_smoke_test.py passed",
+      "bundled python scripts/lynae_spray_paint_scheduler_smoke_test.py passed",
+      "bundled python scripts/scheduled_effect_combat_time_smoke_test.py passed",
+      "bundled python scripts/scheduled_effect_determinism_smoke_test.py passed",
+      "bundled python scripts/scheduled_effect_boundary_zero_phase_smoke_test.py passed",
+      "bundled python scripts/scheduled_effect_runtime_guard_smoke_test.py passed",
+      "bundled python scripts/mornye_aemeath_active_echo_policy_order_smoke_test.py passed",
+      "bundled python scripts/rl_observation_party_shape_stability_smoke_test.py passed",
+      "bundled python scripts/rl_observation_shape_guard_smoke_test.py passed",
+      "bundled python scripts/aemeath_mornye_lynae_observation_preflight_smoke_test.py passed",
+      "bundled python scripts/aemeath_mornye_lynae_short_rollout_smoke_test.py passed",
+      "bundled python scripts/env_smoke_test.py passed",
+      "bundled python scripts/apply_direct_action_data_v61.py --check --fail-on-diff passed with field_level_change_count=0",
+      "manifest copies/hash ok for ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d",
+      "touched-file UTF-8/no-BOM/no-U+FFFD/no stale U+9DAF U+ACC8 U+3058 check passed",
+      "repository JSON parse passed for 108 files",
+      "broad UTF-8 scan found pre-existing BOMs in data/extracted/mornye_excel_actions_source_audit.csv and data/extracted/mornye_raw_rows.csv; these files were not touched by this task"
     ],
-    "next_task": "External review of candidate 103, then full real-cycle integration and baseline measurement with the 25-action policy list including active Echoes.",
-    "review_correction_status": "reactor_husk_atk_profile_fix_pending_re_review",
-    "external_verification_claimed": false,
-    "mornye_reactor_husk_atk_components_added": true,
-    "mornye_reactor_husk_static_atk": 1159.1645,
-    "mornye_reactor_husk_runtime_damage_no_buffs": 2071.3932654700507,
-    "build_profile_validation_complete": true
+    "test_failures_or_skips": [
+      ".venv launcher failed before Python start; bundled Python was used for validation",
+      "Broad repository text scan found pre-existing BOMs in two untouched extracted CSVs; touched-file hygiene passed"
+    ]
   },
   "manual_cycle_reference": {
     "status": "user_researched_reference_cycle",
@@ -383,6 +460,24 @@
       "search_from_scratch": "인간 사이클 보너스 없이 총 피해만 최적화",
       "bc_warm_start": "인간 사이클 모방 후 총 피해 기준 개선",
       "final_candidate": "동일 조건 120초 총 피해 최대값"
+    },
+    "full_real_cycle_integration_candidate_104": {
+      "status": "implemented_tests_passed_pending_external_review",
+      "result_json": "results/full_real_cycle_integration_v103_summary.json",
+      "timeline_csv": "results/full_real_cycle_integration_v103_timeline.csv",
+      "final_combat_time": 32.949999999999996,
+      "total_damage": 1792244.9381157316,
+      "not_120_second_baseline": true,
+      "external_review_status": "pending",
+      "damage_by_character": {
+        "aemeath": 1404246.4250625486,
+        "lynae": 319145.0773344416,
+        "mornye": 68853.43571874128
+      },
+      "reporting_artifact_corrections": [
+        "source-aware per-character damage attribution includes Tune Break response and generated mechanic damage events",
+        "timeline CSV preserves same-time scheduled-effect event-log order with explicit sequence columns"
+      ]
     }
   },
   "known_unresolved_or_missing": [
@@ -414,8 +509,8 @@
     {
       "id": "U005",
       "item": "모니에·에이메스 액티브 에코 행동",
-      "status": "implemented_pending_external_review",
-      "note": "Mornye Reactor Husk and Aemeath Sigillum active Echo actions are implemented in the current candidate, with external-review corrections applied, but baseline 102 remains the latest externally verified archive. Mornye exact dodge-cancel next-input frame remains unresolved; runtime uses the uncancelled 66F route. Mornye/Aemeath Echo Off-Tune remains source-unconfirmed and runtime zero."
+      "status": "externally_verified_complete_with_limits",
+      "note": "Mornye Reactor Husk and Aemeath Sigillum active Echo actions are externally verified in baseline 103. Remaining limits only: Mornye exact dodge-cancel next-input frame is unresolved and runtime uses the uncancelled 66F route; Mornye/Aemeath Echo Off-Tune values are source-unconfirmed and runtime zero."
     },
     {
       "id": "U006",
@@ -426,8 +521,8 @@
     {
       "id": "U007",
       "item": "120초 수동 기준선",
-      "status": "not_built",
-      "note": "자동 피해·30스택·실제 에코 등 핵심 메커니즘 정리 후 상태 머신으로 구현."
+      "status": "next_after_full_cycle_candidate_external_review",
+      "note": "The strict full real-cycle integration route is implemented as candidate 104 pending external review. The 120-second manual baseline remains the next task after that review and is not built yet."
     },
     {
       "id": "U008",
@@ -446,17 +541,28 @@
       "item": "기존 BC 데모",
       "status": "obsolete_due_to_observation_v5",
       "note": "Previous v4/312 BC demonstrations and models are obsolete after v5/314 target Rupturous Trail channels; regenerate later after active Echo actions and full real-cycle baseline are stable."
+    },
+    {
+      "id": "U011",
+      "item": "Opening Aemeath -> Mornye normal-swap exact timing",
+      "status": "unresolved_placeholder_in_candidate_104",
+      "note": "The strict full-cycle route allows exactly one placeholder/fallback swap: opening swap_to_mornye before Aemeath has full Concerto. Current runtime uses the known generic 0.50-second normal-swap placeholder; no source-exact normal-swap timing was fabricated."
     }
   ],
   "next_planned_tasks": [
     {
       "order": 1,
-      "task": "full real-cycle integration",
-      "acceptance": "stable full-cycle run including Mornye Reactor Husk and Aemeath Sigillum without resource or Off-Tune injection"
+      "task": "external review of full-cycle candidate 104",
+      "outputs": [
+        "review full_real_cycle_integration_v103_summary.json",
+        "review timeline CSV",
+        "confirm one opening placeholder swap and no state injection"
+      ]
     },
     {
       "order": 2,
       "task": "120-second manual baseline",
+      "status": "next_after_external_review",
       "outputs": [
         "total damage",
         "DPS",
@@ -934,7 +1040,64 @@
         "apply_direct_action_data_v61.py --check --fail-on-diff passed",
         "observation version remains slot_generic_mechanics_v5 with shape 314"
       ]
+    },
+    {
+      "baseline": "full_real_cycle_integration_candidate_104",
+      "status": "candidate_pending_external_review",
+      "known_good_for_next_task": false,
+      "summary": "Strict 41-action Simulation route implemented from baseline 103 through second enhanced Seraphic Duet; external re-execution passed route/runtime checks, and candidate 104 reporting artifacts now use source-aware character damage attribution and deterministic scheduler-order CSV export. Route ends at 32.95s/1977F and is not the 120-second baseline.",
+      "result_json": "results/full_real_cycle_integration_v103_summary.json",
+      "tests": [
+        ".venv\\Scripts\\python.exe -m compileall . failed before Python start: unable to create process",
+        "bundled python -m compileall -q . passed",
+        "bundled python scripts/full_real_cycle_integration.py --write-results passed",
+        "bundled python scripts/full_real_cycle_integration_smoke_test.py passed",
+        "bundled python scripts/full_real_cycle_scheduled_events_smoke_test.py passed",
+        "bundled python scripts/full_real_cycle_damage_attribution_smoke_test.py passed",
+        "bundled python scripts/full_real_cycle_timeline_csv_order_smoke_test.py passed",
+        "bundled python scripts/full_real_cycle_no_injection_guard_smoke_test.py passed",
+        "bundled python scripts/project_progress_active_echo_alignment_smoke_test.py passed",
+        "bundled python scripts/lynae_off_tune_real_cycle_smoke_test.py passed",
+        "bundled python scripts/lynae_real_cycle_concerto_smoke_test.py passed",
+        "bundled python scripts/aemeath_rupturous_trail_real_tune_break_smoke_test.py passed",
+        "bundled python scripts/aemeath_overdrive_forte_enhancement_state_smoke_test.py passed",
+        "bundled python scripts/aemeath_seraphic_duet_trail_multiplier_smoke_test.py passed",
+        "bundled python scripts/aemeath_seraphic_duet_trail_consumption_smoke_test.py passed",
+        "bundled python scripts/mornye_active_echo_runtime_smoke_test.py passed",
+        "bundled python scripts/aemeath_sigillum_zero_time_activation_smoke_test.py passed",
+        "bundled python scripts/aemeath_sigillum_auxiliary_state_isolation_smoke_test.py passed",
+        "bundled python scripts/aemeath_sigillum_scheduler_smoke_test.py passed",
+        "bundled python scripts/aemeath_sigillum_combat_cutoff_smoke_test.py passed",
+        "bundled python scripts/echo_ability_damage_category_runtime_smoke_test.py passed",
+        "bundled python scripts/mornye_syntony_field_scheduler_smoke_test.py passed",
+        "bundled python scripts/mornye_syntony_field_healing_scheduler_smoke_test.py passed",
+        "bundled python scripts/lynae_spray_paint_scheduler_smoke_test.py passed",
+        "bundled python scripts/scheduled_effect_combat_time_smoke_test.py passed",
+        "bundled python scripts/scheduled_effect_determinism_smoke_test.py passed",
+        "bundled python scripts/scheduled_effect_boundary_zero_phase_smoke_test.py passed",
+        "bundled python scripts/scheduled_effect_runtime_guard_smoke_test.py passed",
+        "bundled python scripts/mornye_aemeath_active_echo_policy_order_smoke_test.py passed",
+        "bundled python scripts/rl_observation_party_shape_stability_smoke_test.py passed",
+        "bundled python scripts/rl_observation_shape_guard_smoke_test.py passed",
+        "bundled python scripts/aemeath_mornye_lynae_observation_preflight_smoke_test.py passed",
+        "bundled python scripts/aemeath_mornye_lynae_short_rollout_smoke_test.py passed",
+        "bundled python scripts/env_smoke_test.py passed",
+        "bundled python scripts/apply_direct_action_data_v61.py --check --fail-on-diff passed with field_level_change_count=0",
+        "manifest copies/hash ok for ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d",
+        "touched-file UTF-8/no-BOM/no-U+FFFD/no stale U+9DAF U+ACC8 U+3058 check passed",
+        "repository JSON parse passed for 108 files",
+        "broad UTF-8 scan found pre-existing BOMs in data/extracted/mornye_excel_actions_source_audit.csv and data/extracted/mornye_raw_rows.csv; these files were not touched by this task"
+      ],
+      "test_failures_or_skips": [
+        ".venv launcher failed before Python start; bundled Python was used for validation",
+        "Broad repository text scan found pre-existing BOMs in two untouched extracted CSVs; touched-file hygiene passed"
+      ],
+      "damage_by_character": {
+        "aemeath": 1404246.4250625486,
+        "lynae": 319145.0773344416,
+        "mornye": 68853.43571874128
+      }
     }
   ],
-  "next_planned_task": "full real-cycle integration with active Echoes"
+  "next_planned_task": "external review of full-cycle candidate 104, then 120-second manual baseline"
 }

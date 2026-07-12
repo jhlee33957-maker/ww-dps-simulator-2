@@ -109,7 +109,12 @@ def main() -> None:
 
     summary = sim.summary()
     assert summary.off_tune_mapping_completeness_status == "incomplete"
-    assert summary.unresolved_off_tune_damaging_action_ids == ["lynae_echo_hyvatia"]
+    assert summary.unresolved_off_tune_damaging_action_ids == [
+        "aemeath_echo_sigillum_hit_1",
+        "aemeath_echo_sigillum_hit_2",
+        "lynae_echo_hyvatia",
+        "mornye_echo_reactor_husk",
+    ]
     assert "reports/lynae_off_tune_direct_mapping_audit.md" in summary.off_tune_value_mapping_source_report
 
     print("lynae_off_tune_real_cycle_smoke_test ok")
