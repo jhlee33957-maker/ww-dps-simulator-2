@@ -26,7 +26,13 @@ def main() -> None:
     row = sim.timeline[-1]
     events = row.aemeath_rupturous_trail_gain_events
     assert [event["stacks_before"] for event in events] == [0, 10, 20]
+    assert [event["requested_gain"] for event in events] == [10, 10, 10]
+    assert [event["applied_gain"] for event in events] == [10, 10, 10]
     assert [event["stacks_after"] for event in events] == [10, 20, 30]
+    assert all(event["event_type"] == "rupturous_trail_gain" for event in events)
+    assert all(event["response_source_character_id"] for event in events)
+    assert all(event["response_action_id"] for event in events)
+    assert [event["remaining_after"] for event in events] == [30.0, 30.0, 30.0]
     assert sim.state.rupturous_trail_stacks == 30
     assert sim.state.rupturous_trail_remaining == 30.0
 

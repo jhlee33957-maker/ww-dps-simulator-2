@@ -30,9 +30,18 @@ def main() -> None:
     assert event is not None
     assert state.rupturous_trail_stacks == 10
     assert state.rupturous_trail_remaining == 30.0
-    assert state.character_mechanics_state["aemeath"]["rupturous_trail_stacks"] == 0
+    assert "rupturous_trail_stacks" not in state.character_mechanics_state["aemeath"]
+    assert "rupturous_trail_remaining" not in state.character_mechanics_state["aemeath"]
     assert event["source_status"] == "workbook_confirmed_c0"
     assert event["source_ref"] == "角色-女!2844"
+    assert event["event_type"] == "rupturous_trail_gain"
+    assert event["response_source_character_id"] == "aemeath"
+    assert event["response_action_id"] == "aemeath_starburst"
+    assert event["stacks_before"] == 0
+    assert event["requested_gain"] == 10
+    assert event["applied_gain"] == 10
+    assert event["stacks_after"] == 10
+    assert event["remaining_after"] == 30.0
     print("aemeath_rupturous_trail_runtime_guard_smoke_test ok")
 
 

@@ -21,6 +21,9 @@ def test_trail_state_clamps_and_expires() -> None:
     state.rupturous_trail_stacks = 30
     state.rupturous_trail_remaining = 2.0
     state.character_mechanics_state["aemeath"] = {
+        "rupturous_trail_stacks": 99,
+        "rupturous_trail_remaining": 99.0,
+        "rupturous_trail_max_stacks": 99,
         "fusion_trail_stacks": 99,
         "fusion_trail_max_stacks": 4,
         "fusion_trail_remaining": 3.0,
@@ -31,14 +34,17 @@ def test_trail_state_clamps_and_expires() -> None:
     }
     mechanic.initialize_state(state)
     data = state.character_mechanics_state["aemeath"]
-    assert data["rupturous_trail_max_stacks"] == 30
+    assert "rupturous_trail_stacks" not in data
+    assert "rupturous_trail_remaining" not in data
+    assert "rupturous_trail_max_stacks" not in data
+    assert state.rupturous_trail_stacks == 30
+    assert state.rupturous_trail_remaining == 2.0
     assert data["fusion_trail_stacks"] == 4
     assert data["forte_enhancement_stacks"] == 2
 
     mechanic.advance_time(state, 1.0)
-    state.rupturous_trail_remaining = max(0.0, state.rupturous_trail_remaining - 1.0)
     assert state.rupturous_trail_stacks == 30
-    assert state.rupturous_trail_remaining == 1.0
+    assert state.rupturous_trail_remaining == 2.0
     assert data["fusion_trail_stacks"] == 4
     assert data["fusion_trail_remaining"] == 2.0
     assert data["forte_enhancement_stacks"] == 2
@@ -46,11 +52,8 @@ def test_trail_state_clamps_and_expires() -> None:
     assert data["trail_no_cost_remaining"] == 2.0
 
     mechanic.advance_time(state, 1.0)
-    state.rupturous_trail_remaining = max(0.0, state.rupturous_trail_remaining - 1.0)
-    if state.rupturous_trail_remaining <= 0.0:
-        state.rupturous_trail_stacks = 0
-    assert state.rupturous_trail_stacks == 0
-    assert state.rupturous_trail_remaining == 0.0
+    assert state.rupturous_trail_stacks == 30
+    assert state.rupturous_trail_remaining == 2.0
     assert data["fusion_trail_stacks"] == 4
     assert data["fusion_trail_remaining"] == 1.0
     assert data["forte_enhancement_stacks"] == 0
@@ -68,7 +71,12 @@ def test_debug_state_exposes_single_target_trail_scaffold() -> None:
     mechanic.initialize_state(state)
     debug = mechanic.get_debug_state(state)
     assert debug["single_target_aemeath_forte_trail_state"] is True
+    assert "rupturous_trail_stacks" not in debug
+    assert "rupturous_trail_remaining" not in debug
+    assert "rupturous_trail_max_stacks" not in debug
     assert "target_rupturous_trail_stacks" in debug
+    assert "target_rupturous_trail_remaining" in debug
+    assert debug["rupturous_trail_state_source"] == "CombatState"
     assert "fusion_trail_stacks" in debug
     assert "forte_enhancement_stacks" in debug
     assert "trail_no_cost_remaining" in debug

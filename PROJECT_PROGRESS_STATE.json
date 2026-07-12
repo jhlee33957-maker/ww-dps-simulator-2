@@ -13,11 +13,11 @@
     "language_preference": "설명은 한국어, Codex 프롬프트와 코드 식별자는 영어 가능"
   },
   "status": {
-    "last_updated": "2026-07-12T07:20:00+09:00",
+    "last_updated": "2026-07-12T07:55:00+09:00",
     "latest_verified_archive": "ww-dps-simulator-2(98).zip",
     "latest_verified_baseline_label": "98",
     "current_task_status": "complete_pending_external_review",
-    "current_task": "Aemeath post-Tune-Break C0 Rupturous Trail source audit and implementation",
+    "current_task": "Aemeath Rupturous Trail duplicate-state and mechanic-metadata cleanup",
     "current_task_expected_next_archive": "미정",
     "do_not_treat_current_task_as_complete_until_reviewed": true
   },
@@ -260,17 +260,37 @@
     }
   ],
   "current_in_progress_task": {
-    "task": "Aemeath post-Tune-Break C0 Rupturous Trail source audit and implementation",
+    "task": "Aemeath Rupturous Trail duplicate-state and mechanic-metadata cleanup",
     "status": "implemented_tests_passed_pending_external_review",
     "latest_externally_verified_baseline": "98",
     "external_review_required": true,
     "authoritative_audit": "aemeath_rupturous_trail_direct_audit_v98.json",
     "audit_sha256": "078e9bc31ea540c2b4441d9e2e14681f1cdd74db834a8358ce25b8c7f38a4094",
-    "notes": "Implemented C0 Tune Rupture target Rupturous Trail, observation v5/314, and source-backed runtime audit; runtime action data and direct action manifests were not modified for this task.",
+    "notes": "Cleaned duplicate personal Aemeath Rupturous Trail state after archive (99) formula review: authoritative target state remains CombatState.rupturous_trail_stacks/remaining/log, debug output uses target_rupturous_trail_* fields, runtime gain/Seraphic diagnostics expose review-facing schema fields, and stale mechanic metadata was aligned. Runtime action data, executor action data, reward, observation labels/order/shape, policy action ordering, and authoritative v98 audit bytes were not changed.",
     "runtime_audit": "data/extracted/aemeath_rupturous_trail_runtime_audit.json",
     "report": "reports/aemeath_rupturous_trail_runtime_audit.md",
     "observation_version": "slot_generic_mechanics_v5",
-    "observation_shape": 314
+    "observation_shape": 314,
+    "bc_eval_bundle_status": "archived_obsolete_after_observation_v5_314_until_regenerated",
+    "tests": [
+      "aemeath_rupturous_trail_single_source_of_truth_smoke_test.py passed",
+      "aemeath_rupturous_trail_metadata_alignment_smoke_test.py passed",
+      "aemeath_rupturous_trail_debug_output_smoke_test.py passed",
+      "all scripts/aemeath*_smoke_test.py passed",
+      "rl_observation_rupturous_trail_v5_smoke_test.py passed",
+      "rl_observation_v4_incompatibility_smoke_test.py passed",
+      "rl_observation_party_shape_stability_smoke_test.py passed",
+      "rl_observation_shape_guard_smoke_test.py passed",
+      "aemeath_mornye_lynae_observation_preflight_smoke_test.py passed",
+      "scheduled_effect_runtime_guard_smoke_test.py passed",
+      "combat_time_effect_duration_smoke_test.py passed",
+      "action_start_effect_snapshot_smoke_test.py passed",
+      "trailblazing_star_combat_time_uptime_smoke_test.py passed",
+      "env_smoke_test.py passed with observation shape 314",
+      "apply_direct_action_data_v61.py --check --fail-on-diff passed",
+      "compileall characters simulator env scripts passed",
+      "aemeath_rupturous_trail_direct_audit_v98.json SHA-256 verified"
+    ]
   },
   "manual_cycle_reference": {
     "status": "user_researched_reference_cycle",
@@ -351,8 +371,8 @@
     {
       "id": "U004",
       "item": "Aemeath C0 Rupturous Trail / Tune Rupture target stacks",
-      "status": "implemented_candidate_pending_external_review",
-      "note": "Source-confirmed C0 mechanic implemented as target state: +10 per successful party Tune Rupture response, cap 30, 30s combat-time duration, Seraphic snapshot multiplier, and one-use preservation. C6, Fusion Trail, multi-target, Echo actions remain out of scope."
+      "status": "implemented_candidate_pending_external_review_cleanup_after_99",
+      "note": "Source-confirmed C0 mechanic implemented as target CombatState only: +10 per successful party Tune Rupture response, cap 30, 30s combat-time duration, Seraphic snapshot multiplier, one-use preservation, and explicit target_rupturous_trail_* debug output. Legacy personal character_mechanics_state Rupturous Trail keys are ignored/removed. C6, Fusion Trail, multi-target, Echo actions remain out of scope."
     },
     {
       "id": "U005",
@@ -779,7 +799,38 @@
         "rl_observation_v4_incompatibility_smoke_test.py",
         "aemeath_rupturous_trail_runtime_guard_smoke_test.py"
       ]
+    },
+    {
+      "baseline": "aemeath_rupturous_trail_formula_review_99",
+      "status": "externally_reviewed_needs_cleanup",
+      "summary": "Archive (99) passed external formula review for Aemeath C0 Rupturous Trail, but duplicate personal state and stale mechanic metadata require cleanup before baseline measurement.",
+      "known_good_for_next_task": false
+    },
+    {
+      "baseline": "aemeath_rupturous_trail_single_source_cleanup_after_99",
+      "status": "candidate_pending_external_review",
+      "summary": "Cleaned remaining duplicate Aemeath Rupturous Trail personal state and stale metadata after archive (99) formula review. Verified single source of truth on CombatState, explicit debug/diagnostic fields, metadata source refs, unchanged v98 audit hash, observation v5/314 stability, and action-data manifest cleanliness.",
+      "known_good_for_next_task": false,
+      "tests": [
+        "aemeath_rupturous_trail_single_source_of_truth_smoke_test.py passed",
+        "aemeath_rupturous_trail_metadata_alignment_smoke_test.py passed",
+        "aemeath_rupturous_trail_debug_output_smoke_test.py passed",
+        "all scripts/aemeath*_smoke_test.py passed",
+        "rl_observation_rupturous_trail_v5_smoke_test.py passed",
+        "rl_observation_v4_incompatibility_smoke_test.py passed",
+        "rl_observation_party_shape_stability_smoke_test.py passed",
+        "rl_observation_shape_guard_smoke_test.py passed",
+        "aemeath_mornye_lynae_observation_preflight_smoke_test.py passed",
+        "scheduled_effect_runtime_guard_smoke_test.py passed",
+        "combat_time_effect_duration_smoke_test.py passed",
+        "action_start_effect_snapshot_smoke_test.py passed",
+        "trailblazing_star_combat_time_uptime_smoke_test.py passed",
+        "env_smoke_test.py passed with observation shape 314",
+        "apply_direct_action_data_v61.py --check --fail-on-diff passed",
+        "compileall characters simulator env scripts passed",
+        "aemeath_rupturous_trail_direct_audit_v98.json SHA-256 verified"
+      ]
     }
   ],
-  "next_planned_task": "Aemeath post-Tune-Break 30-stack source audit and implementation"
+  "next_planned_task": "Mornye and Aemeath active Echo action implementation"
 }

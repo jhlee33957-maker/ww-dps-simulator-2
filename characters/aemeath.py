@@ -39,9 +39,6 @@ class AemeathMechanic(CharacterMechanic):
         "sync_strike_window_type": None,
         "sync_strike_window_remaining": 0,
         "overdrive_form_switch_window_remaining": 0,
-        "rupturous_trail_stacks": 0,
-        "rupturous_trail_remaining": 0.0,
-        "rupturous_trail_max_stacks": RUPTUROUS_TRAIL_MAX_STACKS,
         "fusion_trail_stacks": 0,
         "fusion_trail_remaining": 0.0,
         "fusion_trail_max_stacks": 5,
@@ -318,6 +315,8 @@ class AemeathMechanic(CharacterMechanic):
             "triggered": True,
             "response_damage": response_damage,
             "stacks_before": before,
+            "requested_gain": RUPTUROUS_TRAIL_GAIN_PER_RESPONSE,
+            "applied_gain": after - before,
             "stack_gain": after - before,
             "stack_gain_requested": RUPTUROUS_TRAIL_GAIN_PER_RESPONSE,
             "stacks_after": after,
@@ -513,12 +512,10 @@ class AemeathMechanic(CharacterMechanic):
             "sync_strike_window_remaining": data["sync_strike_window_remaining"],
             "next_resonance_skill_variant": data["sync_strike_window_type"],
             "overdrive_form_switch_window_remaining": data["overdrive_form_switch_window_remaining"],
-            "rupturous_trail_stacks": data["rupturous_trail_stacks"],
-            "rupturous_trail_remaining": data["rupturous_trail_remaining"],
-            "rupturous_trail_max_stacks": data["rupturous_trail_max_stacks"],
             "target_rupturous_trail_stacks": int(getattr(state, "rupturous_trail_stacks", 0) or 0),
             "target_rupturous_trail_remaining": float(getattr(state, "rupturous_trail_remaining", 0.0) or 0.0),
             "target_rupturous_trail_max_stacks": RUPTUROUS_TRAIL_MAX_STACKS,
+            "rupturous_trail_state_source": "CombatState",
             "fusion_trail_stacks": data["fusion_trail_stacks"],
             "fusion_trail_remaining": data["fusion_trail_remaining"],
             "fusion_trail_max_stacks": data["fusion_trail_max_stacks"],
@@ -571,7 +568,9 @@ class AemeathMechanic(CharacterMechanic):
             data["sync_strike_window_type"] = None
         data["sync_strike_window_remaining"] = 1 if data["sync_strike_window_type"] else 0
         data["overdrive_form_switch_window_remaining"] = 1 if int(data["overdrive_form_switch_window_remaining"]) > 0 else 0
-        data["rupturous_trail_max_stacks"] = RUPTUROUS_TRAIL_MAX_STACKS
+        data.pop("rupturous_trail_stacks", None)
+        data.pop("rupturous_trail_remaining", None)
+        data.pop("rupturous_trail_max_stacks", None)
         data["fusion_trail_max_stacks"] = max(1, int(data.get("fusion_trail_max_stacks", 5) or 5))
         data["forte_enhancement_max_stacks"] = max(1, int(data.get("forte_enhancement_max_stacks", 2) or 2))
         data["forte_enhancement_stacks"] = max(
@@ -582,15 +581,10 @@ class AemeathMechanic(CharacterMechanic):
         if data["forte_enhancement_remaining"] <= 0.0:
             data["forte_enhancement_stacks"] = 0
         data["trail_no_cost_remaining"] = max(0.0, float(data.get("trail_no_cost_remaining", 0.0) or 0.0))
-        data["rupturous_trail_stacks"] = max(
-            0,
-            min(data["rupturous_trail_max_stacks"], int(data.get("rupturous_trail_stacks", 0) or 0)),
-        )
         data["fusion_trail_stacks"] = max(
             0,
             min(data["fusion_trail_max_stacks"], int(data.get("fusion_trail_stacks", 0) or 0)),
         )
-        data["rupturous_trail_remaining"] = max(0.0, float(data.get("rupturous_trail_remaining", 0.0) or 0.0))
         data["fusion_trail_remaining"] = max(0.0, float(data.get("fusion_trail_remaining", 0.0) or 0.0))
         data["last_seraphic_duet_consumed_rupturous_trail_stacks"] = max(
             0, int(data.get("last_seraphic_duet_consumed_rupturous_trail_stacks", 0) or 0)

@@ -43,11 +43,22 @@ def main() -> None:
         assert_close(row.aemeath_seraphic_duet_total_extra_tune_multiplier, expected)
         event = row.generated_mechanic_damage_events[0]
         assert event["trail_stack_snapshot"] == stacks
+        assert event["trail_stack_factor"] == 1.0 + 0.04 * stacks
+        assert event["trail_preservation_active"] is False
+        assert event["trail_consumed"] is (stacks > 0)
+        assert event["repeat_count"] == 5
+        assert event["base_multiplier_per_hit"] == 1.0935
+        assert event["stacks_after"] == 0
         assert_close(event["total_extra_tune_multiplier"], expected)
     for stacks, expected in enhanced.items():
         row = run_seraphic(stacks, enhanced=True)
         assert row.aemeath_seraphic_duet_followup_repeat_count == 10
         assert_close(row.aemeath_seraphic_duet_total_extra_tune_multiplier, expected)
+        event = row.generated_mechanic_damage_events[0]
+        assert event["trail_stack_snapshot"] == stacks
+        assert event["repeat_count"] == 10
+        assert event["stacks_after"] == 0
+        assert event["trail_preservation_after"] is False
     print("aemeath_seraphic_duet_trail_multiplier_smoke_test ok")
 
 

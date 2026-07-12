@@ -1105,6 +1105,7 @@ def execute_action(
                         aemeath_state.get("last_seraphic_duet_trail_preservation_active", False)
                     ),
                     "trail_consumed": bool(aemeath_state.get("last_seraphic_duet_trail_consumed", False)),
+                    "stacks_after": int(getattr(state, "rupturous_trail_stacks", 0) or 0),
                     "trail_stacks_after": int(getattr(state, "rupturous_trail_stacks", 0) or 0),
                     "trail_preservation_after": bool(
                         aemeath_state.get("last_seraphic_duet_trail_preservation_after", False)

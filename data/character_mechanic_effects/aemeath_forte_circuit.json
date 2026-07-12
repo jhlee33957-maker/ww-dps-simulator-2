@@ -150,10 +150,10 @@
             "角色-女!2932"
           ],
           "extra_tune_damage_rows": [
-            "dmg/角色技能类型!2578",
-            "dmg/角色技能类型!2579",
-            "dmg/角色技能类型!2628",
-            "dmg/角色技能类型!2629"
+            "dmg/角色女DamageData!2578",
+            "dmg/角色女DamageData!2579",
+            "dmg/角色女DamageData!2628",
+            "dmg/角色女DamageData!2629"
           ]
         },
         "tune_mode": "tune_rupture",
@@ -191,7 +191,15 @@
         },
         "consumption_rule": "Seraphic Duet snapshots current target stacks; without preservation it removes all target stacks after snapshot, while preservation consumes one use and keeps target stacks.",
         "preservation_uses": 1,
-        "preservation_source_ref": "角色-女!2806"
+        "preservation_source_ref": "角色-女!2806",
+        "remaining_state": "CombatState.rupturous_trail_remaining",
+        "event_log_state": "CombatState.rupturous_trail_event_log",
+        "legacy_personal_state": "ignored_removed",
+        "debug_fields": [
+          "target_rupturous_trail_stacks",
+          "target_rupturous_trail_remaining",
+          "target_rupturous_trail_max_stacks"
+        ]
       }
     },
     "fusion_burst": {
