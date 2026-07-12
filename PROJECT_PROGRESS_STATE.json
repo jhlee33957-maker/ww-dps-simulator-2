@@ -13,11 +13,11 @@
     "language_preference": "설명은 한국어, Codex 프롬프트와 코드 식별자는 영어 가능"
   },
   "status": {
-    "last_updated": "2026-07-12T05:15:49+09:00",
-    "latest_verified_archive": "ww-dps-simulator-2(96).zip",
-    "latest_verified_baseline_label": "96",
+    "last_updated": "2026-07-12T07:20:00+09:00",
+    "latest_verified_archive": "ww-dps-simulator-2(98).zip",
+    "latest_verified_baseline_label": "98",
     "current_task_status": "complete_pending_external_review",
-    "current_task": "Lynae Spray Paint source audit and scheduler integration",
+    "current_task": "Aemeath post-Tune-Break C0 Rupturous Trail source audit and implementation",
     "current_task_expected_next_archive": "미정",
     "do_not_treat_current_task_as_complete_until_reviewed": true
   },
@@ -55,14 +55,18 @@
       "resolved_action_end_mode": "Instant Response처럼 조건부 행동 시간이 줄어드는 통합 타격은 hit_time_mode=resolved_action_end 사용"
     },
     "rl_observation": {
-      "version": "slot_generic_mechanics_v4",
-      "shape": 312,
+      "version": "slot_generic_mechanics_v5",
+      "shape": 314,
       "policy_action_slots": 32,
       "notes": [
         "대기 캐릭터 selector 쿨다운도 행동 소유 캐릭터 기준으로 관측",
         "린네 해방·Outro·공격력 버프 등 지연 보상 상태를 범용 효과 채널로 관측",
-        "v3 모델과 204차원 BC 데모는 비호환"
-      ]
+        "v3 모델과 204차원 BC 데모는 비호환",
+        "Aemeath C0 Rupturous Trail target stack and remaining ratios added as fixed global channels.",
+        "v4/312 demonstrations and models are incompatible with v5/314 and must be regenerated before BC/PPO."
+      ],
+      "previous_verified_version": "slot_generic_mechanics_v4",
+      "previous_verified_shape": 312
     },
     "reward": {
       "current_formula": "해당 스텝 실제 총 피해 기반 기존 보상식",
@@ -244,61 +248,29 @@
       "title": "combat_time 업타임 기록",
       "status": "complete",
       "summary": "무기·버프·Trailblazing Star 업타임을 combat_time 축으로 통일. 시정지 후 세트 활성화 시 업타임 0 문제 수정."
+    },
+    {
+      "id": "M012",
+      "title": "Aemeath C0 Rupturous Trail candidate implementation",
+      "status": "candidate_pending_external_review",
+      "summary": "Implemented source-confirmed C0 Tune Rupture Rupturous Trail as single-target enemy state: +10 per successful party Tune Rupture response, cap 30, 30s combat-time duration, Seraphic Duet stack snapshot multiplier, one-use preservation, runtime audit, and observation v5/314 global visibility.",
+      "baseline": "98",
+      "observation_version": "slot_generic_mechanics_v5",
+      "shape": 314
     }
   ],
   "current_in_progress_task": {
-    "task": "Lynae Spray Paint source audit and scheduler integration",
+    "task": "Aemeath post-Tune-Break C0 Rupturous Trail source audit and implementation",
     "status": "implemented_tests_passed_pending_external_review",
-    "latest_externally_verified_baseline": "96",
+    "latest_externally_verified_baseline": "98",
     "external_review_required": true,
-    "implementation_status": "implemented_candidate_pending_external_review",
-    "spray_paint_semantics": "periodic status application, not damage",
-    "canonical_unicode_source_refs_restored": true,
-    "scheduled_status_application": {
-      "host_action_id": "lynae_visual_impact",
-      "payload_action_id": "lynae_spray_paint_flux_application",
-      "instance_id": "lynae_spray_paint_flux:lynae",
-      "payload_event_type": "status_application",
-      "relative_application_frames": [
-        1,
-        121,
-        241
-      ],
-      "field_duration_frames": 300,
-      "first_check_frames": 1,
-      "check_interval_frames": 120,
-      "max_application_count": 3,
-      "remove_on_max_trigger_count": false,
-      "target_presence_assumption": "single_target_remains_inside_paint_area",
-      "zero_damage_resources_off_tune_reward": true
-    },
-    "mode_snapshot_mapping": {
-      "tune_strain": {
-        "target_shift_state": "tune_strain_shifting",
-        "source_ref": "角色-女!2683"
-      },
-      "tune_rupture": {
-        "target_shift_state": "tune_rupture_shifting",
-        "source_ref": "角色-女!2684"
-      }
-    },
-    "c1_out_of_scope_refs": [
-      "角色-女!2685",
-      "角色-女!2686",
-      "角色-女!2687",
-      "角色-女!2688"
-    ],
-    "remaining_limitations": [
-      "C1 600F field extension and attraction remain out of scope",
-      "spatial target-presence simulation remains approximated"
-    ],
-    "manifest_hash_guard": {
-      "verified_canonical_sha256": "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d",
-      "manifest_copies_byte_identical": true
-    },
-    "observation_status": "slot_generic_mechanics_v4 shape 312 unchanged",
-    "reward_and_training_status": "reward settings, PPO, curriculum, BC demonstrations, and route demonstrations unchanged",
-    "notes": "Runtime Spray Paint behavior was externally reviewed in candidate 97 and not changed except canonical source-reference metadata literals."
+    "authoritative_audit": "aemeath_rupturous_trail_direct_audit_v98.json",
+    "audit_sha256": "078e9bc31ea540c2b4441d9e2e14681f1cdd74db834a8358ce25b8c7f38a4094",
+    "notes": "Implemented C0 Tune Rupture target Rupturous Trail, observation v5/314, and source-backed runtime audit; runtime action data and direct action manifests were not modified for this task.",
+    "runtime_audit": "data/extracted/aemeath_rupturous_trail_runtime_audit.json",
+    "report": "reports/aemeath_rupturous_trail_runtime_audit.md",
+    "observation_version": "slot_generic_mechanics_v5",
+    "observation_shape": 314
   },
   "manual_cycle_reference": {
     "status": "user_researched_reference_cycle",
@@ -378,9 +350,9 @@
     },
     {
       "id": "U004",
-      "item": "에이메스 조화도 파괴 후 최대 30스택 메커니즘",
-      "status": "not_implemented",
-      "note": "현재 2회 강화 사용권 단순화와 다름. 원본 엑셀·중국어 스킬 설명 직접 검수 필요."
+      "item": "Aemeath C0 Rupturous Trail / Tune Rupture target stacks",
+      "status": "implemented_candidate_pending_external_review",
+      "note": "Source-confirmed C0 mechanic implemented as target state: +10 per successful party Tune Rupture response, cap 30, 30s combat-time duration, Seraphic snapshot multiplier, and one-use preservation. C6, Fusion Trail, multi-target, Echo actions remain out of scope."
     },
     {
       "id": "U005",
@@ -415,31 +387,26 @@
     {
       "id": "U010",
       "item": "기존 BC 데모",
-      "status": "obsolete",
-      "note": "관측 v4 312차원 및 수정된 액션 데이터와 비호환. 재생성 필요."
+      "status": "obsolete_due_to_observation_v5",
+      "note": "Previous v4/312 BC demonstrations and models are obsolete after v5/314 target Rupturous Trail channels; regenerate later after active Echo actions and full real-cycle baseline are stable."
     }
   ],
   "next_planned_tasks": [
     {
       "order": 1,
-      "task": "Aemeath post-Tune-Break 30-stack source audit and implementation",
-      "likely_observation_change": "v5 may be required"
-    },
-    {
-      "order": 2,
-      "task": "Mornye/Aemeath active Echo actions",
+      "task": "Mornye and Aemeath active Echo action implementation",
       "needs": [
         "source screenshots",
         "source workbook mapping for damage, resources, and Off-Tune"
       ]
     },
     {
-      "order": 3,
+      "order": 2,
       "task": "full real-cycle integration",
       "acceptance": "stable full-cycle run without resource or Off-Tune injection"
     },
     {
-      "order": 4,
+      "order": 3,
       "task": "120-second manual baseline",
       "outputs": [
         "total damage",
@@ -451,16 +418,16 @@
       ]
     },
     {
-      "order": 5,
+      "order": 4,
       "task": "BC/PPO regeneration and training",
       "requirements": [
-        "latest observation version",
+        "slot_generic_mechanics_v5",
         "regenerated demonstrations",
         "manual baseline reproduction check"
       ]
     },
     {
-      "order": 6,
+      "order": 5,
       "task": "Beam Search/MCTS comparison",
       "rule": "Use only final 120-second total damage as the objective; no arbitrary character-use or buff bonuses."
     }
@@ -468,14 +435,15 @@
   "validation_invariants": [
     "scripts/apply_direct_action_data_v61.py --check --fail-on-diff 는 차이 0이어야 한다.",
     "액션 ID·transition ID·policy-selectable action 순서는 변경하지 않는다.",
-    "관측 v4 작업 범위가 아닌 한 observation shape 312를 유지한다.",
     "보상 공식과 캐릭터 사용 보너스를 임의로 바꾸지 않는다.",
     "확정 데이터 수정 시 매니페스트 두 복사본을 함께 갱신하고 재적용·멱등성 테스트를 추가한다.",
     "테스트가 기존 잘못된 수치를 정답으로 고정했다면 테스트를 새 근거에 맞게 수정하되 약화하지 않는다.",
     "자동 피해는 정책 행동으로 실행하지 않으며 일반 행동 자원·쿨다운·콤보·교대 부작용이 없어야 한다.",
     "버프·디버프·필드 지속시간과 업타임은 combat_time_cost 기준이다.",
     "행동 시작 시 활성 효과는 해당 행동 전체에 적용되고 다음 행동 전 만료된다.",
-    "알 수 없는 값은 0을 확정값처럼 취급하지 않고 unresolved 상태를 유지한다."
+    "알 수 없는 값은 0을 확정값처럼 취급하지 않고 unresolved 상태를 유지한다.",
+    "Observation schema is slot_generic_mechanics_v5 with shape 314; v4/312 demos and models are incompatible.",
+    "Aemeath C0 Rupturous Trail must use CombatState target fields as the authoritative stack/duration state."
   ],
   "codex_progress_file_protocol": {
     "canonical_path": "PROJECT_PROGRESS_STATE.json",
@@ -786,6 +754,30 @@
         "direct_action_manifest_hash_guard_smoke_test.py",
         "apply_direct_action_data_v61.py --check --fail-on-diff",
         "manifest byte/hash and no-BOM verification"
+      ]
+    },
+    {
+      "baseline": "98",
+      "status": "verified",
+      "summary": "External review verified archive ww-dps-simulator-2(98).zip before Aemeath C0 Rupturous Trail implementation.",
+      "known_good_for_next_task": true
+    },
+    {
+      "baseline": "aemeath_rupturous_trail_after_98",
+      "status": "candidate_pending_external_review",
+      "summary": "Implemented Aemeath C0 Rupturous Trail target state and observation v5/314 after verified baseline 98. Runtime action data and executor action data were not modified.",
+      "known_good_for_next_task": false,
+      "tests": [
+        "aemeath_rupturous_trail_source_audit_smoke_test.py",
+        "aemeath_rupturous_trail_response_gain_smoke_test.py",
+        "aemeath_rupturous_trail_duration_smoke_test.py",
+        "aemeath_seraphic_duet_trail_multiplier_smoke_test.py",
+        "aemeath_seraphic_duet_trail_consumption_smoke_test.py",
+        "aemeath_rupturous_trail_real_tune_break_smoke_test.py",
+        "aemeath_rupturous_trail_state_reset_smoke_test.py",
+        "rl_observation_rupturous_trail_v5_smoke_test.py",
+        "rl_observation_v4_incompatibility_smoke_test.py",
+        "aemeath_rupturous_trail_runtime_guard_smoke_test.py"
       ]
     }
   ],

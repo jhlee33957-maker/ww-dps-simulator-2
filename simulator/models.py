@@ -402,6 +402,9 @@ class CombatState(BaseModel):
     target_tune_shift_remaining: float = 0.0
     target_interfered_state: str | None = None
     target_interfered_remaining: float = 0.0
+    rupturous_trail_stacks: int = 0
+    rupturous_trail_remaining: float = 0.0
+    rupturous_trail_event_log: list[dict[str, Any]] = Field(default_factory=list)
     target_tune_strain_interfered_stacks: int = 0
     target_tune_strain_interfered_max_stacks: int = 1
     target_tune_strain_interfered_remaining: float = 0.0
@@ -498,9 +501,16 @@ class ActionResult(BaseModel):
     aemeath_seraphic_duet_followup_variant: str | None = None
     aemeath_seraphic_duet_followup_repeat_count: int = 0
     aemeath_seraphic_duet_followup_multiplier: float = 0.0
+    aemeath_seraphic_duet_trail_stack_snapshot: int = 0
+    aemeath_seraphic_duet_trail_stack_factor: float = 1.0
+    aemeath_seraphic_duet_trail_preservation_active: bool = False
+    aemeath_seraphic_duet_trail_preservation_after: bool = False
+    aemeath_seraphic_duet_trail_consumed: bool = False
+    aemeath_seraphic_duet_total_extra_tune_multiplier: float = 0.0
     aemeath_rupturous_trail_stacks_before: int = 0
     aemeath_rupturous_trail_stacks_consumed: int = 0
     aemeath_rupturous_trail_stacks_after: int = 0
+    aemeath_rupturous_trail_gain_events: list[dict[str, Any]] = Field(default_factory=list)
     aemeath_forte_enhancement_stacks_before: int = 0
     aemeath_forte_enhancement_stacks_consumed: int = 0
     aemeath_forte_enhancement_stacks_after: int = 0
@@ -939,9 +949,16 @@ class TimelineEntry(BaseModel):
     aemeath_seraphic_duet_followup_variant: str | None = None
     aemeath_seraphic_duet_followup_repeat_count: int = 0
     aemeath_seraphic_duet_followup_multiplier: float = 0.0
+    aemeath_seraphic_duet_trail_stack_snapshot: int = 0
+    aemeath_seraphic_duet_trail_stack_factor: float = 1.0
+    aemeath_seraphic_duet_trail_preservation_active: bool = False
+    aemeath_seraphic_duet_trail_preservation_after: bool = False
+    aemeath_seraphic_duet_trail_consumed: bool = False
+    aemeath_seraphic_duet_total_extra_tune_multiplier: float = 0.0
     aemeath_rupturous_trail_stacks_before: int = 0
     aemeath_rupturous_trail_stacks_consumed: int = 0
     aemeath_rupturous_trail_stacks_after: int = 0
+    aemeath_rupturous_trail_gain_events: list[dict[str, Any]] = Field(default_factory=list)
     aemeath_forte_enhancement_stacks_before: int = 0
     aemeath_forte_enhancement_stacks_consumed: int = 0
     aemeath_forte_enhancement_stacks_after: int = 0

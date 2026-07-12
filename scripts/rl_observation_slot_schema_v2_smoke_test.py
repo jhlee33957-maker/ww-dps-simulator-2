@@ -41,7 +41,8 @@ install_gymnasium_stub()
 from env.wuwa_env import WuwaDpsEnv
 
 
-EXPECTED_V4_SHAPE = (312,)
+EXPECTED_V5_SHAPE = (314,)
+OLD_V4_SHAPE = (312,)
 OLD_V3_SHAPE = (204,)
 OLD_V2_SHAPE = (186,)
 OLD_V1_SHAPE = (168,)
@@ -60,16 +61,19 @@ def make_env(party: str) -> WuwaDpsEnv:
     return env
 
 
-def test_observation_schema_v4_shape_and_mapping() -> None:
+def test_observation_schema_v5_shape_and_mapping() -> None:
     env = make_env("aemeath_mornye_test_party")
     labels = env.observation_labels()
     mapping = env.observation_channel_mapping()
-    assert env.observation_version == "slot_generic_mechanics_v4"
-    assert env.observation_space.shape == EXPECTED_V4_SHAPE
+    assert env.observation_version == "slot_generic_mechanics_v5"
+    assert env.observation_space.shape == EXPECTED_V5_SHAPE
+    assert env.observation_space.shape != OLD_V4_SHAPE
     assert env.observation_space.shape != OLD_V3_SHAPE
     assert env.observation_space.shape != OLD_V2_SHAPE
     assert env.observation_space.shape != OLD_V1_SHAPE
-    assert len(env._get_observation()) == len(labels) == EXPECTED_V4_SHAPE[0]
+    assert len(env._get_observation()) == len(labels) == EXPECTED_V5_SHAPE[0]
+    assert "global.target_rupturous_trail_stack_ratio" in labels
+    assert "global.target_rupturous_trail_remaining_ratio" in labels
     assert mapping["slot_1.mechanic_state_3"] == "aemeath_heavenfall_unbound_or_stardust_resonance"
     assert mapping["slot_1.mechanic_state_4"] == "aemeath_forte_enhancement_stacks"
     assert mapping["slot_1.mechanic_state_5"] == "aemeath_trail_no_cost"
@@ -95,13 +99,13 @@ def test_observation_schema_v4_shape_and_mapping() -> None:
 def test_party_shape_stays_stable_with_new_channels() -> None:
     aemeath = make_env("aemeath")
     duo = make_env("aemeath_mornye_test_party")
-    assert aemeath.observation_space.shape == duo.observation_space.shape == EXPECTED_V4_SHAPE
+    assert aemeath.observation_space.shape == duo.observation_space.shape == EXPECTED_V5_SHAPE
 
 
 def main() -> None:
-    test_observation_schema_v4_shape_and_mapping()
+    test_observation_schema_v5_shape_and_mapping()
     test_party_shape_stays_stable_with_new_channels()
-    print("rl_observation_slot_schema_v2_smoke_test ok (v4 schema)")
+    print("rl_observation_slot_schema_v2_smoke_test ok (v5 schema)")
 
 
 if __name__ == "__main__":

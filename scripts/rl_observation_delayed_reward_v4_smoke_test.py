@@ -66,7 +66,7 @@ def observation(env: WuwaDpsEnv) -> dict[str, float]:
 
 
 def assert_normalized(env: WuwaDpsEnv) -> None:
-    assert env.observation_space.shape == (312,)
+    assert env.observation_space.shape == (314,)
     for value in env._get_observation():
         numeric = float(value)
         assert math.isfinite(numeric)
@@ -195,8 +195,8 @@ def test_resource_unavailable_is_not_cooldown() -> None:
 
 def main() -> None:
     env = make_env()
-    assert env.observation_version == "slot_generic_mechanics_v4"
-    assert env.observation_space.shape == (312,)
+    assert env.observation_version == "slot_generic_mechanics_v5"
+    assert env.observation_space.shape == (314,)
     test_lynae_liberation_party_buff()
     test_lynae_outro_targeted_buffs_and_expiration()
     test_action_cooldown_slots_and_availability()

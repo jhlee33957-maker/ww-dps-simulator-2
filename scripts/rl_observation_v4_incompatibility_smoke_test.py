@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from pathlib import Path
 import sys
 import types
-from pathlib import Path
+
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -39,28 +40,20 @@ def install_gymnasium_stub() -> None:
 install_gymnasium_stub()
 
 from env.wuwa_env import WuwaDpsEnv
+from rl.evaluate_maskable_ppo import observation_metadata_mismatches
 
 
 def main() -> None:
-    env = WuwaDpsEnv(
-        ROOT / "data",
-        party="aemeath_mornye_test_party",
-        build_profile_overrides={
-            "aemeath": "aemeath_user_real_01",
-            "mornye": "mornye_user_real_01",
-        },
-    )
-    env.reset()
-    mapping = env.observation_channel_mapping()
-    assert env.observation_version == "slot_generic_mechanics_v5"
-    assert env.observation_space.shape == (314,)
-    assert len(env._get_observation()) == 314
-    assert mapping["global.target_rupturous_trail"] == "aemeath_c0_rupturous_trail_target_state"
-    assert mapping["slot_1.mechanic_state_4"] == "aemeath_forte_enhancement_stacks"
-    assert mapping["slot_1.mechanic_state_5"] == "aemeath_trail_no_cost"
-    assert mapping["slot_1.mechanic_state_6"] == "aemeath_rupturous_trail"
-    assert mapping["slot_1.mechanic_state_7"] == "aemeath_fusion_trail"
-    print("rl_observation_slot_schema_v3_smoke_test ok")
+    env = WuwaDpsEnv(ROOT / "data", party="aemeath_mornye_lynae_enabled_test_party")
+    stale = dict(env.observation_metadata())
+    stale["observation_version"] = "slot_generic_mechanics_v4"
+    stale["observation_shape"] = [312]
+    stale["observation_labels"] = stale["observation_labels"][:-2]
+    mismatches = observation_metadata_mismatches(stale, env)
+    assert "observation_version" in mismatches
+    assert "observation_shape" in mismatches
+    assert "observation_labels" in mismatches
+    print("rl_observation_v4_incompatibility_smoke_test ok")
 
 
 if __name__ == "__main__":

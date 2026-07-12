@@ -1150,6 +1150,9 @@ class Simulation:
         self.state.target_interfered_remaining = max(0.0, self.state.target_interfered_remaining - combat_elapsed)
         if self.state.target_interfered_remaining <= 0.0:
             self.state.target_interfered_state = None
+        self.state.rupturous_trail_remaining = max(0.0, self.state.rupturous_trail_remaining - combat_elapsed)
+        if self.state.rupturous_trail_remaining <= 0.0:
+            self.state.rupturous_trail_stacks = 0
         self.state.target_tune_strain_interfered_remaining = max(
             0.0,
             self.state.target_tune_strain_interfered_remaining - combat_elapsed,
@@ -1603,7 +1606,9 @@ class Simulation:
         setattr(self.state, damage_total_attr, float(getattr(self.state, damage_total_attr, 0.0) or 0.0) + damage)
         result.total_damage_after = self.state.total_damage
 
+        tune_break_event_id = f"{result.action_id}:{response_id}:{len(result.tune_response_events) + 1}"
         event = {
+            "event_id": tune_break_event_id,
             "response_id": response_id,
             "source_character_id": source_character_id,
             "damage": damage,
@@ -1617,6 +1622,33 @@ class Simulation:
             "source_status": detail["source_status"],
             **lynae_tune_strain_log,
         }
+        response_context = {
+            "tune_break_event_id": tune_break_event_id,
+            "host_action_id": result.action_id,
+            "response_id": response_id,
+            "response_action_id": response_id,
+            "source_character_id": source_character_id,
+            "interfered_state": self.state.target_interfered_state,
+            "triggered": True,
+            "response_damage": damage,
+            "cooldown_seconds": cooldown,
+            "source_status": detail["source_status"],
+        }
+        mechanic_followup_events = []
+        for mechanic in self.character_mechanics.values():
+            hook = getattr(mechanic, "on_party_tune_response_resolved", None)
+            if hook is None:
+                continue
+            followup_event = hook(self.state, response_context)
+            if followup_event:
+                mechanic_followup_events.append(followup_event)
+        if mechanic_followup_events:
+            event["mechanic_followup_events"] = mechanic_followup_events
+            result.aemeath_rupturous_trail_gain_events.extend(
+                followup_event
+                for followup_event in mechanic_followup_events
+                if followup_event.get("event_type") == "rupturous_trail_gain"
+            )
         result.tune_response_events.append(event)
         self.state.tune_response_events.append(event)
         log["tune_response_events"].append(event)

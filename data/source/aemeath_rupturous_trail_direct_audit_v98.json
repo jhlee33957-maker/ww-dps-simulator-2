@@ -1,0 +1,151 @@
+{
+  "schema_version": "1.0.0",
+  "title": "Aemeath Tune Rupture Trail Direct Audit",
+  "project_baseline_reviewed": "ww-dps-simulator-2(98).zip",
+  "source_workbook": "鸣潮动作数据汇总(5).xlsx",
+  "verified_at": "2026-07-12T06:23:49.317380+09:00",
+  "scope": "C0 Tune Rupture mode only; single target",
+  "direct_source_evidence": {
+    "mechanic_rule": {
+      "sheet": "角色-女",
+      "row": 2844,
+      "facts": [
+        "Tune Rupture mode: each party character Tune Interference response damage applies 10 Rupturous Trail stacks.",
+        "C0 maximum is 30 stacks.",
+        "Duration is 30 combat seconds.",
+        "During Seraphic Duet, nearby target trail stacks are referenced/removed.",
+        "Each referenced stack increases the extra Tune Rupture damage multiplier by 4% for 1 second.",
+        "C6 raises the stack cap by 30 and is out of C0 scope."
+      ]
+    },
+    "seraphic_normal_hits": {
+      "sheet": "角色-女",
+      "rows": [
+        2786,
+        2931
+      ],
+      "repeat_count": 5,
+      "interval_frames": 4
+    },
+    "seraphic_enhanced_hits": {
+      "sheet": "角色-女",
+      "rows": [
+        2787,
+        2932
+      ],
+      "repeat_count": 10,
+      "interval_frames": 2
+    },
+    "extra_tune_damage_multiplier": {
+      "sheet": "dmg",
+      "rows": [
+        2578,
+        2628,
+        2579,
+        2629
+      ],
+      "level_10_multiplier_per_hit": 1.0935
+    },
+    "overdrive_states": {
+      "sheet": "角色-女",
+      "row": 2806,
+      "facts": [
+        "Overdrive grants 2 enhanced Seraphic Duet uses for 30 combat seconds.",
+        "Overdrive grants a one-use trail-no-consumption state for 30 combat seconds.",
+        "The next Seraphic Duet consumes that no-consumption state but must still calculate its multiplier from current trail stacks."
+      ]
+    }
+  },
+  "correct_c0_runtime_rules": {
+    "trail_owner": "single enemy target",
+    "gain_trigger": "each successfully triggered party Tune Rupture response damage event",
+    "gain_per_trigger": 10,
+    "max_stacks": 30,
+    "duration_seconds": 30.0,
+    "duration_clock": "combat_time",
+    "duration_refresh_assumption": "refresh full aggregate duration to 30s on each new application; source does not expose per-batch independent expiry",
+    "seraphic_stack_bonus_per_stack": 0.04,
+    "seraphic_stack_bonus_type": "extra Tune Rupture damage multiplier increase",
+    "normal_repeat_count": 5,
+    "enhanced_repeat_count": 10,
+    "base_multiplier_per_hit": 1.0935,
+    "normal_total_multiplier_by_stacks": {
+      "formula": "1.0935 * (1 + 0.04 * stacks) * 5",
+      "at_0": 5.4675,
+      "at_10": 7.6545,
+      "at_20": 9.8415,
+      "at_30": 12.0285
+    },
+    "enhanced_total_multiplier_by_stacks": {
+      "formula": "1.0935 * (1 + 0.04 * stacks) * 10",
+      "at_0": 10.935,
+      "at_10": 15.309,
+      "at_20": 19.683,
+      "at_30": 24.057
+    },
+    "consumption": {
+      "without_trail_no_cost": "remove all current target stacks during Seraphic Duet after snapshotting stack count for the follow-up multiplier",
+      "with_trail_no_cost": "do not remove stacks, but consume the no-cost state after this Seraphic Duet; multiplier still uses current stack count"
+    },
+    "response_order": [
+      "Tune Break applies Interfered state and scans party responses.",
+      "Each response that actually triggers and deals response damage applies +10 trail.",
+      "Blocked response cooldowns do not grant trail.",
+      "With Aemeath, Mornye, and Lynae all successfully responding, one Tune Break reaches 30 stacks."
+    ]
+  },
+  "current_project_mismatches": [
+    {
+      "file": "characters/aemeath.py",
+      "issue": "rupturous_trail_max_stacks is 5 instead of 30"
+    },
+    {
+      "file": "characters/aemeath.py",
+      "issue": "no runtime path grants +10 trail per successfully triggered party Tune Rupture response"
+    },
+    {
+      "file": "characters/aemeath.py",
+      "issue": "Seraphic Duet generated packet ignores current trail stacks"
+    },
+    {
+      "file": "characters/aemeath.py",
+      "issue": "trail stacks are not removed when no-cost state is absent"
+    },
+    {
+      "file": "characters/aemeath.py",
+      "issue": "trail_no_cost state is consumed, but current code never uses it to control trail removal because removal is not implemented"
+    },
+    {
+      "file": "data/character_mechanic_effects/aemeath_forte_circuit.json",
+      "issue": "Rupturous Trail application is incorrectly marked unresolved/scaffold_only despite workbook row 2844 confirming C0 behavior"
+    },
+    {
+      "file": "characters/aemeath.py",
+      "issue": "forte_enhancement_stacks=2 is a separate correct Overdrive mechanic and must not be replaced by the 30-stack trail system"
+    }
+  ],
+  "recommended_state_model": {
+    "target_rupturous_trail_stacks": 0,
+    "target_rupturous_trail_max_stacks": 30,
+    "target_rupturous_trail_remaining": 0.0,
+    "note": "Use target/global state rather than treating trail as a purely personal Aemeath buff. Single-target simulator may store one target state."
+  },
+  "observation_requirement": {
+    "needs_new_channels": true,
+    "likely_version": "slot_generic_mechanics_v5",
+    "minimum_channels": [
+      "target_rupturous_trail_stack_ratio",
+      "target_rupturous_trail_remaining_ratio"
+    ],
+    "reason": "The policy must distinguish 0/10/20/30-stack Seraphic Duet opportunities."
+  },
+  "out_of_scope": [
+    "Fusion Burst / Fusion Trail mode",
+    "C6 60-stack cap and C6 self-grant behavior",
+    "multi-target trail tracking",
+    "C2/C6 constellation multiplier changes"
+  ],
+  "remaining_ambiguity": [
+    "The workbook states a 30-second duration per application but does not explicitly expose independent expiration per 10-stack batch. Aggregate refresh-to-30s is the minimal single-target implementation."
+  ]
+}

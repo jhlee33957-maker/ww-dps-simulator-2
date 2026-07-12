@@ -167,19 +167,22 @@
   },
   "rupturous_trail": {
     "title": "Rupturous Trail",
-    "implementation_status": "state_scaffold_only",
-    "source_status": "candidate_rows_reviewed_without_confirmed_stack_mutation_formula",
+    "implementation_status": "implemented_workbook_confirmed_c0_pending_external_review",
+    "source_status": "workbook_confirmed_c0",
+    "source_ref": "角色-女!2844",
     "state_fields": [
-      "rupturous_trail_stacks",
-      "rupturous_trail_remaining",
-      "rupturous_trail_max_stacks"
+      "CombatState.rupturous_trail_stacks",
+      "CombatState.rupturous_trail_remaining",
+      "CombatState.rupturous_trail_event_log"
     ],
     "modeled_behavior": [
-      "State is clamped to its configured max stack count.",
-      "Remaining duration ticks with action time and clears stacks when it reaches zero.",
-      "The current model is single-target only for observation and logging."
+      "Single-target enemy state gains 10 stacks per successful actual party Tune Rupture response damage event.",
+      "C0 stack cap is 30 and aggregate duration refreshes to 30 combat seconds on each application.",
+      "Tune Strain, cooldown-blocked, missing, and zero-damage responses do not grant stacks.",
+      "Seraphic Duet snapshots current target stacks for its extra Tune Rupture multiplier, then consumes all stacks unless one-use trail preservation is active.",
+      "Observation schema v5 exposes target stack and remaining ratios as fixed global channels."
     ],
-    "runtime_damage": "none_until_source_confirmed"
+    "runtime_damage": "source_confirmed_seraphic_duet_tune_response_followup"
   },
   "fusion_trail": {
     "title": "Fusion Trail",

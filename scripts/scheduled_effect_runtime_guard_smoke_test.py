@@ -160,9 +160,9 @@ def main() -> None:
 
     env = WuwaDpsEnv(data_dir="data", party="aemeath_mornye_lynae_enabled_test_party")
     obs, _info = env.reset()
-    assert OBSERVATION_VERSION == "slot_generic_mechanics_v4"
-    assert len(obs) == 312
-    assert len(build_observation_labels()) == 312
+    assert OBSERVATION_VERSION == "slot_generic_mechanics_v5"
+    assert len(obs) == 314
+    assert len(build_observation_labels()) == 314
     print("scheduled_effect_runtime_guard_smoke_test ok")
 
 

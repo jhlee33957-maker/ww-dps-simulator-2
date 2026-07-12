@@ -1,6 +1,6 @@
 {
   "character_id": "aemeath",
-  "version": "aemeath_forte_circuit_v2_source_confirmed_tune_rupture",
+  "version": "aemeath_forte_circuit_v3_source_confirmed_c0_rupturous_trail",
   "source_policy": "Workbook/extracted/report sources only. External simulator websites are not used.",
   "source_audit": "reports/aemeath_forte_circuit_source_audit.md",
   "source_audit_json": "data/extracted/aemeath_forte_circuit_source_audit.json",
@@ -129,17 +129,70 @@
           "notes": "Enhanced variant is selected by forte_enhancement_stacks, not directly by Stardust Resonance. Do not bake Interfered Marker into this source multiplier."
         }
       ],
-      "unresolved_entries": [
-        {
-          "name": "Rupturous Trail stack application",
-          "implementation_status": "scaffold_only",
-          "source_rows": [
-            2784,
-            2930
+      "unresolved_entries": [],
+      "rupturous_trail": {
+        "implementation_status": "implemented_workbook_confirmed_c0",
+        "source_status": "workbook_confirmed_c0",
+        "source_ref": "角色-女!2844",
+        "source_refs": {
+          "mechanic_rule": [
+            "角色-女!2844"
           ],
-          "notes": "C6 target trail granting is not enabled for default S0 runtime. Source-backed S0 stack gain/removal beyond trail_no_cost metadata remains unresolved."
-        }
-      ]
+          "overdrive_preservation": [
+            "角色-女!2806"
+          ],
+          "seraphic_normal_action_rows": [
+            "角色-女!2786",
+            "角色-女!2931"
+          ],
+          "seraphic_enhanced_action_rows": [
+            "角色-女!2787",
+            "角色-女!2932"
+          ],
+          "extra_tune_damage_rows": [
+            "dmg/角色技能类型!2578",
+            "dmg/角色技能类型!2579",
+            "dmg/角色技能类型!2628",
+            "dmg/角色技能类型!2629"
+          ]
+        },
+        "tune_mode": "tune_rupture",
+        "target_scope": "single_enemy",
+        "owner_state": "CombatState.rupturous_trail_stacks",
+        "gain_trigger": "successful actual party Tune Rupture response damage event",
+        "excluded_triggers": [
+          "Tune Strain responses",
+          "cooldown-blocked responses",
+          "missing response definitions",
+          "zero-damage responses"
+        ],
+        "gain_per_trigger": 10,
+        "max_stacks": 30,
+        "duration_seconds": 30.0,
+        "duration_clock": "combat_time",
+        "duration_refresh_rule": "refresh aggregate target duration to 30s on each application",
+        "stack_bonus_per_stack": 0.04,
+        "base_multiplier_per_hit": 1.0935,
+        "normal_repeat_count": 5,
+        "enhanced_repeat_count": 10,
+        "normal_total_multiplier_by_stacks": {
+          "formula": "1.0935 * (1 + 0.04 * stacks) * 5",
+          "at_0": 5.4675,
+          "at_10": 7.6545,
+          "at_20": 9.8415,
+          "at_30": 12.0285
+        },
+        "enhanced_total_multiplier_by_stacks": {
+          "formula": "1.0935 * (1 + 0.04 * stacks) * 10",
+          "at_0": 10.935,
+          "at_10": 15.309,
+          "at_20": 19.683,
+          "at_30": 24.057
+        },
+        "consumption_rule": "Seraphic Duet snapshots current target stacks; without preservation it removes all target stacks after snapshot, while preservation consumes one use and keeps target stacks.",
+        "preservation_uses": 1,
+        "preservation_source_ref": "角色-女!2806"
+      }
     },
     "fusion_burst": {
       "trail_state": "fusion_trail",

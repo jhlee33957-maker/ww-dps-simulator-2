@@ -1091,6 +1091,31 @@ def execute_action(
             "damage": packet_damage,
             "notes": packet.notes,
         }
+        if packet.source_character_id == "aemeath" and packet.id.startswith("aemeath_seraphic_duet"):
+            aemeath_state = state.character_mechanics_state.get("aemeath", {})
+            event.update(
+                {
+                    "trail_stack_snapshot": int(
+                        aemeath_state.get("last_seraphic_duet_trail_stack_snapshot", 0) or 0
+                    ),
+                    "trail_stack_factor": float(
+                        aemeath_state.get("last_seraphic_duet_trail_stack_factor", 1.0) or 1.0
+                    ),
+                    "trail_preservation_active": bool(
+                        aemeath_state.get("last_seraphic_duet_trail_preservation_active", False)
+                    ),
+                    "trail_consumed": bool(aemeath_state.get("last_seraphic_duet_trail_consumed", False)),
+                    "trail_stacks_after": int(getattr(state, "rupturous_trail_stacks", 0) or 0),
+                    "trail_preservation_after": bool(
+                        aemeath_state.get("last_seraphic_duet_trail_preservation_after", False)
+                    ),
+                    "stack_bonus_per_stack": 0.04,
+                    "base_multiplier_per_hit": 1.0935,
+                    "total_extra_tune_multiplier": float(
+                        aemeath_state.get("last_seraphic_duet_total_extra_tune_multiplier", 0.0) or 0.0
+                    ),
+                }
+            )
         packet_lynae_tune_strain_bonus = sum(
             float(detail.get("lynae_tune_strain_damage_amp_bonus_damage", 0.0) or 0.0)
             for detail in packet_details
@@ -1181,9 +1206,31 @@ def execute_action(
                 "aemeath_seraphic_duet_followup_multiplier": float(
                     aemeath_state.get("last_seraphic_duet_followup_multiplier", 0.0) or 0.0
                 ),
-                "aemeath_rupturous_trail_stacks_before": int(aemeath_state.get("rupturous_trail_stacks", 0) or 0),
-                "aemeath_rupturous_trail_stacks_consumed": 0,
-                "aemeath_rupturous_trail_stacks_after": int(aemeath_state.get("rupturous_trail_stacks", 0) or 0),
+                "aemeath_seraphic_duet_trail_stack_snapshot": int(
+                    aemeath_state.get("last_seraphic_duet_trail_stack_snapshot", 0) or 0
+                ),
+                "aemeath_seraphic_duet_trail_stack_factor": float(
+                    aemeath_state.get("last_seraphic_duet_trail_stack_factor", 1.0) or 1.0
+                ),
+                "aemeath_seraphic_duet_trail_preservation_active": bool(
+                    aemeath_state.get("last_seraphic_duet_trail_preservation_active", False)
+                ),
+                "aemeath_seraphic_duet_trail_preservation_after": bool(
+                    aemeath_state.get("last_seraphic_duet_trail_preservation_after", False)
+                ),
+                "aemeath_seraphic_duet_trail_consumed": bool(
+                    aemeath_state.get("last_seraphic_duet_trail_consumed", False)
+                ),
+                "aemeath_seraphic_duet_total_extra_tune_multiplier": float(
+                    aemeath_state.get("last_seraphic_duet_total_extra_tune_multiplier", 0.0) or 0.0
+                ),
+                "aemeath_rupturous_trail_stacks_before": int(
+                    aemeath_state.get("last_seraphic_duet_trail_stack_snapshot", 0) or 0
+                ),
+                "aemeath_rupturous_trail_stacks_consumed": int(
+                    aemeath_state.get("last_seraphic_duet_consumed_rupturous_trail_stacks", 0) or 0
+                ),
+                "aemeath_rupturous_trail_stacks_after": int(getattr(state, "rupturous_trail_stacks", 0) or 0),
                 "aemeath_forte_enhancement_stacks_before": int(
                     aemeath_state.get("last_seraphic_duet_forte_enhancement_stacks_before", 0) or 0
                 ),
@@ -1804,9 +1851,16 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         aemeath_seraphic_duet_followup_variant=result.aemeath_seraphic_duet_followup_variant,
         aemeath_seraphic_duet_followup_repeat_count=result.aemeath_seraphic_duet_followup_repeat_count,
         aemeath_seraphic_duet_followup_multiplier=result.aemeath_seraphic_duet_followup_multiplier,
+        aemeath_seraphic_duet_trail_stack_snapshot=result.aemeath_seraphic_duet_trail_stack_snapshot,
+        aemeath_seraphic_duet_trail_stack_factor=result.aemeath_seraphic_duet_trail_stack_factor,
+        aemeath_seraphic_duet_trail_preservation_active=result.aemeath_seraphic_duet_trail_preservation_active,
+        aemeath_seraphic_duet_trail_preservation_after=result.aemeath_seraphic_duet_trail_preservation_after,
+        aemeath_seraphic_duet_trail_consumed=result.aemeath_seraphic_duet_trail_consumed,
+        aemeath_seraphic_duet_total_extra_tune_multiplier=result.aemeath_seraphic_duet_total_extra_tune_multiplier,
         aemeath_rupturous_trail_stacks_before=result.aemeath_rupturous_trail_stacks_before,
         aemeath_rupturous_trail_stacks_consumed=result.aemeath_rupturous_trail_stacks_consumed,
         aemeath_rupturous_trail_stacks_after=result.aemeath_rupturous_trail_stacks_after,
+        aemeath_rupturous_trail_gain_events=result.aemeath_rupturous_trail_gain_events,
         aemeath_forte_enhancement_stacks_before=result.aemeath_forte_enhancement_stacks_before,
         aemeath_forte_enhancement_stacks_consumed=result.aemeath_forte_enhancement_stacks_consumed,
         aemeath_forte_enhancement_stacks_after=result.aemeath_forte_enhancement_stacks_after,

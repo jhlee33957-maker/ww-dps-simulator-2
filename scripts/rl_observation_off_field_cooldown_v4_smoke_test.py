@@ -89,8 +89,8 @@ def cooldown_key_and_duration(env: WuwaDpsEnv, action_id: str) -> tuple[str, flo
 
 def main() -> None:
     env = make_env()
-    assert env.observation_version == "slot_generic_mechanics_v4"
-    assert env.observation_space.shape == (312,)
+    assert env.observation_version == "slot_generic_mechanics_v5"
+    assert env.observation_space.shape == (314,)
 
     observed_unavailable_with_cooldown = False
     expected_resolutions = {

@@ -14,8 +14,8 @@ from simulator.mechanic_events import aemeath_resonance_mode_from_config
 from simulator.weapon_effects import weapon_effect_cooldown_key
 
 
-OBSERVATION_VERSION = "slot_generic_mechanics_v4"
-DEPRECATED_OBSERVATION_VERSION = "slot_generic_mechanics_v3"
+OBSERVATION_VERSION = "slot_generic_mechanics_v5"
+DEPRECATED_OBSERVATION_VERSION = "slot_generic_mechanics_v4"
 MAX_PARTY_SLOTS = 3
 MAX_POLICY_ACTION_SLOTS = 32
 ALL_DAMAGE_AMP_DENOMINATOR = 1.0
@@ -42,6 +42,8 @@ GLOBAL_SCHEMA = [
     "global.target_interfered_state_rupture_remaining_ratio",
     "global.target_interfered_state_strain_active",
     "global.target_interfered_state_strain_remaining_ratio",
+    "global.target_rupturous_trail_stack_ratio",
+    "global.target_rupturous_trail_remaining_ratio",
     "global.target_marker_0_active",
     "global.target_marker_0_remaining_ratio",
     "global.target_marker_0_value_scaled",
@@ -160,6 +162,7 @@ def build_observation_channel_mapping(simulation: Any, max_party_slots: int = MA
     mapping = {
         "global.target_marker_0": "observation_marker",
         "global.target_marker_1": "interfered_marker",
+        "global.target_rupturous_trail": "aemeath_c0_rupturous_trail_target_state",
         **ANOMALY_CHANNEL_MAPPING,
     }
     for slot_index, character_id in enumerate(_slot_character_ids(simulation, max_party_slots=max_party_slots)):
@@ -297,6 +300,8 @@ def _global_values(simulation: Any, *, max_party_slots: int) -> list[float]:
         _ratio(float(getattr(state, "target_interfered_remaining", 0.0) or 0.0), 30.0)
         if target_interfered == "tune_strain_interfered"
         else 0.0,
+        _ratio(float(getattr(state, "rupturous_trail_stacks", 0.0) or 0.0), 30.0),
+        _ratio(float(getattr(state, "rupturous_trail_remaining", 0.0) or 0.0), 30.0),
         _bool(marker_0_remaining > 0.0),
         _ratio(marker_0_remaining, 30.0),
         _bool(marker_0_remaining > 0.0),
@@ -416,9 +421,9 @@ def _mechanic_channel_values(
         seraphic_remaining = float(character_state.get("seraphic_duo_remaining", 0.0) or 0.0)
         heavenfall_remaining = float(character_state.get("heavenfall_unbound_remaining", 0.0) or 0.0)
         stardust_remaining = float(character_state.get("stardust_resonance_remaining", 0.0) or 0.0)
-        trail_remaining = float(character_state.get("rupturous_trail_remaining", 0.0) or 0.0)
+        trail_remaining = float(getattr(simulation.state, "rupturous_trail_remaining", 0.0) or 0.0)
         fusion_trail_remaining = float(character_state.get("fusion_trail_remaining", 0.0) or 0.0)
-        trail_max = float(character_state.get("rupturous_trail_max_stacks", 5.0) or 5.0)
+        trail_max = 30.0
         fusion_trail_max = float(character_state.get("fusion_trail_max_stacks", 5.0) or 5.0)
         forte_remaining = float(character_state.get("forte_enhancement_remaining", 0.0) or 0.0)
         forte_max = float(character_state.get("forte_enhancement_max_stacks", 2.0) or 2.0)
@@ -442,9 +447,9 @@ def _mechanic_channel_values(
             _bool(trail_no_cost_remaining > 0.0),
             _ratio(trail_no_cost_remaining, 30.0),
             _bool(trail_no_cost_remaining > 0.0),
-            _bool(float(character_state.get("rupturous_trail_stacks", 0.0) or 0.0) > 0.0),
+            _bool(float(getattr(simulation.state, "rupturous_trail_stacks", 0.0) or 0.0) > 0.0),
             _ratio(trail_remaining, 30.0),
-            _ratio(float(character_state.get("rupturous_trail_stacks", 0.0) or 0.0), trail_max),
+            _ratio(float(getattr(simulation.state, "rupturous_trail_stacks", 0.0) or 0.0), trail_max),
             _bool(float(character_state.get("fusion_trail_stacks", 0.0) or 0.0) > 0.0),
             _ratio(fusion_trail_remaining, 30.0),
             _ratio(float(character_state.get("fusion_trail_stacks", 0.0) or 0.0), fusion_trail_max),
