@@ -182,8 +182,8 @@ class ActionData(BaseModel):
     name: str
     character_id: str | None
     action_type: ActionType
-    duration: float = Field(gt=0)
-    action_time: float | None = Field(default=None, gt=0)
+    duration: float = Field(ge=0)
+    action_time: float | None = Field(default=None, ge=0)
     combat_time_cost: float | None = Field(default=None, ge=0)
     cooldown: float = Field(ge=0)
     damage_category: DamageCategory = "normal"
@@ -235,6 +235,18 @@ class ActionData(BaseModel):
             self.applies_anomaly_type = self.anomaly_type
         if self.applies_anomaly_stacks <= 0 and self.anomaly_stacks > 0:
             self.applies_anomaly_stacks = self.anomaly_stacks
+        auxiliary_zero_time = bool((self.mechanic_effects or {}).get("auxiliary_zero_time_action", False))
+        if auxiliary_zero_time:
+            if self.duration != 0.0:
+                raise ValueError("Auxiliary zero-time action duration must be exactly 0.0")
+            if self.effective_action_time != 0.0:
+                raise ValueError("Auxiliary zero-time action action_time must be exactly 0.0")
+            if self.effective_combat_time_cost != 0.0:
+                raise ValueError("Auxiliary zero-time action combat_time_cost must be exactly 0.0")
+        elif self.duration <= 0.0:
+            raise ValueError("Action duration must be > 0 unless auxiliary_zero_time_action is true")
+        elif self.effective_action_time <= 0.0:
+            raise ValueError("Action action_time must be > 0 unless auxiliary_zero_time_action is true")
         return self
 
     @property
@@ -891,6 +903,10 @@ class ActionResult(BaseModel):
     optimal_solution_trigger_reason: str | None = None
     optimal_solution_candidate_id: str | None = None
     gp_success_modeled: bool = False
+    aemeath_sigillum_activation_scheduled: bool = False
+    aemeath_sigillum_activation_combat_time: float | None = None
+    aemeath_sigillum_source_end_frame: int | None = None
+    aemeath_sigillum_hit_schedule_events: list[dict[str, Any]] = Field(default_factory=list)
     reason: str | None = None
 
 
@@ -1337,6 +1353,10 @@ class TimelineEntry(BaseModel):
     optimal_solution_trigger_reason: str | None = None
     optimal_solution_candidate_id: str | None = None
     gp_success_modeled: bool = False
+    aemeath_sigillum_activation_scheduled: bool = False
+    aemeath_sigillum_activation_combat_time: float | None = None
+    aemeath_sigillum_source_end_frame: int | None = None
+    aemeath_sigillum_hit_schedule_events: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class PartyState(BaseModel):

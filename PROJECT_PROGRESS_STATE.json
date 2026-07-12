@@ -13,12 +13,12 @@
     "language_preference": "설명은 한국어, Codex 프롬프트와 코드 식별자는 영어 가능"
   },
   "status": {
-    "last_updated": "2026-07-12T09:02:00+09:00",
-    "latest_verified_archive": "ww-dps-simulator-2(98).zip",
-    "latest_verified_baseline_label": "98",
+    "last_updated": "2026-07-12T10:55:00+09:00",
+    "latest_verified_archive": "ww-dps-simulator-2(102).zip",
+    "latest_verified_baseline_label": "102",
     "current_task_status": "complete_pending_external_review",
-    "current_task": "Aemeath Rupturous Trail final metadata encoding correction",
-    "current_task_expected_next_archive": "미정",
+    "current_task": "Mornye and Aemeath active Echo source audit and implementation",
+    "current_task_expected_next_archive": "103",
     "do_not_treat_current_task_as_complete_until_reviewed": true
   },
   "source_of_truth": {
@@ -260,47 +260,74 @@
     }
   ],
   "current_in_progress_task": {
-    "task": "Aemeath Rupturous Trail final metadata encoding correction",
+    "task": "Mornye and Aemeath active Echo source audit and implementation",
     "status": "implemented_tests_passed_pending_external_review",
-    "latest_externally_verified_baseline": "98",
+    "latest_externally_verified_baseline": "102",
     "external_review_required": true,
-    "authoritative_audit": "aemeath_rupturous_trail_direct_audit_v98.json",
-    "audit_sha256": "078e9bc31ea540c2b4441d9e2e14681f1cdd74db834a8358ce25b8c7f38a4094",
-    "notes": "Archive (101) passed runtime and candidate-scope review. This correction repaired the Trail No-cost Overdrive label corruption from three ASCII question marks followed by 1 to the U+5927 U+62DB U+0031 label, added a UTF-8 metadata guard, preserved exact dmg! source references, kept obsolete bc_eval_bundle artifacts absent, and left runtime and observation behavior unchanged. External review is required.",
-    "runtime_audit": "data/extracted/aemeath_rupturous_trail_runtime_audit.json",
-    "report": "reports/aemeath_rupturous_trail_runtime_audit.md",
+    "baseline_archive": "ww-dps-simulator-2(102).zip",
+    "baseline_zip_sha256": "ca2c64e2a408737f0c407a10b9c44071fe5cc01d64f538af541bdebfd525a99c",
+    "source_workbook_sha256": "81604978551989b5575e2d637ad4dfeb8c3b3b34d48e00a9ea79e9008c62f1f9",
+    "source_audit": "data/source/mornye_aemeath_active_echo_source_audit_v102.json",
+    "report": "reports/mornye_aemeath_active_echo_source_audit.md",
+    "implemented_policy_actions": [
+      "mornye_echo_reactor_husk",
+      "aemeath_echo_sigillum"
+    ],
+    "implemented_payload_actions": [
+      "aemeath_echo_sigillum_hit_1",
+      "aemeath_echo_sigillum_hit_2"
+    ],
+    "policy_action_count": 25,
+    "policy_action_order_tail": [
+      "swap_to_mornye",
+      "swap_to_lynae",
+      "mornye_echo_reactor_husk",
+      "aemeath_echo_sigillum"
+    ],
     "observation_version": "slot_generic_mechanics_v5",
     "observation_shape": 314,
-    "bc_eval_bundle_status": "obsolete_pre_v5_bc_eval_bundle_evaluation_artifacts_absent_from_current_candidate",
-    "tests": [
-      ".venv launcher failed before Python start with unable-to-create-process error; bundled Python used for validation",
-      "bundled python -m compileall -q . passed",
-      "aemeath_rupturous_trail_metadata_utf8_guard_smoke_test.py passed",
-      "aemeath_rupturous_trail_metadata_exactness_smoke_test.py passed",
-      "aemeath_rupturous_trail_metadata_alignment_smoke_test.py passed",
-      "aemeath_cleanup_archive_scope_smoke_test.py passed",
-      "Unicode code-point check for U+5927 U+62DB U+0031 passed",
-      "Aemeath mechanic metadata UTF-8 and no-BOM check passed",
-      "exact dmg!2578/dmg!2579/dmg!2628/dmg!2629 references preserved",
-      "aemeath_rupturous_trail_direct_audit_v98.json SHA-256 verified",
-      "aemeath_rupturous_trail_single_source_of_truth_smoke_test.py passed",
-      "aemeath_rupturous_trail_debug_output_smoke_test.py passed",
-      "aemeath_rupturous_trail_response_gain_smoke_test.py passed",
-      "aemeath_rupturous_trail_duration_smoke_test.py passed",
-      "aemeath_seraphic_duet_trail_multiplier_smoke_test.py passed",
-      "aemeath_seraphic_duet_trail_consumption_smoke_test.py passed",
-      "aemeath_rupturous_trail_real_tune_break_smoke_test.py passed",
-      "aemeath_rupturous_trail_state_reset_smoke_test.py passed",
-      "aemeath_rupturous_trail_runtime_guard_smoke_test.py passed",
-      "rl_observation_rupturous_trail_v5_smoke_test.py passed",
-      "rl_observation_party_shape_stability_smoke_test.py passed",
-      "rl_observation_shape_guard_smoke_test.py passed",
-      "aemeath_mornye_lynae_observation_preflight_smoke_test.py passed",
-      "obsolete pre-v5 bc_eval_bundle artifacts remain absent",
-      "apply_direct_action_data_v61.py --check --fail-on-diff passed",
-      "observation version remains slot_generic_mechanics_v5 with shape 314"
+    "max_policy_action_slots": 32,
+    "notes": [
+      "Implemented Mornye Reactor Husk as a 66-frame combat-time Echo action with one frame-49 hit and source-confirmed resource gain.",
+      "Implemented Aemeath Sigillum as a zero-time auxiliary activation that schedules two combat-time one-shot damage/resource events at +25F and +55F.",
+      "Aemeath Sigillum source frame 80 is preserved as metadata/lifetime only and is not used as player action time.",
+      "Echo Off-Tune values remain 0.0 unresolved; no inferred Echo Off-Tune was added.",
+      "Mornye Energy Regen remains 2.5424 with the Reactor Husk passive marked already in profile; no runtime +0.10 passive was added.",
+      "Aemeath Resonance Liberation bonus remains 0.688 with the Sigillum passive marked already in profile; no runtime +0.25 passive was added.",
+      "Observation schema remains slot_generic_mechanics_v5, shape 314, MAX_POLICY_ACTION_SLOTS 32; old 23-action BC/PPO artifacts are incompatible with the 25-action policy list.",
+      "External-review findings fixed without claiming external verification.",
+      "Auxiliary zero-time actions bypass ordinary character after_action state transitions.",
+      "Echo Ability damage category now resolves as echo_ability instead of other.",
+      "Active-Echo source references normalized to 声骸 (U+58F0 U+9AB8).",
+      "Progress-state pending-work lists no longer list active-Echo implementation as pending.",
+      "User-supplied Mornye ATK components were added to mornye_user_real_01 for ATK-scaling Reactor Husk.",
+      "Reactor Husk now resolves nonzero ATK-scaling damage through the normal build-profile system.",
+      "Mornye selected-party build-profile validation is complete and ok.",
+      "Candidate still has not been externally verified; latest externally verified baseline remains 102."
     ],
-    "legacy_artifact_note": "Obsolete pre-v5 bc_eval_bundle evaluation artifacts are absent from the current candidate. No current runtime dependency requires them."
+    "tests": [
+      "scripts/mornye_aemeath_active_echo_source_audit_smoke_test.py passed",
+      "scripts/mornye_active_echo_runtime_smoke_test.py passed",
+      "scripts/aemeath_sigillum_zero_time_activation_smoke_test.py passed",
+      "scripts/aemeath_sigillum_scheduler_smoke_test.py passed",
+      "scripts/aemeath_sigillum_combat_cutoff_smoke_test.py passed",
+      "scripts/mornye_aemeath_active_echo_policy_order_smoke_test.py passed",
+      "scripts/mornye_aemeath_active_echo_profile_passive_guard_smoke_test.py passed",
+      "scripts/mornye_aemeath_active_echo_ui_action_list_smoke_test.py passed",
+      "scripts/mornye_aemeath_active_echo_reapply_guard_smoke_test.py passed",
+      "scripts/zero_time_auxiliary_action_guard_smoke_test.py passed",
+      "scripts/scheduled_damage_execution_smoke_test.py passed",
+      "scripts/scheduled_source_resource_gain_smoke_test.py passed",
+      "data JSON parse passed",
+      "touched-area Python syntax check passed"
+    ],
+    "next_task": "External review of candidate 103, then full real-cycle integration and baseline measurement with the 25-action policy list including active Echoes.",
+    "review_correction_status": "reactor_husk_atk_profile_fix_pending_re_review",
+    "external_verification_claimed": false,
+    "mornye_reactor_husk_atk_components_added": true,
+    "mornye_reactor_husk_static_atk": 1159.1645,
+    "mornye_reactor_husk_runtime_damage_no_buffs": 2071.3932654700507,
+    "build_profile_validation_complete": true
   },
   "manual_cycle_reference": {
     "status": "user_researched_reference_cycle",
@@ -387,8 +414,8 @@
     {
       "id": "U005",
       "item": "모니에·에이메스 액티브 에코 행동",
-      "status": "not_implemented",
-      "note": "스크린샷 근거는 확보했으나 타이밍·조화도 원본 매핑과 런타임 액션 구현 미완료."
+      "status": "implemented_pending_external_review",
+      "note": "Mornye Reactor Husk and Aemeath Sigillum active Echo actions are implemented in the current candidate, with external-review corrections applied, but baseline 102 remains the latest externally verified archive. Mornye exact dodge-cancel next-input frame remains unresolved; runtime uses the uncancelled 66F route. Mornye/Aemeath Echo Off-Tune remains source-unconfirmed and runtime zero."
     },
     {
       "id": "U006",
@@ -424,19 +451,11 @@
   "next_planned_tasks": [
     {
       "order": 1,
-      "task": "Mornye and Aemeath active Echo action implementation",
-      "needs": [
-        "source screenshots",
-        "source workbook mapping for damage, resources, and Off-Tune"
-      ]
+      "task": "full real-cycle integration",
+      "acceptance": "stable full-cycle run including Mornye Reactor Husk and Aemeath Sigillum without resource or Off-Tune injection"
     },
     {
       "order": 2,
-      "task": "full real-cycle integration",
-      "acceptance": "stable full-cycle run without resource or Off-Tune injection"
-    },
-    {
-      "order": 3,
       "task": "120-second manual baseline",
       "outputs": [
         "total damage",
@@ -448,18 +467,14 @@
       ]
     },
     {
-      "order": 4,
-      "task": "BC/PPO regeneration and training",
-      "requirements": [
-        "slot_generic_mechanics_v5",
-        "regenerated demonstrations",
-        "manual baseline reproduction check"
-      ]
+      "order": 3,
+      "task": "BC/PPO regeneration",
+      "note": "Old 23-action demonstrations and checkpoints are incompatible with the 25-action active-Echo policy list."
     },
     {
-      "order": 5,
+      "order": 4,
       "task": "Beam Search/MCTS comparison",
-      "rule": "Use only final 120-second total damage as the objective; no arbitrary character-use or buff bonuses."
+      "note": "Compare only after the manual 120-second baseline and regenerated action-space artifacts exist."
     }
   ],
   "validation_invariants": [
@@ -921,5 +936,5 @@
       ]
     }
   ],
-  "next_planned_task": "Mornye and Aemeath active Echo action implementation"
+  "next_planned_task": "full real-cycle integration with active Echoes"
 }

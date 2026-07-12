@@ -203,7 +203,8 @@
             "intro": 0.0,
             "outro": 0.0,
             "coordinated_attack": 0.0,
-            "other": 0.0
+            "other": 0.0,
+            "echo_ability": 0.0
           },
           "by_element": {
             "generic": 0.4,
@@ -233,6 +234,21 @@
           "base_atk_and_crit_already_in_profile": true,
           "source_status": "user_supplied_weapon_tooltip",
           "notes": "Weapon base ATK and crit stat are assumed already reflected in user-entered real stat profile. Runtime weapon passive effects are applied separately."
+        },
+        "main_echo_id": "sigillum",
+        "static_resonance_liberation_damage_bonus": 0.25,
+        "static_resonance_liberation_bonus_already_in_profile": true,
+        "runtime_passive_enabled": false,
+        "active_echo": {
+          "echo_id": "sigillum",
+          "source_status": "workbook_confirmed_active_echo",
+          "source_refs": [
+            "声骸!410",
+            "声骸!411",
+            "dmg!2632",
+            "dmg!2633"
+          ],
+          "passive_note": "Main Echo +25% Resonance Liberation damage is already included in damage_bonuses.by_category.resonance_liberation = 0.688; no runtime passive is applied."
         }
       }
     },
@@ -380,15 +396,16 @@
         "implementation_status": "user_supplied_required",
         "default_scaling_stat": "def",
         "required_scaling_stats": [
-          "def"
+          "def",
+          "atk"
         ],
         "stat_components": {
           "atk": {
-            "character_base": null,
-            "weapon_base": null,
-            "percent": null,
-            "flat": null,
-            "final_reference": null
+            "character_base": 287.0,
+            "weapon_base": 412.5,
+            "percent": 0.071,
+            "flat": 410.0,
+            "final_reference": 1159.1645
           },
           "def": {
             "character_base": 1356,
@@ -439,7 +456,8 @@
             "intro": 0.0,
             "outro": 0.0,
             "coordinated_attack": 0.0,
-            "other": 0.0
+            "other": 0.0,
+            "echo_ability": 0.0
           },
           "by_element": {
             "generic": 0.0,
@@ -453,7 +471,7 @@
           "static_stats_already_in_profile": true,
           "energy_regen_substat_already_in_profile": true,
           "source_status": "user_supplied_weapon_tooltip",
-          "notes": "Discord R5 is equipped. Discord's 51.8% Energy Regen substat is included in combat_stats.energy_regen, and its base ATK does not affect Mornye's current DEF-scaling actions. Discord's cooldown-gated Concerto restore is applied at runtime. No Starfield Calibrator DEF passive or party Crit DMG buff is included in this profile."
+          "notes": "Discord R5 is equipped. Discord's 412.5 base ATK is included in stat_components.atk.weapon_base for ATK-scaling actions such as Reactor Husk. Discord's 51.8% Energy Regen substat remains included in combat_stats.energy_regen, and its cooldown-gated Concerto restore is applied at runtime. No Starfield Calibrator DEF passive or party Crit DMG buff is included in this profile."
         },
         "echo_sets": {
           "halo_of_starry_radiance": {
@@ -468,6 +486,19 @@
             "buff_id": "mornye_halo_of_starry_radiance_5set",
             "notes": "2-set Healing Bonus is metadata only for DPS. 5-set party ATK buff uses current Off-Tune Buildup Rate. Base value is 1.0; Syntony Field can raise it by +0.5, and C2 can add +0.2 if enabled."
           }
+        },
+        "main_echo_id": "reactor_husk",
+        "static_energy_regen_bonus": 0.1,
+        "static_energy_regen_already_in_profile": true,
+        "runtime_passive_enabled": false,
+        "active_echo": {
+          "echo_id": "reactor_husk",
+          "source_status": "workbook_confirmed_active_echo",
+          "source_refs": [
+            "声骸!383",
+            "dmg!2534"
+          ],
+          "passive_note": "Main Echo +10% Energy Regen is already included in combat_stats.energy_regen = 2.5424; no runtime passive is applied."
         }
       }
     },

@@ -16,6 +16,7 @@ DAMAGE_BONUS_CATEGORIES = {
     "intro",
     "outro",
     "coordinated_attack",
+    "echo_ability",
     "other",
 }
 ELEMENT_KEYS = {"generic", "spectro", "aero", "fusion", "electro", "glacio", "havoc"}

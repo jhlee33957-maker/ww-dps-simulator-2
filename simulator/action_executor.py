@@ -2199,4 +2199,8 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         optimal_solution_trigger_reason=result.optimal_solution_trigger_reason,
         optimal_solution_candidate_id=result.optimal_solution_candidate_id,
         gp_success_modeled=result.gp_success_modeled,
+        aemeath_sigillum_activation_scheduled=result.aemeath_sigillum_activation_scheduled,
+        aemeath_sigillum_activation_combat_time=result.aemeath_sigillum_activation_combat_time,
+        aemeath_sigillum_source_end_frame=result.aemeath_sigillum_source_end_frame,
+        aemeath_sigillum_hit_schedule_events=result.aemeath_sigillum_hit_schedule_events,
     )

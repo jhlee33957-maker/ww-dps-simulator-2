@@ -106,6 +106,14 @@ class Simulation:
     MORNYE_HIGH_SYNTONY_FIELD_HEAL_ACTION_ID = "mornye_high_syntony_field_heal"
     LYNAE_SPRAY_PAINT_INSTANCE_ID = "lynae_spray_paint_flux:lynae"
     LYNAE_SPRAY_PAINT_PAYLOAD_ACTION_ID = "lynae_spray_paint_flux_application"
+    AEMEATH_SIGILLUM_ACTION_ID = "aemeath_echo_sigillum"
+    AEMEATH_SIGILLUM_HIT_1_ACTION_ID = "aemeath_echo_sigillum_hit_1"
+    AEMEATH_SIGILLUM_HIT_2_ACTION_ID = "aemeath_echo_sigillum_hit_2"
+    AEMEATH_SIGILLUM_SOURCE_REF = "\u58f0\u9ab8!410:411 / dmg!2632:2633"
+    AEMEATH_SIGILLUM_HIT_SOURCE_REFS = {
+        1: "\u58f0\u9ab8!410 / dmg!2632",
+        2: "\u58f0\u9ab8!411 / dmg!2633",
+    }
 
     def __init__(
         self,
@@ -546,7 +554,112 @@ class Simulation:
         )
         self._apply_scheduled_off_tune_accumulation(payload, event, effect.source_character_id)
         self._apply_scheduled_resource_policy(payload, event, effect.source_character_id, effect.scheduled_resource_policy)
+        metadata = dict(getattr(effect, "metadata", {}) or {})
+        sigillum_fields = {
+            key: metadata[key]
+            for key in (
+                "hit_index",
+                "due_combat_time",
+                "relative_due_frames",
+                "relative_due_seconds",
+                "base_resonance_energy_gain",
+                "source_end_frame",
+                "toughness",
+                "source_ref",
+            )
+            if key in metadata
+        }
+        if sigillum_fields:
+            event.update(sigillum_fields)
+            if self.state.scheduled_effect_event_log:
+                self.state.scheduled_effect_event_log[-1].update(event)
         return event
+
+    def _schedule_aemeath_sigillum_hits(self, action: ActionData, result) -> None:
+        if action.id != self.AEMEATH_SIGILLUM_ACTION_ID:
+            return
+        if result.truncated_by_combat_limit:
+            return
+        activation_time = float(result.combat_time_start)
+        hit_specs = [
+            {
+                "hit_index": 1,
+                "payload_action_id": self.AEMEATH_SIGILLUM_HIT_1_ACTION_ID,
+                "due_frames": 25.0,
+                "base_resonance_energy_gain": 0.23,
+                "multiplier": 0.684,
+                "toughness": 38,
+            },
+            {
+                "hit_index": 2,
+                "payload_action_id": self.AEMEATH_SIGILLUM_HIT_2_ACTION_ID,
+                "due_frames": 55.0,
+                "base_resonance_energy_gain": 2.13,
+                "multiplier": 2.052,
+                "toughness": 114,
+            },
+        ]
+        schedule_events: list[dict[str, Any]] = []
+        for spec in hit_specs:
+            hit_index = int(spec["hit_index"])
+            due_seconds = float(spec["due_frames"]) / 60.0
+            due_combat_time = activation_time + due_seconds
+            instance_order = int(self.state.scheduled_effect_next_order)
+            instance_id = f"aemeath_echo_sigillum_hit_{hit_index}:aemeath:{instance_order}"
+            metadata = {
+                "active_echo_id": "sigillum",
+                "hit_index": hit_index,
+                "relative_due_frames": spec["due_frames"],
+                "relative_due_seconds": due_seconds,
+                "due_combat_time": due_combat_time,
+                "activation_combat_time": activation_time,
+                "source_end_frame": 80,
+                "source_end_frame_metadata_only": True,
+                "base_resonance_energy_gain": spec["base_resonance_energy_gain"],
+                "damage_multiplier": spec["multiplier"],
+                "toughness": spec["toughness"],
+                "off_tune_value": 0.0,
+                "off_tune_value_source_status": "unresolved_echo_off_tune",
+                "source_ref": self.AEMEATH_SIGILLUM_HIT_SOURCE_REFS[hit_index],
+                "scheduled_resource_policy": "source_confirmed_positive_gains",
+                "survives_swap": True,
+            }
+            scheduled = self.schedule_effect(
+                instance_id=instance_id,
+                effect_id=f"aemeath_echo_sigillum_hit_{hit_index}",
+                source_character_id="aemeath",
+                source_action_id=action.id,
+                payload_action_id=str(spec["payload_action_id"]),
+                activation_combat_time=activation_time,
+                remaining_duration=due_seconds,
+                tick_interval=due_seconds,
+                time_until_next_tick=due_seconds,
+                max_trigger_count=1,
+                refresh_rule="replace",
+                scheduled_resource_policy="source_confirmed_positive_gains",
+                source_status="workbook_confirmed_active_echo_scheduled_hit",
+                source_ref=self.AEMEATH_SIGILLUM_HIT_SOURCE_REFS[hit_index],
+                metadata=metadata,
+            )
+            schedule_events.append(
+                {
+                    "hit_index": hit_index,
+                    "payload_action_id": spec["payload_action_id"],
+                    "scheduled_effect_instance_id": instance_id,
+                    "operation": scheduled.get("operation"),
+                    "activation_combat_time": activation_time,
+                    "due_combat_time": due_combat_time,
+                    "relative_due_frames": spec["due_frames"],
+                    "source_status": "workbook_confirmed_active_echo_scheduled_hit",
+                    "source_ref": self.AEMEATH_SIGILLUM_HIT_SOURCE_REFS[hit_index],
+                    "base_resonance_energy_gain": spec["base_resonance_energy_gain"],
+                    "scheduled_resource_policy": "source_confirmed_positive_gains",
+                }
+            )
+        result.aemeath_sigillum_activation_scheduled = True
+        result.aemeath_sigillum_activation_combat_time = activation_time
+        result.aemeath_sigillum_source_end_frame = 80
+        result.aemeath_sigillum_hit_schedule_events = schedule_events
 
     def execute_scheduled_healing_event(
         self,
@@ -986,11 +1099,14 @@ class Simulation:
                 result.effective_combat_time_cost,
                 action_elapsed=result.action_time,
             )
-        if not result.truncated_by_combat_limit and not (action.mechanic_effects or {}).get("skip_character_after_action"):
+        skip_after_action = bool((action.mechanic_effects or {}).get("skip_character_after_action"))
+        auxiliary_zero_time_action = bool((action.mechanic_effects or {}).get("auxiliary_zero_time_action"))
+        if not result.truncated_by_combat_limit and not skip_after_action and not auxiliary_zero_time_action:
             actor_mechanic.after_action(self.state, action, result)
             self._schedule_lynae_spray_paint_status_field(action, result)
         if not result.truncated_by_combat_limit:
             self._apply_mornye_post_action_support_events(action, result)
+            self._schedule_aemeath_sigillum_hits(action, result)
         self._sync_weapon_result_fields(result)
         self._sync_lynae_spray_paint_window_mirror(result)
         result.mechanic_debug_after = {
@@ -1751,6 +1867,7 @@ class Simulation:
 
     def _build_policy_actions(self) -> dict[str, ActionData]:
         policy_actions: dict[str, ActionData] = {}
+        appended_policy_actions: list[tuple[str, ActionData]] = []
         selected = set(self.selected_character_ids)
         for action_id, action in self.actions.items():
             if not action.policy_selectable:
@@ -1761,6 +1878,11 @@ class Simulation:
                     continue
             if action.character_id is not None and action.character_id not in selected:
                 continue
+            if bool((action.mechanic_effects or {}).get("policy_order_append", False)):
+                appended_policy_actions.append((action_id, action))
+            else:
+                policy_actions[action_id] = action
+        for action_id, action in appended_policy_actions:
             policy_actions[action_id] = action
         return policy_actions
 

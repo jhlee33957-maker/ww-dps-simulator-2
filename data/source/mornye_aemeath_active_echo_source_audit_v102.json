@@ -1,0 +1,65 @@
+{
+  "audit_id": "mornye_aemeath_active_echo_source_audit_v102",
+  "baseline_archive": "ww-dps-simulator-2(102).zip",
+  "baseline_archive_sha256": "ca2c64e2a408737f0c407a10b9c44071fe5cc01d64f538af541bdebfd525a99c",
+  "workbook_sha256": "81604978551989b5575e2d637ad4dfeb8c3b3b34d48e00a9ea79e9008c62f1f9",
+  "implemented_action_ids": [
+    "mornye_echo_reactor_husk",
+    "aemeath_echo_sigillum"
+  ],
+  "implemented_payload_action_ids": [
+    "aemeath_echo_sigillum_hit_1",
+    "aemeath_echo_sigillum_hit_2"
+  ],
+  "policy_action_count": 25,
+  "echoes": {
+    "mornye_echo_reactor_husk": {
+      "source_refs": [
+        "声骸!383",
+        "dmg!2534"
+      ],
+      "action_time_seconds": 1.1,
+      "hit_frame": 49,
+      "multiplier": 3.51,
+      "base_resonance_energy_gain": 4.87,
+      "expected_final_resonance_energy_gain_with_real_profile": 12.381488,
+      "off_tune_value": 0.0,
+      "off_tune_value_source_status": "unresolved_echo_off_tune"
+    },
+    "aemeath_echo_sigillum": {
+      "source_refs": [
+        "声骸!410",
+        "声骸!411",
+        "dmg!2632",
+        "dmg!2633"
+      ],
+      "activation_action_time_seconds": 0.0,
+      "source_end_frame_metadata_only": 80,
+      "scheduled_hits": [
+        {
+          "hit_index": 1,
+          "due_frames": 25,
+          "multiplier": 0.684,
+          "base_resonance_energy_gain": 0.23,
+          "expected_final_resonance_energy_gain_with_real_profile": 0.276
+        },
+        {
+          "hit_index": 2,
+          "due_frames": 55,
+          "multiplier": 2.052,
+          "base_resonance_energy_gain": 2.13,
+          "expected_final_resonance_energy_gain_with_real_profile": 2.556
+        }
+      ],
+      "expected_total_final_resonance_energy_gain_with_real_profile": 2.832,
+      "off_tune_value": 0.0,
+      "off_tune_value_source_status": "unresolved_echo_off_tune"
+    }
+  },
+  "non_goals_preserved": {
+    "observation_version": "slot_generic_mechanics_v5",
+    "observation_shape": 314,
+    "max_policy_action_slots": 32,
+    "canonical_v61_manifest_sha_changed": false
+  }
+}

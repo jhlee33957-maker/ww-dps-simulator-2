@@ -6301,5 +6301,264 @@
     "source_status": "workbook_confirmed_scheduled_status_application",
     "data_status": "workbook_confirmed_scheduled_status_application",
     "notes": "Non-policy scheduled status payload. Applies/refreshes Photocromic Flux and snapshotted target Tune Shift; no damage, Off-Tune, resources, reward, cooldown, or combo progression."
+  },
+  {
+    "id": "mornye_echo_reactor_husk",
+    "name": "Mornye Echo Reactor Husk",
+    "character_id": "mornye",
+    "action_type": "echo_skill",
+    "duration": 1.1,
+    "action_time": 1.1,
+    "combat_time_cost": 1.1,
+    "cooldown": 20.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "echo_ability",
+    "damage_element": "fusion",
+    "damage_multiplier": 3.51,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_echo_off_tune",
+    "off_tune_value_source_ref": "声骸!383",
+    "hits": [
+      {
+        "time": 0.8166666666666667,
+        "damage_category": "normal",
+        "damage_multiplier": 3.51,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "fusion",
+          "echo",
+          "echo_ability",
+          "mornye"
+        ],
+        "name": "Reactor Husk hit"
+      }
+    ],
+    "resonance_energy_gain": 4.87,
+    "concerto_energy_gain": 0.0,
+    "resonance_energy_cost": 0.0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "fusion",
+      "echo",
+      "echo_ability",
+      "mornye",
+      "source:excel"
+    ],
+    "policy_selectable": true,
+    "cooldown_group": "mornye_echo_reactor_husk",
+    "mechanic_effects": {
+      "active_echo_id": "reactor_husk",
+      "echo_kind": "transformation",
+      "policy_order_append": true,
+      "source_sheet": "声骸",
+      "source_action_row": 383,
+      "source_damage_row": 2534,
+      "displayed_hit_frame": 49,
+      "source_end_frame": 66,
+      "source_end_frame_is_action_time": true,
+      "enemy_hitstop_frames_metadata_only": 8,
+      "toughness_metadata_only": 195,
+      "off_tune_value_status": "unresolved_echo_off_tune"
+    },
+    "data_status": "workbook_confirmed_active_echo",
+    "scaling_stat": "atk",
+    "notes": "Source-confirmed active Echo action from 声骸!383 and dmg!2534. Mornye main Echo Energy Regen passive is already included in the real profile and is not applied at runtime."
+  },
+  {
+    "id": "aemeath_echo_sigillum",
+    "name": "Aemeath Echo Sigillum",
+    "character_id": "aemeath",
+    "action_type": "echo_skill",
+    "duration": 0.0,
+    "action_time": 0.0,
+    "combat_time_cost": 0.0,
+    "cooldown": 20.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "echo_ability",
+    "damage_element": "fusion",
+    "damage_multiplier": 0.0,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_echo_off_tune",
+    "off_tune_value_source_ref": "声骸!410:411",
+    "hits": [],
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 0.0,
+    "resonance_energy_cost": 0.0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "fusion",
+      "echo",
+      "echo_ability",
+      "aemeath",
+      "source:excel"
+    ],
+    "policy_selectable": true,
+    "cooldown_group": "aemeath_echo_sigillum",
+    "mechanic_effects": {
+      "active_echo_id": "sigillum",
+      "echo_kind": "summon",
+      "auxiliary_zero_time_action": true,
+      "schedules_sigillum_hits": true,
+      "policy_order_append": true,
+      "source_sheet": "声骸",
+      "source_action_rows": [
+        410,
+        411
+      ],
+      "source_damage_rows": [
+        2632,
+        2633
+      ],
+      "source_end_frame": 80,
+      "source_end_frame_metadata_only": true,
+      "scheduled_hit_frames": [
+        25,
+        55
+      ],
+      "scheduled_payload_action_ids": [
+        "aemeath_echo_sigillum_hit_1",
+        "aemeath_echo_sigillum_hit_2"
+      ],
+      "off_tune_value_status": "unresolved_echo_off_tune"
+    },
+    "data_status": "workbook_confirmed_active_echo",
+    "scaling_stat": "atk",
+    "notes": "Zero-time active Echo summon. Activation starts the 20s cooldown and schedules two combat-time damage payloads; source end frame 80 is metadata/lifetime only, not player action time."
+  },
+  {
+    "id": "aemeath_echo_sigillum_hit_1",
+    "name": "Aemeath Echo Sigillum Hit 1 Payload",
+    "character_id": "aemeath",
+    "action_type": "echo_skill",
+    "duration": 0.016666666666666666,
+    "action_time": 0.016666666666666666,
+    "combat_time_cost": 0.0,
+    "cooldown": 0.0,
+    "scheduled_event_type": "damage",
+    "damage_category": "normal",
+    "damage_bonus_category": "echo_ability",
+    "damage_element": "fusion",
+    "damage_multiplier": 0.684,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_echo_off_tune",
+    "off_tune_value_source_ref": "声骸!410:411",
+    "hits": [
+      {
+        "time": 0.0,
+        "damage_category": "normal",
+        "damage_multiplier": 0.684,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "fusion",
+          "echo",
+          "echo_ability",
+          "aemeath",
+          "scheduled_payload"
+        ],
+        "name": "Sigillum scheduled hit 1"
+      }
+    ],
+    "resonance_energy_gain": 0.23,
+    "concerto_energy_gain": 0.0,
+    "resonance_energy_cost": 0.0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "fusion",
+      "echo",
+      "echo_ability",
+      "aemeath",
+      "scheduled_payload",
+      "source:excel"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "scheduled_payload": true,
+      "scheduled_resource_policy": "source_confirmed_positive_gains",
+      "source_status": "workbook_confirmed_active_echo_scheduled_hit",
+      "source_ref": "声骸!410 / dmg!2632",
+      "hit_index": 1,
+      "relative_due_frames": 25,
+      "source_end_frame": 80,
+      "source_end_frame_metadata_only": true,
+      "toughness_metadata_only": 38,
+      "ordinary_player_action_side_effects_applied": false
+    },
+    "data_status": "workbook_confirmed_active_echo_scheduled_payload",
+    "scaling_stat": "atk",
+    "notes": "Non-policy scheduled payload for Aemeath Sigillum. Scheduler controls timing and source-confirmed positive resource gains; no cooldown, buff, combo, or ordinary player-action side effects are applied by this payload."
+  },
+  {
+    "id": "aemeath_echo_sigillum_hit_2",
+    "name": "Aemeath Echo Sigillum Hit 2 Payload",
+    "character_id": "aemeath",
+    "action_type": "echo_skill",
+    "duration": 0.016666666666666666,
+    "action_time": 0.016666666666666666,
+    "combat_time_cost": 0.0,
+    "cooldown": 0.0,
+    "scheduled_event_type": "damage",
+    "damage_category": "normal",
+    "damage_bonus_category": "echo_ability",
+    "damage_element": "fusion",
+    "damage_multiplier": 2.052,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_echo_off_tune",
+    "off_tune_value_source_ref": "声骸!410:411",
+    "hits": [
+      {
+        "time": 0.0,
+        "damage_category": "normal",
+        "damage_multiplier": 2.052,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "fusion",
+          "echo",
+          "echo_ability",
+          "aemeath",
+          "scheduled_payload"
+        ],
+        "name": "Sigillum scheduled hit 2"
+      }
+    ],
+    "resonance_energy_gain": 2.13,
+    "concerto_energy_gain": 0.0,
+    "resonance_energy_cost": 0.0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "fusion",
+      "echo",
+      "echo_ability",
+      "aemeath",
+      "scheduled_payload",
+      "source:excel"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "scheduled_payload": true,
+      "scheduled_resource_policy": "source_confirmed_positive_gains",
+      "source_status": "workbook_confirmed_active_echo_scheduled_hit",
+      "source_ref": "声骸!411 / dmg!2633",
+      "hit_index": 2,
+      "relative_due_frames": 55,
+      "source_end_frame": 80,
+      "source_end_frame_metadata_only": true,
+      "toughness_metadata_only": 114,
+      "ordinary_player_action_side_effects_applied": false
+    },
+    "data_status": "workbook_confirmed_active_echo_scheduled_payload",
+    "scaling_stat": "atk",
+    "notes": "Non-policy scheduled payload for Aemeath Sigillum. Scheduler controls timing and source-confirmed positive resource gains; no cooldown, buff, combo, or ordinary player-action side effects are applied by this payload."
   }
 ]
