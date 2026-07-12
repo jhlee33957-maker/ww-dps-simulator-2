@@ -15,16 +15,36 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from env.wuwa_env import WuwaDpsEnv
+from rl.demo_contract import (
+    DEFAULT_DEMO_PATH,
+    DIRECT_ACTION_MANIFEST_SHA256,
+    OBSERVATION_SHAPE,
+    OBSERVATION_VERSION,
+    POLICY_ACTION_COUNT,
+    SCHEMA_VERSION,
+    SOURCE_ROUTE_FILE_SHA256,
+    DemoContractError,
+    action_data_hash,
+    array_manifest,
+    file_sha256,
+    json_safe,
+    load_demo_npz,
+    party_config_hash,
+    project_relative_posix,
+    validate_demo_contract,
+    validate_legacy_demo_rejected,
+)
 
 
-DEFAULT_DEMO_PATH = PROJECT_ROOT / "data" / "generated" / "route_demonstrations_aemeath_mornye_lynae.npz"
+DEFAULT_MODEL_PATH = PROJECT_ROOT / "models" / "maskable_ppo_bc_v105.zip"
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Behavior-cloning warm-start for MaskablePPO route demonstrations.")
     parser.add_argument("--party", type=str, default="aemeath_mornye_lynae_enabled_test_party")
+    parser.add_argument("--initial-active-character", type=str, default=None)
     parser.add_argument("--demo-path", type=Path, default=DEFAULT_DEMO_PATH)
-    parser.add_argument("--model-path", type=Path, default=PROJECT_ROOT / "models" / "maskable_ppo_bc_warm_start.zip")
+    parser.add_argument("--model-path", type=Path, default=DEFAULT_MODEL_PATH)
     parser.add_argument("--load-model", type=Path, default=None)
     parser.add_argument("--epochs", type=int, default=20)
     parser.add_argument("--batch-size", type=int, default=128)
@@ -39,45 +59,63 @@ def build_arg_parser() -> argparse.ArgumentParser:
 def load_demo(path: Path) -> dict[str, Any]:
     if not path.exists():
         raise FileNotFoundError(f"Demo file not found: {path}")
-    with np.load(path, allow_pickle=False) as data:
-        metadata = json.loads(str(data["metadata_json"]))
-        observations = np.asarray(data["observations"], dtype=np.float32)
-        action_indices = np.asarray(data["action_indices"], dtype=np.int64)
-        action_ids = np.asarray(data["action_ids"], dtype=str)
-        action_masks = np.asarray(data["action_masks"], dtype=bool)
-        route_ids = np.asarray(data["route_ids"], dtype=str)
-        active_characters = (
-            np.asarray(data["active_characters"], dtype=str)
-            if "active_characters" in data
-            else np.asarray([], dtype=str)
-        )
-    return {
-        "observations": observations,
-        "action_indices": action_indices,
-        "action_ids": action_ids,
-        "action_masks": action_masks,
-        "route_ids": route_ids,
-        "active_characters": active_characters,
-        "metadata": metadata,
-    }
+    try:
+        return load_demo_npz(path)
+    except DemoContractError:
+        raise
+    except Exception as exc:
+        raise DemoContractError(f"Could not load demo dataset {path}: {exc}") from exc
 
 
 def run_pretrain(args: argparse.Namespace) -> dict[str, Any]:
     demo = load_demo(args.demo_path)
-    env = WuwaDpsEnv(PROJECT_ROOT / "data", party=args.party)
+    initial_active_character = resolve_demo_initial_active_character(
+        demo,
+        explicit_initial_active_character=args.initial_active_character,
+    )
+    curriculum_reset_mode = _resolve_demo_curriculum_reset_mode(demo)
+    env = WuwaDpsEnv(
+        PROJECT_ROOT / "data",
+        party=args.party,
+        initial_active_character=initial_active_character,
+        curriculum_reset_mode=curriculum_reset_mode,
+    )
+    env.reset(seed=args.seed)
+    observation_metadata = env.observation_metadata()
     observation_shape = list(env.observation_space.shape)
     action_count = int(env.action_space.n)
-    _validate_demo_contract(demo, env)
+    validation = _validate_demo_contract(demo, env, demo_path=args.demo_path)
     plan = {
         "demo_path": str(args.demo_path),
-        "route_set_id": demo["metadata"].get("route_set_id"),
+        "demo_sha256": file_sha256(args.demo_path),
+        "demo_schema_version": demo["metadata"].get("schema_version"),
+        "route_id": demo["metadata"].get("route_id"),
         "party": args.party,
         "sample_count": int(len(demo["action_indices"])),
         "observation_shape": observation_shape,
         "action_count": action_count,
+        "policy_action_ids": env.get_policy_action_ids(),
+        "selected_party_character_ids": env.get_selected_party_character_ids(),
+        "initial_active_character": initial_active_character,
+        "demo_initial_active_character": demo["metadata"].get("initial_active_character"),
+        "curriculum_reset_mode": curriculum_reset_mode,
+        "active_build_profiles": env.get_active_build_profiles(),
+        "effective_build_stats_summary": env.get_effective_build_stats_summary(),
+        "observation_metadata": observation_metadata,
+        "observation_version": observation_metadata["observation_version"],
+        "observation_labels": observation_metadata["observation_labels"],
+        "max_party_slots": observation_metadata["max_party_slots"],
+        "max_policy_action_slots": observation_metadata["max_policy_action_slots"],
+        "observation_action_slot_mapping": observation_metadata["observation_action_slot_mapping"],
+        "action_data_hash": demo["metadata"].get("action_data_hash"),
+        "party_config_hash": demo["metadata"].get("party_config_hash"),
+        "selected_sequence_sha256": demo["metadata"].get("selected_sequence_sha256"),
+        "resolved_sequence_sha256": demo["metadata"].get("resolved_sequence_sha256"),
         "action_distribution": dict(Counter(map(str, demo["action_ids"]))),
         "route_distribution": dict(Counter(map(str, demo["route_ids"]))),
         "character_distribution": dict(Counter(map(str, demo["active_characters"]))),
+        "contract_validation": validation,
+        "array_manifest": array_manifest(demo),
         "dry_run": bool(args.dry_run),
     }
     print(json.dumps(plan, indent=2))
@@ -122,31 +160,65 @@ def run_pretrain(args: argparse.Namespace) -> dict[str, Any]:
     model.save(args.model_path)
     metadata = {
         "algorithm": "MaskablePPO_BC_WarmStart",
-        "demo_path": str(args.demo_path),
-        "route_set_id": demo["metadata"].get("route_set_id"),
+        "demo_file_sha256": file_sha256(args.demo_path),
+        "demo_schema_version": demo["metadata"].get("schema_version"),
+        "source_verified_baseline_label": demo["metadata"].get("source_verified_baseline_label"),
+        "demo_path": project_relative_posix(args.demo_path, root=PROJECT_ROOT),
+        "route_id": demo["metadata"].get("route_id"),
+        "source_route_file": demo["metadata"].get("source_route_file"),
+        "source_route_file_sha256": demo["metadata"].get("source_route_file_sha256"),
+        "source_route_file_sha256_expected": SOURCE_ROUTE_FILE_SHA256,
         "route_ids": sorted(set(map(str, demo["route_ids"]))),
         "route_sample_counts": dict(Counter(map(str, demo["route_ids"]))),
         "action_counts": dict(Counter(map(str, demo["action_ids"]))),
         "character_counts": dict(Counter(map(str, demo["active_characters"]))),
-        "balanced_route_demo": _is_balanced_route_demo(demo),
         "party": args.party,
+        "selected_party_character_ids": env.get_selected_party_character_ids(),
+        "initial_active_character": initial_active_character,
+        "demo_initial_active_character": demo["metadata"].get("initial_active_character"),
+        "curriculum_reset_mode": curriculum_reset_mode,
+        "active_build_profiles": env.get_active_build_profiles(),
+        "effective_build_stats_summary": env.get_effective_build_stats_summary(),
         "epochs": args.epochs,
         "batch_size": args.batch_size,
         "learning_rate": args.learning_rate,
         "ent_coef": args.ent_coef,
         "sample_count": int(len(demo["action_indices"])),
-        "model_path": str(args.model_path),
-        "load_model": str(args.load_model) if args.load_model else None,
+        "observation_version": demo["metadata"].get("observation_version"),
+        "observation_shape": demo["metadata"].get("observation_shape"),
+        "observation_labels": observation_metadata["observation_labels"],
+        "max_party_slots": observation_metadata["max_party_slots"],
+        "max_policy_action_slots": observation_metadata["max_policy_action_slots"],
+        "observation_action_slot_mapping": observation_metadata["observation_action_slot_mapping"],
+        "observation_metadata": observation_metadata,
+        "policy_action_ids": demo["metadata"].get("policy_action_ids"),
+        "policy_action_count": demo["metadata"].get("policy_action_count"),
+        "action_data_hash": demo["metadata"].get("action_data_hash"),
+        "party_config_hash": demo["metadata"].get("party_config_hash"),
+        "selected_sequence_sha256": demo["metadata"].get("selected_sequence_sha256"),
+        "resolved_sequence_sha256": demo["metadata"].get("resolved_sequence_sha256"),
+        "baseline_total_damage": demo["metadata"].get("total_damage"),
+        "baseline_dps": demo["metadata"].get("dps"),
+        "bc_hyperparameters": {
+            "epochs": args.epochs,
+            "batch_size": args.batch_size,
+            "learning_rate": args.learning_rate,
+            "ent_coef": args.ent_coef,
+            "seed": args.seed,
+        },
+        "model_path": project_relative_posix(args.model_path, root=PROJECT_ROOT),
+        "load_model": project_relative_posix(args.load_model, root=PROJECT_ROOT) if args.load_model else None,
         "final_loss": losses[-1] if losses else None,
         "no_character_specific_usage_reward_bonus": True,
+        "reward_shaping": False,
         "reward_formula_unchanged": True,
         "reward_formula": "damage_this_action / 10000.0",
         "final_evaluation_reset_mode": "none",
         "training_only": True,
-}
+    }
     sidecar = bc_metadata_path(args.model_path)
-    sidecar.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
-    print(json.dumps(metadata, indent=2))
+    sidecar.write_text(json.dumps(json_safe(metadata), indent=2, ensure_ascii=False), encoding="utf-8")
+    print(json.dumps(json_safe(metadata), indent=2, ensure_ascii=False))
     return metadata
 
 
@@ -154,26 +226,68 @@ def bc_metadata_path(model_path: Path) -> Path:
     return Path(str(model_path) + ".bc_metadata.json")
 
 
-def _validate_demo_contract(demo: dict[str, Any], env: WuwaDpsEnv) -> None:
-    observations = demo["observations"]
-    action_indices = demo["action_indices"]
-    action_masks = demo["action_masks"]
-    if list(observations.shape[1:]) != list(env.observation_space.shape):
-        raise ValueError(
-            f"Demo observation shape {list(observations.shape[1:])} does not match env {list(env.observation_space.shape)}"
+def resolve_demo_initial_active_character(
+    demo: dict[str, Any],
+    *,
+    explicit_initial_active_character: str | None,
+) -> str:
+    demo_initial = demo.get("metadata", {}).get("initial_active_character")
+    if not demo_initial:
+        raise DemoContractError("Demo metadata is missing initial_active_character")
+    demo_initial = str(demo_initial)
+    if explicit_initial_active_character:
+        requested = str(explicit_initial_active_character)
+        if requested != demo_initial:
+            raise DemoContractError(
+                "Explicit --initial-active-character "
+                f"{requested!r} does not match demo metadata initial_active_character {demo_initial!r}"
+            )
+        return requested
+    return demo_initial
+
+
+def _resolve_demo_curriculum_reset_mode(demo: dict[str, Any]) -> str:
+    mode = demo.get("metadata", {}).get("curriculum_reset_mode")
+    if not mode:
+        raise DemoContractError("Demo metadata is missing curriculum_reset_mode")
+    return str(mode)
+
+
+def _validate_demo_contract(demo: dict[str, Any], env: WuwaDpsEnv, *, demo_path: Path) -> dict[str, Any]:
+    _reject_stale_demo_shape(demo, demo_path)
+    demo_initial = str(demo["metadata"].get("initial_active_character"))
+    if env.get_initial_active_character() != demo_initial:
+        raise DemoContractError(
+            f"Pretrainer env initial_active_character {env.get_initial_active_character()!r} "
+            f"does not match demo metadata {demo_initial!r}"
         )
-    if action_masks.shape != (len(action_indices), env.action_space.n):
-        raise ValueError(f"Demo action mask shape {action_masks.shape} does not match env action count {env.action_space.n}")
-    invalid = [
-        index
-        for index, action_index in enumerate(action_indices)
-        if action_index < 0 or action_index >= env.action_space.n or not bool(action_masks[index, action_index])
-    ]
-    if invalid:
-        raise ValueError(f"Demo contains invalid action indices under mask at rows: {invalid[:10]}")
-    metadata_actions = demo["metadata"].get("policy_action_ids")
-    if metadata_actions and list(metadata_actions) != env.get_policy_action_ids():
-        raise ValueError("Demo policy_action_ids do not match env policy action space.")
+    demo_party_id = demo["metadata"].get("party_id")
+    if demo_party_id and env.get_party_id() != demo_party_id:
+        raise DemoContractError(
+            f"Pretrainer env party {env.get_party_id()!r} does not match demo metadata party_id {demo_party_id!r}"
+        )
+    return validate_demo_contract(demo, env, root=PROJECT_ROOT)
+
+
+def _reject_stale_demo_shape(demo: dict[str, Any], demo_path: Path) -> None:
+    observations = np.asarray(demo.get("observations"))
+    action_masks = np.asarray(demo.get("action_masks"))
+    actual_shape = tuple(observations.shape[1:]) if observations.ndim >= 2 else tuple()
+    actual_action_count = int(action_masks.shape[1]) if action_masks.ndim >= 2 else -1
+    if actual_shape != OBSERVATION_SHAPE or actual_action_count != POLICY_ACTION_COUNT:
+        result = {
+            "path": demo_path.as_posix(),
+            "actual_observation_shape": list(actual_shape),
+            "actual_action_count": actual_action_count,
+            "expected_observation_shape": list(OBSERVATION_SHAPE),
+            "expected_action_count": POLICY_ACTION_COUNT,
+        }
+        message = (
+            f"incompatible legacy BC demo {demo_path.as_posix()}: actual observation shape "
+            f"{result['actual_observation_shape']} and action count {actual_action_count}; expected "
+            f"observation shape {result['expected_observation_shape']} and action count {POLICY_ACTION_COUNT}"
+        )
+        raise DemoContractError(message)
 
 
 def _is_balanced_route_demo(demo: dict[str, Any]) -> bool:

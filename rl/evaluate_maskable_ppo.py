@@ -26,6 +26,14 @@ from simulator.transition_config import (
     transition_mode_summary,
 )
 from rl.evaluation_report import build_generated_damage_summary
+from rl.demo_contract import (
+    OBSERVATION_SHAPE,
+    OBSERVATION_VERSION,
+    POLICY_ACTION_COUNT,
+    action_data_hash,
+    json_safe,
+    party_config_hash,
+)
 
 
 METHODOLOGY_PATH = PROJECT_ROOT / "data" / "rl_training_methodology.json"
@@ -38,6 +46,17 @@ OBSERVATION_METADATA_KEYS = (
     "observation_action_slot_mapping",
 )
 
+METADATA_COMPATIBILITY_KEYS = (
+    "selected_party_character_ids",
+    "initial_active_character",
+    "policy_action_ids",
+    "policy_action_count",
+    "active_build_profiles",
+    "effective_build_stats_summary",
+    "action_data_hash",
+    "party_config_hash",
+)
+
 
 def observation_metadata_mismatches(metadata: dict[str, Any], env: Any) -> dict[str, dict[str, Any]]:
     expected = env.observation_metadata()
@@ -46,6 +65,75 @@ def observation_metadata_mismatches(metadata: dict[str, Any], env: Any) -> dict[
         for key in OBSERVATION_METADATA_KEYS
         if metadata.get(key) != expected[key]
     }
+
+
+def bc_metadata_path(model_path: Path) -> Path:
+    return Path(str(model_path) + ".bc_metadata.json")
+
+
+def load_model_metadata(model_path: Path, global_metadata_path: Path) -> dict[str, Any]:
+    sidecar_path = bc_metadata_path(model_path)
+    if sidecar_path.exists():
+        return {
+            "source": "model_sidecar",
+            "path": sidecar_path,
+            "metadata": json.loads(sidecar_path.read_text(encoding="utf-8")),
+        }
+    if global_metadata_path.exists():
+        metadata = json.loads(global_metadata_path.read_text(encoding="utf-8"))
+        metadata_model_path = metadata.get("model_path")
+        if metadata_model_path and _paths_match(Path(metadata_model_path), model_path):
+            return {
+                "source": "associated_global",
+                "path": global_metadata_path,
+                "metadata": metadata,
+            }
+    return {"source": "none", "path": None, "metadata": {}}
+
+
+def model_metadata_mismatches(metadata: dict[str, Any], env: Any) -> dict[str, dict[str, Any]]:
+    expected = {
+        "selected_party_character_ids": env.get_selected_party_character_ids(),
+        "initial_active_character": env.get_initial_active_character(),
+        "policy_action_ids": env.get_policy_action_ids(),
+        "policy_action_count": int(env.action_space.n),
+        "active_build_profiles": env.get_active_build_profiles(),
+        "effective_build_stats_summary": env.get_effective_build_stats_summary(),
+        "action_data_hash": action_data_hash(root=PROJECT_ROOT),
+        "party_config_hash": party_config_hash(root=PROJECT_ROOT),
+    }
+    mismatches = {
+        key: {"model": metadata.get(key), "evaluation": value}
+        for key, value in expected.items()
+        if metadata.get(key) != value
+    }
+    missing = [key for key in METADATA_COMPATIBILITY_KEYS if key not in metadata]
+    for key in missing:
+        mismatches[f"missing_{key}"] = {"model": None, "evaluation": expected.get(key)}
+    mismatches.update(observation_metadata_mismatches(metadata, env))
+    mismatches.update(_stale_contract_mismatches(metadata))
+    return mismatches
+
+
+def _paths_match(left: Path, right: Path) -> bool:
+    try:
+        return left.resolve() == right.resolve()
+    except OSError:
+        return left.as_posix() == right.as_posix()
+
+
+def _stale_contract_mismatches(metadata: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    mismatches: dict[str, dict[str, Any]] = {}
+    observation_shape = metadata.get("observation_shape")
+    observation_version = metadata.get("observation_version")
+    policy_action_count = metadata.get("policy_action_count")
+    if observation_shape is not None and list(observation_shape) != list(OBSERVATION_SHAPE):
+        mismatches["stale_observation_shape"] = {"model": observation_shape, "expected": list(OBSERVATION_SHAPE)}
+    if observation_version is not None and observation_version != OBSERVATION_VERSION:
+        mismatches["stale_observation_version"] = {"model": observation_version, "expected": OBSERVATION_VERSION}
+    if policy_action_count is not None and int(policy_action_count) != POLICY_ACTION_COUNT:
+        mismatches["stale_policy_action_count"] = {"model": policy_action_count, "expected": POLICY_ACTION_COUNT}
+    return mismatches
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -86,6 +174,13 @@ def build_arg_parser() -> argparse.ArgumentParser:
         default=None,
     )
     parser.add_argument("--allow-mismatch", action="store_true")
+    parser.add_argument("--dry-run-contract", action="store_true")
+    parser.add_argument(
+        "--training-metadata-path",
+        type=Path,
+        default=PROJECT_ROOT / "results" / "training_metadata.json",
+        help="Legacy global metadata fallback. A model sidecar is preferred when present.",
+    )
     parser.add_argument("--diagnose-policy-probs", action="store_true")
     parser.add_argument(
         "--write-policy-probability-report",
@@ -164,34 +259,47 @@ def main() -> None:
         raise SystemExit(2)
     for warning in validation.get("warnings", []):
         print(f"Build profile warning: {warning}")
-    metadata_path = PROJECT_ROOT / "results" / "training_metadata.json"
-    metadata: dict[str, Any] = {}
-    if metadata_path.exists():
-        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-        expected = {
-            "selected_party_character_ids": metadata_env.get_selected_party_character_ids(),
-            "policy_action_ids": metadata_env.get_policy_action_ids(),
-            "active_build_profiles": metadata_env.get_active_build_profiles(),
-            "effective_build_stats_summary": metadata_env.get_effective_build_stats_summary(),
-        }
-        mismatches = {
-            key: {"model": metadata.get(key), "evaluation": value}
-            for key, value in expected.items()
-            if metadata.get(key) != value
-        }
-        mismatches.update(observation_metadata_mismatches(metadata, metadata_env))
-        if mismatches and not args.allow_mismatch:
+    metadata_info = load_model_metadata(args.model_path, args.training_metadata_path)
+    metadata: dict[str, Any] = metadata_info["metadata"]
+    metadata_mismatches: dict[str, Any] = {}
+    if metadata:
+        metadata_mismatches = model_metadata_mismatches(metadata, metadata_env)
+        if metadata_mismatches and not args.allow_mismatch:
             print(
                 "Model metadata does not match the requested evaluation roster, build profile config, "
                 "or observation contract."
             )
-            print(json.dumps(mismatches, indent=2))
+            print(json.dumps(json_safe(metadata_mismatches), indent=2, ensure_ascii=False))
             print("Use --allow-mismatch only if you intentionally want to bypass this check.")
             raise SystemExit(1)
-        if mismatches:
+        if metadata_mismatches:
             print("WARNING: evaluating with model metadata mismatches:")
-            print(json.dumps(mismatches, indent=2))
+            print(json.dumps(json_safe(metadata_mismatches), indent=2, ensure_ascii=False))
     model = MaskablePPO.load(args.model_path)
+    model_space_mismatches = _model_space_mismatches(model, metadata_env)
+    if model_space_mismatches and not args.allow_mismatch:
+        print("Model spaces do not match the requested evaluation environment.")
+        print(json.dumps(json_safe(model_space_mismatches), indent=2, ensure_ascii=False))
+        raise SystemExit(1)
+    if args.dry_run_contract:
+        print(
+            json.dumps(
+                json_safe(
+                    {
+                        "status": "ok",
+                        "dry_run_contract": True,
+                        "model_path": args.model_path,
+                        "metadata_source": metadata_info["source"],
+                        "metadata_path": metadata_info["path"],
+                        "metadata_mismatches": metadata_mismatches,
+                        "model_space_mismatches": model_space_mismatches,
+                    }
+                ),
+                indent=2,
+                ensure_ascii=False,
+            )
+        )
+        return
     env, action_sequence, resolved_action_sequence = run_masked_episode(
         model,
         PROJECT_ROOT / "data",
@@ -423,11 +531,15 @@ def main() -> None:
         "max_policy_action_slots": env.observation_metadata()["max_policy_action_slots"],
         "curriculum_reset_mode": env.get_last_curriculum_reset_mode(),
         "training_methodology_summary": training_methodology_summary,
-        "model_training_metadata": metadata if metadata_path.exists() else None,
-        "model_observation_shape": metadata.get("observation_shape") if metadata_path.exists() else None,
+        "model_training_metadata_source": metadata_info["source"],
+        "model_training_metadata_path": metadata_info["path"].as_posix() if metadata_info["path"] else None,
+        "model_training_metadata": metadata if metadata else None,
+        "model_metadata_mismatches": metadata_mismatches,
+        "model_space_mismatches": model_space_mismatches,
+        "model_observation_shape": metadata.get("observation_shape") if metadata else None,
         "current_observation_shape": list(env.observation_space.shape),
         "observation_shape_matches_model": (
-            metadata.get("observation_shape") == list(env.observation_space.shape) if metadata_path.exists() else None
+            metadata.get("observation_shape") == list(env.observation_space.shape) if metadata else None
         ),
         **transition_event_counts(summary.timeline),
         "action_sequence": action_sequence,
@@ -544,7 +656,7 @@ def main() -> None:
         ],
         "resources": summary.resources,
     }
-    summary_path.write_text(json.dumps(summary_payload, indent=2), encoding="utf-8")
+    summary_path.write_text(json.dumps(json_safe(summary_payload), indent=2, ensure_ascii=False), encoding="utf-8")
 
     timeline_rows = [row.model_dump() for row in summary.timeline]
     with timeline_path.open("w", newline="", encoding="utf-8") as file:
@@ -602,6 +714,21 @@ def _policy_actions_exposed_by_character(
         if character_id in exposed:
             exposed[character_id].append(action_id)
     return {character_id: sorted(action_ids) for character_id, action_ids in exposed.items()}
+
+
+def _model_space_mismatches(model: Any, env: Any) -> dict[str, Any]:
+    mismatches: dict[str, Any] = {}
+    model_action_n = getattr(getattr(model, "action_space", None), "n", None)
+    if model_action_n != env.action_space.n:
+        mismatches["action_space_n"] = {"model": model_action_n, "evaluation": env.action_space.n}
+    model_observation_shape = list(getattr(getattr(model, "observation_space", None), "shape", []) or [])
+    env_observation_shape = list(env.observation_space.shape)
+    if model_observation_shape != env_observation_shape:
+        mismatches["observation_shape"] = {
+            "model": model_observation_shape,
+            "evaluation": env_observation_shape,
+        }
+    return mismatches
 
 
 def _load_training_methodology_summary() -> dict[str, Any]:

@@ -25,6 +25,11 @@ from simulator.transition_config import (
     mechanics_mode_summary,
     transition_mode_summary,
 )
+from rl.demo_contract import (
+    OBSERVATION_SHAPE,
+    OBSERVATION_VERSION,
+    POLICY_ACTION_COUNT,
+)
 
 
 CURRICULUM_RESET_MODE_CHOICES = [
@@ -169,6 +174,11 @@ def main() -> None:
         if not args.load_model.exists():
             print(f"Cannot continue training: load model not found at {args.load_model}")
             raise SystemExit(2)
+        try:
+            _load_bc_warm_start_metadata(args.load_model)
+        except ValueError as exc:
+            print(f"Cannot continue training: {exc}")
+            raise SystemExit(2) from None
         loaded_model = MaskablePPO.load(args.load_model)
         mismatches = _model_space_mismatches(loaded_model, env)
         if mismatches:
@@ -550,14 +560,42 @@ def _load_bc_warm_start_metadata(load_model_path: Path | None) -> dict[str, Any]
     if not sidecar.exists():
         return None
     data = json.loads(sidecar.read_text(encoding="utf-8"))
+    mismatches = _bc_sidecar_contract_mismatches(data)
+    if mismatches:
+        raise ValueError(
+            "Loaded BC warm-start sidecar is incompatible with the current v105 manual demo contract: "
+            + json.dumps(mismatches, indent=2)
+        )
     return {
         "demo_path": data.get("demo_path"),
-        "route_set_id": data.get("route_set_id"),
+        "route_id": data.get("route_id") or data.get("route_set_id"),
+        "demo_schema_version": data.get("demo_schema_version"),
+        "source_verified_baseline_label": data.get("source_verified_baseline_label"),
         "epochs": data.get("epochs"),
         "sample_count": data.get("sample_count"),
+        "observation_version": data.get("observation_version"),
+        "observation_shape": data.get("observation_shape"),
+        "policy_action_count": data.get("policy_action_count"),
+        "action_data_hash": data.get("action_data_hash"),
+        "party_config_hash": data.get("party_config_hash"),
+        "selected_sequence_sha256": data.get("selected_sequence_sha256"),
+        "resolved_sequence_sha256": data.get("resolved_sequence_sha256"),
         "no_character_specific_usage_reward_bonus": data.get("no_character_specific_usage_reward_bonus"),
         "reward_formula_unchanged": data.get("reward_formula_unchanged"),
     }
+
+
+def _bc_sidecar_contract_mismatches(data: dict[str, Any]) -> dict[str, Any]:
+    mismatches: dict[str, Any] = {}
+    observation_shape = data.get("observation_shape")
+    policy_action_count = data.get("policy_action_count")
+    if observation_shape is not None and list(observation_shape) != list(OBSERVATION_SHAPE):
+        mismatches["observation_shape"] = {"metadata": observation_shape, "expected": list(OBSERVATION_SHAPE)}
+    if data.get("observation_version") is not None and data.get("observation_version") != OBSERVATION_VERSION:
+        mismatches["observation_version"] = {"metadata": data.get("observation_version"), "expected": OBSERVATION_VERSION}
+    if policy_action_count is not None and int(policy_action_count) != POLICY_ACTION_COUNT:
+        mismatches["policy_action_count"] = {"metadata": policy_action_count, "expected": POLICY_ACTION_COUNT}
+    return mismatches
 
 
 if __name__ == "__main__":

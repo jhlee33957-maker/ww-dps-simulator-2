@@ -43,6 +43,8 @@ TIMELINE_PATH = ROOT / "results" / "manual_120s_baseline_v104_timeline.csv"
 REPORT_PATH = ROOT / "reports" / "manual_120s_baseline_v104.md"
 COMPARISONS_PATH = ROOT / "results" / "manual_120s_baseline_v104_comparisons.json"
 COMPARISONS_REPORT_PATH = ROOT / "reports" / "manual_120s_baseline_v104_comparisons.md"
+ROUTE_NEWLINE = "\r\n"
+GENERATED_TEXT_NEWLINE = "\n"
 
 
 class ManualBaselineFailure(AssertionError):
@@ -215,6 +217,15 @@ ROUTE_DEFINITIONS = {
 def _sequence_hash(sequence: list[str]) -> str:
     payload = json.dumps(sequence, ensure_ascii=False, separators=(",", ":"))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
+def _write_text(path: Path, text: str, *, newline: str) -> None:
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+    if not normalized.endswith("\n"):
+        normalized += "\n"
+    if newline != "\n":
+        normalized = normalized.replace("\n", newline)
+    path.write_bytes(normalized.encode("utf-8"))
 
 
 def _load_routes_or_defaults() -> dict[str, Any]:
@@ -784,7 +795,7 @@ def run_all() -> dict[str, Any]:
 def _write_route_file() -> dict[str, Any]:
     payload = _build_route_payload()
     ROUTE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    ROUTE_PATH.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    _write_text(ROUTE_PATH, json.dumps(payload, ensure_ascii=False, indent=2), newline=ROUTE_NEWLINE)
     return payload
 
 
@@ -1007,13 +1018,13 @@ def write_outputs() -> dict[str, Any]:
     results = {name: execute_route(name, routes_payload=routes) for name in routes["routes"]}
     primary = results["primary"]
     SUMMARY_PATH.parent.mkdir(parents=True, exist_ok=True)
-    SUMMARY_PATH.write_text(json.dumps(primary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    _write_text(SUMMARY_PATH, json.dumps(primary, ensure_ascii=False, indent=2), newline=GENERATED_TEXT_NEWLINE)
     _write_timeline_csv(primary)
     REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    REPORT_PATH.write_text(_render_report(primary), encoding="utf-8")
+    _write_text(REPORT_PATH, _render_report(primary), newline=GENERATED_TEXT_NEWLINE)
     comparisons = _comparison_payload(results)
-    COMPARISONS_PATH.write_text(json.dumps(comparisons, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    COMPARISONS_REPORT_PATH.write_text(_render_comparison_report(comparisons), encoding="utf-8")
+    _write_text(COMPARISONS_PATH, json.dumps(comparisons, ensure_ascii=False, indent=2), newline=GENERATED_TEXT_NEWLINE)
+    _write_text(COMPARISONS_REPORT_PATH, _render_comparison_report(comparisons), newline=GENERATED_TEXT_NEWLINE)
     return {"routes": routes, "results": results, "comparisons": comparisons}
 
 

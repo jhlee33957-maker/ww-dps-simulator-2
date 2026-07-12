@@ -10,19 +10,19 @@ ROOT = Path(__file__).resolve().parents[1]
 def main() -> None:
     data = json.loads((ROOT / "PROJECT_PROGRESS_STATE.json").read_text(encoding="utf-8-sig"))
     status = data["status"]
-    assert status["latest_verified_archive"] == "ww-dps-simulator-2(104).zip"
-    assert status["latest_verified_baseline_label"] == "104"
-    assert status["current_task"] == "120-second deterministic manual baseline"
+    assert status["latest_verified_archive"] == "ww-dps-simulator-2(105).zip"
+    assert status["latest_verified_baseline_label"] == "105"
+    assert status["current_task"] == "canonical BC demonstration regeneration and BC/PPO compatibility preflight"
     assert status["current_task_status"] == "implemented_tests_passed_pending_external_review"
     assert status["do_not_treat_current_task_as_complete_until_reviewed"] is True
 
-    assert data["next_planned_task"] == "external review of manual baseline candidate 105, then BC demonstration regeneration and PPO retraining"
+    assert data["next_planned_task"] == "external review of canonical BC demonstration candidate 106, then user-run full BC warm-start, deterministic normal-reset evaluation, and PPO retraining"
     planned = data["next_planned_tasks"]
     assert [item["task"] for item in planned[:4]] == [
-        "external review of manual baseline candidate 105",
-        "BC/PPO regeneration",
-        "Beam Search/MCTS comparison",
-        "source-resolution follow-ups",
+        "external review of canonical BC demonstration candidate 106",
+        "user-run full BC warm-start",
+        "deterministic normal-reset evaluation",
+        "PPO retraining",
     ]
     planned_text = json.dumps(planned, ensure_ascii=False).lower()
     assert "active echo action implementation" not in planned_text

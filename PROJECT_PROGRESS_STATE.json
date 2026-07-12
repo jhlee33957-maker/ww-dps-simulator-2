@@ -14,13 +14,13 @@
   },
   "status": {
     "last_updated": "2026-07-12T12:00:00+09:00",
-    "latest_verified_archive": "ww-dps-simulator-2(104).zip",
-    "latest_verified_baseline_label": "104",
+    "latest_verified_archive": "ww-dps-simulator-2(105).zip",
+    "latest_verified_baseline_label": "105",
     "current_task_status": "implemented_tests_passed_pending_external_review",
-    "current_task": "120-second deterministic manual baseline",
-    "current_task_expected_next_archive": "105",
+    "current_task": "canonical BC demonstration regeneration and BC/PPO compatibility preflight",
+    "current_task_expected_next_archive": "106",
     "do_not_treat_current_task_as_complete_until_reviewed": true,
-    "candidate_expected_next_archive": "ww-dps-simulator-2(105).zip"
+    "candidate_expected_next_archive": "ww-dps-simulator-2(106).zip"
   },
   "source_of_truth": {
     "raw_action_workbook": "鸣潮动作数据汇总(5).xlsx",
@@ -318,12 +318,12 @@
       "id": "M015",
       "title": "120-second deterministic manual baseline",
       "baseline": "manual_120s_baseline_candidate_105",
-      "status": "implemented_tests_passed_pending_external_review",
+      "status": "externally_verified_complete",
       "candidate": "105",
-      "external_review_status": "pending",
-      "external_verification_claimed": false,
-      "latest_externally_verified_baseline": "104",
-      "summary": "Implemented deterministic human-authored 120.0s Simulation-only manual baseline and corrected source-aware reporting/accounting. Candidate 105 is pending external review and is not a global optimum claim.",
+      "external_review_status": "externally_verified",
+      "external_verification_claimed": true,
+      "latest_externally_verified_baseline": "105",
+      "summary": "External review promoted the deterministic human-authored 120.0s manual baseline to verified baseline 105. It remains a lower-bound reference, not a global optimum claim.",
       "route_json": "data/manual_120s_baseline_routes_v104.json",
       "result_json": "results/manual_120s_baseline_v104_summary.json",
       "timeline_csv": "results/manual_120s_baseline_v104_timeline.csv",
@@ -486,180 +486,189 @@
         "Source-unconfirmed active-Echo Off-Tune values remain runtime zero where unresolved.",
         "Lynae Hyvatia Off-Tune source uncertainty remains unresolved.",
         "Out-of-scope mechanics already recorded remain unresolved."
+      ],
+      "baseline_archive": "ww-dps-simulator-2(105).zip",
+      "external_verification_label": "105"
+    },
+    {
+      "id": "M016",
+      "title": "Canonical BC demonstration and compatibility preflight",
+      "baseline": "105",
+      "candidate": "106",
+      "status": "implemented_tests_passed_pending_external_review",
+      "external_review_status": "pending",
+      "external_verification_claimed": false,
+      "latest_externally_verified_baseline": "105",
+      "summary": "Generated the single-episode canonical manual 120s BC demonstration dataset from verified baseline 105 and added strict contract, replay, alias, legacy-incompatibility, and BC small-overfit preflight checks. Candidate 106 is pending external review; no full BC/PPO training has been executed.",
+      "dataset": "data/generated/manual_120s_bc_demonstration_v105.npz",
+      "summary_json": "results/manual_120s_bc_demonstration_v105_summary.json",
+      "report": "reports/manual_120s_bc_demonstration_v105.md",
+      "sample_count": 148,
+      "episode_count": 1,
+      "observation_version": "slot_generic_mechanics_v5",
+      "observation_shape": 314,
+      "policy_action_count": 25,
+      "max_policy_action_slots": 32,
+      "reward_formula": "damage_this_action / 10000.0",
+      "full_bc_training_executed": false,
+      "ppo_training_executed": false,
+      "legacy_incompatible_datasets": [
+        "data/generated/route_demonstrations_aemeath_mornye_lynae.npz",
+        "data/generated/route_demonstrations_aemeath_mornye_lynae_v2.npz"
+      ],
+      "route_hashes": {
+        "selected_sequence_sha256": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
+        "resolved_sequence_sha256": "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229"
+      },
+      "runtime_totals": {
+        "final_combat_time": 120.0,
+        "total_damage": 5165134.682363359,
+        "dps": 43042.78901969466
+      },
+      "dataset_sha256": "b020a1b9309b46bd87eb3fff4837aead53035c4c84620962f47feb9fc11846ff",
+      "action_data_hash": "d6377d54a1abb985dc5f58866321c61c7b904a6b73ddc1538be7e38d36a99ff1",
+      "party_config_hash": "bd106ba1c0f5581436c35fea736a00fd6ad92b131f8b43ba8cf1e3dc89cbcb11",
+      "source_route_file_sha256": "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a",
+      "bc_small_overfit_smoke_metrics": {
+        "status": "ok",
+        "seed": 11,
+        "epochs": 300,
+        "initial_masked_nll": 1.755488395690918,
+        "final_masked_nll": 0.006889604963362217,
+        "nll_decrease": 1.7485987907275558,
+        "initial_top1_accuracy": 0.054054055362939835,
+        "final_top1_accuracy": 1.0,
+        "invalid_top1_count": 0,
+        "temporary_artifacts_only": true
+      },
+      "tests": [
+        "generate_manual_120s_bc_demonstration.py --output data/generated/manual_120s_bc_demonstration_v105.npz passed",
+        "pretrain_maskable_ppo_bc.py --dry-run --initial-active-character aemeath passed",
+        "train_maskable_ppo.py --dry-run-train-config passed",
+        "manual_120s_bc_demo_generation_smoke_test.py passed",
+        "manual_120s_bc_demo_contract_smoke_test.py passed",
+        "manual_120s_bc_demo_replay_smoke_test.py passed",
+        "manual_120s_bc_demo_hash_guard_smoke_test.py passed",
+        "manual_120s_bc_demo_alias_smoke_test.py passed",
+        "legacy_bc_demo_incompatibility_smoke_test.py passed",
+        "project_progress_bc_demo_alignment_smoke_test.py passed",
+        "manual_120s_bc_small_overfit_smoke_test.py passed"
       ]
     }
   ],
   "current_in_progress_task": {
-    "task": "120-second deterministic manual baseline",
+    "task": "canonical BC demonstration regeneration and BC/PPO compatibility preflight",
     "status": "implemented_tests_passed_pending_external_review",
-    "candidate": "105",
+    "candidate": "106",
     "external_review_required": true,
     "external_verification_claimed": false,
-    "latest_externally_verified_baseline": "104",
-    "baseline_archive": "ww-dps-simulator-2(104).zip",
-    "candidate_expected_next_archive": "ww-dps-simulator-2(105).zip",
-    "route_script": "scripts/manual_120s_baseline.py",
-    "route_json": "data/manual_120s_baseline_routes_v104.json",
-    "result_json": "results/manual_120s_baseline_v104_summary.json",
-    "timeline_csv": "results/manual_120s_baseline_v104_timeline.csv",
-    "report": "reports/manual_120s_baseline_v104.md",
-    "comparison_json": "results/manual_120s_baseline_v104_comparisons.json",
-    "comparison_report": "reports/manual_120s_baseline_v104_comparisons.md",
-    "manual_120s_baseline": {
-      "primary": {
-        "total_damage": 5165134.682363359,
-        "dps": 43042.78901969466,
-        "final_combat_time": 120.0,
-        "final_current_time": 165.03333333333336,
-        "selected_action_count": 148,
-        "resolved_action_count": 148,
-        "selected_sequence_sha256": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
-        "resolved_sequence_sha256": "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229",
-        "damage_by_character": {
-          "aemeath": 3733934.8538652016,
-          "lynae": 1162391.9084385103,
-          "mornye": 268807.92005964793
-        },
-        "placeholder_fallback_count": 1,
-        "placeholder_fallback_steps": [
-          6
-        ],
-        "tune_break_times": [
-          25.066666666666666,
-          54.93333333333333,
-          93.01666666666665
-        ],
-        "final_clipped_action": {
-          "step": 148,
-          "selected_action_id": "lynae_basic_attack",
-          "resolved_action_id": "lynae_kaleidoscopic_basic_stage_3",
-          "start_time": 119.83333333333333,
-          "end_time": 120.0,
-          "full_combat_time_cost": 0.6666666666666666,
-          "effective_clipped_cost": 0.1666666666666714,
-          "truncated_by_combat_limit": true,
-          "damage_before_cutoff": 0.0,
-          "damage_after_cutoff_excluded": 6395.257655214092
-        }
-      },
-      "comparisons": {
-        "primary": {
-          "total_damage": 5165134.682363359,
-          "dps": 43042.78901969466,
-          "delta_vs_primary_damage": 0.0,
-          "delta_vs_primary_percent": 0.0,
-          "damage_by_character": {
-            "aemeath": 3733934.8538652016,
-            "lynae": 1162391.9084385103,
-            "mornye": 268807.92005964793
-          },
-          "action_count": 148,
-          "placeholder_count": 1,
-          "tune_break_times": [
-            25.066666666666666,
-            54.93333333333333,
-            93.01666666666665
-          ],
-          "major_field_event_count": 53,
-          "route_hash": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
-          "known_limitations": [
-            "Opening normal-swap exact timing placeholder remains unresolved.",
-            "Mornye exact dodge-cancel next-input frame remains unresolved.",
-            "Source-unconfirmed active-Echo Off-Tune values remain runtime zero where unresolved.",
-            "Lynae Hyvatia Off-Tune source uncertainty remains unresolved."
-          ]
-        },
-        "no_lynae_control": {
-          "total_damage": 2515518.460173657,
-          "dps": 20962.653834780478,
-          "delta_vs_primary_damage": -2649616.222189702,
-          "delta_vs_primary_percent": -51.29810518275476,
-          "damage_by_character": {
-            "aemeath": 1997720.7910687788,
-            "lynae": 287292.05572559364,
-            "mornye": 230505.61337928416
-          },
-          "action_count": 146,
-          "placeholder_count": 0,
-          "tune_break_times": [
-            38.29999999999998,
-            68.89999999999995,
-            118.50000000000004
-          ],
-          "major_field_event_count": 46,
-          "route_hash": "ac31919697f6c6c5b3f623b4d881258c2071c76523b8ef60e791b093ac023786",
-          "known_limitations": [
-            "Opening normal-swap exact timing placeholder remains unresolved.",
-            "Mornye exact dodge-cancel next-input frame remains unresolved.",
-            "Source-unconfirmed active-Echo Off-Tune values remain runtime zero where unresolved.",
-            "Lynae Hyvatia Off-Tune source uncertainty remains unresolved."
-          ]
-        },
-        "reactor_husk_order_variant": {
-          "total_damage": 3841570.4373557484,
-          "dps": 32013.08697796457,
-          "delta_vs_primary_damage": -1323564.2450076109,
-          "delta_vs_primary_percent": -25.62497062326361,
-          "damage_by_character": {
-            "aemeath": 2716066.1684148605,
-            "lynae": 947823.6358734153,
-            "mornye": 177680.63306747313
-          },
-          "action_count": 140,
-          "placeholder_count": 1,
-          "tune_break_times": [
-            29.533333333333335,
-            63.966666666666676,
-            103.38333333333338
-          ],
-          "major_field_event_count": 45,
-          "route_hash": "294073c3ac8ca7200b73ac5d7bcdd737bf86d3f23ffdef575b730bc58a46ff89",
-          "known_limitations": [
-            "Opening normal-swap exact timing placeholder remains unresolved.",
-            "Mornye exact dodge-cancel next-input frame remains unresolved.",
-            "Source-unconfirmed active-Echo Off-Tune values remain runtime zero where unresolved.",
-            "Lynae Hyvatia Off-Tune source uncertainty remains unresolved."
-          ]
-        }
-      }
-    },
-    "route_hashes": {
-      "primary": {
-        "selected_sequence_sha256": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
-        "resolved_sequence_sha256": "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229"
-      },
-      "no_lynae_control": {
-        "selected_sequence_sha256": "ac31919697f6c6c5b3f623b4d881258c2071c76523b8ef60e791b093ac023786",
-        "resolved_sequence_sha256": "57cb95ec9038894fc6cbacf309ade8cadbd4d374ef5537edcb9ecdf94a4bd079"
-      },
-      "reactor_husk_order_variant": {
-        "selected_sequence_sha256": "294073c3ac8ca7200b73ac5d7bcdd737bf86d3f23ffdef575b730bc58a46ff89",
-        "resolved_sequence_sha256": "ad9ec00e103b6ecb189291fcfcc1cd4638301213955e27bd71cec83b1db125f1"
-      }
-    },
-    "state_injection_used": false,
-    "all_selected_actions_available": true,
-    "short_wait_used": false,
-    "policy_action_count": 25,
+    "latest_externally_verified_baseline": "105",
+    "baseline_archive": "ww-dps-simulator-2(105).zip",
+    "candidate_expected_next_archive": "ww-dps-simulator-2(106).zip",
+    "dataset": "data/generated/manual_120s_bc_demonstration_v105.npz",
+    "summary_json": "results/manual_120s_bc_demonstration_v105_summary.json",
+    "report": "reports/manual_120s_bc_demonstration_v105.md",
+    "source_route_file": "data/manual_120s_baseline_routes_v104.json",
+    "source_route_verified_as_baseline": "105",
+    "route_id": "manual_120s_primary_v105",
+    "episode_count": 1,
+    "sample_count": 148,
     "observation_version": "slot_generic_mechanics_v5",
     "observation_shape": 314,
+    "policy_action_count": 25,
     "max_policy_action_slots": 32,
+    "reward_formula": "damage_this_action / 10000.0",
+    "no_character_specific_usage_reward_bonus": true,
+    "reward_shaping": false,
+    "future_information_used_as_policy_input": false,
+    "full_bc_training_executed": false,
+    "ppo_training_executed": false,
+    "old_204_23_and_312_era_models_demos_incompatible": true,
+    "selected_sequence_sha256": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
+    "resolved_sequence_sha256": "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229",
+    "final_combat_time": 120.0,
+    "total_damage": 5165134.682363359,
+    "dps": 43042.78901969466,
     "notes": [
-      "Human-authored deterministic lower-bound reference, not a global optimum.",
-      "Uses Simulation directly with strict availability checks and no silent action replacement.",
-      "Candidate 105 is pending external review.",
-      "Source-aware resource accounting, complete damage category totals, and active Echo damage reporting corrected without changing the primary route."
+      "Candidate 106 is pending external review and must not be treated as verified.",
+      "The canonical BC dataset contains one deterministic episode and 148 samples, not repeated copies.",
+      "Remaining return, remaining damage, step index, episode ID, route ID, and resolved action ID are diagnostics only and are not model inputs.",
+      "No simulator combat mechanics, reward formula, action data, action order, observation schema, build profiles, or 120-second route were changed.",
+      "BC pretraining now resolves the Aemeath initial active character and no-reset curriculum from canonical demo metadata, and rejects an explicit mismatched initial active character before writing a model.",
+      "BC evaluation now validates sidecar initial_active_character compatibility; Aemeath dry-run compatibility passes and Mornye dry-run compatibility fails on that key."
     ],
-    "unresolved_limits": [
-      "Opening normal-swap exact timing placeholder remains unresolved.",
-      "Mornye exact dodge-cancel next-input frame remains unresolved.",
-      "Source-unconfirmed active-Echo Off-Tune values remain runtime zero where unresolved.",
-      "Lynae Hyvatia Off-Tune source uncertainty remains unresolved.",
-      "Out-of-scope mechanics already recorded remain unresolved."
+    "next_after_external_verification": "user-run full BC warm-start, deterministic normal-reset evaluation, then PPO retraining",
+    "dataset_sha256": "b020a1b9309b46bd87eb3fff4837aead53035c4c84620962f47feb9fc11846ff",
+    "action_data_hash": "d6377d54a1abb985dc5f58866321c61c7b904a6b73ddc1538be7e38d36a99ff1",
+    "party_config_hash": "bd106ba1c0f5581436c35fea736a00fd6ad92b131f8b43ba8cf1e3dc89cbcb11",
+    "source_route_file_sha256": "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a",
+    "bc_small_overfit_smoke_metrics": {
+      "status": "ok",
+      "seed": 11,
+      "epochs": 300,
+      "device": "cpu",
+      "initial_masked_nll": 1.755488395690918,
+      "final_masked_nll": 0.006889711134135723,
+      "nll_decrease": 1.7485986845567822,
+      "initial_top1_accuracy": 0.054054055362939835,
+      "final_top1_accuracy": 1.0,
+      "invalid_top1_count": 0,
+      "temporary_artifacts_only": true,
+      "canonical_artifacts_mutated": false,
+      "runtime_seconds": 1.448802
+    },
+    "tests": [
+      "generate_manual_120s_bc_demonstration.py --output data/generated/manual_120s_bc_demonstration_v105.npz passed",
+      "pretrain_maskable_ppo_bc.py --dry-run --initial-active-character aemeath passed",
+      "train_maskable_ppo.py --dry-run-train-config passed",
+      "manual_120s_bc_demo_generation_smoke_test.py passed",
+      "manual_120s_bc_demo_contract_smoke_test.py passed",
+      "manual_120s_bc_demo_replay_smoke_test.py passed",
+      "manual_120s_bc_demo_hash_guard_smoke_test.py passed",
+      "manual_120s_bc_demo_alias_smoke_test.py passed",
+      "legacy_bc_demo_incompatibility_smoke_test.py passed",
+      "project_progress_bc_demo_alignment_smoke_test.py passed",
+      "manual_120s_bc_small_overfit_smoke_test.py passed",
+      "manual_120s_baseline.py --write-results restored canonical route bytes",
+      "manual_120s_baseline_smoke_test.py passed",
+      "generate_manual_120s_bc_demonstration.py passed",
+      "manual_120s_bc_packaged_generation_parity_smoke_test.py passed",
+      "evaluate_bc_sidecar_compatibility_smoke_test.py passed",
+      "pretrain_bc_initial_active_contract_smoke_test.py passed",
+      "bc_pretrain_evaluator_contract_smoke_test.py passed with one temporary BC model lifecycle",
+      "manual_120s_bc_report_portability_smoke_test.py passed",
+      "manual_120s_bc_small_overfit_smoke_test.py passed without canonical side effects",
+      "rl_observation_shape_guard_smoke_test.py passed",
+      "aemeath_mornye_lynae_rl_action_space_smoke_test.py passed",
+      "mornye_aemeath_active_echo_policy_order_smoke_test.py passed",
+      "apply_direct_action_data_v61.py --check passed",
+      "python -m compileall -q . passed with bundled Python",
+      "manual_120s_bc_final_archive_integrity_smoke_test.py passed on exact final ZIP with unified fresh-extraction compatibility smoke",
+      "manual_120s_bc_mojibake_archive_guard_smoke_test.py passed",
+      "evaluate_bc_sidecar_compatibility_smoke_test.py passed with CPU thread bounds and Mornye mismatch rejection",
+      "pretrain_bc_initial_active_contract_smoke_test.py passed with CPU thread bounds",
+      "manual_cycle_reference marked externally_verified_complete for baseline 105",
+      "final archive integrity completed on exact candidate ZIP; external verification still not claimed"
+    ],
+    "post_review_remediation_status": "implemented_tests_passed_pending_external_review",
+    "reporting_portability": "canonical reports use project-relative paths only",
+    "evaluator_metadata_policy": "model sidecar bc_metadata is preferred over legacy global metadata",
+    "route_byte_contract": "UTF-8 without BOM, CRLF, trailing CRLF",
+    "final_archive_integrity": "exact final ZIP validation completed with unified fresh-extraction compatibility smoke; final SHA is reported outside the archive to avoid self-reference",
+    "archive_path": "../ww-dps-simulator-2(106).zip",
+    "final_archive_expected_cache_entry_count": 0,
+    "final_archive_expected_raw_corrupted_sheet_occurrence_count": 0,
+    "final_archive_expected_correct_sheet_check": "authoritative source contains U+58F0 U+9AB8 sheet name",
+    "final_archive_expected_fresh_extraction_checks": [
+      "manual_120s_bc_demo_contract_smoke_test.py",
+      "manual_120s_bc_packaged_generation_parity_smoke_test.py",
+      "manual_120s_bc_report_portability_smoke_test.py",
+      "bc_pretrain_evaluator_contract_smoke_test.py",
+      "pretrain_maskable_ppo_bc.py --dry-run --initial-active-character aemeath"
     ]
   },
   "manual_cycle_reference": {
-    "status": "candidate_105_implemented_pending_external_review",
+    "status": "externally_verified_complete",
     "source_baseline_label": "104",
     "candidate_label": "105",
     "not_global_optimum": true,
@@ -678,7 +687,10 @@
       "report": "reports/manual_120s_baseline_v104.md",
       "comparison_json": "results/manual_120s_baseline_v104_comparisons.json",
       "comparison_report": "reports/manual_120s_baseline_v104_comparisons.md"
-    }
+    },
+    "external_review_status": "externally_verified",
+    "external_verification_label": "105",
+    "latest_externally_verified_baseline": "105"
   },
   "known_unresolved_or_missing": [
     {
@@ -721,8 +733,8 @@
     {
       "id": "U007",
       "item": "120초 수동 기준선",
-      "status": "implemented_candidate_105_pending_external_review",
-      "note": "The deterministic 120-second primary manual baseline is implemented and tests passed as candidate 105. candidate 105 is not externally verified; baseline 104 remains the latest externally verified baseline. After external review, the next implementation task is BC demonstration regeneration and PPO retraining."
+      "status": "externally_verified_complete",
+      "note": "The deterministic 120-second primary manual baseline passed external review and is verified as baseline 105. Candidate 106 uses it only as the canonical BC demonstration source."
     },
     {
       "id": "U008",
@@ -751,24 +763,24 @@
   ],
   "next_planned_tasks": [
     {
-      "task": "external review of manual baseline candidate 105",
+      "task": "external review of canonical BC demonstration candidate 106",
       "status": "next",
-      "note": "Review route artifacts, strict tests, comparison controls, and candidate archive ww-dps-simulator-2(105).zip."
+      "note": "Review dataset contract, replay validator, alias audit, legacy rejection, dry-run compatibility, and small-overfit smoke metrics."
     },
     {
-      "task": "BC/PPO regeneration",
-      "status": "after_manual_baseline_external_review",
-      "note": "Regenerate BC demonstrations and retrain PPO for the 25-action, observation-v5/314 contract after candidate 105 review."
+      "task": "user-run full BC warm-start",
+      "status": "after_candidate_106_external_verification",
+      "note": "Use the canonical v105 demo to train a full BC warm-start model; this candidate does not execute it."
     },
     {
-      "task": "Beam Search/MCTS comparison",
-      "status": "future_after_manual_and_regenerated_bc_ppo",
-      "note": "Compare only after the manual 120-second baseline and regenerated BC/PPO artifacts exist."
+      "task": "deterministic normal-reset evaluation",
+      "status": "after_full_bc_warm_start",
+      "note": "Evaluate the full BC warm-start under normal reset before PPO retraining."
     },
     {
-      "task": "source-resolution follow-ups",
-      "status": "future",
-      "note": "Opening swap exact timing, Mornye dodge-cancel frame, and active-Echo Off-Tune source values remain unresolved."
+      "task": "PPO retraining",
+      "status": "future_after_bc_evaluation",
+      "note": "Run long PPO training only after candidate 106 is externally verified and BC warm-start is produced."
     }
   ],
   "validation_invariants": [
@@ -1308,5 +1320,45 @@
       }
     }
   ],
-  "next_planned_task": "external review of manual baseline candidate 105, then BC demonstration regeneration and PPO retraining"
+  "next_planned_task": "external review of canonical BC demonstration candidate 106, then user-run full BC warm-start, deterministic normal-reset evaluation, and PPO retraining",
+  "candidate_history": [
+    {
+      "candidate": "106",
+      "task": "canonical BC demonstration regeneration and BC/PPO compatibility preflight",
+      "status": "implemented_tests_passed_pending_external_review",
+      "dataset": "data/generated/manual_120s_bc_demonstration_v105.npz",
+      "full_bc_training_executed": false,
+      "ppo_training_executed": false,
+      "dataset_sha256": "b020a1b9309b46bd87eb3fff4837aead53035c4c84620962f47feb9fc11846ff",
+      "bc_small_overfit_smoke_metrics": {
+        "status": "ok",
+        "seed": 11,
+        "epochs": 300,
+        "device": "cpu",
+        "initial_masked_nll": 1.755488395690918,
+        "final_masked_nll": 0.006889711134135723,
+        "nll_decrease": 1.7485986845567822,
+        "initial_top1_accuracy": 0.054054055362939835,
+        "final_top1_accuracy": 1.0,
+        "invalid_top1_count": 0,
+        "temporary_artifacts_only": true,
+        "canonical_artifacts_mutated": false,
+        "runtime_seconds": 1.448802
+      },
+      "source_route_file_sha256": "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a",
+      "post_review_remediation_status": "implemented_tests_passed_pending_external_review",
+      "final_archive_integrity": "exact final ZIP validation completed with unified fresh-extraction compatibility smoke; final SHA is reported outside the archive to avoid self-reference",
+      "archive_path": "../ww-dps-simulator-2(106).zip",
+      "final_archive_expected_cache_entry_count": 0,
+      "final_archive_expected_raw_corrupted_sheet_occurrence_count": 0,
+      "final_archive_expected_correct_sheet_check": "authoritative source contains U+58F0 U+9AB8 sheet name",
+      "final_archive_expected_fresh_extraction_checks": [
+      "manual_120s_bc_demo_contract_smoke_test.py",
+      "manual_120s_bc_packaged_generation_parity_smoke_test.py",
+      "manual_120s_bc_report_portability_smoke_test.py",
+      "bc_pretrain_evaluator_contract_smoke_test.py",
+      "pretrain_maskable_ppo_bc.py --dry-run --initial-active-character aemeath"
+      ]
+    }
+  ]
 }
