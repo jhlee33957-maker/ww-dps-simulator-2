@@ -14,12 +14,13 @@
   },
   "status": {
     "last_updated": "2026-07-12T12:00:00+09:00",
-    "latest_verified_archive": "ww-dps-simulator-2(103).zip",
-    "latest_verified_baseline_label": "103",
+    "latest_verified_archive": "ww-dps-simulator-2(104).zip",
+    "latest_verified_baseline_label": "104",
     "current_task_status": "implemented_tests_passed_pending_external_review",
-    "current_task": "full real-cycle integration with active Echoes",
-    "current_task_expected_next_archive": "104",
-    "do_not_treat_current_task_as_complete_until_reviewed": true
+    "current_task": "120-second deterministic manual baseline",
+    "current_task_expected_next_archive": "105",
+    "do_not_treat_current_task_as_complete_until_reviewed": true,
+    "candidate_expected_next_archive": "ww-dps-simulator-2(105).zip"
   },
   "source_of_truth": {
     "raw_action_workbook": "鸣潮动作数据汇总(5).xlsx",
@@ -276,208 +277,407 @@
     {
       "id": "M014",
       "title": "Full real-cycle integration with active Echoes",
-      "status": "candidate_pending_external_review",
+      "status": "externally_verified_complete",
       "baseline": "103",
       "candidate": "104",
-      "summary": "Implemented a deterministic strict Simulation route from Aemeath opening through Mornye Reactor Husk, Lynae core route/Hyvatia, Aemeath real Tune Break, Overdrive, Sigillum, and both enhanced Seraphic Duets. External re-execution passed route/runtime checks; candidate 104 remains pending after correcting reporting artifacts for source-aware damage attribution and CSV scheduler order. This is not the 120-second baseline.",
+      "summary": "External review promoted the strict full real-cycle integration candidate to baseline 104. The route remains a 41-action/32.95s verified mechanics integration, not a 120-second baseline.",
       "final_combat_time": 32.949999999999996,
       "final_combat_frames": 1977,
       "total_damage": 1792244.9381157316,
       "route_duration_dps_not_120_second_baseline": 54392.86610366409,
       "placeholder_fallback_count": 1,
-      "external_review_status": "pending",
+      "external_review_status": "externally_verified",
       "damage_by_character": {
         "aemeath": 1404246.4250625486,
-        "lynae": 319145.0773344416,
-        "mornye": 68853.43571874128
-      }
+        "mornye": 68853.43571874128,
+        "lynae": 319145.0773344416
+      },
+      "latest_externally_verified_baseline": "104",
+      "baseline_archive": "ww-dps-simulator-2(104).zip",
+      "external_verification_claimed": true,
+      "selected_action_count": 41,
+      "resolved_action_count": 41,
+      "placeholder_fallback_locations": [
+        {
+          "step": 6,
+          "selected_action_id": "swap_to_mornye",
+          "resolved_action_id": "swap_to_mornye",
+          "fallback_swap_used": true,
+          "swap_timing_is_placeholder": true,
+          "transition_type": "normal_swap"
+        }
+      ],
+      "all_selected_actions_available": true,
+      "state_injection_used": false,
+      "policy_action_count": 25,
+      "observation_version": "slot_generic_mechanics_v5",
+      "observation_shape": 314,
+      "max_policy_action_slots": 32
+    },
+    {
+      "id": "M015",
+      "title": "120-second deterministic manual baseline",
+      "baseline": "manual_120s_baseline_candidate_105",
+      "status": "implemented_tests_passed_pending_external_review",
+      "candidate": "105",
+      "external_review_status": "pending",
+      "external_verification_claimed": false,
+      "latest_externally_verified_baseline": "104",
+      "summary": "Implemented deterministic human-authored 120.0s Simulation-only manual baseline and corrected source-aware reporting/accounting. Candidate 105 is pending external review and is not a global optimum claim.",
+      "route_json": "data/manual_120s_baseline_routes_v104.json",
+      "result_json": "results/manual_120s_baseline_v104_summary.json",
+      "timeline_csv": "results/manual_120s_baseline_v104_timeline.csv",
+      "report": "reports/manual_120s_baseline_v104.md",
+      "comparison_json": "results/manual_120s_baseline_v104_comparisons.json",
+      "comparison_report": "reports/manual_120s_baseline_v104_comparisons.md",
+      "manual_120s_baseline": {
+        "primary": {
+          "total_damage": 5165134.682363359,
+          "dps": 43042.78901969466,
+          "final_combat_time": 120.0,
+          "final_current_time": 165.03333333333336,
+          "selected_action_count": 148,
+          "resolved_action_count": 148,
+          "selected_sequence_sha256": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
+          "resolved_sequence_sha256": "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229",
+          "damage_by_character": {
+            "aemeath": 3733934.8538652016,
+            "lynae": 1162391.9084385103,
+            "mornye": 268807.92005964793
+          },
+          "placeholder_fallback_count": 1,
+          "placeholder_fallback_steps": [
+            6
+          ],
+          "tune_break_times": [
+            25.066666666666666,
+            54.93333333333333,
+            93.01666666666665
+          ],
+          "final_clipped_action": {
+            "step": 148,
+            "selected_action_id": "lynae_basic_attack",
+            "resolved_action_id": "lynae_kaleidoscopic_basic_stage_3",
+            "start_time": 119.83333333333333,
+            "end_time": 120.0,
+            "full_combat_time_cost": 0.6666666666666666,
+            "effective_clipped_cost": 0.1666666666666714,
+            "truncated_by_combat_limit": true,
+            "damage_before_cutoff": 0.0,
+            "damage_after_cutoff_excluded": 6395.257655214092
+          }
+        },
+        "comparisons": {
+          "primary": {
+            "total_damage": 5165134.682363359,
+            "dps": 43042.78901969466,
+            "delta_vs_primary_damage": 0.0,
+            "delta_vs_primary_percent": 0.0,
+            "damage_by_character": {
+              "aemeath": 3733934.8538652016,
+              "lynae": 1162391.9084385103,
+              "mornye": 268807.92005964793
+            },
+            "action_count": 148,
+            "placeholder_count": 1,
+            "tune_break_times": [
+              25.066666666666666,
+              54.93333333333333,
+              93.01666666666665
+            ],
+            "major_field_event_count": 53,
+            "route_hash": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
+            "known_limitations": [
+              "Opening normal-swap exact timing placeholder remains unresolved.",
+              "Mornye exact dodge-cancel next-input frame remains unresolved.",
+              "Source-unconfirmed active-Echo Off-Tune values remain runtime zero where unresolved.",
+              "Lynae Hyvatia Off-Tune source uncertainty remains unresolved."
+            ]
+          },
+          "no_lynae_control": {
+            "total_damage": 2515518.460173657,
+            "dps": 20962.653834780478,
+            "delta_vs_primary_damage": -2649616.222189702,
+            "delta_vs_primary_percent": -51.29810518275476,
+            "damage_by_character": {
+              "aemeath": 1997720.7910687788,
+              "lynae": 287292.05572559364,
+              "mornye": 230505.61337928416
+            },
+            "action_count": 146,
+            "placeholder_count": 0,
+            "tune_break_times": [
+              38.29999999999998,
+              68.89999999999995,
+              118.50000000000004
+            ],
+            "major_field_event_count": 46,
+            "route_hash": "ac31919697f6c6c5b3f623b4d881258c2071c76523b8ef60e791b093ac023786",
+            "known_limitations": [
+              "Opening normal-swap exact timing placeholder remains unresolved.",
+              "Mornye exact dodge-cancel next-input frame remains unresolved.",
+              "Source-unconfirmed active-Echo Off-Tune values remain runtime zero where unresolved.",
+              "Lynae Hyvatia Off-Tune source uncertainty remains unresolved."
+            ]
+          },
+          "reactor_husk_order_variant": {
+            "total_damage": 3841570.4373557484,
+            "dps": 32013.08697796457,
+            "delta_vs_primary_damage": -1323564.2450076109,
+            "delta_vs_primary_percent": -25.62497062326361,
+            "damage_by_character": {
+              "aemeath": 2716066.1684148605,
+              "lynae": 947823.6358734153,
+              "mornye": 177680.63306747313
+            },
+            "action_count": 140,
+            "placeholder_count": 1,
+            "tune_break_times": [
+              29.533333333333335,
+              63.966666666666676,
+              103.38333333333338
+            ],
+            "major_field_event_count": 45,
+            "route_hash": "294073c3ac8ca7200b73ac5d7bcdd737bf86d3f23ffdef575b730bc58a46ff89",
+            "known_limitations": [
+              "Opening normal-swap exact timing placeholder remains unresolved.",
+              "Mornye exact dodge-cancel next-input frame remains unresolved.",
+              "Source-unconfirmed active-Echo Off-Tune values remain runtime zero where unresolved.",
+              "Lynae Hyvatia Off-Tune source uncertainty remains unresolved."
+            ]
+          }
+        }
+      },
+      "route_hashes": {
+        "primary": {
+          "selected_sequence_sha256": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
+          "resolved_sequence_sha256": "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229"
+        },
+        "no_lynae_control": {
+          "selected_sequence_sha256": "ac31919697f6c6c5b3f623b4d881258c2071c76523b8ef60e791b093ac023786",
+          "resolved_sequence_sha256": "57cb95ec9038894fc6cbacf309ade8cadbd4d374ef5537edcb9ecdf94a4bd079"
+        },
+        "reactor_husk_order_variant": {
+          "selected_sequence_sha256": "294073c3ac8ca7200b73ac5d7bcdd737bf86d3f23ffdef575b730bc58a46ff89",
+          "resolved_sequence_sha256": "ad9ec00e103b6ecb189291fcfcc1cd4638301213955e27bd71cec83b1db125f1"
+        }
+      },
+      "state_injection_used": false,
+      "all_selected_actions_available": true,
+      "short_wait_used": false,
+      "policy_action_count": 25,
+      "observation_version": "slot_generic_mechanics_v5",
+      "observation_shape": 314,
+      "tests": [
+        "bundled python scripts/manual_120s_baseline.py --write-results passed",
+        "bundled python scripts/manual_120s_baseline_smoke_test.py passed",
+        "bundled python scripts/manual_120s_baseline_no_injection_guard_smoke_test.py passed",
+        "bundled python scripts/manual_120s_baseline_transition_guard_smoke_test.py passed",
+        "bundled python scripts/manual_120s_baseline_cutoff_smoke_test.py passed",
+        "bundled python scripts/manual_120s_baseline_damage_attribution_smoke_test.py passed",
+        "bundled python scripts/manual_120s_baseline_reporting_smoke_test.py passed",
+        "bundled python scripts/manual_120s_baseline_comparison_smoke_test.py passed",
+        "bundled python scripts/project_progress_manual_120s_baseline_alignment_smoke_test.py passed",
+        "bundled python scripts/manual_120s_baseline_resource_accounting_smoke_test.py passed"
+      ],
+      "unresolved_limits": [
+        "Opening normal-swap exact timing placeholder remains unresolved.",
+        "Mornye exact dodge-cancel next-input frame remains unresolved.",
+        "Source-unconfirmed active-Echo Off-Tune values remain runtime zero where unresolved.",
+        "Lynae Hyvatia Off-Tune source uncertainty remains unresolved.",
+        "Out-of-scope mechanics already recorded remain unresolved."
+      ]
     }
   ],
   "current_in_progress_task": {
-    "task": "full real-cycle integration with active Echoes",
+    "task": "120-second deterministic manual baseline",
     "status": "implemented_tests_passed_pending_external_review",
-    "latest_externally_verified_baseline": "103",
+    "candidate": "105",
     "external_review_required": true,
     "external_verification_claimed": false,
-    "baseline_archive": "ww-dps-simulator-2(103).zip",
-    "candidate_expected_next_archive": "ww-dps-simulator-2(104).zip",
-    "route_script": "scripts/full_real_cycle_integration.py",
-    "smoke_tests": [
-      "scripts/full_real_cycle_integration_smoke_test.py",
-      "scripts/full_real_cycle_scheduled_events_smoke_test.py",
-      "scripts/full_real_cycle_no_injection_guard_smoke_test.py",
-      "scripts/full_real_cycle_damage_attribution_smoke_test.py",
-      "scripts/full_real_cycle_timeline_csv_order_smoke_test.py"
-    ],
-    "result_json": "results/full_real_cycle_integration_v103_summary.json",
-    "timeline_csv": "results/full_real_cycle_integration_v103_timeline.csv",
-    "report": "reports/full_real_cycle_integration_v103.md",
-    "selected_action_count": 41,
-    "resolved_action_count": 41,
-    "final_combat_time": 32.949999999999996,
-    "final_combat_frames": 1977,
-    "total_damage": 1792244.9381157316,
-    "route_duration_dps_not_120_second_baseline": 54392.86610366409,
-    "damage_by_character": {
-      "aemeath": 1404246.4250625486,
-      "lynae": 319145.0773344416,
-      "mornye": 68853.43571874128
-    },
-    "placeholder_fallback_count": 1,
-    "placeholder_fallback_locations": [
-      {
-        "step": 6,
-        "selected_action_id": "swap_to_mornye",
-        "resolved_action_id": "swap_to_mornye",
-        "fallback_swap_used": true,
-        "swap_timing_is_placeholder": true,
-        "transition_type": "normal_swap"
+    "latest_externally_verified_baseline": "104",
+    "baseline_archive": "ww-dps-simulator-2(104).zip",
+    "candidate_expected_next_archive": "ww-dps-simulator-2(105).zip",
+    "route_script": "scripts/manual_120s_baseline.py",
+    "route_json": "data/manual_120s_baseline_routes_v104.json",
+    "result_json": "results/manual_120s_baseline_v104_summary.json",
+    "timeline_csv": "results/manual_120s_baseline_v104_timeline.csv",
+    "report": "reports/manual_120s_baseline_v104.md",
+    "comparison_json": "results/manual_120s_baseline_v104_comparisons.json",
+    "comparison_report": "reports/manual_120s_baseline_v104_comparisons.md",
+    "manual_120s_baseline": {
+      "primary": {
+        "total_damage": 5165134.682363359,
+        "dps": 43042.78901969466,
+        "final_combat_time": 120.0,
+        "final_current_time": 165.03333333333336,
+        "selected_action_count": 148,
+        "resolved_action_count": 148,
+        "selected_sequence_sha256": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
+        "resolved_sequence_sha256": "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229",
+        "damage_by_character": {
+          "aemeath": 3733934.8538652016,
+          "lynae": 1162391.9084385103,
+          "mornye": 268807.92005964793
+        },
+        "placeholder_fallback_count": 1,
+        "placeholder_fallback_steps": [
+          6
+        ],
+        "tune_break_times": [
+          25.066666666666666,
+          54.93333333333333,
+          93.01666666666665
+        ],
+        "final_clipped_action": {
+          "step": 148,
+          "selected_action_id": "lynae_basic_attack",
+          "resolved_action_id": "lynae_kaleidoscopic_basic_stage_3",
+          "start_time": 119.83333333333333,
+          "end_time": 120.0,
+          "full_combat_time_cost": 0.6666666666666666,
+          "effective_clipped_cost": 0.1666666666666714,
+          "truncated_by_combat_limit": true,
+          "damage_before_cutoff": 0.0,
+          "damage_after_cutoff_excluded": 6395.257655214092
+        }
+      },
+      "comparisons": {
+        "primary": {
+          "total_damage": 5165134.682363359,
+          "dps": 43042.78901969466,
+          "delta_vs_primary_damage": 0.0,
+          "delta_vs_primary_percent": 0.0,
+          "damage_by_character": {
+            "aemeath": 3733934.8538652016,
+            "lynae": 1162391.9084385103,
+            "mornye": 268807.92005964793
+          },
+          "action_count": 148,
+          "placeholder_count": 1,
+          "tune_break_times": [
+            25.066666666666666,
+            54.93333333333333,
+            93.01666666666665
+          ],
+          "major_field_event_count": 53,
+          "route_hash": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
+          "known_limitations": [
+            "Opening normal-swap exact timing placeholder remains unresolved.",
+            "Mornye exact dodge-cancel next-input frame remains unresolved.",
+            "Source-unconfirmed active-Echo Off-Tune values remain runtime zero where unresolved.",
+            "Lynae Hyvatia Off-Tune source uncertainty remains unresolved."
+          ]
+        },
+        "no_lynae_control": {
+          "total_damage": 2515518.460173657,
+          "dps": 20962.653834780478,
+          "delta_vs_primary_damage": -2649616.222189702,
+          "delta_vs_primary_percent": -51.29810518275476,
+          "damage_by_character": {
+            "aemeath": 1997720.7910687788,
+            "lynae": 287292.05572559364,
+            "mornye": 230505.61337928416
+          },
+          "action_count": 146,
+          "placeholder_count": 0,
+          "tune_break_times": [
+            38.29999999999998,
+            68.89999999999995,
+            118.50000000000004
+          ],
+          "major_field_event_count": 46,
+          "route_hash": "ac31919697f6c6c5b3f623b4d881258c2071c76523b8ef60e791b093ac023786",
+          "known_limitations": [
+            "Opening normal-swap exact timing placeholder remains unresolved.",
+            "Mornye exact dodge-cancel next-input frame remains unresolved.",
+            "Source-unconfirmed active-Echo Off-Tune values remain runtime zero where unresolved.",
+            "Lynae Hyvatia Off-Tune source uncertainty remains unresolved."
+          ]
+        },
+        "reactor_husk_order_variant": {
+          "total_damage": 3841570.4373557484,
+          "dps": 32013.08697796457,
+          "delta_vs_primary_damage": -1323564.2450076109,
+          "delta_vs_primary_percent": -25.62497062326361,
+          "damage_by_character": {
+            "aemeath": 2716066.1684148605,
+            "lynae": 947823.6358734153,
+            "mornye": 177680.63306747313
+          },
+          "action_count": 140,
+          "placeholder_count": 1,
+          "tune_break_times": [
+            29.533333333333335,
+            63.966666666666676,
+            103.38333333333338
+          ],
+          "major_field_event_count": 45,
+          "route_hash": "294073c3ac8ca7200b73ac5d7bcdd737bf86d3f23ffdef575b730bc58a46ff89",
+          "known_limitations": [
+            "Opening normal-swap exact timing placeholder remains unresolved.",
+            "Mornye exact dodge-cancel next-input frame remains unresolved.",
+            "Source-unconfirmed active-Echo Off-Tune values remain runtime zero where unresolved.",
+            "Lynae Hyvatia Off-Tune source uncertainty remains unresolved."
+          ]
+        }
       }
-    ],
-    "all_selected_actions_available": true,
+    },
+    "route_hashes": {
+      "primary": {
+        "selected_sequence_sha256": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
+        "resolved_sequence_sha256": "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229"
+      },
+      "no_lynae_control": {
+        "selected_sequence_sha256": "ac31919697f6c6c5b3f623b4d881258c2071c76523b8ef60e791b093ac023786",
+        "resolved_sequence_sha256": "57cb95ec9038894fc6cbacf309ade8cadbd4d374ef5537edcb9ecdf94a4bd079"
+      },
+      "reactor_husk_order_variant": {
+        "selected_sequence_sha256": "294073c3ac8ca7200b73ac5d7bcdd737bf86d3f23ffdef575b730bc58a46ff89",
+        "resolved_sequence_sha256": "ad9ec00e103b6ecb189291fcfcc1cd4638301213955e27bd71cec83b1db125f1"
+      }
+    },
     "state_injection_used": false,
+    "all_selected_actions_available": true,
+    "short_wait_used": false,
     "policy_action_count": 25,
-    "policy_action_order_tail": [
-      "swap_to_mornye",
-      "swap_to_lynae",
-      "mornye_echo_reactor_husk",
-      "aemeath_echo_sigillum"
-    ],
     "observation_version": "slot_generic_mechanics_v5",
     "observation_shape": 314,
     "max_policy_action_slots": 32,
-    "direct_action_manifest_sha256": "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d",
     "notes": [
-      "Active-Echo baseline 103 is externally verified; candidate 104 is not externally verified.",
-      "Full-cycle route uses Simulation directly with strict availability checks and no short_wait substitution.",
-      "The route is mechanically complete but not fully source-exact in absolute timing because opening swap_to_mornye uses the known 0.50-second normal-swap placeholder.",
-      "Mornye Reactor Husk preserves the verified static ATK profile; in the integrated route its hit snapshots the existing Halo ATK runtime buff.",
-      "This candidate is not the 120-second manual baseline and is not a global optimum claim.",
-      "Candidate 104 external re-execution passed route/runtime checks, but reporting artifacts were corrected for source-aware damage attribution and deterministic same-time scheduled-event CSV ordering."
+      "Human-authored deterministic lower-bound reference, not a global optimum.",
+      "Uses Simulation directly with strict availability checks and no silent action replacement.",
+      "Candidate 105 is pending external review.",
+      "Source-aware resource accounting, complete damage category totals, and active Echo damage reporting corrected without changing the primary route."
     ],
     "unresolved_limits": [
-      "Opening Aemeath -> Mornye normal-swap exact timing is unresolved; current route uses the known 0.50s placeholder.",
-      "Mornye exact dodge-cancel next-input frame remains unresolved; Reactor Husk uses the verified uncancelled 66F route.",
-      "Mornye/Aemeath/Lynae active Echo Off-Tune values are source-unconfirmed and remain runtime zero where unresolved."
-    ],
-    "tests": [
-      ".venv\\Scripts\\python.exe -m compileall . failed before Python start: unable to create process",
-      "bundled python -m compileall -q . passed",
-      "bundled python scripts/full_real_cycle_integration.py --write-results passed",
-      "bundled python scripts/full_real_cycle_integration_smoke_test.py passed",
-      "bundled python scripts/full_real_cycle_scheduled_events_smoke_test.py passed",
-      "bundled python scripts/full_real_cycle_damage_attribution_smoke_test.py passed",
-      "bundled python scripts/full_real_cycle_timeline_csv_order_smoke_test.py passed",
-      "bundled python scripts/full_real_cycle_no_injection_guard_smoke_test.py passed",
-      "bundled python scripts/project_progress_active_echo_alignment_smoke_test.py passed",
-      "bundled python scripts/lynae_off_tune_real_cycle_smoke_test.py passed",
-      "bundled python scripts/lynae_real_cycle_concerto_smoke_test.py passed",
-      "bundled python scripts/aemeath_rupturous_trail_real_tune_break_smoke_test.py passed",
-      "bundled python scripts/aemeath_overdrive_forte_enhancement_state_smoke_test.py passed",
-      "bundled python scripts/aemeath_seraphic_duet_trail_multiplier_smoke_test.py passed",
-      "bundled python scripts/aemeath_seraphic_duet_trail_consumption_smoke_test.py passed",
-      "bundled python scripts/mornye_active_echo_runtime_smoke_test.py passed",
-      "bundled python scripts/aemeath_sigillum_zero_time_activation_smoke_test.py passed",
-      "bundled python scripts/aemeath_sigillum_auxiliary_state_isolation_smoke_test.py passed",
-      "bundled python scripts/aemeath_sigillum_scheduler_smoke_test.py passed",
-      "bundled python scripts/aemeath_sigillum_combat_cutoff_smoke_test.py passed",
-      "bundled python scripts/echo_ability_damage_category_runtime_smoke_test.py passed",
-      "bundled python scripts/mornye_syntony_field_scheduler_smoke_test.py passed",
-      "bundled python scripts/mornye_syntony_field_healing_scheduler_smoke_test.py passed",
-      "bundled python scripts/lynae_spray_paint_scheduler_smoke_test.py passed",
-      "bundled python scripts/scheduled_effect_combat_time_smoke_test.py passed",
-      "bundled python scripts/scheduled_effect_determinism_smoke_test.py passed",
-      "bundled python scripts/scheduled_effect_boundary_zero_phase_smoke_test.py passed",
-      "bundled python scripts/scheduled_effect_runtime_guard_smoke_test.py passed",
-      "bundled python scripts/mornye_aemeath_active_echo_policy_order_smoke_test.py passed",
-      "bundled python scripts/rl_observation_party_shape_stability_smoke_test.py passed",
-      "bundled python scripts/rl_observation_shape_guard_smoke_test.py passed",
-      "bundled python scripts/aemeath_mornye_lynae_observation_preflight_smoke_test.py passed",
-      "bundled python scripts/aemeath_mornye_lynae_short_rollout_smoke_test.py passed",
-      "bundled python scripts/env_smoke_test.py passed",
-      "bundled python scripts/apply_direct_action_data_v61.py --check --fail-on-diff passed with field_level_change_count=0",
-      "manifest copies/hash ok for ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d",
-      "touched-file UTF-8/no-BOM/no-U+FFFD/no stale U+9DAF U+ACC8 U+3058 check passed",
-      "repository JSON parse passed for 108 files",
-      "broad UTF-8 scan found pre-existing BOMs in data/extracted/mornye_excel_actions_source_audit.csv and data/extracted/mornye_raw_rows.csv; these files were not touched by this task"
-    ],
-    "test_failures_or_skips": [
-      ".venv launcher failed before Python start; bundled Python was used for validation",
-      "Broad repository text scan found pre-existing BOMs in two untouched extracted CSVs; touched-file hygiene passed"
+      "Opening normal-swap exact timing placeholder remains unresolved.",
+      "Mornye exact dodge-cancel next-input frame remains unresolved.",
+      "Source-unconfirmed active-Echo Off-Tune values remain runtime zero where unresolved.",
+      "Lynae Hyvatia Off-Tune source uncertainty remains unresolved.",
+      "Out-of-scope mechanics already recorded remain unresolved."
     ]
   },
   "manual_cycle_reference": {
-    "status": "user_researched_reference_cycle",
-    "purpose": "학습 모델이 최소한 재현해야 하는 인간 기준선. 모델이 반드시 초과해야 하는 전역 최적 증명은 아님.",
-    "opening": {
-      "aemeath": [
-        "aemeath_basic_attack x4",
-        "aemeath_resonance_skill",
-        "swap_to_mornye"
-      ],
-      "mornye_no_counter": [
-        "mornye_resonance_skill",
-        "mornye_basic_attack x3",
-        "mornye_heavy_attack",
-        "mornye_resonance_liberation",
-        "mornye_resonance_skill",
-        "mornye_basic_attack x3",
-        "mornye_heavy_attack",
-        "swap_to_lynae"
-      ],
-      "lynae": [
-        "Lynae real Intro",
-        "lynae_resonance_skill",
-        "lynae_spark_collision",
-        "lynae_polychrome_leap x3",
-        "lynae_visual_impact",
-        "lynae_resonance_liberation",
-        "lynae_echo_hyvatia",
-        "swap_to_aemeath"
-      ],
-      "aemeath_pre_break": [
-        "Aemeath real Intro",
-        "aemeath_basic_attack x2",
-        "manual aemeath_tune_break"
-      ]
+    "status": "candidate_105_implemented_pending_external_review",
+    "source_baseline_label": "104",
+    "candidate_label": "105",
+    "not_global_optimum": true,
+    "primary_total_damage": 5165134.682363359,
+    "primary_dps": 43042.78901969466,
+    "primary_route_hash": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
+    "comparison_totals": {
+      "primary": 5165134.682363359,
+      "no_lynae_control": 2515518.460173657,
+      "reactor_husk_order_variant": 3841570.4373557484
     },
-    "aemeath_burst_after_break": {
-      "status": "partially_verified_requires_30_stack_and_resource_review",
-      "user_reference": [
-        "resonance_liberation",
-        "resonance_skill / Seraphic Duet sequence",
-        "basic_attack x3",
-        "resonance_skill",
-        "heavy_attack",
-        "resonance_skill or second liberation",
-        "echo",
-        "basic_attack x4",
-        "resonance_skill"
-      ]
-    },
-    "comparison_policy": {
-      "manual_reference": "사람이 지정한 상태 머신 기준선",
-      "search_from_scratch": "인간 사이클 보너스 없이 총 피해만 최적화",
-      "bc_warm_start": "인간 사이클 모방 후 총 피해 기준 개선",
-      "final_candidate": "동일 조건 120초 총 피해 최대값"
-    },
-    "full_real_cycle_integration_candidate_104": {
-      "status": "implemented_tests_passed_pending_external_review",
-      "result_json": "results/full_real_cycle_integration_v103_summary.json",
-      "timeline_csv": "results/full_real_cycle_integration_v103_timeline.csv",
-      "final_combat_time": 32.949999999999996,
-      "total_damage": 1792244.9381157316,
-      "not_120_second_baseline": true,
-      "external_review_status": "pending",
-      "damage_by_character": {
-        "aemeath": 1404246.4250625486,
-        "lynae": 319145.0773344416,
-        "mornye": 68853.43571874128
-      },
-      "reporting_artifact_corrections": [
-        "source-aware per-character damage attribution includes Tune Break response and generated mechanic damage events",
-        "timeline CSV preserves same-time scheduled-effect event-log order with explicit sequence columns"
-      ]
+    "artifacts": {
+      "route_json": "data/manual_120s_baseline_routes_v104.json",
+      "summary_json": "results/manual_120s_baseline_v104_summary.json",
+      "timeline_csv": "results/manual_120s_baseline_v104_timeline.csv",
+      "report": "reports/manual_120s_baseline_v104.md",
+      "comparison_json": "results/manual_120s_baseline_v104_comparisons.json",
+      "comparison_report": "reports/manual_120s_baseline_v104_comparisons.md"
     }
   },
   "known_unresolved_or_missing": [
@@ -521,8 +721,8 @@
     {
       "id": "U007",
       "item": "120초 수동 기준선",
-      "status": "next_after_full_cycle_candidate_external_review",
-      "note": "The strict full real-cycle integration route is implemented as candidate 104 pending external review. The 120-second manual baseline remains the next task after that review and is not built yet."
+      "status": "implemented_candidate_105_pending_external_review",
+      "note": "The deterministic 120-second primary manual baseline is implemented and tests passed as candidate 105. candidate 105 is not externally verified; baseline 104 remains the latest externally verified baseline. After external review, the next implementation task is BC demonstration regeneration and PPO retraining."
     },
     {
       "id": "U008",
@@ -545,42 +745,30 @@
     {
       "id": "U011",
       "item": "Opening Aemeath -> Mornye normal-swap exact timing",
-      "status": "unresolved_placeholder_in_candidate_104",
-      "note": "The strict full-cycle route allows exactly one placeholder/fallback swap: opening swap_to_mornye before Aemeath has full Concerto. Current runtime uses the known generic 0.50-second normal-swap placeholder; no source-exact normal-swap timing was fabricated."
+      "status": "unresolved_placeholder_in_candidate_105",
+      "note": "Candidate 105 preserves exactly one placeholder/fallback swap: opening swap_to_mornye before Aemeath has full Concerto. The current runtime still uses the known generic 0.50-second normal-swap placeholder; no source-exact normal-swap timing was fabricated."
     }
   ],
   "next_planned_tasks": [
     {
-      "order": 1,
-      "task": "external review of full-cycle candidate 104",
-      "outputs": [
-        "review full_real_cycle_integration_v103_summary.json",
-        "review timeline CSV",
-        "confirm one opening placeholder swap and no state injection"
-      ]
+      "task": "external review of manual baseline candidate 105",
+      "status": "next",
+      "note": "Review route artifacts, strict tests, comparison controls, and candidate archive ww-dps-simulator-2(105).zip."
     },
     {
-      "order": 2,
-      "task": "120-second manual baseline",
-      "status": "next_after_external_review",
-      "outputs": [
-        "total damage",
-        "DPS",
-        "damage by character",
-        "buff uptime",
-        "Off-Tune timeline",
-        "action log"
-      ]
-    },
-    {
-      "order": 3,
       "task": "BC/PPO regeneration",
-      "note": "Old 23-action demonstrations and checkpoints are incompatible with the 25-action active-Echo policy list."
+      "status": "after_manual_baseline_external_review",
+      "note": "Regenerate BC demonstrations and retrain PPO for the 25-action, observation-v5/314 contract after candidate 105 review."
     },
     {
-      "order": 4,
       "task": "Beam Search/MCTS comparison",
-      "note": "Compare only after the manual 120-second baseline and regenerated action-space artifacts exist."
+      "status": "future_after_manual_and_regenerated_bc_ppo",
+      "note": "Compare only after the manual 120-second baseline and regenerated BC/PPO artifacts exist."
+    },
+    {
+      "task": "source-resolution follow-ups",
+      "status": "future",
+      "note": "Opening swap exact timing, Mornye dodge-cancel frame, and active-Echo Off-Tune source values remain unresolved."
     }
   ],
   "validation_invariants": [
@@ -1097,7 +1285,28 @@
         "lynae": 319145.0773344416,
         "mornye": 68853.43571874128
       }
+    },
+    {
+      "candidate": "105",
+      "task": "120-second deterministic manual baseline",
+      "status": "implemented_tests_passed_pending_external_review",
+      "primary_total_damage": 5165134.682363359,
+      "primary_dps": 43042.78901969466,
+      "route_hashes": {
+        "primary": {
+          "selected_sequence_sha256": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
+          "resolved_sequence_sha256": "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229"
+        },
+        "no_lynae_control": {
+          "selected_sequence_sha256": "ac31919697f6c6c5b3f623b4d881258c2071c76523b8ef60e791b093ac023786",
+          "resolved_sequence_sha256": "57cb95ec9038894fc6cbacf309ade8cadbd4d374ef5537edcb9ecdf94a4bd079"
+        },
+        "reactor_husk_order_variant": {
+          "selected_sequence_sha256": "294073c3ac8ca7200b73ac5d7bcdd737bf86d3f23ffdef575b730bc58a46ff89",
+          "resolved_sequence_sha256": "ad9ec00e103b6ecb189291fcfcc1cd4638301213955e27bd71cec83b1db125f1"
+        }
+      }
     }
   ],
-  "next_planned_task": "external review of full-cycle candidate 104, then 120-second manual baseline"
+  "next_planned_task": "external review of manual baseline candidate 105, then BC demonstration regeneration and PPO retraining"
 }
