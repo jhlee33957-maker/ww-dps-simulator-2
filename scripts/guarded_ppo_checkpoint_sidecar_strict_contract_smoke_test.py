@@ -4,6 +4,7 @@ import json
 import tempfile
 from pathlib import Path
 import sys
+import zipfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -34,7 +35,7 @@ def main() -> None:
         root = Path(temp_dir)
         model = root / "models" / "guarded_ppo_v109" / branch["branch_id"] / "step_000010000.zip"
         model.parent.mkdir(parents=True)
-        model.write_bytes(b"synthetic checkpoint bytes")
+        _write_synthetic_model(model, num_timesteps=10240, seed=effective_seed(branch, 1), n_steps=512)
         sidecar = Path(str(model) + ".ppo_metadata.json")
         metadata = _valid_metadata(
             model=model,
@@ -76,6 +77,13 @@ def main() -> None:
             "branch_base_seed": 999,
             "effective_chunk_seed": 999,
             "actual_model_seed": 999,
+            "requested_chunk_timesteps": 999,
+            "requested_cumulative_timesteps": 999,
+            "actual_chunk_timesteps": 999,
+            "actual_model_num_timesteps": 999,
+            "rollout_granularity": 999,
+            "timestep_overshoot": 999,
+            "timestep_overshoot_ratio": 9.99,
             "experiment_plan_path": "data/other_plan.json",
             "experiment_plan_sha256": "1" * 64,
             "source_experiment_plan_path": "data/other_plan.json",
@@ -126,6 +134,13 @@ def _valid_metadata(*, model: Path, branch: dict[str, object], plan_path: Path, 
         "branch_base_seed": branch["seed"],
         "effective_chunk_seed": effective_seed_value,
         "actual_model_seed": effective_seed_value,
+        "requested_chunk_timesteps": branch["chunk_timesteps"],
+        "requested_cumulative_timesteps": branch["chunk_timesteps"],
+        "actual_chunk_timesteps": 10240,
+        "actual_model_num_timesteps": 10240,
+        "rollout_granularity": 512,
+        "timestep_overshoot": 240,
+        "timestep_overshoot_ratio": 0.024,
         "experiment_plan_path": plan_path.as_posix(),
         "experiment_plan_sha256": sha256_file(plan_path),
         "source_experiment_plan_path": plan_path.as_posix(),
@@ -150,6 +165,16 @@ def _valid_metadata(*, model: Path, branch: dict[str, object], plan_path: Path, 
 
 def _write(path: Path, payload: dict[str, object]) -> None:
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
+def _write_synthetic_model(path: Path, *, num_timesteps: int, seed: int, n_steps: int) -> None:
+    payload = {
+        "num_timesteps": num_timesteps,
+        "seed": seed,
+        "n_steps": n_steps,
+    }
+    with zipfile.ZipFile(path, "w") as zf:
+        zf.writestr("data", json.dumps(payload))
 
 
 def _assert_fails(payload: dict[str, object], sidecar: Path, branch: dict[str, object], model: Path, label: str) -> None:

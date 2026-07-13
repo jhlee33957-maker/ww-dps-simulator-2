@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import sys
+import hashlib
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -12,6 +13,7 @@ sys.path.insert(0, str(ROOT))
 def main() -> None:
     from rl.guarded_ppo import DEFAULT_PLAN_PATH, run_dry_run_plan, sha256_file, validate_plan
 
+    canonical_before = _snapshot_canonical_outputs()
     plan = json.loads(DEFAULT_PLAN_PATH.read_text(encoding="utf-8"))
     result = validate_plan(plan, plan_path=DEFAULT_PLAN_PATH)
     assert result["status"] == "ok"
@@ -44,8 +46,7 @@ def main() -> None:
     assert len(dry_run["incumbent_records"]) == 3
     assert dry_run["canonical_models_created"] is False
     assert dry_run["canonical_results_created"] is False
-    assert not (ROOT / "models" / "guarded_ppo_v109").exists()
-    assert not (ROOT / "results" / "guarded_ppo_v109").exists()
+    assert _snapshot_canonical_outputs() == canonical_before
     for mutation in (
         ("branches", 0, "seed", 99),
         ("branches", 1, "learning_rate", 0.123),
@@ -61,6 +62,22 @@ def main() -> None:
         else:
             raise AssertionError(f"plan mutation unexpectedly passed: {mutation}")
     print("guarded_ppo_plan_contract_smoke_test ok")
+
+
+def _snapshot_canonical_outputs() -> dict[str, tuple[str, int]]:
+    roots = [ROOT / "models" / "guarded_ppo_v109", ROOT / "results" / "guarded_ppo_v109"]
+    snapshot: dict[str, tuple[str, int]] = {}
+    for root in roots:
+        if not root.exists():
+            continue
+        for path in sorted(item for item in root.rglob("*") if item.is_file()):
+            rel = path.relative_to(ROOT).as_posix()
+            snapshot[rel] = (_sha256(path), path.stat().st_mtime_ns)
+    return snapshot
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 if __name__ == "__main__":

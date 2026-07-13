@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import contextlib
+import hashlib
 import io
 import tempfile
 import time
@@ -17,15 +18,14 @@ def main() -> None:
     started = time.perf_counter()
     from rl.guarded_ppo import parse_and_validate_guarded_ppo_args, run_dry_run_plan
 
+    canonical_before = _snapshot_canonical_outputs()
     _assert_rejected(parse_and_validate_guarded_ppo_args, [], "No mode selected")
     _assert_rejected(parse_and_validate_guarded_ppo_args, ["--resume"], "--resume requires --execute")
 
     dry_run_args = parse_and_validate_guarded_ppo_args(["--dry-run-plan", "--plan", str(PLAN)])
     result = run_dry_run_plan(dry_run_args.plan_path, output_root=dry_run_args.output_root)
     assert result["status"] == "dry_run_plan_ok"
-    assert result["canonical_models_created"] is False
-    assert result["canonical_results_created"] is False
-    _assert_no_canonical_outputs()
+    assert _snapshot_canonical_outputs() == canonical_before
 
     with tempfile.TemporaryDirectory(prefix="guarded-cli-gate-") as temp_dir:
         _assert_rejected(
@@ -46,7 +46,7 @@ def main() -> None:
         ["--execute", "--smoke-run", "--output-root", str(ROOT)],
         "--smoke-run cannot target",
     )
-    _assert_no_canonical_outputs()
+    assert _snapshot_canonical_outputs() == canonical_before
     elapsed = time.perf_counter() - started
     print(f"guarded_ppo_cli_execution_gate_smoke_test ok ({elapsed:.3f}s)")
 
@@ -63,9 +63,19 @@ def _assert_rejected(callable_object, args: list[str], expected: str) -> None:
     raise AssertionError(f"CLI args unexpectedly accepted: {args}")
 
 
-def _assert_no_canonical_outputs() -> None:
-    assert not (ROOT / "models" / "guarded_ppo_v109").exists()
-    assert not (ROOT / "results" / "guarded_ppo_v109").exists()
+def _snapshot_canonical_outputs() -> dict[str, tuple[str, int]]:
+    roots = [ROOT / "models" / "guarded_ppo_v109", ROOT / "results" / "guarded_ppo_v109"]
+    snapshot: dict[str, tuple[str, int]] = {}
+    for root in roots:
+        if not root.exists():
+            continue
+        for path in sorted(item for item in root.rglob("*") if item.is_file()):
+            snapshot[path.relative_to(ROOT).as_posix()] = (_sha256(path), path.stat().st_mtime_ns)
+    return snapshot
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 if __name__ == "__main__":

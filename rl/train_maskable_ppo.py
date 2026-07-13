@@ -235,6 +235,7 @@ def main() -> None:
         print("dry_run_train_config ok: model compatibility check passed; learn/save skipped.")
         return
 
+    pre_learn_num_timesteps = int(getattr(model, "num_timesteps", 0))
     train_started_at = _utc_timestamp()
     train_start_seconds = time.monotonic()
     progress_callback = _TrainingProgressCallback(
@@ -255,6 +256,10 @@ def main() -> None:
 
     args.model_path.parent.mkdir(parents=True, exist_ok=True)
     model.save(args.model_path)
+    actual_model_num_timesteps = int(getattr(model, "num_timesteps", 0))
+    actual_chunk_timesteps = actual_model_num_timesteps - pre_learn_num_timesteps
+    requested_cumulative_timesteps = args.cumulative_timesteps or args.timesteps
+    timestep_overshoot = actual_model_num_timesteps - requested_cumulative_timesteps
     model_sha256 = file_sha256(args.model_path)
     parent_model_sha256 = None
     if args.load_model is not None:
@@ -290,6 +295,17 @@ def main() -> None:
         "chunk_index": args.chunk_index,
         "chunk_timesteps": args.timesteps,
         "cumulative_branch_timesteps": args.cumulative_timesteps,
+        "requested_chunk_timesteps": args.timesteps,
+        "requested_cumulative_timesteps": requested_cumulative_timesteps,
+        "actual_chunk_timesteps": actual_chunk_timesteps,
+        "actual_model_num_timesteps": actual_model_num_timesteps,
+        "rollout_granularity": args.n_steps,
+        "timestep_overshoot": timestep_overshoot,
+        "timestep_overshoot_ratio": (
+            float(timestep_overshoot) / float(requested_cumulative_timesteps)
+            if requested_cumulative_timesteps
+            else 0.0
+        ),
         "experiment_plan_path": project_relative_posix(args.experiment_plan_path, root=PROJECT_ROOT)
         if args.experiment_plan_path
         else None,

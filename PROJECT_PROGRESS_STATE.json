@@ -14,13 +14,13 @@
   },
   "status": {
     "last_updated": "2026-07-13T00:00:00+09:00",
-    "latest_verified_archive": "ww-dps-simulator-2(108).zip",
-    "latest_verified_baseline_label": "108",
+    "latest_verified_archive": "ww-dps-simulator-2-110.zip",
+    "latest_verified_baseline_label": "110",
     "current_task_status": "implemented_tests_passed_pending_external_review",
-    "current_task": "guarded multi-branch PPO continuation infrastructure with immutable checkpoints and deterministic damage-only evaluation",
-    "current_task_expected_next_archive": "109",
+    "current_task": "independent deterministic diverse Beam Search infrastructure",
+    "current_task_expected_next_archive": "111",
     "do_not_treat_current_task_as_complete_until_reviewed": true,
-    "candidate_expected_next_archive": "ww-dps-simulator-2-109.zip"
+    "candidate_expected_next_archive": "ww-dps-simulator-2-111.zip"
   },
   "source_of_truth": {
     "raw_action_workbook": "鸣潮动作数据汇总(5).xlsx",
@@ -577,143 +577,101 @@
     }
   ],
   "current_in_progress_task": {
-    "task": "guarded multi-branch PPO continuation infrastructure with immutable checkpoints and deterministic damage-only evaluation",
+    "task": "independent deterministic diverse Beam Search infrastructure",
     "status": "implemented_tests_passed_pending_external_review",
-    "candidate": "109",
+    "candidate": "111",
     "external_review_required": true,
+    "external_review_status": "pending",
     "external_verification_claimed": false,
-    "latest_externally_verified_baseline": "108",
-    "baseline_archive": "ww-dps-simulator-2(108).zip",
-    "candidate_expected_next_archive": "ww-dps-simulator-2-109.zip",
-    "bc_training_executed": true,
-    "full_bc_training_executed": true,
-    "ppo_training_executed": true,
-    "prior_ppo_training_executed": true,
-    "guarded_long_experiment_executed": false,
-    "objective": "deterministic_120s_total_damage_only",
-    "party": "aemeath_mornye_lynae_enabled_test_party",
-    "global_optimum_claimed": false,
-    "route_similarity_objective": false,
-    "character_specific_reward": false,
-    "bc_refresh_enabled": false,
-    "rollback_enabled": false,
-    "early_stopping_enabled": false,
-    "ppo_training": {
-      "source_bc_model": "models/maskable_ppo_bc_v105.zip",
-      "source_bc_model_sha256": "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e",
-      "ppo_model_path": "models/maskable_ppo_candidate_after_bc_v105.zip",
-      "ppo_model_sha256": "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513",
-      "timesteps": 100000,
-      "seed": 42,
-      "learning_rate": 0.0003,
-      "entropy_coefficient": 0.01,
-      "ent_coef": 0.01,
-      "n_steps": 512,
-      "batch_size": 64,
-      "gamma": 0.999,
-      "initial_active_character": "aemeath",
-      "curriculum_reset_mode": "none",
-      "elapsed_seconds": 321.1551833000267,
-      "training_started_at": "2026-07-12T16:33:45.564697+00:00",
-      "training_finished_at": "2026-07-12T16:39:06.719900+00:00"
-    },
-    "ppo_deterministic_evaluation": {
-      "summary_path": "results/ppo_100k_evaluation_summary.json",
-      "timeline_path": "results/ppo_100k_timeline.csv",
-      "total_damage": 3600637.129626801,
-      "dps": 30005.309413556675,
-      "final_combat_time": 120.0,
-      "selected_action_count": 152,
-      "resolved_action_count": 152,
-      "selected_sequence_sha256": "0bba8688b3a085fde3a842901f659b24fdefd009102cc1ccba5a0d971a27c11d",
-      "resolved_sequence_sha256": "9650b6e4d1b8f9ba616c26293f60c8cc4a5d6ea57dcf7153305aa085f84ad6e1",
-      "manual_baseline_total_damage": 5165134.682363359,
-      "manual_baseline_damage_ratio": 0.6971042094839032,
-      "manual_baseline_damage_delta": -1564497.5527365585,
-      "loss_vs_manual_percent": 30.28957905160968,
-      "manual_baseline_selected_sequence_match": false,
-      "manual_baseline_resolved_sequence_match": false,
-      "manual_baseline_character_damage_match": false,
-      "damage_by_character": {
-        "aemeath": 2674131.053725695,
-        "mornye": 201528.93426401448,
-        "lynae": 724977.1416370921
-      },
-      "scheduled_damage": 140026.5111366104,
-      "effective_damage_role_breakdown_delta": 0.0,
-      "first_selected_action_divergence": {
-        "zero_based_step": 4,
-        "baseline": "aemeath_resonance_skill",
-        "ppo": "swap_to_mornye"
-      },
-      "model_metadata_mismatches": {},
-      "model_space_mismatches": {}
-    },
-    "ppo_candidate_status": "valid_but_regressed",
-    "prior_ppo_status": "valid_but_regressed",
-    "prior_ppo_model": "models/maskable_ppo_candidate_after_bc_v105.zip",
+    "latest_externally_verified_baseline": "110",
+    "baseline_archive": "ww-dps-simulator-2-110.zip",
+    "candidate_expected_next_archive": "ww-dps-simulator-2-111.zip",
+    "beam_search_long_execution": false,
+    "mcts_execution": false,
+    "calibration_stage_executed": false,
+    "full_search_stage_executed": false,
     "current_best_model": "models/maskable_ppo_bc_v105.zip",
     "current_best_result": 5165134.682363356,
-    "comparison_artifact": "results/manual_bc_ppo_comparison_v108.json",
-    "plan_path": "data/guarded_ppo_experiment_plan_v109.json",
-    "plan_sha256": "0306c734347e49460fd7273bce546eed80a2db657e460eb707f5cab961a9e0e6",
-    "checkpoint_root": "models/guarded_ppo_v109",
-    "results_root": "results/guarded_ppo_v109",
-    "immutable_checkpoint_pattern": "models/guarded_ppo_v109/<branch>/step_XXXXXXXXX.zip",
-    "branch_ids": [
-      "bc_conservative_seed_11",
-      "bc_exploratory_seed_73",
-      "scratch_control_seed_137"
+    "current_best_dps": 43042.78901969464,
+    "search_objective": "deterministic_120s_total_damage_only",
+    "manual_route_guidance": false,
+    "bc_ppo_policy_guidance": false,
+    "route_similarity_objective": false,
+    "global_optimum_claimed": false,
+    "plan_path": "data/beam_search_plan_v111.json",
+    "plan_sha256": "b504def4e0c1da82ef2a6024d19ccac76fe175df51899e50d12f3bff99a17998",
+    "report": "reports/beam_search_v111.md",
+    "stages": [
+      {
+        "stage_id": "calibration_30s",
+        "combat_duration": 30.0,
+        "time_bucket_width": 0.5,
+        "beam_width": 1024,
+        "global_damage_quota": 512,
+        "diversity_retention_quota": 512,
+        "max_states_per_diversity_key": 8,
+        "maximum_expansions": 500000
+      },
+      {
+        "stage_id": "full_120s",
+        "combat_duration": 120.0,
+        "time_bucket_width": 0.5,
+        "beam_width": 4096,
+        "global_damage_quota": 2048,
+        "diversity_retention_quota": 2048,
+        "max_states_per_diversity_key": 8,
+        "maximum_expansions": 5000000
+      }
     ],
-    "branch_roles": {
-      "bc_conservative_seed_11": "BC warm start, conservative PPO continuation",
-      "bc_exploratory_seed_73": "BC warm start, exploratory PPO continuation",
-      "scratch_control_seed_137": "scratch PPO control branch"
-    },
-    "scratch_control_purpose": "separate control for BC warm-start lift; not a replacement for the incumbent BC model",
-    "branch_continuation_rule": "each branch resumes from its own latest immutable checkpoint; global best is recorded only as metadata and is never loaded by default",
-    "winner": "bc_model",
-    "winner_model": "models/maskable_ppo_bc_v105.zip",
-    "observation_version": "slot_generic_mechanics_v5",
-    "observation_shape": 314,
-    "policy_action_count": 25,
-    "max_policy_action_slots": 32,
-    "source_route_file_sha256": "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a",
-    "dataset_sha256": "b020a1b9309b46bd87eb3fff4837aead53035c4c84620962f47feb9fc11846ff",
-    "action_data_hash": "d6377d54a1abb985dc5f58866321c61c7b904a6b73ddc1538be7e38d36a99ff1",
-    "party_config_hash": "bd106ba1c0f5581436c35fea736a00fd6ad92b131f8b43ba8cf1e3dc89cbcb11",
-    "manifest_sha256": "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d",
-    "manual_bc_selected_sequence_sha256": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
-    "manual_bc_resolved_sequence_sha256": "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229",
-    "manual_uploaded_archive_finding": {
-      "zip_sha256": "57f0c10a72b0fcff71c9a8da196329e317902b572c49344682504ea0f5c6300e",
-      "entry_count": 641,
-      "cache_entries": 0,
-      "archive_integrity_checker": "passed",
-      "externally_verified": false,
-      "not_final_candidate_reasons": [
-        "dedicated PPO evaluation outputs absent",
-        "progress metadata stale",
-        "builder could not include the PPO model",
-        "explicit best-result comparison absent"
+    "notes": [
+      "Candidate 111 implements Beam Search infrastructure only and remains pending external review.",
+      "Calibration 30s and full 120s Beam Search stages were not run for this candidate.",
+      "Beam Search is independent of manual route, BC/PPO policy probabilities, route similarity bonuses, and learned value functions.",
+      "Winner selection remains deterministic 120-second total damage only; route similarity is diagnostic only.",
+      "MCTS remains a later option only if reviewed Beam Search coverage is inadequate or excessively myopic."
+    ],
+    "validation_summary": {
+      "status": "pending_final_archive_validation",
+      "archive_path": "../ww-dps-simulator-2-111.zip",
+      "archive_exact_validation_passed": false,
+      "archive_sha256_reported_outside_progress_state": true,
+      "canonical_beam_search_results_written": false,
+      "smoke_max_combat_duration": 3.0,
+      "smoke_max_expansions": 2000,
+      "notes": [
+        "Candidate 111 destination-accumulator hot-path, spill, compact manifest/CLI, metrics, and lineage-tie correction passed bounded smoke validation; final archive validation is pending.",
+        "30-second calibration, full 120-second Beam Search, MCTS, BC training, and PPO training were not run."
       ]
     },
-    "notes": [
-      "Candidate 108 has passed external review and is the latest verified baseline.",
-      "The PPO 100k candidate is structurally valid but materially regressed versus the verified BC/manual result.",
-      "The BC checkpoint remains the current best model and was not overwritten or demoted.",
-      "Candidate 109 remains pending external review; no guarded long PPO experiment has been executed.",
-      "Cross-platform guarded result ingestion now canonicalizes legacy Windows and POSIX project paths to project-relative POSIX paths.",
-      "Native project-relative resolution now precedes generic anchor recovery for guarded paths.",
-      "Parent directories named data no longer corrupt guarded canonical paths during fresh Linux extraction.",
-      "Strict guarded PPO checkpoint sidecar provenance validation now rejects missing required fields and wrong checkpoint associations.",
-      "Strict sidecar contract coverage now includes fresh Linux extraction paths whose parent directories contain data.",
-      "CLI execution-gate validation now uses bounded in-process parser validation instead of a nested multi-process chain.",
-      "Dry-run step-0 output now reports one shared verified BC alias evaluation with two branch aliases, matching execution.",
-      "Exact final ZIP validation must be performed only after final archive creation.",
-      "No combat formulas, action data, reward formula, observation schema, route, BC NPZ, BC model, prior PPO model, or runtime executor were modified."
-    ],
-    "next_after_external_verification": "execute the reviewed guarded PPO continuation plan with deterministic evaluation after every 10000-step chunk and compare every immutable checkpoint against the verified BC incumbent"
+    "alias_preserving_clone_contract": "character_states is restored as the same object as character_mechanics_state after every clone/restore",
+    "true_time_bucket_implementation": true,
+    "compact_future_only_node_payload": true,
+    "resumable_multi_bucket_frontier": true,
+    "bc_incumbent_final_comparison": true,
+    "route_blind_real_diversity_schema": true,
+    "realistic_2000_resume_equivalence": true,
+    "party_preset_final_replay_parity": true,
+    "complete_event_aware_route_reporting": true,
+    "complete_future_field_classification_audit": true,
+    "practical_scheduled_effect_phase_bands": true,
+    "derived_memory_bound_contract": true,
+    "monotonic_completion_ordering": true,
+    "short_window_active_inactive_diversity": true,
+    "horizon_safe_reference_reporting": true,
+    "bounded_pending_frontier_contract": true,
+    "accurate_peak_live_node_metrics": true,
+    "intra_bucket_wall_clock_memory_guard": true,
+    "safe_stage_execution_defaults": true,
+    "destination_bucket_accumulator_exact_batch_equivalent": true,
+    "destination_bucket_insertion_order_independent": true,
+    "destination_bucket_partition_merge_independent": true,
+    "destination_bucket_resume_equivalent": true,
+    "destination_bucket_no_per_child_full_retained_selection": true,
+    "destination_accumulator_atomic_compressed_spill": true,
+    "destination_accumulator_compact_manifest": true,
+    "beam_search_compact_cli_output": true,
+    "destination_accumulator_metric_conservation": true,
+    "destination_accumulator_lineage_tie_key": true
   },
   "manual_cycle_reference": {
     "status": "externally_verified_complete",
@@ -811,24 +769,22 @@
   ],
   "next_planned_tasks": [
     {
-      "task": "external review of candidate 109",
-      "status": "pending_external_review",
-      "note": "Candidate 109 remains pending review; do not claim external verification."
+      "task": "external review of candidate 111"
     },
     {
-      "task": "execute the reviewed v109 guarded PPO plan",
-      "status": "after_candidate_109_external_review",
-      "note": "Use the explicit --execute gate and do not launch the long guarded run before review."
+      "task": "run the 30-second Beam Search calibration stage"
     },
     {
-      "task": "deterministic evaluation after every 10k chunk and immutable-best comparison against BC",
-      "status": "during_reviewed_guarded_ppo_execution",
-      "note": "Every immutable checkpoint is compared by deterministic 120-second total damage against the externally verified BC incumbent."
+      "task": "review expansion rate, memory, diversity, and pruning diagnostics"
     },
     {
-      "task": "compare guarded PPO results with Beam Search/MCTS afterward",
-      "status": "after_guarded_ppo_results",
-      "note": "Use final 120-second total damage as the comparison objective unless a later reviewed contract changes it."
+      "task": "run the 120-second full Beam Search stage only after calibration review"
+    },
+    {
+      "task": "compare the best search route against manual, BC, and all PPO checkpoints"
+    },
+    {
+      "task": "use MCTS only if Beam Search coverage is inadequate or excessively myopic"
     }
   ],
   "validation_invariants": [
@@ -1366,9 +1322,39 @@
           "resolved_sequence_sha256": "ad9ec00e103b6ecb189291fcfcc1cd4638301213955e27bd71cec83b1db125f1"
         }
       }
+    },
+    {
+      "baseline": "beam_search_infrastructure_candidate_111",
+      "status": "candidate_pending_external_review",
+      "summary": "Implemented deterministic diverse Beam Search infrastructure with CombatState clone isolation, future-affecting exact deduplication, coarse diversity retention, resumable frontier checkpoints, CLI execution gates, and bounded smoke validation. No 30-second calibration, full 120-second Beam Search, MCTS, BC training, PPO training, runtime mechanic changes, action data changes, build profile changes, reward changes, observation changes, policy-ID changes, or canonical search result directories were produced.",
+      "known_good_for_next_task": false,
+      "tests": [
+        "python -m compileall -q search scripts rl simulator env passed with bundled Python",
+        "all Beam Search smoke tests passed, including bounded integration <=3s/<=2000 expansions",
+        "project progress Beam Search and guarded PPO alignment smoke tests passed",
+        "guarded_ppo_completed_experiment_integrity_smoke_test.py passed",
+        "manual_bc_ppo_comparison_smoke_test.py passed",
+        "bc_evaluation_manual_baseline_parity_smoke_test.py passed",
+        "manual_120s_baseline_smoke_test.py passed",
+        "full_real_cycle_integration_smoke_test.py passed",
+        "rl_observation_shape_guard_smoke_test.py passed",
+        "direct_action_manifest_hash_guard_smoke_test.py passed",
+        "apply_direct_action_data_v61.py --check --fail-on-diff passed with field_level_change_count=0",
+        "manual_120s_bc_final_archive_integrity_smoke_test.py passed on ../ww-dps-simulator-2-111.zip with fresh extraction Beam Search checks"
+      ]
+    },
+    {
+      "baseline": "beam_search_infrastructure_candidate_111_correction",
+      "status": "candidate_pending_external_review",
+      "summary": "Corrected candidate 111 Beam Search after external review: clone/restore preserves character_states alias, runner processes true combat-time buckets, node payload is future-only/compact, resume manifests preserve multi-bucket frontier and retained bucket queues, completed routes use monotonic completion ordering, hot-path metrics are cached, checkpoint interval/dirty-bucket writes are honored, route-store lineage is compacted, partial-node resume preserves unexpanded legal actions, final replay uses the party preset/build profiles with terminal parity validation, final route reporting is complete and event-aware, non-120s route reports suppress numeric 120s damage rankings, future-field classification is explicitly audited, short mechanic windows encode active/inactive state with field-specific bands, scheduled-effect and buff diversity bands are practical, pending destination buckets are bounded by declared exact batch-equivalent accumulator retention, peak live-node metrics are accurate, intra-bucket wall-clock/memory checks preserve resumable cursors, safe stage defaults declare wall-clock and memory budgets, final full-stage comparison integrates the verified BC incumbent, memory estimates derive the concurrent-bucket bound from max combat-time cost, real diversity key declares route-blind setup state categories, destination-bucket retention is insertion-order independent, partition-merge independent, and resume-equivalent, and the destination accumulator now avoids per-child full retained-set selection, spills exact compressed chunks, keeps search_state.json/CLI output compact, reports conserved exact metrics, and uses a canonical lineage tie key before internal node IDs.",
+      "known_good_for_next_task": false,
+      "tests": [
+        "all Beam Search smoke tests passed with bundled Python after the destination-accumulator hot-path/spill/manifest/CLI/metrics/lineage correction, including order independence, batch equivalence, partition merge, resume equivalence, diversity quota fill, no per-child retained-set recomputation, compact manifest/CLI output, exact metric conservation, and canonical lineage tie",
+        "new external-review blocker guards added for short-window diversity, horizon-safe reporting, pending-frontier bounds, peak live-node metrics, intra-bucket budget interruption/resume, realistic 2000 resume determinism, terminal replay parity, completed route reporting, monotonic completion order, memory bound derivation, hot path scalability, checkpoint interval, route-store compaction, diversity phase fields, future-field classification, partial-node resume, and final route replay reporting"
+      ]
     }
   ],
-  "next_planned_task": "after candidate 109 external review, execute the guarded PPO plan with deterministic 10000-step evaluations and compare against the verified BC incumbent",
+  "next_planned_task": "after candidate 111 external review, run the 30-second Beam Search calibration stage before any full 120-second search",
   "candidate_history": [
     {
       "candidate": "106",
@@ -1467,13 +1453,13 @@
     {
       "candidate": "109",
       "task": "guarded multi-branch PPO continuation infrastructure with immutable checkpoints and deterministic damage-only evaluation",
-      "status": "implemented_tests_passed_pending_external_review",
-      "latest_externally_verified_baseline": "108",
-      "external_review_status": "pending",
-      "external_verification_claimed": false,
+      "status": "externally_verified_complete",
+      "latest_externally_verified_baseline": "109",
+      "external_review_status": "passed",
+      "external_verification_claimed": true,
       "full_bc_training_executed": true,
       "prior_ppo_training_executed": true,
-      "guarded_long_experiment_executed": false,
+      "guarded_long_experiment_executed": true,
       "plan_path": "data/guarded_ppo_experiment_plan_v109.json",
       "plan_sha256": "0306c734347e49460fd7273bce546eed80a2db657e460eb707f5cab961a9e0e6",
       "branch_ids": [
@@ -1488,7 +1474,96 @@
       "route_similarity_objective": false,
       "character_specific_reward": false,
       "rollback_enabled": false,
-      "archive_path": "../ww-dps-simulator-2-109.zip"
+      "archive_path": "../ww-dps-simulator-2(109).zip",
+      "external_verification_label": "109",
+      "baseline_archive": "ww-dps-simulator-2(109).zip",
+      "completed_guarded_checkpoint_count": 30,
+      "requested_aggregate_ppo_budget": 300000,
+      "actual_aggregate_sb3_model_timesteps": 307200,
+      "winner": "verified_bc_model",
+      "winner_model": "models/maskable_ppo_bc_v105.zip"
+    },
+    {
+      "candidate": "110",
+      "task": "completed guarded PPO v109 experiment ingestion and reporting",
+      "status": "externally_verified_complete",
+      "latest_externally_verified_baseline": "110",
+      "external_review_status": "passed",
+      "external_verification_claimed": true,
+      "guarded_long_experiment_executed": true,
+      "completed_guarded_checkpoint_count": 30,
+      "requested_aggregate_ppo_budget": 300000,
+      "actual_aggregate_sb3_model_timesteps": 307200,
+      "winner": "verified_bc_model",
+      "archive_path": "../ww-dps-simulator-2-110.zip",
+      "external_verification_label": "110",
+      "baseline_archive": "ww-dps-simulator-2-110.zip"
+    },
+    {
+      "candidate": "111",
+      "task": "independent deterministic diverse Beam Search infrastructure",
+      "status": "implemented_tests_passed_pending_external_review",
+      "latest_externally_verified_baseline": "110",
+      "external_review_status": "pending",
+      "external_verification_claimed": false,
+      "beam_search_long_execution": false,
+      "mcts_execution": false,
+      "plan_path": "data/beam_search_plan_v111.json",
+      "plan_sha256": "b504def4e0c1da82ef2a6024d19ccac76fe175df51899e50d12f3bff99a17998",
+      "archive_path": "../ww-dps-simulator-2-111.zip",
+      "validation_summary": {
+        "status": "pending_final_archive_validation",
+        "archive_path": "../ww-dps-simulator-2-111.zip",
+        "archive_exact_validation_passed": false,
+        "archive_sha256_reported_outside_progress_state": true,
+        "canonical_beam_search_results_written": false,
+        "smoke_max_combat_duration": 3.0,
+        "smoke_max_expansions": 2000,
+        "notes": [
+          "Candidate 111 destination-accumulator hot-path, spill, compact manifest/CLI, metrics, and lineage-tie correction passed bounded smoke validation; final archive validation is pending.",
+          "30-second calibration, full 120-second Beam Search, MCTS, BC training, and PPO training were not run."
+        ]
+      },
+      "corrected_after_external_review": true,
+      "correction_summary": {
+        "alias_preserving_clone_contract": true,
+        "true_time_bucket_implementation": true,
+        "compact_future_only_node_payload": true,
+        "resumable_multi_bucket_frontier": true,
+        "bc_incumbent_final_comparison": true,
+        "route_blind_real_diversity_schema": true,
+        "hot_path_cached_metrics": true,
+        "checkpoint_interval_dirty_bucket_policy": true,
+        "route_store_compaction": true,
+        "scheduled_effect_and_buff_phase_diversity": true,
+        "future_field_classification": true,
+        "partial_node_action_cursor_resume": true,
+        "deterministic_final_route_replay_reporting": true,
+        "conservative_dry_run_memory_estimate": true,
+        "realistic_2000_resume_equivalence": true,
+        "party_preset_final_replay_parity": true,
+        "complete_event_aware_route_reporting": true,
+        "complete_future_field_classification_audit": true,
+        "practical_scheduled_effect_phase_bands": true,
+        "derived_memory_bound_contract": true,
+        "monotonic_completion_ordering": true,
+        "short_window_active_inactive_diversity": true,
+        "horizon_safe_reference_reporting": true,
+        "bounded_pending_frontier_contract": true,
+        "accurate_peak_live_node_metrics": true,
+        "intra_bucket_wall_clock_memory_guard": true,
+        "safe_stage_execution_defaults": true,
+        "destination_bucket_accumulator_exact_batch_equivalent": true,
+        "destination_bucket_insertion_order_independent": true,
+        "destination_bucket_partition_merge_independent": true,
+        "destination_bucket_resume_equivalent": true,
+        "destination_bucket_no_per_child_full_retained_selection": true,
+        "destination_accumulator_atomic_compressed_spill": true,
+        "destination_accumulator_compact_manifest": true,
+        "beam_search_compact_cli_output": true,
+        "destination_accumulator_metric_conservation": true,
+        "destination_accumulator_lineage_tie_key": true
+      }
     }
   ]
 }

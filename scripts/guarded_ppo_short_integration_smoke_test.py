@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import json
+import hashlib
 import subprocess
 import sys
 import tempfile
@@ -12,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main() -> None:
+    canonical_before = _snapshot_canonical_outputs()
     with tempfile.TemporaryDirectory(prefix="guarded-ppo-short-") as temp_dir:
         output_root = Path(temp_dir)
         result = subprocess.run(
@@ -94,8 +96,7 @@ def main() -> None:
         else:
             assert best_payload["total_damage"] == max_branch_damage
         assert not (output_root / "models" / "guarded_ppo_v109_smoke" / "best.zip").exists()
-    assert not (ROOT / "models" / "guarded_ppo_v109").exists()
-    assert not (ROOT / "results" / "guarded_ppo_v109").exists()
+    assert _snapshot_canonical_outputs() == canonical_before
     print("guarded_ppo_short_integration_smoke_test ok")
 
 
@@ -114,9 +115,18 @@ def _env() -> dict[str, str]:
 
 
 def _sha256(path: Path) -> str:
-    import hashlib
-
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _snapshot_canonical_outputs() -> dict[str, tuple[str, int]]:
+    roots = [ROOT / "models" / "guarded_ppo_v109", ROOT / "results" / "guarded_ppo_v109"]
+    snapshot: dict[str, tuple[str, int]] = {}
+    for root in roots:
+        if not root.exists():
+            continue
+        for path in sorted(item for item in root.rglob("*") if item.is_file()):
+            snapshot[path.relative_to(ROOT).as_posix()] = (_sha256(path), path.stat().st_mtime_ns)
+    return snapshot
 
 
 if __name__ == "__main__":

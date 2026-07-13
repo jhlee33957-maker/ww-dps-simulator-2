@@ -12,6 +12,7 @@ from tempfile import TemporaryDirectory
 ROOT = Path(__file__).resolve().parents[1]
 PYTHON = sys.executable
 PPO_MODEL = ROOT / "models" / "maskable_ppo_candidate_after_bc_v105.zip"
+PPO_MODEL_SIDECAR = ROOT / "models" / "maskable_ppo_candidate_after_bc_v105.zip.ppo_metadata.json"
 EXPECTED_PPO_MODEL_SHA256 = "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513"
 EXPECTED_BC_DAMAGE = 5165134.682363356
 EXPECTED_TOTAL_DAMAGE = 3600637.129626801
@@ -32,7 +33,7 @@ PROTECTED_FILES = (
     "models/maskable_ppo_bc_v105.zip",
     "models/maskable_ppo_bc_v105.zip.bc_metadata.json",
     "models/maskable_ppo_candidate_after_bc_v105.zip",
-    "results/training_metadata.json",
+    "models/maskable_ppo_candidate_after_bc_v105.zip.ppo_metadata.json",
     "results/ppo_evaluation_summary.json",
     "results/ppo_timeline.csv",
     "results/ppo_100k_evaluation_summary.json",
@@ -47,7 +48,7 @@ PROTECTED_FILES = (
 def main() -> None:
     before = _hashes(PROTECTED_FILES)
     assert _sha256(PPO_MODEL) == EXPECTED_PPO_MODEL_SHA256
-    metadata = json.loads((ROOT / "results" / "training_metadata.json").read_text(encoding="utf-8"))
+    metadata = json.loads(PPO_MODEL_SIDECAR.read_text(encoding="utf-8"))
     _assert_training_metadata(metadata)
     with TemporaryDirectory() as temp_dir:
         summary_path = Path(temp_dir) / "ppo_100k_summary.json"
@@ -104,6 +105,17 @@ def _assert_training_metadata(metadata: dict[str, object]) -> None:
     assert metadata["ppo_model_sha256"] == EXPECTED_PPO_MODEL_SHA256
     assert metadata["timesteps"] == 100000
     assert metadata["seed"] == 42
+    assert metadata["requested_seed"] == 42
+    assert metadata["actual_saved_model_seed"] == 11
+    assert metadata["actual_model_seed"] == 11
+    assert metadata["requested_timesteps"] == 100000
+    assert metadata["actual_model_num_timesteps"] == 100352
+    assert metadata["requested_chunk_timesteps"] == 100000
+    assert metadata["requested_cumulative_timesteps"] == 100000
+    assert metadata["actual_chunk_timesteps"] == 100352
+    assert metadata["rollout_granularity"] == 512
+    assert metadata["timestep_overshoot"] == 352
+    _assert_close(float(metadata["timestep_overshoot_ratio"]), 0.00352)
     _assert_close(float(metadata["learning_rate"]), 0.0003)
     _assert_close(float(metadata["ent_coef"]), 0.01)
     assert metadata["n_steps"] == 512
@@ -139,6 +151,8 @@ def _assert_summary(summary: dict[str, object]) -> None:
     _assert_close(float(role_breakdown["total_damage_delta"]), 0.0)
     assert summary["model_metadata_mismatches"] == {}
     assert summary["model_space_mismatches"] == {}
+    assert summary["model_training_metadata_source"] == "ppo_model_sidecar"
+    assert summary["model_training_metadata_path"] == "models/maskable_ppo_candidate_after_bc_v105.zip.ppo_metadata.json"
     _assert_close(float(summary["manual_baseline_total_damage"]), EXPECTED_MANUAL_DAMAGE)
     _assert_close(float(summary["manual_baseline_damage_ratio"]), EXPECTED_MANUAL_RATIO)
     _assert_close(float(summary["manual_baseline_damage_delta"]), EXPECTED_MANUAL_DELTA)

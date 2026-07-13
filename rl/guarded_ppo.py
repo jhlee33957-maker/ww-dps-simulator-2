@@ -12,6 +12,7 @@ import sys
 import tempfile
 import time
 from typing import Any
+import zipfile
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -49,6 +50,13 @@ REQUIRED_CHECKPOINT_SIDECAR_KEYS = (
     "branch_base_seed",
     "effective_chunk_seed",
     "actual_model_seed",
+    "requested_chunk_timesteps",
+    "requested_cumulative_timesteps",
+    "actual_chunk_timesteps",
+    "actual_model_num_timesteps",
+    "rollout_granularity",
+    "timestep_overshoot",
+    "timestep_overshoot_ratio",
     "experiment_plan_path",
     "experiment_plan_sha256",
     "source_experiment_plan_path",
@@ -948,6 +956,12 @@ def validate_checkpoint_sidecar(
     metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
     expected_seed = effective_seed(branch, chunk_index)
     model_sha = sha256_file(model_path)
+    model_data = read_sb3_model_data(model_path)
+    actual_model_num_timesteps = int(model_data.get("num_timesteps", 0))
+    parent_model_data = read_sb3_model_data(parent_model_path) if parent_model_path and chunk_index > 1 else None
+    parent_num_timesteps = int(parent_model_data.get("num_timesteps", 0)) if parent_model_data else 0
+    requested_cumulative_timesteps = chunk_index * int(branch["chunk_timesteps"])
+    timestep_overshoot = actual_model_num_timesteps - requested_cumulative_timesteps
     expected_parent_path = canonicalize_guarded_path(project_relative(parent_model_path, root=PROJECT_ROOT)) if parent_model_path else None
     expected_parent_sha = sha256_file(parent_model_path) if parent_model_path else None
     expected_model_path = canonicalize_guarded_path(project_relative(model_path, root=PROJECT_ROOT))
@@ -962,6 +976,12 @@ def validate_checkpoint_sidecar(
         "branch_base_seed": int(branch["seed"]),
         "effective_chunk_seed": expected_seed,
         "actual_model_seed": expected_seed,
+        "requested_chunk_timesteps": int(branch["chunk_timesteps"]),
+        "requested_cumulative_timesteps": requested_cumulative_timesteps,
+        "actual_chunk_timesteps": actual_model_num_timesteps - parent_num_timesteps,
+        "actual_model_num_timesteps": actual_model_num_timesteps,
+        "rollout_granularity": int(branch["n_steps"]),
+        "timestep_overshoot": timestep_overshoot,
         "experiment_plan_path": expected_plan_path,
         "experiment_plan_sha256": sha256_file(plan_path),
         "source_experiment_plan_path": expected_plan_path,
@@ -989,9 +1009,14 @@ def validate_checkpoint_sidecar(
             actual = canonicalize_guarded_path(actual)
         if actual != expected:
             errors.append(f"{key} {actual!r} != {expected!r}")
+    expected_ratio = float(timestep_overshoot) / float(requested_cumulative_timesteps) if requested_cumulative_timesteps else 0.0
+    if abs(float(metadata.get("timestep_overshoot_ratio", 999.0)) - expected_ratio) > 1e-12:
+        errors.append(f"timestep_overshoot_ratio {metadata.get('timestep_overshoot_ratio')!r} != {expected_ratio!r}")
     shape = metadata.get("observation_shape")
     if shape not in ([EXPECTED_OBSERVATION_SHAPE], EXPECTED_OBSERVATION_SHAPE):
         errors.append(f"observation_shape {shape!r} != {EXPECTED_OBSERVATION_SHAPE}")
+    if int(model_data.get("seed", -1)) != expected_seed:
+        errors.append(f"model internal seed {model_data.get('seed')!r} != {expected_seed!r}")
     if metadata.get("policy_action_ids") != expected_policy_action_ids():
         errors.append("policy_action_ids missing or order mismatch")
     reward_formula = metadata.get("reward_formula")
@@ -1000,6 +1025,13 @@ def validate_checkpoint_sidecar(
     if errors:
         raise ValueError("checkpoint sidecar contract failed: " + "; ".join(errors))
     return metadata
+
+
+def read_sb3_model_data(model_path: Path | None) -> dict[str, Any]:
+    if model_path is None:
+        return {}
+    with zipfile.ZipFile(model_path) as zf:
+        return json.loads(zf.read("data").decode("utf-8"))
 
 
 def expected_policy_action_ids() -> list[str]:
