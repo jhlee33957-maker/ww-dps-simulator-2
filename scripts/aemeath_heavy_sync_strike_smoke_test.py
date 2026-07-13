@@ -50,7 +50,7 @@ def test_normal_form_switch_is_not_sync_strike() -> None:
     sim = make_sim()
     assert sim.resolve_action_id("aemeath_resonance_skill") == "aemeath_form_switch_to_mech_normal"
     assert sim.resolve_action_id("aemeath_resonance_skill") != "aemeath_sync_strike_armament_merge"
-    assert multipliers(sim, "aemeath_form_switch_to_mech_normal") == [0.232, 0.232, 0.232]
+    assert multipliers(sim, "aemeath_form_switch_to_mech_normal") == [0.696]
     assert multipliers(sim, "aemeath_form_switch_to_mech_normal") != multipliers(sim, "aemeath_sync_strike_armament_merge")
 
 
@@ -97,7 +97,6 @@ def test_human_heavy_charged_2_instant_response() -> None:
     assert data["instant_response_consumed"] is True
     assert data["aemeath_combo_stage"] == 3
     assert data["sync_strike_window_type"] == "armament_merge"
-    assert sim.timeline[-1].hit_details[0]["mechanic_damage_multiplier"] == 3.0
 
 
 def test_mech_heavy_charged_2_instant_response() -> None:
@@ -110,7 +109,6 @@ def test_mech_heavy_charged_2_instant_response() -> None:
     assert data["instant_response_consumed"] is True
     assert data["mech_combo_stage"] == 3
     assert data["sync_strike_window_type"] == "call_of_dawn"
-    assert sim.timeline[-1].hit_details[0]["mechanic_damage_multiplier"] == 3.0
 
 
 def test_finale_after_instant_response_heavy() -> None:

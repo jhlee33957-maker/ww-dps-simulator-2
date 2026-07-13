@@ -41,12 +41,12 @@ def main() -> None:
     assert record["damage_bonus_category"] == "intro"
     assert record["element"] == "spectro"
     assert record["scaling_stat"] == "atk"
-    assert_close(record["action_time"], 1.0, "action_time")
-    assert_close(record["combat_time_cost"], 1.0, "combat_time_cost")
-    assert record["hits"] == [0.2248] * 10
+    assert_close(record["action_time"], 80 / 60, "action_time")
+    assert_close(record["combat_time_cost"], 80 / 60, "combat_time_cost")
+    assert record["hits"] == [2.248]
     assert_close(sum(record["hits"]), 2.248, "total multiplier")
-    assert_close(record["resonance_energy_gain"], 1.34, "resonance gain")
-    assert_close(record["concerto_energy_gain"], 1.2, "concerto gain")
+    assert_close(record["resonance_energy_gain"], 13.4, "resonance gain")
+    assert_close(record["concerto_energy_gain"], 12.0, "concerto gain")
     assert record["apply_character_mechanics"] is False
     assert record["mechanic_effects"]["overflow_gain"] == 100.0
     assert record["mechanic_effects"]["applies_photocromic_flux"] is True
@@ -76,10 +76,10 @@ def main() -> None:
     assert row.damage_bonus_category == "intro"
     assert row.damage_element == "spectro"
     assert row.scaling_stat == "atk"
-    assert_close(row.action_time, 1.0, "row action_time")
-    assert_close(row.combat_time_cost, 1.0, "row combat_time_cost")
-    assert_close(row.concerto_gain, 1.2, "row concerto_gain")
-    assert_close(row.base_resonance_energy_gain, 1.34, "row base_resonance_energy_gain")
+    assert_close(row.action_time, 80 / 60, "row action_time")
+    assert_close(row.combat_time_cost, 80 / 60, "row combat_time_cost")
+    assert_close(row.concerto_gain, 12.0, "row concerto_gain")
+    assert_close(row.base_resonance_energy_gain, 13.4, "row base_resonance_energy_gain")
     assert row.lynae_overflow == 100.0
     assert state["overflow"] == 100.0
     assert state["overflow"] != 200.0

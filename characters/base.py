@@ -56,6 +56,25 @@ class CharacterMechanic:
     def after_action(self, state: Any, action: Any, result: Any) -> None:
         pass
 
+    def apply_scheduled_status_effect(
+        self,
+        state: Any,
+        payload_action: Any,
+        effect_metadata: dict[str, Any],
+        event_context: dict[str, Any],
+    ) -> dict[str, Any]:
+        raise NotImplementedError(
+            f"{self.character_id} does not support scheduled status effect "
+            f"{getattr(payload_action, 'id', '<unknown>')!r}"
+        )
+
+    def on_party_tune_response_resolved(
+        self,
+        state: Any,
+        response_context: dict[str, Any],
+    ) -> dict[str, Any] | None:
+        return None
+
     def apply_character_mechanics(self, resolved_action: Any, character_state: Any, party_state: Any) -> None:
         pass
 
@@ -66,7 +85,7 @@ class CharacterMechanic:
     ) -> tuple[str | None, list[str]]:
         return None, []
 
-    def advance_time(self, state: Any, elapsed_time: float) -> None:
+    def advance_time(self, state: Any, combat_elapsed: float, action_elapsed: float | None = None) -> None:
         pass
 
     def get_observation_values(self, state: Any) -> list[float]:

@@ -20,8 +20,8 @@ def main() -> None:
     assert "mornye_tune_break" in sim.actions
     assert sim.actions["aemeath_tune_break"].policy_selectable is True
     assert sim.actions["mornye_tune_break"].policy_selectable is True
-    assert multipliers(sim.actions["aemeath_tune_break"]) == [1.0, 12.0]
-    assert multipliers(sim.actions["mornye_tune_break"]) == [1.7334, 2.2666, 12.0]
+    assert multipliers(sim.actions["aemeath_tune_break"]) == [12.0]
+    assert multipliers(sim.actions["mornye_tune_break"]) == [12.0]
     assert sim.actions["aemeath_tune_break"].scaling_stat == "none"
     assert sim.actions["mornye_tune_break"].damage_bonus_category == "tune_break"
     assert sim.is_action_available(sim.actions["mornye_tune_break"]) is False

@@ -28,8 +28,8 @@ def main() -> None:
 
     assert len(action["hits"]) == 1
     hit = action["hits"][0]
-    assert hit["name"] == "lynae_tune_break_1"
-    assert hit["time"] == 1.2
+    assert hit["name"] == "Lynae Tune Break tune break"
+    assert hit["time"] == 1.6
     assert hit["damage_category"] == "tune_break"
     assert hit["damage_multiplier"] == 0.0
     assert hit["tune_break_multiplier"] == 16.0

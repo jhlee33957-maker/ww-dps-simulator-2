@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from simulator.anomaly_system import advance_anomalies, apply_anomaly, get_havoc_bane_def_reduction_at_time
+from simulator.action_start_snapshot import ActionStartEffectSnapshot, capture_action_start_effect_snapshot
+from simulator.anomaly_system import advance_anomalies, apply_anomaly
 from simulator.buff_system import (
     apply_buff,
     apply_buff_modifiers_to_damage_context,
@@ -32,7 +33,7 @@ from simulator.echo_sets import (
 from simulator.generated_damage import calculate_generated_damage_packet
 from simulator.lynae_tune_strain import apply_lynae_tune_strain_damage_amp
 from simulator.mechanic_events import preview_mechanic_event_trigger, process_mechanic_event_triggers
-from simulator.models import ActionData, ActionResult, BuffData, CharacterData, CombatState, HitData, TimelineEntry
+from simulator.models import ActionData, ActionResult, BuffData, CharacterData, CombatState, HitData, ScheduledEffectState, TimelineEntry
 from simulator.resource_system import apply_resource_changes, can_pay_resources
 from simulator.tune_break import (
     INTERFERED_MARKER_AMP_SOURCE,
@@ -80,11 +81,17 @@ def _active_interfered_marker_buff_damage_amp(
     buffs: dict[str, BuffData],
     *,
     time_offset: float,
+    action_start_snapshot: ActionStartEffectSnapshot | None = None,
 ) -> float:
     for active in state.active_buffs:
         if active.buff_id != INTERFERED_MARKER_BUFF_ID:
             continue
-        if active.remaining_duration <= time_offset:
+        if (
+            action_start_snapshot is not None
+            and action_start_snapshot.buff_active(INTERFERED_MARKER_BUFF_ID)
+        ):
+            pass
+        elif active.remaining_duration <= time_offset:
             continue
         buff = buffs.get(active.buff_id)
         if buff is None or buff.modifier_type != "damage_amp":
@@ -102,22 +109,53 @@ def reduce_cooldowns(state: CombatState, elapsed: float) -> None:
             del state.cooldowns[action_id]
 
 
-def resolve_action_timing(action: ActionData, actor_state: Any | None = None) -> tuple[float, float]:
+def _runtime_value(runtime_context: Any | None, key: str, default: Any = None) -> Any:
+    if isinstance(runtime_context, dict):
+        return runtime_context.get(key, default)
+    if runtime_context is not None:
+        return getattr(runtime_context, key, default)
+    return default
+
+
+def _has_valid_target(runtime_context: Any | None) -> bool:
+    if bool(_runtime_value(runtime_context, "no_target", False)):
+        return False
+    for key in ("has_valid_target", "target_valid", "valid_target"):
+        value = _runtime_value(runtime_context, key, None)
+        if value is not None:
+            return bool(value)
+    return True
+
+
+def _timing_override_applies(override_key: str, runtime_context: Any | None) -> bool:
+    if override_key == "instant_response":
+        return bool(_runtime_value(runtime_context, "instant_response", False))
+    if override_key == "form_mech":
+        return _runtime_value(runtime_context, "form") == "mech"
+    if override_key == "wide_field_observation":
+        return _runtime_value(runtime_context, "mode") == "wide_field_observation"
+    if override_key == "lumiflow_gt_119":
+        return float(_runtime_value(runtime_context, "lumiflow", 0.0) or 0.0) > 119.0
+    if override_key == "no_target":
+        return not _has_valid_target(runtime_context)
+    raise ValueError(f"Unknown timing override key {override_key!r}")
+
+
+def resolve_action_runtime_timing(action: ActionData, runtime_context: Any | None = None) -> tuple[float, float, float]:
+    duration = action.duration
     action_time = action.effective_action_time
     combat_time_cost = action.effective_combat_time_cost
-    overrides = action.timing_overrides or {}
+    for override_key, override in (action.timing_overrides or {}).items():
+        if not _timing_override_applies(override_key, runtime_context):
+            continue
+        duration = float(override.get("duration", duration))
+        action_time = float(override.get("action_time", action_time))
+        combat_time_cost = float(override.get("combat_time_cost", action_time))
+    return duration, action_time, combat_time_cost
 
-    instant_response = False
-    if isinstance(actor_state, dict):
-        instant_response = bool(actor_state.get("instant_response"))
-    elif actor_state is not None:
-        instant_response = bool(getattr(actor_state, "instant_response", False))
 
-    if instant_response and "instant_response" in overrides:
-        override = overrides["instant_response"]
-        action_time = override.get("action_time", action_time)
-        combat_time_cost = override.get("combat_time_cost", action_time)
-
+def resolve_action_timing(action: ActionData, actor_state: Any | None = None) -> tuple[float, float]:
+    _duration, action_time, combat_time_cost = resolve_action_runtime_timing(action, actor_state)
     return action_time, combat_time_cost
 
 
@@ -154,6 +192,16 @@ def _hit_combat_offset(
     return min(combat_time_cost, hit.time / action_time * combat_time_cost)
 
 
+def _resolved_action_hits(action: ActionData, *, action_time: float) -> list[HitData]:
+    resolved_hits: list[HitData] = []
+    for hit in action.effective_hits():
+        if hit.hit_time_mode == "resolved_action_end":
+            resolved_hits.append(hit.model_copy(update={"time": action_time}))
+        else:
+            resolved_hits.append(hit)
+    return resolved_hits
+
+
 def _calculate_hit_damage(
     hit: HitData,
     action: ActionData,
@@ -162,6 +210,7 @@ def _calculate_hit_damage(
     buffs: dict[str, BuffData],
     temporary_stat_modifiers: dict[str, float] | None = None,
     force_active_buff_ids: set[str] | None = None,
+    action_start_snapshot: ActionStartEffectSnapshot | None = None,
     weapon_definitions: dict[str, Any] | None = None,
 ) -> tuple[float, dict]:
     transition_damage_action = bool((action.mechanic_effects or {}).get("transition_action"))
@@ -201,9 +250,18 @@ def _calculate_hit_damage(
         time_offset=hit.time,
         force_active_buff_ids=force_active_buff_ids,
     )
-    target_damage_taken_amp = current_interfered_damage_taken_amp(state)
+    target_damage_taken_amp = (
+        action_start_snapshot.target_damage_taken_amp
+        if action_start_snapshot is not None
+        else current_interfered_damage_taken_amp(state)
+    )
     if target_damage_taken_amp > 0.0:
-        damage_amp -= _active_interfered_marker_buff_damage_amp(state, buffs, time_offset=hit.time)
+        damage_amp -= _active_interfered_marker_buff_damage_amp(
+            state,
+            buffs,
+            time_offset=hit.time,
+            action_start_snapshot=action_start_snapshot,
+        )
     target_damage_taken_multiplier = 1.0 + target_damage_taken_amp
     damage_element = action_damage_element(action, character)
     runtime_weapon_effects = weapon_runtime_damage_effects(
@@ -216,6 +274,7 @@ def _calculate_hit_damage(
         damage_bonus_category=action.damage_bonus_category or action.action_type or "other",
         hit_damage_category=hit.damage_category,
         time_offset=hit.time,
+        action_start_snapshot=action_start_snapshot,
     )
     runtime_element_bonuses = dict(stats.get("damage_bonus_by_element_buff") or {})
     for element, value in (runtime_weapon_effects.get("runtime_element_bonus_by_element") or {}).items():
@@ -238,11 +297,16 @@ def _calculate_hit_damage(
         damage_bonus_category=str(damage_bonus_context.get("damage_bonus_category") or "other"),
         hit_damage_category=hit.damage_category,
         time_offset=hit.time,
+        action_start_snapshot=action_start_snapshot,
     )
     all_attribute_bonus = float(runtime_weapon_effects.get("runtime_all_attribute_damage_bonus", 0.0) or 0.0)
     element_damage_bonus_after_weapon = float(damage_bonus_context.get("element_dmg_bonus", 0.0) or 0.0)
     element_damage_bonus_before_weapon = element_damage_bonus_after_weapon - all_attribute_bonus
-    havoc_def_reduction = get_havoc_bane_def_reduction_at_time(state, hit.time)
+    havoc_def_reduction = (
+        action_start_snapshot.havoc_bane_def_reduction
+        if action_start_snapshot is not None
+        else 0.0
+    )
     final_def_reduction = state.def_reduction + havoc_def_reduction
     scaling_stat, scaling_value = scaling_value_for_action(stats, action, character)
     def_ignore_before_weapon = float(stats["def_ignore"])
@@ -509,6 +573,7 @@ def _calculate_hit_damage_totals(
     action_damage_multiplier: float = 1.0,
     temporary_stat_modifiers: dict[str, float] | None = None,
     force_active_buff_ids: set[str] | None = None,
+    action_start_snapshot: ActionStartEffectSnapshot | None = None,
     weapon_definitions: dict[str, Any] | None = None,
 ) -> tuple[float, float, list[dict], dict[str, float], float, dict[str, Any], dict[str, Any]]:
     normal_damage = 0.0
@@ -530,7 +595,7 @@ def _calculate_hit_damage_totals(
     tune_break_damage_after_target_amp = 0.0
     has_explicit_hit_timing = bool(action.hits)
 
-    for hit in sorted(action.effective_hits(), key=lambda item: item.time):
+    for hit in sorted(_resolved_action_hits(action, action_time=action_time), key=lambda item: item.time):
         if hit.time > action_time:
             continue
         damage, detail = _calculate_hit_damage(
@@ -541,6 +606,7 @@ def _calculate_hit_damage_totals(
             buffs,
             temporary_stat_modifiers,
             force_active_buff_ids=force_active_buff_ids,
+            action_start_snapshot=action_start_snapshot,
             weapon_definitions=weapon_definitions,
         )
         if damage > 0.0 and action_damage_multiplier != 1.0:
@@ -717,7 +783,7 @@ def _calculate_hit_damage_totals(
 def _action_has_trigger_damage_potential(action: ActionData, action_time: float) -> bool:
     if action.character_id is None:
         return False
-    for hit in action.effective_hits():
+    for hit in _resolved_action_hits(action, action_time=action_time):
         if hit.time > action_time:
             continue
         if hit.damage_category == "normal" and hit.damage_multiplier > 0.0:
@@ -840,6 +906,7 @@ def execute_action(
     combat_duration: float | None = None,
     pre_action_echo_set_log_fields: dict[str, Any] | None = None,
     weapon_definitions: dict[str, Any] | None = None,
+    scheduled_effect_runner: Any | None = None,
 ) -> ActionResult:
     valid, reason = is_action_valid(action, state)
     start_time = state.current_time
@@ -855,7 +922,7 @@ def execute_action(
     )
     actor_character_id = actor_character_id or active_character_before
     actor_state = state.character_mechanics_state.get(action.character_id or state.active_character_id, {})
-    action_time, combat_time_cost = resolve_action_timing(action, actor_state)
+    _duration, action_time, combat_time_cost = resolve_action_runtime_timing(action, actor_state)
     if combat_duration is not None and combat_start_time >= combat_duration:
         valid = False
         reason = "Combat duration has ended."
@@ -926,12 +993,13 @@ def execute_action(
             characters=characters,
             state=state,
             buffs=buffs,
-            application_time=start_time,
+            application_time=combat_start_time,
             applied_before_triggering_damage=True,
             ),
         )
 
-    force_active_buff_ids: set[str] = set()
+    action_start_snapshot = capture_action_start_effect_snapshot(state)
+    force_active_buff_ids: set[str] = set(action_start_snapshot.active_buff_ids)
     if echo_set_log_fields.get("halo_of_starry_radiance_5set_same_action_application"):
         force_active_buff_ids.add(MORNYE_HALO_OF_STARRY_RADIANCE_5SET_BUFF_ID)
     if echo_set_log_fields.get("high_syntony_field_same_action_application"):
@@ -962,6 +1030,7 @@ def execute_action(
         action_damage_multiplier=action_damage_multiplier,
         temporary_stat_modifiers=temporary_stat_modifiers,
         force_active_buff_ids=force_active_buff_ids,
+        action_start_snapshot=action_start_snapshot,
         weapon_definitions=weapon_definitions,
     )
     direct_damage = normal_damage + tune_break_damage
@@ -1002,6 +1071,7 @@ def execute_action(
             characters=characters,
             buffs=buffs,
             force_active_buff_ids=force_active_buff_ids,
+            action_start_snapshot=action_start_snapshot,
         )
         event = {
             "id": packet.id,
@@ -1021,6 +1091,32 @@ def execute_action(
             "damage": packet_damage,
             "notes": packet.notes,
         }
+        if packet.source_character_id == "aemeath" and packet.id.startswith("aemeath_seraphic_duet"):
+            aemeath_state = state.character_mechanics_state.get("aemeath", {})
+            event.update(
+                {
+                    "trail_stack_snapshot": int(
+                        aemeath_state.get("last_seraphic_duet_trail_stack_snapshot", 0) or 0
+                    ),
+                    "trail_stack_factor": float(
+                        aemeath_state.get("last_seraphic_duet_trail_stack_factor", 1.0) or 1.0
+                    ),
+                    "trail_preservation_active": bool(
+                        aemeath_state.get("last_seraphic_duet_trail_preservation_active", False)
+                    ),
+                    "trail_consumed": bool(aemeath_state.get("last_seraphic_duet_trail_consumed", False)),
+                    "stacks_after": int(getattr(state, "rupturous_trail_stacks", 0) or 0),
+                    "trail_stacks_after": int(getattr(state, "rupturous_trail_stacks", 0) or 0),
+                    "trail_preservation_after": bool(
+                        aemeath_state.get("last_seraphic_duet_trail_preservation_after", False)
+                    ),
+                    "stack_bonus_per_stack": 0.04,
+                    "base_multiplier_per_hit": 1.0935,
+                    "total_extra_tune_multiplier": float(
+                        aemeath_state.get("last_seraphic_duet_total_extra_tune_multiplier", 0.0) or 0.0
+                    ),
+                }
+            )
         packet_lynae_tune_strain_bonus = sum(
             float(detail.get("lynae_tune_strain_damage_amp_bonus_damage", 0.0) or 0.0)
             for detail in packet_details
@@ -1111,9 +1207,31 @@ def execute_action(
                 "aemeath_seraphic_duet_followup_multiplier": float(
                     aemeath_state.get("last_seraphic_duet_followup_multiplier", 0.0) or 0.0
                 ),
-                "aemeath_rupturous_trail_stacks_before": int(aemeath_state.get("rupturous_trail_stacks", 0) or 0),
-                "aemeath_rupturous_trail_stacks_consumed": 0,
-                "aemeath_rupturous_trail_stacks_after": int(aemeath_state.get("rupturous_trail_stacks", 0) or 0),
+                "aemeath_seraphic_duet_trail_stack_snapshot": int(
+                    aemeath_state.get("last_seraphic_duet_trail_stack_snapshot", 0) or 0
+                ),
+                "aemeath_seraphic_duet_trail_stack_factor": float(
+                    aemeath_state.get("last_seraphic_duet_trail_stack_factor", 1.0) or 1.0
+                ),
+                "aemeath_seraphic_duet_trail_preservation_active": bool(
+                    aemeath_state.get("last_seraphic_duet_trail_preservation_active", False)
+                ),
+                "aemeath_seraphic_duet_trail_preservation_after": bool(
+                    aemeath_state.get("last_seraphic_duet_trail_preservation_after", False)
+                ),
+                "aemeath_seraphic_duet_trail_consumed": bool(
+                    aemeath_state.get("last_seraphic_duet_trail_consumed", False)
+                ),
+                "aemeath_seraphic_duet_total_extra_tune_multiplier": float(
+                    aemeath_state.get("last_seraphic_duet_total_extra_tune_multiplier", 0.0) or 0.0
+                ),
+                "aemeath_rupturous_trail_stacks_before": int(
+                    aemeath_state.get("last_seraphic_duet_trail_stack_snapshot", 0) or 0
+                ),
+                "aemeath_rupturous_trail_stacks_consumed": int(
+                    aemeath_state.get("last_seraphic_duet_consumed_rupturous_trail_stacks", 0) or 0
+                ),
+                "aemeath_rupturous_trail_stacks_after": int(getattr(state, "rupturous_trail_stacks", 0) or 0),
                 "aemeath_forte_enhancement_stacks_before": int(
                     aemeath_state.get("last_seraphic_duet_forte_enhancement_stacks_before", 0) or 0
                 ),
@@ -1134,24 +1252,41 @@ def execute_action(
             }
         )
 
+    scheduled_effect_result = (
+        scheduled_effect_runner(
+            combat_start_time=combat_start_time,
+            combat_elapsed=effective_combat_time_cost,
+            action_start_snapshot=action_start_snapshot,
+            force_active_buff_ids=set(force_active_buff_ids),
+        )
+        if scheduled_effect_runner is not None
+        else {}
+    )
+    scheduled_damage = float(scheduled_effect_result.get("scheduled_damage", 0.0) or 0.0)
+    scheduled_damage_events = list(scheduled_effect_result.get("scheduled_damage_events", []))
+    scheduled_healing_events = list(scheduled_effect_result.get("scheduled_healing_events", []))
+    scheduled_status_application_events = list(
+        scheduled_effect_result.get("scheduled_status_application_events", [])
+    )
+
     if action.action_type == "swap" and action.character_id is not None:
         state.active_character_id = action.character_id
 
-    state.total_damage += direct_damage + generated_mechanic_damage
+    state.total_damage += direct_damage + generated_mechanic_damage + scheduled_damage
     resource_change = None if truncated_by_combat_limit else apply_resource_changes(state, action, characters)
 
     state.current_time += action_time
     state.combat_time = combat_time_end
     reduce_cooldowns(state, effective_combat_time_cost)
-    tick_buffs(state, action_time)
-    anomaly_tick_damage, anomaly_damage_by_type = advance_anomalies(state, action_time)
+    tick_buffs(state, effective_combat_time_cost)
+    anomaly_tick_damage, anomaly_damage_by_type = advance_anomalies(state, effective_combat_time_cost)
     if truncated_by_combat_limit:
         damage_after_cutoff_excluded += anomaly_tick_damage
         anomaly_tick_damage = 0.0
         anomaly_damage_by_type = {}
     state.total_damage += anomaly_tick_damage
 
-    total_action_damage = direct_damage + generated_mechanic_damage + anomaly_tick_damage
+    total_action_damage = direct_damage + generated_mechanic_damage + scheduled_damage + anomaly_tick_damage
 
     if not truncated_by_combat_limit:
         for buff_id in action.applies_buffs:
@@ -1273,6 +1408,11 @@ def execute_action(
         damage=total_action_damage,
         normal_damage=normal_damage,
         tune_break_damage=tune_break_damage,
+        direct_action_damage=direct_damage + generated_mechanic_damage + anomaly_tick_damage,
+        scheduled_damage=scheduled_damage,
+        scheduled_damage_events=scheduled_damage_events,
+        scheduled_healing_events=scheduled_healing_events,
+        scheduled_status_application_events=scheduled_status_application_events,
         direct_damage_taken_amp_total_bonus_damage=float(
             direct_amp_summary.get("direct_damage_taken_amp_total_bonus_damage", 0.0) or 0.0
         ),
@@ -1529,6 +1669,10 @@ def execute_action(
                 "damage_after_cutoff_excluded": damage_after_cutoff_excluded,
                 "generated_mechanic_damage": generated_mechanic_damage,
                 "generated_mechanic_damage_events": generated_mechanic_events,
+                "scheduled_damage": scheduled_damage,
+                "scheduled_damage_events": scheduled_damage_events,
+                "scheduled_healing_events": scheduled_healing_events,
+                "scheduled_status_application_events": scheduled_status_application_events,
                 **action_damage_bonus_context,
                 **mechanic_event_log_fields,
                 **echo_set_log_fields,
@@ -1545,6 +1689,99 @@ def execute_action(
             }
         )
     return result
+
+
+def execute_scheduled_damage_event(
+    *,
+    effect: ScheduledEffectState,
+    payload_action: ActionData,
+    state: CombatState,
+    characters: dict[str, CharacterData],
+    buffs: dict[str, BuffData],
+    host_action_id: str,
+    combat_time: float,
+    host_action_combat_offset: float,
+    trigger_index: int,
+    action_start_snapshot: ActionStartEffectSnapshot | None = None,
+    force_active_buff_ids: set[str] | None = None,
+    weapon_definitions: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if effect.source_character_id not in characters:
+        raise ValueError(f"Scheduled effect source character {effect.source_character_id!r} is unavailable")
+    action = payload_action.model_copy(update={"character_id": effect.source_character_id})
+    action_time = action.effective_action_time
+    (
+        normal_damage,
+        tune_break_damage,
+        hit_details,
+        hit_damage_by_category,
+        _damage_after_cutoff_excluded,
+        action_damage_bonus_context,
+        direct_amp_summary,
+    ) = _calculate_hit_damage_totals(
+        action,
+        state,
+        characters,
+        buffs,
+        action_time=action_time,
+        combat_time_cost=0.0,
+        combat_start_time=combat_time,
+        combat_duration=None,
+        truncated_by_combat_limit=False,
+        force_active_buff_ids=force_active_buff_ids,
+        action_start_snapshot=action_start_snapshot,
+        weapon_definitions=weapon_definitions,
+    )
+    damage = normal_damage + tune_break_damage
+    event = {
+        "event_type": "scheduled_damage",
+        "scheduled_effect_instance_id": effect.instance_id,
+        "scheduled_effect_id": effect.effect_id,
+        "source_character_id": effect.source_character_id,
+        "source_action_id": effect.source_action_id,
+        "payload_action_id": action.id,
+        "payload_action_name": action.name,
+        "host_action_id": host_action_id,
+        "trigger_index": trigger_index,
+        "combat_time": combat_time,
+        "host_action_combat_offset": host_action_combat_offset,
+        "damage": damage,
+        "normal_damage": normal_damage,
+        "tune_break_damage": tune_break_damage,
+        "hit_details": hit_details,
+        "hit_damage_by_category": hit_damage_by_category,
+        "source_status": effect.source_status,
+        "source_ref": effect.source_ref,
+        "metadata": dict(effect.metadata or {}),
+        "direct_damage_taken_amp_total_bonus_damage": float(
+            direct_amp_summary.get("direct_damage_taken_amp_total_bonus_damage", 0.0) or 0.0
+        ),
+        "interfered_marker_direct_damage_amp_applied_count": int(
+            direct_amp_summary.get("interfered_marker_direct_damage_amp_applied_count", 0) or 0
+        ),
+        "interfered_marker_direct_damage_amp_bonus_damage": float(
+            direct_amp_summary.get("interfered_marker_direct_damage_amp_bonus_damage", 0.0) or 0.0
+        ),
+        **action_damage_bonus_context,
+    }
+    state.scheduled_effect_event_log.append(event)
+    if damage > 0.0:
+        state.damage_log.append(
+            {
+                "event_type": "scheduled_damage",
+                "action_id": action.id,
+                "actor_character_id": effect.source_character_id,
+                "scheduled_effect_instance_id": effect.instance_id,
+                "scheduled_effect_id": effect.effect_id,
+                "host_action_id": host_action_id,
+                "damage_before_cutoff": damage,
+                "damage_after_cutoff_excluded": 0.0,
+                "combat_time_start": combat_time,
+                "combat_time_end": combat_time,
+                **action_damage_bonus_context,
+            }
+        )
+    return event
 
 
 def timeline_entry(result: ActionResult, active_character_name: str) -> TimelineEntry:
@@ -1577,6 +1814,11 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         damage=result.damage,
         normal_damage=result.normal_damage,
         tune_break_damage=result.tune_break_damage,
+        direct_action_damage=result.direct_action_damage,
+        scheduled_damage=result.scheduled_damage,
+        scheduled_damage_events=result.scheduled_damage_events,
+        scheduled_healing_events=result.scheduled_healing_events,
+        scheduled_status_application_events=result.scheduled_status_application_events,
         direct_damage_taken_amp_total_bonus_damage=result.direct_damage_taken_amp_total_bonus_damage,
         interfered_marker_direct_damage_amp_applied_count=result.interfered_marker_direct_damage_amp_applied_count,
         interfered_marker_direct_damage_amp_bonus_damage=result.interfered_marker_direct_damage_amp_bonus_damage,
@@ -1610,9 +1852,16 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         aemeath_seraphic_duet_followup_variant=result.aemeath_seraphic_duet_followup_variant,
         aemeath_seraphic_duet_followup_repeat_count=result.aemeath_seraphic_duet_followup_repeat_count,
         aemeath_seraphic_duet_followup_multiplier=result.aemeath_seraphic_duet_followup_multiplier,
+        aemeath_seraphic_duet_trail_stack_snapshot=result.aemeath_seraphic_duet_trail_stack_snapshot,
+        aemeath_seraphic_duet_trail_stack_factor=result.aemeath_seraphic_duet_trail_stack_factor,
+        aemeath_seraphic_duet_trail_preservation_active=result.aemeath_seraphic_duet_trail_preservation_active,
+        aemeath_seraphic_duet_trail_preservation_after=result.aemeath_seraphic_duet_trail_preservation_after,
+        aemeath_seraphic_duet_trail_consumed=result.aemeath_seraphic_duet_trail_consumed,
+        aemeath_seraphic_duet_total_extra_tune_multiplier=result.aemeath_seraphic_duet_total_extra_tune_multiplier,
         aemeath_rupturous_trail_stacks_before=result.aemeath_rupturous_trail_stacks_before,
         aemeath_rupturous_trail_stacks_consumed=result.aemeath_rupturous_trail_stacks_consumed,
         aemeath_rupturous_trail_stacks_after=result.aemeath_rupturous_trail_stacks_after,
+        aemeath_rupturous_trail_gain_events=result.aemeath_rupturous_trail_gain_events,
         aemeath_forte_enhancement_stacks_before=result.aemeath_forte_enhancement_stacks_before,
         aemeath_forte_enhancement_stacks_consumed=result.aemeath_forte_enhancement_stacks_consumed,
         aemeath_forte_enhancement_stacks_after=result.aemeath_forte_enhancement_stacks_after,
@@ -1759,6 +2008,11 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         lynae_target_tune_shift_state=result.lynae_target_tune_shift_state,
         lynae_target_tune_shift_remaining=result.lynae_target_tune_shift_remaining,
         lynae_spray_paint_window_remaining=result.lynae_spray_paint_window_remaining,
+        lynae_spray_paint_scheduled=result.lynae_spray_paint_scheduled,
+        lynae_spray_paint_schedule_operation=result.lynae_spray_paint_schedule_operation,
+        lynae_spray_paint_mode_snapshot=result.lynae_spray_paint_mode_snapshot,
+        lynae_spray_paint_target_shift_state_snapshot=result.lynae_spray_paint_target_shift_state_snapshot,
+        lynae_spray_paint_source_ref=result.lynae_spray_paint_source_ref,
         lynae_visual_impact_cooldown_remaining=result.lynae_visual_impact_cooldown_remaining,
         lynae_visual_impact_tune_break_boost_buff_active=result.lynae_visual_impact_tune_break_boost_buff_active,
         lynae_visual_impact_tune_break_boost_value=result.lynae_visual_impact_tune_break_boost_value,
@@ -1945,4 +2199,8 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         optimal_solution_trigger_reason=result.optimal_solution_trigger_reason,
         optimal_solution_candidate_id=result.optimal_solution_candidate_id,
         gp_success_modeled=result.gp_success_modeled,
+        aemeath_sigillum_activation_scheduled=result.aemeath_sigillum_activation_scheduled,
+        aemeath_sigillum_activation_combat_time=result.aemeath_sigillum_activation_combat_time,
+        aemeath_sigillum_source_end_frame=result.aemeath_sigillum_source_end_frame,
+        aemeath_sigillum_hit_schedule_events=result.aemeath_sigillum_hit_schedule_events,
     )

@@ -127,8 +127,7 @@ def test_off_tune_mistune_and_cooldown_state() -> None:
 def test_marker_interfered_and_response_state() -> None:
     env = make_env()
     sim = env.simulation
-    sim.characters["mornye"].energy_regen = 2.7944
-    sim.state.character_states["mornye"]["energy_regen"] = 2.7944
+    assert sim.characters["mornye"].energy_regen == 2.5424
     sim.state.character_mechanics_state["mornye"]["mode"] = "wide_field_observation"
     sim.state.character_mechanics_state["mornye"]["relative_momentum"] = 100.0
     assert sim.execute_action("mornye_heavy_attack")
@@ -144,9 +143,10 @@ def test_marker_interfered_and_response_state() -> None:
     sim.state.target_tune_shift_remaining = 8.0
     assert sim.execute_action("mornye_tune_break")
     assert sim.timeline[-1].mornye_interfered_marker_applied is True
+    assert sim.timeline[-1].interfered_marker_damage_taken_amp == 0.38560000000000005
     interfered_marker_channel = channel_for(env, "interfered_marker")
     assert obs_value(env, f"{interfered_marker_channel}_active") == 1.0
-    assert obs_value(env, f"{interfered_marker_channel}_value_scaled") == 1.0
+    assert abs(obs_value(env, f"{interfered_marker_channel}_value_scaled") - 0.964) < 1e-6
     assert_positive(env, f"{channel_for(env, 'aemeath_starburst')}_cooldown_ratio")
     assert_positive(env, f"{channel_for(env, 'mornye_particle_jet')}_cooldown_ratio")
 
@@ -158,12 +158,12 @@ def test_fields_echo_weapon_and_trailblazing_state() -> None:
     assert sim.execute_action("mornye_heavy_attack")
     syntony_channel = channel_for(env, "mornye_syntony_field")
     halo_channel = channel_for(env, "mornye_halo_of_starry_radiance_5set")
-    starfield_buff_channel = channel_for(env, "starfield_calibrator_party_crit_damage")
+    discord_restore_channel = channel_for(env, "discord_concerto_restore")
     assert obs_value(env, f"{syntony_channel}_active") == 1.0
     assert obs_value(env, f"{halo_channel}_active") == 1.0
     assert_positive(env, f"{halo_channel}_value_scaled")
-    assert obs_value(env, f"{starfield_buff_channel}_active") == 1.0
-    assert_positive(env, f"{starfield_buff_channel}_value_scaled")
+    assert obs_value(env, f"{discord_restore_channel}_active") == 1.0
+    assert obs_value(env, f"{discord_restore_channel}_value_scaled") == 1.0
 
     sim.state.resonance_energy["mornye"] = sim.characters["mornye"].resonance_energy_max
     assert sim.execute_action("mornye_resonance_liberation")
@@ -173,7 +173,20 @@ def test_fields_echo_weapon_and_trailblazing_state() -> None:
 
     weapon_env = make_env()
     assert weapon_env.simulation.execute_action("mornye_resonance_skill")
-    assert_positive(weapon_env, f"{channel_for(weapon_env, 'starfield_calibrator_concerto_restore')}_cooldown_ratio")
+    assert_positive(weapon_env, f"{channel_for(weapon_env, 'discord_concerto_restore')}_cooldown_ratio")
+
+    starfield_env = make_env()
+    starfield_env.simulation.characters["mornye"].weapon = {
+        "weapon_id": "starfield_calibrator",
+        "weapon_type": "broadblade",
+        "rank": 1,
+        "static_stats_already_in_profile": True,
+    }
+    starfield_env.simulation.state.character_states["mornye"]["rest_mass_energy"] = 100.0
+    assert starfield_env.simulation.execute_action("mornye_heavy_attack")
+    starfield_buff_channel = channel_for(starfield_env, "starfield_calibrator_party_crit_damage")
+    assert obs_value(starfield_env, f"{starfield_buff_channel}_active") == 1.0
+    assert_positive(starfield_env, f"{starfield_buff_channel}_value_scaled")
 
     trail_env = WuwaDpsEnv(
         DATA_DIR,

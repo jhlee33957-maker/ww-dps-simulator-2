@@ -1,0 +1,73 @@
+{
+  "schema_version": "aemeath_rupturous_trail_runtime_audit_v1",
+  "source_audit": "data/source/aemeath_rupturous_trail_direct_audit_v98.json",
+  "source_audit_sha256": "078e9bc31ea540c2b4441d9e2e14681f1cdd74db834a8358ce25b8c7f38a4094",
+  "implementation_status": "implemented_tests_passed_pending_external_review",
+  "mechanic": "Aemeath C0 Rupturous Trail for Tune Rupture",
+  "authoritative_state": {
+    "owner": "single enemy target",
+    "runtime_fields": [
+      "CombatState.rupturous_trail_stacks",
+      "CombatState.rupturous_trail_remaining",
+      "CombatState.rupturous_trail_event_log"
+    ],
+    "max_stacks": 30,
+    "duration_seconds": 30.0,
+    "duration_clock": "combat_time",
+    "refresh_rule": "refresh aggregate target duration to 30s on each successful application"
+  },
+  "gain_rule": {
+    "trigger": "successful actual party Tune Rupture response damage event",
+    "gain_per_trigger": 10,
+    "excluded": [
+      "Tune Strain responses",
+      "cooldown-blocked responses",
+      "missing responses",
+      "zero-damage responses"
+    ],
+    "source_status": "workbook_confirmed_c0",
+    "source_ref": "角色-女!2844"
+  },
+  "seraphic_duet_rule": {
+    "base_multiplier_per_hit": 1.0935,
+    "stack_bonus_per_stack": 0.04,
+    "normal_repeat_count": 5,
+    "enhanced_repeat_count": 10,
+    "normal_total_multiplier_by_stacks": {
+      "0": 5.4675,
+      "10": 7.6545,
+      "20": 9.8415,
+      "30": 12.0285
+    },
+    "enhanced_total_multiplier_by_stacks": {
+      "0": 10.935,
+      "10": 15.309,
+      "20": 19.683,
+      "30": 24.057
+    },
+    "consumption": "snapshot target stacks, consume all stacks unless one-use trail preservation is active, consume preservation when active"
+  },
+  "observation_schema": {
+    "version": "slot_generic_mechanics_v5",
+    "shape": 314,
+    "new_global_channels": [
+      "global.target_rupturous_trail_stack_ratio",
+      "global.target_rupturous_trail_remaining_ratio"
+    ],
+    "previous_verified_version": "slot_generic_mechanics_v4",
+    "previous_verified_shape": 312,
+    "compatibility": "v4/312 demos and models are incompatible"
+  },
+  "runtime_tests": [
+    "scripts/aemeath_rupturous_trail_source_audit_smoke_test.py",
+    "scripts/aemeath_rupturous_trail_response_gain_smoke_test.py",
+    "scripts/aemeath_rupturous_trail_duration_smoke_test.py",
+    "scripts/aemeath_seraphic_duet_trail_multiplier_smoke_test.py",
+    "scripts/aemeath_seraphic_duet_trail_consumption_smoke_test.py",
+    "scripts/aemeath_rupturous_trail_real_tune_break_smoke_test.py",
+    "scripts/aemeath_rupturous_trail_state_reset_smoke_test.py",
+    "scripts/rl_observation_rupturous_trail_v5_smoke_test.py",
+    "scripts/rl_observation_v4_incompatibility_smoke_test.py",
+    "scripts/aemeath_rupturous_trail_runtime_guard_smoke_test.py"
+  ]
+}

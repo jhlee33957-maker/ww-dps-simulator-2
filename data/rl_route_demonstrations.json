@@ -1,0 +1,388 @@
+{
+  "schema_version": "2026-07-09-route-demonstrations-v2",
+  "route_sets": [
+    {
+      "route_set_id": "aemeath_mornye_lynae_route_warm_start",
+      "party_id": "aemeath_mornye_lynae_enabled_test_party",
+      "description": "Generic route demonstrations for delayed-reward branch exploration.",
+      "training_only": true,
+      "reward_shaping": false,
+      "character_usage_bonus": false,
+      "routes": [
+        {
+          "route_id": "entry_to_lynae_intro",
+          "party_id": "aemeath_mornye_lynae_enabled_test_party",
+          "purpose": "Teach policy to choose swap_to_lynae from an Aemeath concerto-ready state.",
+          "setup_steps": [
+            {"op": "reset"},
+            {"op": "set_active_character", "character_id": "aemeath"},
+            {"op": "set_concerto", "character_id": "aemeath", "energy": 100, "ready": true},
+            {
+              "op": "set_action_unavailable",
+              "character_id": "aemeath",
+              "action_id": "aemeath_resonance_liberation",
+              "reason": "mirrors anti-liberation curriculum entry state"
+            }
+          ],
+          "demonstration_actions": ["swap_to_lynae"],
+          "repeat_weight": 1,
+          "notes": "Training-only entry demonstration; no reward shaping and no character usage bonus.",
+          "training_only": true,
+          "reward_shaping": false,
+          "character_usage_bonus": false
+        },
+        {
+          "route_id": "lynae_intro_liberation_skill_spark",
+          "party_id": "aemeath_mornye_lynae_enabled_test_party",
+          "purpose": "Teach the beginning of the Lynae branch after entry.",
+          "setup_steps": [
+            {"op": "reset"},
+            {"op": "set_active_character", "character_id": "aemeath"},
+            {"op": "set_concerto", "character_id": "aemeath", "energy": 100, "ready": true},
+            {"op": "execute_action", "action_id": "swap_to_lynae"}
+          ],
+          "demonstration_actions": [
+            "lynae_resonance_liberation",
+            "lynae_resonance_skill",
+            "lynae_spark_collision"
+          ],
+          "repeat_weight": 1,
+          "notes": "Source-backed route prefix after real Lynae Intro.",
+          "training_only": true,
+          "reward_shaping": false,
+          "character_usage_bonus": false
+        },
+        {
+          "route_id": "lynae_core_after_liberation",
+          "party_id": "aemeath_mornye_lynae_enabled_test_party",
+          "purpose": "Teach Lynae internal branch with Liberation consumed.",
+          "setup_steps": [
+            {"op": "reset"},
+            {"op": "set_active_character", "character_id": "aemeath"},
+            {"op": "set_concerto", "character_id": "aemeath", "energy": 100, "ready": true},
+            {"op": "execute_action", "action_id": "swap_to_lynae"},
+            {"op": "execute_action", "action_id": "lynae_resonance_liberation"}
+          ],
+          "demonstration_actions": [
+            "lynae_resonance_skill",
+            "lynae_spark_collision",
+            "lynae_polychrome_leap",
+            "lynae_polychrome_leap",
+            "lynae_polychrome_leap",
+            "lynae_visual_impact"
+          ],
+          "repeat_weight": 1,
+          "notes": "Source-backed core route after Liberation is unavailable.",
+          "training_only": true,
+          "reward_shaping": false,
+          "character_usage_bonus": false
+        },
+        {
+          "route_id": "lynae_kp_core",
+          "party_id": "aemeath_mornye_lynae_enabled_test_party",
+          "purpose": "Teach KP continuation from Spark.",
+          "setup_steps": [
+            {"op": "reset"},
+            {"op": "set_active_character", "character_id": "aemeath"},
+            {"op": "set_concerto", "character_id": "aemeath", "energy": 100, "ready": true},
+            {"op": "execute_action", "action_id": "swap_to_lynae"},
+            {"op": "execute_action", "action_id": "lynae_resonance_liberation"},
+            {"op": "execute_action", "action_id": "lynae_resonance_skill"},
+            {"op": "execute_action", "action_id": "lynae_spark_collision"}
+          ],
+          "demonstration_actions": [
+            "lynae_polychrome_leap",
+            "lynae_polychrome_leap",
+            "lynae_polychrome_leap",
+            "lynae_visual_impact"
+          ],
+          "repeat_weight": 1,
+          "notes": "KP continuation demonstration; generator must fail if Visual Impact is not valid.",
+          "training_only": true,
+          "reward_shaping": false,
+          "character_usage_bonus": false
+        },
+        {
+          "route_id": "lynae_full_branch",
+          "party_id": "aemeath_mornye_lynae_enabled_test_party",
+          "purpose": "End-to-end delayed branch demonstration.",
+          "setup_steps": [
+            {"op": "reset"},
+            {"op": "set_active_character", "character_id": "aemeath"},
+            {"op": "set_concerto", "character_id": "aemeath", "energy": 100, "ready": true}
+          ],
+          "demonstration_actions": [
+            "swap_to_lynae",
+            "lynae_resonance_liberation",
+            "lynae_resonance_skill",
+            "lynae_spark_collision",
+            "lynae_polychrome_leap",
+            "lynae_polychrome_leap",
+            "lynae_polychrome_leap",
+            "lynae_visual_impact"
+          ],
+          "repeat_weight": 1,
+          "notes": "End-to-end route demonstration with no reward shaping and no character usage bonus.",
+          "training_only": true,
+          "reward_shaping": false,
+          "character_usage_bonus": false
+        }
+      ]
+    },
+    {
+      "route_set_id": "aemeath_mornye_lynae_balanced_route_warm_start_v2",
+      "party_id": "aemeath_mornye_lynae_enabled_test_party",
+      "description": "Balanced demonstrations for normal-start party behavior, Lynae delayed branch entry, and Lynae internal route.",
+      "training_only": true,
+      "reward_shaping": false,
+      "character_usage_bonus": false,
+      "routes": [
+        {
+          "route_id": "normal_start_aemeath_mornye_baseline",
+          "party_id": "aemeath_mornye_lynae_enabled_test_party",
+          "purpose": "Prevent BC overfitting to immediate Lynae swap by teaching normal-start Mornye/Aemeath behavior.",
+          "setup_steps": [
+            {"op": "reset"}
+          ],
+          "demonstration_actions": [
+            "mornye_resonance_liberation",
+            "mornye_resonance_skill",
+            "mornye_heavy_attack",
+            "swap_to_aemeath",
+            "aemeath_resonance_liberation",
+            "aemeath_resonance_skill",
+            "aemeath_heavy_attack",
+            "aemeath_resonance_skill"
+          ],
+          "repeat_weight": 2,
+          "notes": "Baseline route intentionally excludes Lynae and uses deterministic valid Mornye-to-Aemeath actions.",
+          "training_only": true,
+          "reward_shaping": false,
+          "character_usage_bonus": false
+        },
+        {
+          "route_id": "normal_start_to_aemeath_concerto_ready",
+          "party_id": "aemeath_mornye_lynae_enabled_test_party",
+          "purpose": "Teach how to reach the Aemeath concerto-ready entry state from the real initial Mornye start.",
+          "setup_steps": [
+            {"op": "reset"}
+          ],
+          "demonstration_actions": [
+            {
+              "op": "auto_build_concerto",
+              "target_character": "aemeath",
+              "target_concerto": 100,
+              "max_steps": 60,
+              "action_priority": [
+                "swap_to_aemeath",
+                "aemeath_resonance_liberation",
+                "aemeath_resonance_skill",
+                "aemeath_heavy_attack",
+                "aemeath_basic_attack",
+                "short_wait",
+                "mornye_resonance_liberation",
+                "mornye_resonance_skill",
+                "mornye_heavy_attack",
+                "mornye_basic_attack"
+              ]
+            }
+          ],
+          "repeat_weight": 1,
+          "notes": "Records valid normal-start actions until Aemeath reaches concerto 100; does not include swap_to_lynae.",
+          "training_only": true,
+          "reward_shaping": false,
+          "character_usage_bonus": false
+        },
+        {
+          "route_id": "normal_start_to_lynae_intro_entry",
+          "party_id": "aemeath_mornye_lynae_enabled_test_party",
+          "purpose": "Teach full normal-start path into Lynae with realistic history before swap_to_lynae.",
+          "setup_steps": [
+            {"op": "reset"}
+          ],
+          "demonstration_actions": [
+            {
+              "op": "auto_build_concerto",
+              "target_character": "aemeath",
+              "target_concerto": 100,
+              "max_steps": 60,
+              "action_priority": [
+                "swap_to_aemeath",
+                "aemeath_resonance_liberation",
+                "aemeath_resonance_skill",
+                "aemeath_heavy_attack",
+                "aemeath_basic_attack",
+                "short_wait",
+                "mornye_resonance_liberation",
+                "mornye_resonance_skill",
+                "mornye_heavy_attack",
+                "mornye_basic_attack"
+              ]
+            },
+            "swap_to_lynae"
+          ],
+          "repeat_weight": 1,
+          "notes": "Records the actual observations leading from reset to the delayed branch entry action.",
+          "training_only": true,
+          "reward_shaping": false,
+          "character_usage_bonus": false
+        },
+        {
+          "route_id": "aemeath_concerto_to_lynae_intro_exact",
+          "party_id": "aemeath_mornye_lynae_enabled_test_party",
+          "purpose": "Keep the exact Aemeath concerto-ready entry-state demonstration.",
+          "setup_steps": [
+            {"op": "reset"},
+            {"op": "set_active_character", "character_id": "aemeath"},
+            {"op": "set_concerto", "character_id": "aemeath", "energy": 100, "ready": true},
+            {
+              "op": "set_action_unavailable",
+              "character_id": "aemeath",
+              "action_id": "aemeath_resonance_liberation",
+              "reason": "training-only anti-liberation state"
+            }
+          ],
+          "demonstration_actions": ["swap_to_lynae"],
+          "repeat_weight": 1,
+          "notes": "Exact entry-state route; no reward shaping and no character usage bonus.",
+          "training_only": true,
+          "reward_shaping": false,
+          "character_usage_bonus": false
+        },
+        {
+          "route_id": "lynae_after_intro_core_no_liberation",
+          "party_id": "aemeath_mornye_lynae_enabled_test_party",
+          "purpose": "Teach core route when Liberation is not used.",
+          "setup_steps": [
+            {"op": "reset"},
+            {"op": "set_active_character", "character_id": "aemeath"},
+            {"op": "set_concerto", "character_id": "aemeath", "energy": 100, "ready": true},
+            {"op": "execute_action", "action_id": "swap_to_lynae"},
+            {
+              "op": "set_action_unavailable",
+              "character_id": "lynae",
+              "action_id": "lynae_resonance_liberation",
+              "reason": "training-only unavailable Liberation branch"
+            }
+          ],
+          "demonstration_actions": [
+            "lynae_resonance_skill",
+            "lynae_spark_collision",
+            "lynae_polychrome_leap",
+            "lynae_polychrome_leap",
+            "lynae_polychrome_leap",
+            "lynae_visual_impact"
+          ],
+          "repeat_weight": 1,
+          "notes": "Core no-Liberation branch after valid Lynae Intro.",
+          "training_only": true,
+          "reward_shaping": false,
+          "character_usage_bonus": false
+        },
+        {
+          "route_id": "lynae_after_intro_liberation_core",
+          "party_id": "aemeath_mornye_lynae_enabled_test_party",
+          "purpose": "Teach core route after using Liberation.",
+          "setup_steps": [
+            {"op": "reset"},
+            {"op": "set_active_character", "character_id": "aemeath"},
+            {"op": "set_concerto", "character_id": "aemeath", "energy": 100, "ready": true},
+            {"op": "execute_action", "action_id": "swap_to_lynae"}
+          ],
+          "demonstration_actions": [
+            "lynae_resonance_liberation",
+            "lynae_resonance_skill",
+            "lynae_spark_collision",
+            "lynae_polychrome_leap",
+            "lynae_polychrome_leap",
+            "lynae_polychrome_leap",
+            "lynae_visual_impact"
+          ],
+          "repeat_weight": 1,
+          "notes": "Liberation branch through Visual Impact.",
+          "training_only": true,
+          "reward_shaping": false,
+          "character_usage_bonus": false
+        },
+        {
+          "route_id": "lynae_skill_to_spark_bridge",
+          "party_id": "aemeath_mornye_lynae_enabled_test_party",
+          "purpose": "Fix the observed failure where after Lynae Skill the policy swaps out instead of using Spark.",
+          "setup_steps": [
+            {"op": "reset"},
+            {"op": "set_active_character", "character_id": "aemeath"},
+            {"op": "set_concerto", "character_id": "aemeath", "energy": 100, "ready": true},
+            {"op": "execute_action", "action_id": "swap_to_lynae"},
+            {"op": "execute_action", "action_id": "lynae_resonance_liberation"},
+            {"op": "execute_action", "action_id": "lynae_resonance_skill"}
+          ],
+          "demonstration_actions": [
+            "lynae_spark_collision",
+            "lynae_polychrome_leap",
+            "lynae_polychrome_leap",
+            "lynae_polychrome_leap",
+            "lynae_visual_impact"
+          ],
+          "repeat_weight": 3,
+          "notes": "Bridge-focused route with higher repeat weight.",
+          "training_only": true,
+          "reward_shaping": false,
+          "character_usage_bonus": false
+        },
+        {
+          "route_id": "lynae_spark_to_visual_bridge",
+          "party_id": "aemeath_mornye_lynae_enabled_test_party",
+          "purpose": "Reinforce Spark into Polychrome x3 and Visual Impact.",
+          "setup_steps": [
+            {"op": "reset"},
+            {"op": "set_active_character", "character_id": "aemeath"},
+            {"op": "set_concerto", "character_id": "aemeath", "energy": 100, "ready": true},
+            {"op": "execute_action", "action_id": "swap_to_lynae"},
+            {"op": "execute_action", "action_id": "lynae_resonance_liberation"},
+            {"op": "execute_action", "action_id": "lynae_resonance_skill"},
+            {"op": "execute_action", "action_id": "lynae_spark_collision"}
+          ],
+          "demonstration_actions": [
+            "lynae_polychrome_leap",
+            "lynae_polychrome_leap",
+            "lynae_polychrome_leap",
+            "lynae_visual_impact"
+          ],
+          "repeat_weight": 3,
+          "notes": "Kaleidoscopic continuation route with higher repeat weight.",
+          "training_only": true,
+          "reward_shaping": false,
+          "character_usage_bonus": false
+        },
+        {
+          "route_id": "lynae_full_branch_with_exit",
+          "party_id": "aemeath_mornye_lynae_enabled_test_party",
+          "purpose": "Teach that Lynae route can end by returning to Aemeath.",
+          "setup_steps": [
+            {"op": "reset"},
+            {"op": "set_active_character", "character_id": "aemeath"},
+            {"op": "set_concerto", "character_id": "aemeath", "energy": 100, "ready": true}
+          ],
+          "demonstration_actions": [
+            "swap_to_lynae",
+            "lynae_resonance_liberation",
+            "lynae_resonance_skill",
+            "lynae_spark_collision",
+            "lynae_polychrome_leap",
+            "lynae_polychrome_leap",
+            "lynae_polychrome_leap",
+            "lynae_visual_impact",
+            "swap_to_aemeath",
+            "aemeath_resonance_skill",
+            "aemeath_heavy_attack"
+          ],
+          "repeat_weight": 1,
+          "notes": "Uses generic swap back to Aemeath; this teaches return behavior, not guaranteed full Outro timing.",
+          "training_only": true,
+          "reward_shaping": false,
+          "character_usage_bonus": false
+        }
+      ]
+    }
+  ]
+}

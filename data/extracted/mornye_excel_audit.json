@@ -1,6 +1,6 @@
 {
   "source_name": "莫宁",
-  "generated_at": "2026-07-06T01:53:42.926262+00:00",
+  "generated_at": "2026-07-10T13:51:01.810714+00:00",
   "workbook": "C:\\Users\\coree\\OneDrive\\Documents\\GitHub\\ww-dps-simulator-2\\ww-dps-simulator-2\\data\\source\\鸣潮动作数据汇总.xlsx",
   "source_row_count": 109,
   "source_rows": [
@@ -8147,14 +8147,12 @@
         0.1671
       ],
       "current_hit_multipliers": [
-        0.1671,
-        0.2227,
-        0.1671
+        0.5569
       ],
-      "coefficient_status": "exact",
+      "coefficient_status": "differs",
       "source_action_time": 1.0167,
-      "current_action_time": 1.0167,
-      "timing_status": "exact",
+      "current_action_time": 0.4167,
+      "timing_status": "differs",
       "resource_comparisons": [
         {
           "resource": "mechanic_effects.rest_mass_energy_delta",
@@ -8190,17 +8188,12 @@
         0.179
       ],
       "current_hit_multipliers": [
-        0.2386,
-        0.2386,
-        0.179,
-        0.179,
-        0.179,
-        0.179
+        1.1932
       ],
-      "coefficient_status": "exact",
+      "coefficient_status": "differs",
       "source_action_time": 1.1333,
-      "current_action_time": 1.1333,
-      "timing_status": "exact",
+      "current_action_time": 0.8167,
+      "timing_status": "differs",
       "resource_comparisons": [
         {
           "resource": "mechanic_effects.rest_mass_energy_delta",
@@ -8235,18 +8228,12 @@
         0.1034
       ],
       "current_hit_multipliers": [
-        0.4136,
-        0.1034,
-        0.1034,
-        0.1034,
-        0.1034,
-        0.1034,
-        0.1034
+        1.034
       ],
-      "coefficient_status": "exact",
+      "coefficient_status": "differs",
       "source_action_time": 1.5167,
-      "current_action_time": 1.5167,
-      "timing_status": "exact",
+      "current_action_time": 0.8333,
+      "timing_status": "differs",
       "resource_comparisons": [
         {
           "resource": "mechanic_effects.rest_mass_energy_delta",
@@ -8277,8 +8264,8 @@
       ],
       "coefficient_status": "exact",
       "source_action_time": 2.8333,
-      "current_action_time": 2.8333,
-      "timing_status": "exact",
+      "current_action_time": 1.9333,
+      "timing_status": "differs",
       "resource_comparisons": [
         {
           "resource": "mechanic_effects.rest_mass_energy_delta",
@@ -8308,20 +8295,17 @@
         0.1392
       ],
       "current_hit_multipliers": [
-        0.1392,
-        0.1392,
-        0.1392,
-        0.1392
+        0.5568
       ],
-      "coefficient_status": "exact",
+      "coefficient_status": "differs",
       "source_action_time": 0.7167,
-      "current_action_time": 0.7167,
-      "timing_status": "exact",
+      "current_action_time": 0.35,
+      "timing_status": "differs",
       "resource_comparisons": [
         {
           "resource": "mechanic_effects.relative_momentum_delta",
-          "source_value": 2.5,
-          "current_value": 2.5,
+          "source_value": 10.0,
+          "current_value": 10.0,
           "status": "exact"
         }
       ],
@@ -8346,20 +8330,17 @@
         0.2585
       ],
       "current_hit_multipliers": [
-        0.2585,
-        0.2585,
-        0.2585,
-        0.2585
+        1.034
       ],
-      "coefficient_status": "exact",
+      "coefficient_status": "differs",
       "source_action_time": 1.1333,
-      "current_action_time": 1.1333,
-      "timing_status": "exact",
+      "current_action_time": 0.7167,
+      "timing_status": "differs",
       "resource_comparisons": [
         {
           "resource": "mechanic_effects.relative_momentum_delta",
-          "source_value": 3,
-          "current_value": 3,
+          "source_value": 12.0,
+          "current_value": 12.0,
           "status": "exact"
         }
       ],
@@ -8392,17 +8373,12 @@
         0.3309
       ],
       "current_hit_multipliers": [
-        0.0931,
-        0.0931,
-        0.0931,
-        0.0931,
-        0.3309,
-        0.3309
+        1.0342
       ],
-      "coefficient_status": "exact",
+      "coefficient_status": "differs",
       "source_action_time": 1.0167,
-      "current_action_time": 1.0167,
-      "timing_status": "exact",
+      "current_action_time": 0.65,
+      "timing_status": "differs",
       "resource_comparisons": [
         {
           "resource": "mechanic_effects.relative_momentum_delta",
@@ -8413,8 +8389,8 @@
         {
           "resource": "concerto_energy_gain",
           "source_value": 20,
-          "current_value": 20,
-          "status": "exact"
+          "current_value": 22.56,
+          "status": "differs"
         }
       ],
       "notes": "Passive workbook text grants 20 Concerto after Observation A3.",
@@ -8441,14 +8417,12 @@
         0.148
       ],
       "current_hit_multipliers": [
-        0.111,
-        0.111,
-        0.148
+        0.37
       ],
-      "coefficient_status": "exact",
+      "coefficient_status": "differs",
       "source_action_time": 2.3333,
-      "current_action_time": 2.3333,
-      "timing_status": "exact",
+      "current_action_time": 1.5833,
+      "timing_status": "differs",
       "resource_comparisons": [
         {
           "resource": "mechanic_effects.rest_mass_energy_delta",
@@ -8478,13 +8452,12 @@
         0.9902
       ],
       "current_hit_multipliers": [
-        0.4414,
-        0.9902
+        0.4414
       ],
-      "coefficient_status": "exact",
+      "coefficient_status": "differs",
       "source_action_time": 1.2,
-      "current_action_time": 1.2,
-      "timing_status": "exact",
+      "current_action_time": 1.3333,
+      "timing_status": "differs",
       "resource_comparisons": [
         {
           "resource": "mechanic_effects.rest_mass_energy_delta",
@@ -8527,8 +8500,8 @@
       ],
       "coefficient_status": "exact",
       "source_action_time": 1.3,
-      "current_action_time": 1.3,
-      "timing_status": "exact",
+      "current_action_time": 1.4333,
+      "timing_status": "differs",
       "resource_comparisons": [
         {
           "resource": "mechanic_effects.relative_momentum_delta",
@@ -8565,8 +8538,8 @@
       ],
       "coefficient_status": "exact",
       "source_action_time": 1.8333,
-      "current_action_time": 1.8333,
-      "timing_status": "exact",
+      "current_action_time": 2.0167,
+      "timing_status": "differs",
       "resource_comparisons": [
         {
           "resource": "cooldown",
@@ -8609,12 +8582,9 @@
         0.3977
       ],
       "current_hit_multipliers": [
-        0.3977,
-        0.3977,
-        0.3977,
-        0.3977
+        1.5908
       ],
-      "coefficient_status": "exact",
+      "coefficient_status": "differs",
       "source_action_time": 1.0,
       "current_action_time": 1.0,
       "timing_status": "exact",
@@ -8628,7 +8598,7 @@
         {
           "resource": "concerto_energy_gain",
           "source_value": 10,
-          "current_value": 10,
+          "current_value": 10.0,
           "status": "exact"
         },
         {
@@ -8662,8 +8632,8 @@
       ],
       "coefficient_status": "exact",
       "source_action_time": 4.9333,
-      "current_action_time": 4.9333,
-      "timing_status": "exact",
+      "current_action_time": 4.7,
+      "timing_status": "differs",
       "resource_comparisons": [
         {
           "resource": "cooldown",
@@ -8680,7 +8650,7 @@
         {
           "resource": "concerto_energy_gain",
           "source_value": 20,
-          "current_value": 20,
+          "current_value": 20.0,
           "status": "exact"
         },
         {
@@ -8746,13 +8716,13 @@
       ],
       "coefficient_status": "exact",
       "source_action_time": 1.7,
-      "current_action_time": 1.7,
-      "timing_status": "exact",
+      "current_action_time": 1.8333,
+      "timing_status": "differs",
       "resource_comparisons": [
         {
           "resource": "concerto_energy_gain",
           "source_value": 10,
-          "current_value": 30,
+          "current_value": 30.0,
           "status": "differs"
         },
         {
@@ -8882,10 +8852,11 @@
     }
   ],
   "status_counts": {
-    "exact": 30,
-    "resource_exact": 29,
+    "differs": 22,
+    "resource_exact": 28,
+    "exact": 8,
+    "resource_differs": 2,
     "source_missing": 1,
-    "resource_differs": 1,
     "missing": 1
   },
   "audit_scope": {

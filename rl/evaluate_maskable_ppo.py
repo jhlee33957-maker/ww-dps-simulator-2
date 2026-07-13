@@ -26,13 +26,39 @@ from simulator.transition_config import (
     transition_mode_summary,
 )
 from rl.evaluation_report import build_generated_damage_summary
+from rl.damage_attribution import damage_by_character as event_aware_damage_by_character
+from rl.demo_contract import (
+    OBSERVATION_SHAPE,
+    OBSERVATION_VERSION,
+    POLICY_ACTION_COUNT,
+    action_data_hash,
+    file_sha256,
+    json_safe,
+    party_config_hash,
+    sequence_hash,
+)
 
 
+METHODOLOGY_PATH = PROJECT_ROOT / "data" / "rl_training_methodology.json"
+MANUAL_BASELINE_SUMMARY_PATH = PROJECT_ROOT / "results" / "manual_120s_baseline_v104_summary.json"
 OBSERVATION_METADATA_KEYS = (
     "observation_shape",
     "observation_version",
     "observation_labels",
     "max_party_slots",
+    "max_policy_action_slots",
+    "observation_action_slot_mapping",
+)
+
+METADATA_COMPATIBILITY_KEYS = (
+    "selected_party_character_ids",
+    "initial_active_character",
+    "policy_action_ids",
+    "policy_action_count",
+    "active_build_profiles",
+    "effective_build_stats_summary",
+    "action_data_hash",
+    "party_config_hash",
 )
 
 
@@ -43,6 +69,100 @@ def observation_metadata_mismatches(metadata: dict[str, Any], env: Any) -> dict[
         for key in OBSERVATION_METADATA_KEYS
         if metadata.get(key) != expected[key]
     }
+
+
+def ppo_metadata_path(model_path: Path) -> Path:
+    return Path(str(model_path) + ".ppo_metadata.json")
+
+
+def bc_metadata_path(model_path: Path) -> Path:
+    return Path(str(model_path) + ".bc_metadata.json")
+
+
+def load_model_metadata(model_path: Path, global_metadata_path: Path) -> dict[str, Any]:
+    ppo_sidecar = ppo_metadata_path(model_path)
+    bc_sidecar = bc_metadata_path(model_path)
+    if ppo_sidecar.exists() and bc_sidecar.exists() and ppo_sidecar.read_bytes() != bc_sidecar.read_bytes():
+        raise ValueError(
+            "Conflicting model sidecars found. PPO and BC sidecars may coexist only as byte-equivalent aliases: "
+            f"{ppo_sidecar} and {bc_sidecar}"
+        )
+    if ppo_sidecar.exists():
+        return {
+            "source": "ppo_model_sidecar",
+            "path": ppo_sidecar,
+            "metadata": json.loads(ppo_sidecar.read_text(encoding="utf-8")),
+        }
+    if bc_sidecar.exists():
+        return {
+            "source": "bc_model_sidecar",
+            "path": bc_sidecar,
+            "metadata": json.loads(bc_sidecar.read_text(encoding="utf-8")),
+        }
+    if global_metadata_path.exists():
+        metadata = json.loads(global_metadata_path.read_text(encoding="utf-8"))
+        metadata_model_path = metadata.get("model_path")
+        if metadata_model_path and _paths_match(Path(metadata_model_path), model_path):
+            return {
+                "source": "associated_global",
+                "path": global_metadata_path,
+                "metadata": metadata,
+            }
+    return {"source": "none", "path": None, "metadata": {}}
+
+
+def model_metadata_mismatches(
+    metadata: dict[str, Any],
+    env: Any,
+    *,
+    model_path: Path | None = None,
+) -> dict[str, dict[str, Any]]:
+    expected = {
+        "selected_party_character_ids": env.get_selected_party_character_ids(),
+        "initial_active_character": env.get_initial_active_character(),
+        "policy_action_ids": env.get_policy_action_ids(),
+        "policy_action_count": int(env.action_space.n),
+        "active_build_profiles": env.get_active_build_profiles(),
+        "effective_build_stats_summary": env.get_effective_build_stats_summary(),
+        "action_data_hash": action_data_hash(root=PROJECT_ROOT),
+        "party_config_hash": party_config_hash(root=PROJECT_ROOT),
+    }
+    mismatches = {
+        key: {"model": metadata.get(key), "evaluation": value}
+        for key, value in expected.items()
+        if metadata.get(key) != value
+    }
+    missing = [key for key in METADATA_COMPATIBILITY_KEYS if key not in metadata]
+    for key in missing:
+        mismatches[f"missing_{key}"] = {"model": None, "evaluation": expected.get(key)}
+    mismatches.update(observation_metadata_mismatches(metadata, env))
+    mismatches.update(_stale_contract_mismatches(metadata))
+    if model_path is not None and metadata.get("model_sha256"):
+        actual_sha = file_sha256(model_path)
+        if metadata["model_sha256"] != actual_sha:
+            mismatches["model_sha256"] = {"model": metadata["model_sha256"], "evaluation": actual_sha}
+    return mismatches
+
+
+def _paths_match(left: Path, right: Path) -> bool:
+    try:
+        return left.resolve() == right.resolve()
+    except OSError:
+        return left.as_posix() == right.as_posix()
+
+
+def _stale_contract_mismatches(metadata: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    mismatches: dict[str, dict[str, Any]] = {}
+    observation_shape = metadata.get("observation_shape")
+    observation_version = metadata.get("observation_version")
+    policy_action_count = metadata.get("policy_action_count")
+    if observation_shape is not None and list(observation_shape) != list(OBSERVATION_SHAPE):
+        mismatches["stale_observation_shape"] = {"model": observation_shape, "expected": list(OBSERVATION_SHAPE)}
+    if observation_version is not None and observation_version != OBSERVATION_VERSION:
+        mismatches["stale_observation_version"] = {"model": observation_version, "expected": OBSERVATION_VERSION}
+    if policy_action_count is not None and int(policy_action_count) != POLICY_ACTION_COUNT:
+        mismatches["stale_policy_action_count"] = {"model": policy_action_count, "expected": POLICY_ACTION_COUNT}
+    return mismatches
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -83,6 +203,21 @@ def build_arg_parser() -> argparse.ArgumentParser:
         default=None,
     )
     parser.add_argument("--allow-mismatch", action="store_true")
+    parser.add_argument("--dry-run-contract", action="store_true")
+    parser.add_argument(
+        "--training-metadata-path",
+        type=Path,
+        default=PROJECT_ROOT / "results" / "training_metadata.json",
+        help="Legacy global metadata fallback. A model sidecar is preferred when present.",
+    )
+    parser.add_argument("--diagnose-policy-probs", action="store_true")
+    parser.add_argument(
+        "--write-policy-probability-report",
+        type=Path,
+        default=PROJECT_ROOT / "reports" / "aemeath_mornye_lynae_policy_probability_report.json",
+    )
+    parser.add_argument("--summary-path", type=Path, default=PROJECT_ROOT / "results" / "ppo_evaluation_summary.json")
+    parser.add_argument("--timeline-path", type=Path, default=PROJECT_ROOT / "results" / "ppo_timeline.csv")
     return parser
 
 
@@ -155,34 +290,51 @@ def main() -> None:
         raise SystemExit(2)
     for warning in validation.get("warnings", []):
         print(f"Build profile warning: {warning}")
-    metadata_path = PROJECT_ROOT / "results" / "training_metadata.json"
-    metadata: dict[str, Any] = {}
-    if metadata_path.exists():
-        metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-        expected = {
-            "selected_party_character_ids": metadata_env.get_selected_party_character_ids(),
-            "policy_action_ids": metadata_env.get_policy_action_ids(),
-            "active_build_profiles": metadata_env.get_active_build_profiles(),
-            "effective_build_stats_summary": metadata_env.get_effective_build_stats_summary(),
-        }
-        mismatches = {
-            key: {"model": metadata.get(key), "evaluation": value}
-            for key, value in expected.items()
-            if metadata.get(key) != value
-        }
-        mismatches.update(observation_metadata_mismatches(metadata, metadata_env))
-        if mismatches and not args.allow_mismatch:
+    try:
+        metadata_info = load_model_metadata(args.model_path, args.training_metadata_path)
+    except ValueError as exc:
+        print(str(exc))
+        raise SystemExit(1) from None
+    metadata: dict[str, Any] = metadata_info["metadata"]
+    metadata_mismatches: dict[str, Any] = {}
+    if metadata:
+        metadata_mismatches = model_metadata_mismatches(metadata, metadata_env, model_path=args.model_path)
+        if metadata_mismatches and not args.allow_mismatch:
             print(
                 "Model metadata does not match the requested evaluation roster, build profile config, "
                 "or observation contract."
             )
-            print(json.dumps(mismatches, indent=2))
+            print(json.dumps(json_safe(metadata_mismatches), indent=2, ensure_ascii=False))
             print("Use --allow-mismatch only if you intentionally want to bypass this check.")
             raise SystemExit(1)
-        if mismatches:
+        if metadata_mismatches:
             print("WARNING: evaluating with model metadata mismatches:")
-            print(json.dumps(mismatches, indent=2))
+            print(json.dumps(json_safe(metadata_mismatches), indent=2, ensure_ascii=False))
     model = MaskablePPO.load(args.model_path)
+    model_space_mismatches = _model_space_mismatches(model, metadata_env)
+    if model_space_mismatches and not args.allow_mismatch:
+        print("Model spaces do not match the requested evaluation environment.")
+        print(json.dumps(json_safe(model_space_mismatches), indent=2, ensure_ascii=False))
+        raise SystemExit(1)
+    if args.dry_run_contract:
+        print(
+            json.dumps(
+                json_safe(
+                    {
+                        "status": "ok",
+                        "dry_run_contract": True,
+                        "model_path": args.model_path,
+                        "metadata_source": metadata_info["source"],
+                        "metadata_path": metadata_info["path"],
+                        "metadata_mismatches": metadata_mismatches,
+                        "model_space_mismatches": model_space_mismatches,
+                    }
+                ),
+                indent=2,
+                ensure_ascii=False,
+            )
+        )
+        return
     env, action_sequence, resolved_action_sequence = run_masked_episode(
         model,
         PROJECT_ROOT / "data",
@@ -206,21 +358,28 @@ def main() -> None:
     )
     damage_by_action: Counter[str] = Counter()
     damage_by_resolved: Counter[str] = Counter()
-    damage_by_character: Counter[str] = Counter()
     damage_by_category: Counter[str] = Counter()
     damage_by_action_type: Counter[str] = Counter()
     damage_by_damage_bonus_category: Counter[str] = Counter()
     for selected_id, resolved_id, row in zip(action_sequence, resolved_action_sequence, summary.timeline):
         damage_by_action[selected_id] += row.total_action_damage
         damage_by_resolved[resolved_id] += row.total_action_damage
-        damage_by_character[row.actor_character_id or row.character_id or "unknown"] += row.total_action_damage
         damage_by_category[row.damage_category] += row.total_action_damage
         damage_by_action_type[row.action_type or "other"] += row.total_action_damage
         damage_by_damage_bonus_category[row.damage_bonus_category or row.damage_category] += row.total_action_damage
+    damage_by_character = event_aware_damage_by_character(summary.timeline, total_damage=summary.total_damage)
     generated_damage_summary = build_generated_damage_summary(
         summary.timeline,
         total_damage=summary.total_damage,
     )
+    manual_baseline_parity = _manual_baseline_parity(
+        action_sequence=action_sequence,
+        resolved_action_sequence=resolved_action_sequence,
+        total_damage=summary.total_damage,
+        dps=summary.dps,
+        damage_by_character=damage_by_character,
+    )
+    training_methodology_summary = _load_training_methodology_summary()
     unused_party_members = [
         character_id
         for character_id in env.get_selected_party_character_ids()
@@ -272,12 +431,13 @@ def main() -> None:
     print("Resource summary:", summary.resources)
     print("Timeline:")
     for row in summary.timeline:
-        print(row.model_dump())
+        print(json.dumps(json_safe(row.model_dump()), ensure_ascii=True))
 
-    results_dir = PROJECT_ROOT / "results"
+    results_dir = args.summary_path.parent
     results_dir.mkdir(parents=True, exist_ok=True)
-    summary_path = results_dir / "ppo_evaluation_summary.json"
-    timeline_path = results_dir / "ppo_timeline.csv"
+    args.timeline_path.parent.mkdir(parents=True, exist_ok=True)
+    summary_path = args.summary_path
+    timeline_path = args.timeline_path
 
     summary_payload = {
         "total_damage": summary.total_damage,
@@ -408,15 +568,27 @@ def main() -> None:
         "observation_labels": env.observation_labels(),
         "observation_channel_mapping": env.observation_channel_mapping(),
         "observation_slot_mapping": env.observation_slot_mapping(),
+        "observation_action_slot_mapping": env.observation_action_slot_mapping(),
         "max_party_slots": env.observation_metadata()["max_party_slots"],
-        "model_observation_shape": metadata.get("observation_shape") if metadata_path.exists() else None,
+        "max_policy_action_slots": env.observation_metadata()["max_policy_action_slots"],
+        "curriculum_reset_mode": env.get_last_curriculum_reset_mode(),
+        "training_methodology_summary": training_methodology_summary,
+        "model_training_metadata_source": metadata_info["source"],
+        "model_training_metadata_path": metadata_info["path"].as_posix() if metadata_info["path"] else None,
+        "model_training_metadata": metadata if metadata else None,
+        "model_metadata_mismatches": metadata_mismatches,
+        "model_space_mismatches": model_space_mismatches,
+        "model_observation_shape": metadata.get("observation_shape") if metadata else None,
         "current_observation_shape": list(env.observation_space.shape),
         "observation_shape_matches_model": (
-            metadata.get("observation_shape") == list(env.observation_space.shape) if metadata_path.exists() else None
+            metadata.get("observation_shape") == list(env.observation_space.shape) if metadata else None
         ),
         **transition_event_counts(summary.timeline),
         "action_sequence": action_sequence,
         "resolved_action_sequence": resolved_action_sequence,
+        "selected_action_count": len(action_sequence),
+        "resolved_action_count": len(resolved_action_sequence),
+        **manual_baseline_parity,
         "action_counts": counts,
         "selected_action_counts": counts,
         "resolved_action_counts": resolved_counts,
@@ -529,7 +701,7 @@ def main() -> None:
         ],
         "resources": summary.resources,
     }
-    summary_path.write_text(json.dumps(summary_payload, indent=2), encoding="utf-8")
+    summary_path.write_text(json.dumps(json_safe(summary_payload), indent=2, ensure_ascii=False), encoding="utf-8")
 
     timeline_rows = [row.model_dump() for row in summary.timeline]
     with timeline_path.open("w", newline="", encoding="utf-8") as file:
@@ -540,6 +712,16 @@ def main() -> None:
 
     print(f"Saved evaluation summary to {summary_path}")
     print(f"Saved timeline to {timeline_path}")
+    if args.diagnose_policy_probs:
+        from scripts.aemeath_mornye_lynae_policy_probability_diagnostic import run_policy_probability_diagnostic
+
+        probability_report = run_policy_probability_diagnostic(
+            model_path=args.model_path,
+            party=args.party or "aemeath_mornye_lynae_enabled_test_party",
+            write_json=args.write_policy_probability_report,
+        )
+        print(f"Saved policy probability diagnostic to {args.write_policy_probability_report}")
+        print("Policy probability diagnostic status:", probability_report["model_probability_status"])
 
 
 def _deep_update(target: dict[str, Any], updates: dict[str, Any]) -> dict[str, Any]:
@@ -563,6 +745,49 @@ def _action_counts_by_character_prefix(action_sequence: list[str]) -> dict[str, 
     return dict(Counter(_action_character_prefix(action_id) for action_id in action_sequence))
 
 
+def _manual_baseline_parity(
+    *,
+    action_sequence: list[str],
+    resolved_action_sequence: list[str],
+    total_damage: float,
+    dps: float,
+    damage_by_character: dict[str, float],
+) -> dict[str, Any]:
+    if not MANUAL_BASELINE_SUMMARY_PATH.exists():
+        raise FileNotFoundError(f"Manual baseline summary not found: {MANUAL_BASELINE_SUMMARY_PATH}")
+    baseline = json.loads(MANUAL_BASELINE_SUMMARY_PATH.read_text(encoding="utf-8"))
+    for key in (
+        "selected_sequence_sha256",
+        "resolved_sequence_sha256",
+        "total_damage",
+        "dps",
+        "damage_by_character",
+    ):
+        if key not in baseline:
+            raise ValueError(f"Manual baseline summary is missing required key {key!r}")
+    selected_sha = sequence_hash(action_sequence)
+    resolved_sha = sequence_hash(resolved_action_sequence)
+    baseline_total_damage = float(baseline["total_damage"])
+    baseline_dps = float(baseline["dps"])
+    damage_delta = float(total_damage) - baseline_total_damage
+    baseline_damage = {str(key): float(value) for key, value in baseline["damage_by_character"].items()}
+    character_damage_match = set(damage_by_character) == set(baseline_damage) and all(
+        abs(float(damage_by_character[key]) - baseline_damage[key]) <= 1e-6
+        for key in baseline_damage
+    )
+    return {
+        "selected_sequence_sha256": selected_sha,
+        "resolved_sequence_sha256": resolved_sha,
+        "manual_baseline_total_damage": baseline_total_damage,
+        "manual_baseline_dps": baseline_dps,
+        "manual_baseline_damage_ratio": float(total_damage) / baseline_total_damage if baseline_total_damage else None,
+        "manual_baseline_damage_delta": damage_delta,
+        "manual_baseline_selected_sequence_match": selected_sha == baseline["selected_sequence_sha256"],
+        "manual_baseline_resolved_sequence_match": resolved_sha == baseline["resolved_sequence_sha256"],
+        "manual_baseline_character_damage_match": character_damage_match,
+    }
+
+
 def _policy_actions_exposed_by_character(
     policy_action_ids: list[str],
     actions_by_id: dict[str, Any],
@@ -577,6 +802,42 @@ def _policy_actions_exposed_by_character(
         if character_id in exposed:
             exposed[character_id].append(action_id)
     return {character_id: sorted(action_ids) for character_id, action_ids in exposed.items()}
+
+
+def _model_space_mismatches(model: Any, env: Any) -> dict[str, Any]:
+    mismatches: dict[str, Any] = {}
+    model_action_n = getattr(getattr(model, "action_space", None), "n", None)
+    if model_action_n != env.action_space.n:
+        mismatches["action_space_n"] = {"model": model_action_n, "evaluation": env.action_space.n}
+    model_observation_shape = list(getattr(getattr(model, "observation_space", None), "shape", []) or [])
+    env_observation_shape = list(env.observation_space.shape)
+    if model_observation_shape != env_observation_shape:
+        mismatches["observation_shape"] = {
+            "model": model_observation_shape,
+            "evaluation": env_observation_shape,
+        }
+    return mismatches
+
+
+def _load_training_methodology_summary() -> dict[str, Any]:
+    if not METHODOLOGY_PATH.exists():
+        return {
+            "methodology_summary_id": "missing",
+            "algorithm": "MaskablePPO",
+            "reward_formula": "damage_this_action / 10000.0",
+            "evaluation_default": "none",
+        }
+    data = json.loads(METHODOLOGY_PATH.read_text(encoding="utf-8"))
+    return {
+        "methodology_version": data.get("methodology_version"),
+        "methodology_summary_id": data.get("methodology_summary_id"),
+        "algorithm": data.get("algorithm"),
+        "reward_formula": data.get("reward_formula"),
+        "evaluation_default": data.get("evaluation_default"),
+        "no_character_specific_usage_reward_bonus": data.get("no_character_specific_usage_reward_bonus"),
+        "curriculum_training_only_note": data.get("curriculum_training_only_note"),
+        "stale_model_warning": data.get("stale_model_warning"),
+    }
 
 
 if __name__ == "__main__":

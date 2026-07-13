@@ -24,6 +24,12 @@ def make_sim() -> Simulation:
         },
         transition_config={"mechanics": {"mornye": {"mornye_heal_event_mode": "simplified_syntony_field_uptime"}}},
     )
+    sim.characters["mornye"].weapon = {
+        "weapon_id": "starfield_calibrator",
+        "weapon_type": "broadblade",
+        "rank": 1,
+        "static_stats_already_in_profile": True,
+    }
     sim.state.resonance_energy["mornye"] = sim.characters["mornye"].resonance_energy_max
     sim.state.character_states["mornye"]["syntony_field_remaining"] = 25.0
     apply_syntony_field_off_tune_buff(state=sim.state, constellation=0)

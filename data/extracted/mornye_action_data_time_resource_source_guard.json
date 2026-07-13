@@ -648,15 +648,15 @@
   "interpretation": {
     "inversion": {
       "has_global_time_stop": false,
-      "action_time": 1.3,
-      "combat_time_cost": 1.3,
+      "action_time": 1.4333333333333333,
+      "combat_time_cost": 1.4333333333333333,
       "resource_delta": -100,
       "direct_interfered_source_confirmed": false
     },
     "qte_intro": {
       "has_global_time_stop": false,
-      "action_time": 1.7,
-      "combat_time_cost": 1.7,
+      "action_time": 1.8333333333333333,
+      "combat_time_cost": 1.8333333333333333,
       "base_concerto_gain": 10,
       "passive_concerto_source_confirmed": true,
       "passive_concerto_gain": 20,
@@ -674,10 +674,11 @@
     },
     "liberation": {
       "has_global_time_stop": true,
-      "action_time": 4.933333333333334,
+      "action_time": 4.7,
       "combat_time_cost": 0.0,
       "global_time_stop_frames": 300,
-      "concerto_gain": 20
+      "concerto_gain": 20,
+      "wide_field_observation_action_time": 4.933333333333334
     },
     "tune_rupture": {
       "has_global_time_stop": true,

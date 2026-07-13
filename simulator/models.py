@@ -20,6 +20,10 @@ AnomalyType = Literal["aero_erosion", "spectro_frazzle", "electro_flare", "havoc
 BuffModifierType = Literal["attack", "damage_bonus", "boost", "dmg_taken", "damage_amp"]
 BuffTarget = Literal["self", "active", "team", "party", "next_active", "specific_character", "enemy"]
 ScalingStat = Literal["atk", "def", "hp", "none", "unresolved"]
+HitTimeMode = Literal["source_time", "resolved_action_end"]
+ScheduledEffectRefreshRule = Literal["replace", "refresh_duration", "keep_existing"]
+ScheduledResourcePolicy = Literal["none", "source_confirmed_positive_gains"]
+ScheduledPayloadEventType = Literal["damage", "healing", "status_application"]
 
 
 class CharacterData(BaseModel):
@@ -170,6 +174,7 @@ class HitData(BaseModel):
     tune_break_multiplier: float = Field(default=0.0, ge=0)
     tags: list[str] = Field(default_factory=list)
     name: str | None = None
+    hit_time_mode: HitTimeMode = "source_time"
 
 
 class ActionData(BaseModel):
@@ -177,8 +182,8 @@ class ActionData(BaseModel):
     name: str
     character_id: str | None
     action_type: ActionType
-    duration: float = Field(gt=0)
-    action_time: float | None = Field(default=None, gt=0)
+    duration: float = Field(ge=0)
+    action_time: float | None = Field(default=None, ge=0)
     combat_time_cost: float | None = Field(default=None, ge=0)
     cooldown: float = Field(ge=0)
     damage_category: DamageCategory = "normal"
@@ -190,6 +195,7 @@ class ActionData(BaseModel):
     scaling_stat_note: str | None = None
     raw_skill_category: str | None = None
     raw_damage_type: str | None = None
+    scheduled_event_type: ScheduledPayloadEventType | None = None
     damage_bonus_category_source: str | None = None
     damage_multiplier: float = Field(default=0.0, ge=0)
     tune_break_multiplier: float = Field(default=0.0, ge=0)
@@ -229,6 +235,18 @@ class ActionData(BaseModel):
             self.applies_anomaly_type = self.anomaly_type
         if self.applies_anomaly_stacks <= 0 and self.anomaly_stacks > 0:
             self.applies_anomaly_stacks = self.anomaly_stacks
+        auxiliary_zero_time = bool((self.mechanic_effects or {}).get("auxiliary_zero_time_action", False))
+        if auxiliary_zero_time:
+            if self.duration != 0.0:
+                raise ValueError("Auxiliary zero-time action duration must be exactly 0.0")
+            if self.effective_action_time != 0.0:
+                raise ValueError("Auxiliary zero-time action action_time must be exactly 0.0")
+            if self.effective_combat_time_cost != 0.0:
+                raise ValueError("Auxiliary zero-time action combat_time_cost must be exactly 0.0")
+        elif self.duration <= 0.0:
+            raise ValueError("Action duration must be > 0 unless auxiliary_zero_time_action is true")
+        elif self.effective_action_time <= 0.0:
+            raise ValueError("Action action_time must be > 0 unless auxiliary_zero_time_action is true")
         return self
 
     @property
@@ -310,6 +328,28 @@ class ResourceChange(BaseModel):
     concerto_ready_after: bool = False
 
 
+class ScheduledEffectState(BaseModel):
+    instance_id: str
+    effect_id: str
+    source_character_id: str
+    source_action_id: str | None = None
+    payload_action_id: str
+    activation_combat_time: float = Field(default=0.0, ge=0)
+    remaining_duration: float = Field(gt=0)
+    tick_interval: float = Field(gt=0)
+    time_until_next_tick: float = Field(ge=0)
+    trigger_on_apply_pending: bool = False
+    trigger_count: int = Field(default=0, ge=0)
+    max_trigger_count: int | None = Field(default=None, gt=0)
+    refresh_rule: ScheduledEffectRefreshRule = "replace"
+    source_status: str
+    source_ref: str | None = None
+    payload_event_type: ScheduledPayloadEventType = "damage"
+    scheduled_resource_policy: ScheduledResourcePolicy = "none"
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    insertion_order: int = Field(default=0, ge=0)
+
+
 class CombatState(BaseModel):
     current_time: float = 0.0
     combat_time: float = 0.0
@@ -336,6 +376,9 @@ class CombatState(BaseModel):
     echo_set_trigger_counts: dict[str, int] = Field(default_factory=dict)
     echo_set_buff_windows: list[dict[str, Any]] = Field(default_factory=list)
     high_syntony_field_buff_windows: list[dict[str, Any]] = Field(default_factory=list)
+    scheduled_effects: list[ScheduledEffectState] = Field(default_factory=list)
+    scheduled_effect_next_order: int = 0
+    scheduled_effect_event_log: list[dict[str, Any]] = Field(default_factory=list)
     action_log: list[dict[str, Any]] = Field(default_factory=list)
     damage_log: list[dict[str, Any]] = Field(default_factory=list)
     resonance_energy: dict[str, float] = Field(default_factory=dict)
@@ -371,6 +414,9 @@ class CombatState(BaseModel):
     target_tune_shift_remaining: float = 0.0
     target_interfered_state: str | None = None
     target_interfered_remaining: float = 0.0
+    rupturous_trail_stacks: int = 0
+    rupturous_trail_remaining: float = 0.0
+    rupturous_trail_event_log: list[dict[str, Any]] = Field(default_factory=list)
     target_tune_strain_interfered_stacks: int = 0
     target_tune_strain_interfered_max_stacks: int = 1
     target_tune_strain_interfered_remaining: float = 0.0
@@ -441,6 +487,11 @@ class ActionResult(BaseModel):
     damage: float
     normal_damage: float = 0.0
     tune_break_damage: float = 0.0
+    direct_action_damage: float = 0.0
+    scheduled_damage: float = 0.0
+    scheduled_damage_events: list[dict[str, Any]] = Field(default_factory=list)
+    scheduled_healing_events: list[dict[str, Any]] = Field(default_factory=list)
+    scheduled_status_application_events: list[dict[str, Any]] = Field(default_factory=list)
     direct_damage_taken_amp_total_bonus_damage: float = 0.0
     interfered_marker_direct_damage_amp_applied_count: int = 0
     interfered_marker_direct_damage_amp_bonus_damage: float = 0.0
@@ -462,9 +513,16 @@ class ActionResult(BaseModel):
     aemeath_seraphic_duet_followup_variant: str | None = None
     aemeath_seraphic_duet_followup_repeat_count: int = 0
     aemeath_seraphic_duet_followup_multiplier: float = 0.0
+    aemeath_seraphic_duet_trail_stack_snapshot: int = 0
+    aemeath_seraphic_duet_trail_stack_factor: float = 1.0
+    aemeath_seraphic_duet_trail_preservation_active: bool = False
+    aemeath_seraphic_duet_trail_preservation_after: bool = False
+    aemeath_seraphic_duet_trail_consumed: bool = False
+    aemeath_seraphic_duet_total_extra_tune_multiplier: float = 0.0
     aemeath_rupturous_trail_stacks_before: int = 0
     aemeath_rupturous_trail_stacks_consumed: int = 0
     aemeath_rupturous_trail_stacks_after: int = 0
+    aemeath_rupturous_trail_gain_events: list[dict[str, Any]] = Field(default_factory=list)
     aemeath_forte_enhancement_stacks_before: int = 0
     aemeath_forte_enhancement_stacks_consumed: int = 0
     aemeath_forte_enhancement_stacks_after: int = 0
@@ -720,6 +778,11 @@ class ActionResult(BaseModel):
     lynae_target_tune_shift_state: str | None = None
     lynae_target_tune_shift_remaining: float = 0.0
     lynae_spray_paint_window_remaining: float = 0.0
+    lynae_spray_paint_scheduled: bool = False
+    lynae_spray_paint_schedule_operation: str | None = None
+    lynae_spray_paint_mode_snapshot: str | None = None
+    lynae_spray_paint_target_shift_state_snapshot: str | None = None
+    lynae_spray_paint_source_ref: str | None = None
     lynae_visual_impact_cooldown_remaining: float = 0.0
     lynae_visual_impact_tune_break_boost_buff_active: bool = False
     lynae_visual_impact_tune_break_boost_value: float = 0.0
@@ -840,6 +903,10 @@ class ActionResult(BaseModel):
     optimal_solution_trigger_reason: str | None = None
     optimal_solution_candidate_id: str | None = None
     gp_success_modeled: bool = False
+    aemeath_sigillum_activation_scheduled: bool = False
+    aemeath_sigillum_activation_combat_time: float | None = None
+    aemeath_sigillum_source_end_frame: int | None = None
+    aemeath_sigillum_hit_schedule_events: list[dict[str, Any]] = Field(default_factory=list)
     reason: str | None = None
 
 
@@ -872,6 +939,11 @@ class TimelineEntry(BaseModel):
     damage: float
     normal_damage: float = 0.0
     tune_break_damage: float = 0.0
+    direct_action_damage: float = 0.0
+    scheduled_damage: float = 0.0
+    scheduled_damage_events: list[dict[str, Any]] = Field(default_factory=list)
+    scheduled_healing_events: list[dict[str, Any]] = Field(default_factory=list)
+    scheduled_status_application_events: list[dict[str, Any]] = Field(default_factory=list)
     direct_damage_taken_amp_total_bonus_damage: float = 0.0
     interfered_marker_direct_damage_amp_applied_count: int = 0
     interfered_marker_direct_damage_amp_bonus_damage: float = 0.0
@@ -893,9 +965,16 @@ class TimelineEntry(BaseModel):
     aemeath_seraphic_duet_followup_variant: str | None = None
     aemeath_seraphic_duet_followup_repeat_count: int = 0
     aemeath_seraphic_duet_followup_multiplier: float = 0.0
+    aemeath_seraphic_duet_trail_stack_snapshot: int = 0
+    aemeath_seraphic_duet_trail_stack_factor: float = 1.0
+    aemeath_seraphic_duet_trail_preservation_active: bool = False
+    aemeath_seraphic_duet_trail_preservation_after: bool = False
+    aemeath_seraphic_duet_trail_consumed: bool = False
+    aemeath_seraphic_duet_total_extra_tune_multiplier: float = 0.0
     aemeath_rupturous_trail_stacks_before: int = 0
     aemeath_rupturous_trail_stacks_consumed: int = 0
     aemeath_rupturous_trail_stacks_after: int = 0
+    aemeath_rupturous_trail_gain_events: list[dict[str, Any]] = Field(default_factory=list)
     aemeath_forte_enhancement_stacks_before: int = 0
     aemeath_forte_enhancement_stacks_consumed: int = 0
     aemeath_forte_enhancement_stacks_after: int = 0
@@ -1149,6 +1228,11 @@ class TimelineEntry(BaseModel):
     lynae_target_tune_shift_state: str | None = None
     lynae_target_tune_shift_remaining: float = 0.0
     lynae_spray_paint_window_remaining: float = 0.0
+    lynae_spray_paint_scheduled: bool = False
+    lynae_spray_paint_schedule_operation: str | None = None
+    lynae_spray_paint_mode_snapshot: str | None = None
+    lynae_spray_paint_target_shift_state_snapshot: str | None = None
+    lynae_spray_paint_source_ref: str | None = None
     lynae_visual_impact_cooldown_remaining: float = 0.0
     lynae_visual_impact_tune_break_boost_buff_active: bool = False
     lynae_visual_impact_tune_break_boost_value: float = 0.0
@@ -1269,6 +1353,10 @@ class TimelineEntry(BaseModel):
     optimal_solution_trigger_reason: str | None = None
     optimal_solution_candidate_id: str | None = None
     gp_success_modeled: bool = False
+    aemeath_sigillum_activation_scheduled: bool = False
+    aemeath_sigillum_activation_combat_time: float | None = None
+    aemeath_sigillum_source_end_frame: int | None = None
+    aemeath_sigillum_hit_schedule_events: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class PartyState(BaseModel):

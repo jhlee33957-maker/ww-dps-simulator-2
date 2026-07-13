@@ -1,0 +1,62 @@
+{
+  "algorithm": "MaskablePPO_BC_WarmStart",
+  "demo_path": "data\\generated\\route_demonstrations_aemeath_mornye_lynae_v2.npz",
+  "route_set_id": "aemeath_mornye_lynae_balanced_route_warm_start_v2",
+  "route_ids": [
+    "aemeath_concerto_to_lynae_intro_exact",
+    "lynae_after_intro_core_no_liberation",
+    "lynae_after_intro_liberation_core",
+    "lynae_full_branch_with_exit",
+    "lynae_skill_to_spark_bridge",
+    "lynae_spark_to_visual_bridge",
+    "normal_start_aemeath_mornye_baseline",
+    "normal_start_to_aemeath_concerto_ready",
+    "normal_start_to_lynae_intro_entry"
+  ],
+  "route_sample_counts": {
+    "normal_start_aemeath_mornye_baseline": 2048,
+    "normal_start_to_aemeath_concerto_ready": 2176,
+    "normal_start_to_lynae_intro_entry": 2304,
+    "aemeath_concerto_to_lynae_intro_exact": 128,
+    "lynae_after_intro_core_no_liberation": 768,
+    "lynae_after_intro_liberation_core": 896,
+    "lynae_skill_to_spark_bridge": 1920,
+    "lynae_spark_to_visual_bridge": 1536,
+    "lynae_full_branch_with_exit": 1408
+  },
+  "action_counts": {
+    "mornye_resonance_liberation": 256,
+    "mornye_resonance_skill": 256,
+    "mornye_heavy_attack": 256,
+    "swap_to_aemeath": 640,
+    "aemeath_resonance_liberation": 512,
+    "aemeath_resonance_skill": 3200,
+    "aemeath_heavy_attack": 1664,
+    "swap_to_lynae": 384,
+    "lynae_resonance_skill": 384,
+    "lynae_spark_collision": 768,
+    "lynae_polychrome_leap": 3456,
+    "lynae_visual_impact": 1152,
+    "lynae_resonance_liberation": 256
+  },
+  "character_counts": {
+    "mornye": 1280,
+    "aemeath": 5760,
+    "lynae": 6144
+  },
+  "balanced_route_demo": true,
+  "party": "aemeath_mornye_lynae_enabled_test_party",
+  "epochs": 20,
+  "batch_size": 128,
+  "learning_rate": 0.0001,
+  "ent_coef": 0.0,
+  "sample_count": 13184,
+  "model_path": "models\\maskable_ppo_aemeath_mornye_lynae_bc_v2_init.zip",
+  "load_model": null,
+  "final_loss": 0.1754407435655594,
+  "no_character_specific_usage_reward_bonus": true,
+  "reward_formula_unchanged": true,
+  "reward_formula": "damage_this_action / 10000.0",
+  "final_evaluation_reset_mode": "none",
+  "training_only": true
+}

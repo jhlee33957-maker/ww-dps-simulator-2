@@ -39,6 +39,7 @@ from simulator.transition_config import (
 )
 from rl.evaluation_report import build_generated_damage_summary
 from ui.mechanics_reference import render_mechanics_reference
+from ui.training_methodology import render_training_methodology
 
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -1339,9 +1340,11 @@ def render_simulation(summary: Any, action_sequence: list[str] | None = None, si
 
 st.set_page_config(page_title="Wuwa DPS RL Simulator Prototype", layout="wide")
 st.title("Wuwa DPS RL Simulator Prototype")
-mode = st.sidebar.radio("Mode", ["Demo Sequence", "PPO Model", "Character Mechanics"])
+mode = st.sidebar.radio("Mode", ["Demo Sequence", "PPO Model", "Character Mechanics", "Training Methodology"])
 
-if mode == "Character Mechanics":
+if mode == "Training Methodology":
+    render_training_methodology(DATA_DIR, Path(__file__).parent / "results")
+elif mode == "Character Mechanics":
     mechanics_options = {"aemeath": "Aemeath", "mornye": "Mornye"}
     character_id = st.selectbox(
         "Character",

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 
 from extract_aemeath_excel_data import (
     DEFAULT_ACTIONS,
@@ -16,6 +17,9 @@ from extract_aemeath_excel_data import (
     extract,
     resolve_workbook_path,
 )
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
 
 def workbook_exists() -> bool:
@@ -216,6 +220,12 @@ def main() -> int:
             continue
         coeff = by_id[action_id]["coefficient_candidate"]
         comparison = coeff.get("current_actions_comparison", {})
+        current_runtime_hits = comparison.get("current_hit_count", current_hits)
+        if current_runtime_hits == 1:
+            assert comparison.get("shape_status") in {"exact_match", "same_length_diff_values", "longer_than_current"}
+            if comparison.get("shape_status") != "exact_match":
+                assert not coeff.get("safe_to_patch")
+            continue
         if comparison.get("candidate_hit_count") == current_hits:
             assert comparison.get("shape_status") in {"exact_match", "same_length_diff_values"}, (
                 f"{action_id} should have complete shape after joining repeat metadata"

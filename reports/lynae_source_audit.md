@@ -9,6 +9,7 @@ Source name: 琳奈
 - `static_mist`: Static Mist (user_supplied_tooltip), source user supplied weapon tooltip; weapon!65 reviewed for Lynae weapon candidate
 - `lynae_user_real_01`: User real profile stats (user_profile), source user supplied stat panel
 - `lynae_complex_movement_states`: Lumiflow / skating / hold movement branches (metadata_only), source 角色-女!2577:2738
+- `lynae_spray_paint_scheduled_flux_application`: Spray Paint Photocromic Flux field checks (implemented_scheduled_status_application_single_target), source 角色-女!2683:2684
 
 ## Spectral Analysis
 - dmg!2489 multiplier: 18.8075

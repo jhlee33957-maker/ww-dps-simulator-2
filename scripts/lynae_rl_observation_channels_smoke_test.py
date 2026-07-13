@@ -43,7 +43,7 @@ def main() -> None:
     assert slot_mapping[LYNAE_SLOT] == "lynae"
     for key, value in expected.items():
         assert mapping[key] == value
-    assert len(SLOT_SCHEMA) == 57
+    assert len(SLOT_SCHEMA) == 61
     assert all(value.startswith("lynae_") for value in expected.values())
     print("lynae_rl_observation_channels_smoke_test ok")
 

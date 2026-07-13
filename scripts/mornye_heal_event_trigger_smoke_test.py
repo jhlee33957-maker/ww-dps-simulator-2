@@ -30,7 +30,13 @@ def make_sim(mode: str) -> Simulation:
 def test_metadata_is_targeted() -> None:
     actions = {item["id"]: item for item in json.loads((DATA_DIR / "actions.json").read_text(encoding="utf-8-sig"))}
     for action_id in ELIGIBLE_ACTIONS:
-        assert "team_heal" in actions[action_id].get("mechanic_event_tags", [])
+        assert "team_heal" not in actions[action_id].get("mechanic_event_tags", [])
+        effects = actions[action_id]["mechanic_effects"]
+        assert effects["healing_implementation_status"] == "scheduled_180f_exact"
+        assert "scheduled_180f_exact" in effects["heal_event_mode_support"]
+        assert effects["scheduled_healing_first_tick_frames"] == 1
+        assert effects["scheduled_healing_interval_frames"] == 180
+        assert effects["scheduled_healing_max_trigger_count"] == 9
     arbitrary = [
         action
         for action in actions.values()
@@ -43,11 +49,13 @@ def test_metadata_is_targeted() -> None:
     transition_records = json.loads((DATA_DIR / "transition_actions.json").read_text(encoding="utf-8-sig"))
     intro = next(item for item in transition_records if item["id"] == "mornye_intro_convergence")
     transition_action = transition_action_to_action_data(intro)
-    assert "team_heal" in transition_action.mechanic_event_tags
+    assert "team_heal" not in transition_action.mechanic_event_tags
     assert transition_action.policy_selectable is False
     effects = transition_action.mechanic_effects
     assert effects["set_syntony_field_remaining"] == 25.0
-    assert effects["team_heal_event_tag"] == "team_heal"
+    assert effects["healing_implementation_status"] == "scheduled_180f_exact"
+    assert effects["scheduled_healing_first_tick_frames"] == 1
+    assert effects["scheduled_healing_interval_frames"] == 180
     assert "field_creation_only" in effects["heal_event_mode_support"]
     assert "simplified_syntony_field_uptime" in effects["heal_event_mode_support"]
 

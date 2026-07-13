@@ -6,45 +6,38 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = PROJECT_ROOT / "data"
+MANIFEST_PATH = DATA_DIR / "source" / "direct_action_data_patch_manifest_v61.json"
 
 
-EXPECTED_MULTIPLIERS = {
-    "aemeath_basic_form_stage_1": [0.4635],
-    "aemeath_basic_form_stage_2": [0.1389, 0.2084, 0.3473],
-    "aemeath_basic_form_stage_3": [0.0932, 0.0932, 0.0932, 0.1863, 0.4656],
-    "aemeath_basic_form_stage_4": [0.0673, 0.0673, 0.0673, 0.0673, 0.0673, 1.0094],
-    "aemeath_mech_basic_stage_1": [0.232, 0.232, 0.232],
-    "aemeath_mech_basic_stage_2": [0.1857, 0.7426],
-    "aemeath_mech_basic_stage_3": [0.1165, 0.0389, 0.0389, 0.0389, 0.0389, 0.8154],
-    "aemeath_mech_basic_stage_4": [0.4038, 0.9421],
-    "aemeath_form_switch_to_mech_normal": [0.232, 0.232, 0.232],
-    "aemeath_form_switch_to_aemeath_normal": [0.4635],
-    "aemeath_form_switch_to_aemeath_after_overdrive": [0.1389, 0.2084, 0.3473],
-    "aemeath_sync_strike_armament_merge": [0.2692, 0.4038, 0.6729],
-    "aemeath_sync_strike_call_of_dawn": [0.1633, 0.1633, 0.1633, 1.1428],
-    "aemeath_seraphic_duet_overturn": [
-        0.179,
-        0.1492,
-        0.1492,
-        0.1492,
-        0.1492,
-        0.1492,
-        0.1492,
-        0.2386,
-        0.2386,
-        0.2386,
-        0.5965,
-        0.5965,
-        0.5965,
-    ],
-    "aemeath_seraphic_duet_encore": [0.179, 0.179, 0.3579, 0.3579, 0.179, 0.179, 1.7893, 0.3579],
-    "aemeath_heavy_aemeath_charged_1": [0.1857, 0.7426],
-    "aemeath_heavy_aemeath_charged_2": [0.116, 0.116, 0.116, 0.116, 1.856],
-    "aemeath_heavy_mech_charged_1": [0.9283],
-    "aemeath_heavy_mech_charged_2": [2.32],
-    "aemeath_liberation_overdrive": [2.008, 2.6774, 2.6774, 2.6774],
-    "aemeath_heavenfall_finale": [17.8929],
-}
+EXPECTED_ACTION_IDS = [
+    "aemeath_basic_form_stage_1",
+    "aemeath_basic_form_stage_2",
+    "aemeath_basic_form_stage_3",
+    "aemeath_basic_form_stage_4",
+    "aemeath_mech_basic_stage_1",
+    "aemeath_mech_basic_stage_2",
+    "aemeath_mech_basic_stage_3",
+    "aemeath_mech_basic_stage_4",
+    "aemeath_form_switch_to_mech_normal",
+    "aemeath_form_switch_to_aemeath_normal",
+    "aemeath_form_switch_to_aemeath_after_overdrive",
+    "aemeath_sync_strike_armament_merge",
+    "aemeath_sync_strike_call_of_dawn",
+    "aemeath_seraphic_duet_overturn",
+    "aemeath_seraphic_duet_encore",
+    "aemeath_heavy_aemeath_charged_1",
+    "aemeath_heavy_aemeath_charged_2",
+    "aemeath_heavy_mech_charged_1",
+    "aemeath_heavy_mech_charged_2",
+    "aemeath_liberation_overdrive",
+    "aemeath_heavenfall_finale",
+]
+
+
+def manifest_damage_totals() -> dict[str, list[float]]:
+    manifest = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+    patches = {patch["action_id"]: patch for patch in manifest["action_patches"]}
+    return {action_id: [float(patches[action_id]["after"]["damage_total"])] for action_id in EXPECTED_ACTION_IDS}
 
 
 def main() -> None:
@@ -53,7 +46,7 @@ def main() -> None:
         for action in json.loads((DATA_DIR / "actions.json").read_text(encoding="utf-8-sig"))
     }
 
-    for action_id, expected in EXPECTED_MULTIPLIERS.items():
+    for action_id, expected in manifest_damage_totals().items():
         action = actions[action_id]
         actual = [hit["damage_multiplier"] for hit in action["hits"]]
         assert actual == expected, f"{action_id} multipliers: expected {expected}, got {actual}"

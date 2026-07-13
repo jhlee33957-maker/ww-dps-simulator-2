@@ -15,6 +15,7 @@ LYNAE_SPARK_SELECTOR_ACTION_ID = "lynae_spark_collision"
 LYNAE_POLYCHROME_LEAP_SELECTOR_ACTION_ID = "lynae_polychrome_leap"
 LYNAE_VIVID_TOMORROW_ACTION_ID = "lynae_to_a_vivid_tomorrow"
 LYNAE_VISUAL_IMPACT_ACTION_ID = "lynae_visual_impact"
+LYNAE_SPRAY_PAINT_FLUX_ACTION_ID = "lynae_spray_paint_flux_application"
 LYNAE_IRIDESCENT_SPLASH_ACTION_ID = "lynae_iridescent_splash"
 LYNAE_INTRO_ACTION_ID = "lynae_intro_time_to_show_some_colors"
 
@@ -22,6 +23,14 @@ KP_DURATION_SECONDS = 15.0
 PHOTOCROMIC_FLUX_DURATION_SECONDS = 25.0
 SPRAY_PAINT_DURATION_SECONDS = 5.0
 VIVID_TOMORROW_WINDOW_SECONDS = 8.0
+SPRAY_PAINT_SOURCE_ROWS_BY_MODE = {
+    "tune_strain": "角色-女!2683",
+    "tune_rupture": "角色-女!2684",
+}
+SHIFT_STATE_BY_MODE = {
+    "tune_rupture": "tune_rupture_shifting",
+    "tune_strain": "tune_strain_shifting",
+}
 
 
 class LynaeMechanic(CharacterMechanic):
@@ -104,11 +113,7 @@ class LynaeMechanic(CharacterMechanic):
         resolved_id = selected_action.id
         if selected_action.id == LYNAE_POLICY_BASIC_ACTION_ID:
             if data.get("to_vivid_tomorrow_window_remaining", 0.0) > 0.0:
-                resolved_id = (
-                    "lynae_kaleidoscopic_basic_stage_2"
-                    if self._in_kaleidoscopic_parade(data)
-                    else LYNAE_VIVID_TOMORROW_ACTION_ID
-                )
+                resolved_id = LYNAE_VIVID_TOMORROW_ACTION_ID
             elif self._in_kaleidoscopic_parade(data):
                 forced_stage = data.get("next_basic_forced_stage")
                 stage = int(forced_stage or data.get("kaleidoscopic_combo_stage", 1) or 1)
@@ -268,19 +273,22 @@ class LynaeMechanic(CharacterMechanic):
         self._clamp(data)
         self._sync_result_state(result, data)
 
-    def advance_time(self, state: Any, elapsed_time: float) -> None:
+    def advance_time(self, state: Any, combat_elapsed: float, action_elapsed: float | None = None) -> None:
         data = self._state(state)
         for key in (
             "kaleidoscopic_parade_remaining",
             "photocromic_flux_remaining",
             "target_tune_shift_remaining",
             "hyvatia_outro_window_remaining",
-            "spray_paint_window_remaining",
-            "visual_impact_cooldown_remaining",
             "to_vivid_tomorrow_window_remaining",
+        ):
+            data[key] = max(0.0, float(data.get(key, 0.0) or 0.0) - max(0.0, combat_elapsed))
+        cooldown_elapsed = max(0.0, float(action_elapsed if action_elapsed is not None else combat_elapsed))
+        for key in (
+            "visual_impact_cooldown_remaining",
             "spectral_analysis_cooldown_remaining",
         ):
-            data[key] = max(0.0, float(data.get(key, 0.0) or 0.0) - max(0.0, elapsed_time))
+            data[key] = max(0.0, float(data.get(key, 0.0) or 0.0) - cooldown_elapsed)
         data["photocromic_flux_active"] = data["photocromic_flux_remaining"] > 0.0
         if data["target_tune_shift_remaining"] <= 0.0:
             data["target_tune_shift_state"] = None
@@ -331,29 +339,101 @@ class LynaeMechanic(CharacterMechanic):
         data["next_basic_forced_stage"] = None
         data["optical_sampling_stage_active"] = True
 
-    def _apply_photocromic_flux(self, state: Any, data: dict[str, Any], result: Any, action_id: str) -> None:
-        mode = data.get("lynae_resonance_mode", "tune_rupture")
+    def apply_scheduled_status_effect(
+        self,
+        state: Any,
+        payload_action: Any,
+        effect_metadata: dict[str, Any],
+        event_context: dict[str, Any],
+    ) -> dict[str, Any]:
+        if payload_action.id != LYNAE_SPRAY_PAINT_FLUX_ACTION_ID:
+            return super().apply_scheduled_status_effect(state, payload_action, effect_metadata, event_context)
+        if effect_metadata.get("scheduled_status_effect_id") != "lynae_photocromic_flux":
+            raise ValueError(
+                f"Unsupported Lynae scheduled status effect "
+                f"{effect_metadata.get('scheduled_status_effect_id')!r}"
+            )
+        data = self._state(state)
+        paint_mode = str(effect_metadata.get("paint_mode_snapshot") or data.get("lynae_resonance_mode") or "")
+        if paint_mode not in SHIFT_STATE_BY_MODE:
+            raise ValueError(f"Unsupported Lynae Spray Paint mode snapshot {paint_mode!r}")
+        previous_shift_state = state.target_tune_shift_state
+        previous_shift_remaining = float(state.target_tune_shift_remaining or 0.0)
+        shift_state = SHIFT_STATE_BY_MODE[paint_mode]
+        source_row = str(effect_metadata.get("source_row") or SPRAY_PAINT_SOURCE_ROWS_BY_MODE[paint_mode])
+        log: dict[str, Any] = {}
+        self._apply_photocromic_flux(
+            state,
+            data,
+            log,
+            payload_action.id,
+            mode_override=paint_mode,
+            shift_state_override=shift_state,
+            source_status="workbook_confirmed_scheduled_status_application",
+        )
+        return {
+            "paint_mode_snapshot": paint_mode,
+            "applied_target_shift_state": shift_state,
+            "previous_shift_state": previous_shift_state,
+            "previous_shift_remaining": previous_shift_remaining,
+            "new_shift_remaining": PHOTOCROMIC_FLUX_DURATION_SECONDS,
+            "photocromic_flux_active": bool(data.get("photocromic_flux_active", False)),
+            "photocromic_flux_remaining": float(data.get("photocromic_flux_remaining", 0.0) or 0.0),
+            "photocromic_flux_source_action_id": payload_action.id,
+            "target_tune_shift_state": state.target_tune_shift_state,
+            "target_tune_shift_remaining": state.target_tune_shift_remaining,
+            "source_row": source_row,
+            "source_ref": source_row,
+            "source_status": "workbook_confirmed_scheduled_status_application",
+            "target_presence_assumption": effect_metadata.get(
+                "target_presence_assumption",
+                "single_target_remains_inside_paint_area",
+            ),
+            **log,
+        }
+
+    def _apply_photocromic_flux(
+        self,
+        state: Any,
+        data: dict[str, Any],
+        result: Any,
+        action_id: str,
+        *,
+        mode_override: str | None = None,
+        shift_state_override: str | None = None,
+        source_status: str = "user_tooltip_confirmed",
+    ) -> None:
+        mode = mode_override or data.get("lynae_resonance_mode", "tune_rupture")
         data["photocromic_flux_active"] = True
         data["photocromic_flux_remaining"] = PHOTOCROMIC_FLUX_DURATION_SECONDS
         data["photocromic_flux_source_action_id"] = action_id
-        if hasattr(result, "lynae_photocromic_flux_applied"):
+        if isinstance(result, dict):
+            result["lynae_photocromic_flux_applied"] = True
+            result["lynae_photocromic_flux_mode"] = mode
+            result["lynae_photocromic_flux_source_status"] = source_status
+        elif hasattr(result, "lynae_photocromic_flux_applied"):
             result.lynae_photocromic_flux_applied = True
             result.lynae_photocromic_flux_mode = mode
-            result.lynae_photocromic_flux_source_status = "user_tooltip_confirmed"
-        if mode == "tune_rupture":
-            shift_state = "tune_rupture_shifting"
-        elif mode == "tune_strain":
-            shift_state = "tune_strain_shifting"
+            result.lynae_photocromic_flux_source_status = source_status
+        if shift_state_override is not None:
+            shift_state = shift_state_override
+        elif mode in SHIFT_STATE_BY_MODE:
+            shift_state = SHIFT_STATE_BY_MODE[mode]
         else:
             shift_state = None
-            if hasattr(result, "lynae_photocromic_flux_unresolved_reason"):
+            if isinstance(result, dict):
+                result["lynae_photocromic_flux_unresolved_reason"] = "lynae_resonance_mode_unresolved_no_shift_state"
+            elif hasattr(result, "lynae_photocromic_flux_unresolved_reason"):
                 result.lynae_photocromic_flux_unresolved_reason = "lynae_resonance_mode_unresolved_no_shift_state"
         data["target_tune_shift_state"] = shift_state
         data["target_tune_shift_remaining"] = PHOTOCROMIC_FLUX_DURATION_SECONDS if shift_state else 0.0
         if shift_state:
             state.target_tune_shift_state = shift_state
             state.target_tune_shift_remaining = PHOTOCROMIC_FLUX_DURATION_SECONDS
-            if hasattr(result, "target_tune_shift_state"):
+            if isinstance(result, dict):
+                result["target_tune_shift_state"] = shift_state
+                result["target_tune_shift_remaining"] = PHOTOCROMIC_FLUX_DURATION_SECONDS
+            elif hasattr(result, "target_tune_shift_state"):
                 result.target_tune_shift_state = shift_state
                 result.target_tune_shift_remaining = PHOTOCROMIC_FLUX_DURATION_SECONDS
 

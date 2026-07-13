@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
+from simulator.action_start_snapshot import ActionStartEffectSnapshot
 from simulator.buff_system import buffed_combat_stats
 from simulator.lynae_tune_strain import apply_lynae_tune_strain_damage_amp
 from simulator.models import ActionData, CharacterData, CombatState
@@ -95,6 +96,7 @@ def calculate_generated_damage_packet(
     characters: dict[str, CharacterData],
     buffs: dict[str, Any],
     force_active_buff_ids: set[str] | None = None,
+    action_start_snapshot: ActionStartEffectSnapshot | None = None,
 ) -> tuple[float, list[dict[str, Any]]]:
     if not packet.runtime_applicable:
         return 0.0, []
@@ -120,6 +122,7 @@ def calculate_generated_damage_packet(
             stats=stats,
             character=character,
             force_active_buff_ids=force_active_buff_ids,
+            action_start_snapshot=action_start_snapshot,
         )
         total_damage += damage
         details.append(detail)
@@ -137,9 +140,14 @@ def _calculate_single_generated_hit(
     stats: dict[str, Any],
     character: CharacterData,
     force_active_buff_ids: set[str] | None = None,
+    action_start_snapshot: ActionStartEffectSnapshot | None = None,
 ) -> tuple[float, dict[str, Any]]:
     applied_amp = (
-        current_interfered_damage_taken_amp(state)
+        (
+            action_start_snapshot.target_damage_taken_amp
+            if action_start_snapshot is not None
+            else current_interfered_damage_taken_amp(state)
+        )
         if packet.applied_damage_taken_amp_mode == "current_target_marker"
         else 0.0
     )

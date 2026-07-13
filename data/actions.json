@@ -96,40 +96,26 @@
     "name": "Mornye Basic Stage 1",
     "character_id": "mornye",
     "action_type": "basic_attack",
-    "duration": 1.0167,
-    "action_time": 1.0167,
-    "combat_time_cost": 1.0167,
+    "duration": 0.4166666666666667,
+    "action_time": 0.4166666666666667,
+    "combat_time_cost": 0.4166666666666667,
     "cooldown": 0,
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
+    "resonance_energy_gain": 0.89,
+    "concerto_energy_gain": 2.8,
     "resonance_energy_cost": 0,
     "hits": [
       {
-        "time": 0.1667,
-        "damage_multiplier": 0.1671,
+        "time": 0.4166666666666667,
+        "damage_category": "normal",
+        "damage_multiplier": 0.5569,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "fusion",
-          "basic"
+          "basic",
+          "mornye",
+          "source:excel"
         ],
-        "name": "A1-1"
-      },
-      {
-        "time": 0.2167,
-        "damage_multiplier": 0.2227,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "A1-2"
-      },
-      {
-        "time": 0.3333,
-        "damage_multiplier": 0.1671,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "A1-3"
+        "name": "Mornye Basic Stage 1 hit"
       }
     ],
     "tags": [
@@ -152,74 +138,35 @@
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
-    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
+    "damage_multiplier": 0.5569,
+    "tune_break_multiplier": 0.0
   },
   {
     "id": "mornye_basic_stage_2",
     "name": "Mornye Basic Stage 2",
     "character_id": "mornye",
     "action_type": "basic_attack",
-    "duration": 1.1333,
-    "action_time": 1.1333,
-    "combat_time_cost": 1.1333,
+    "duration": 0.8166666666666667,
+    "action_time": 0.8166666666666667,
+    "combat_time_cost": 0.8166666666666667,
     "cooldown": 0,
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
+    "resonance_energy_gain": 1.92,
+    "concerto_energy_gain": 6.0,
     "resonance_energy_cost": 0,
     "hits": [
       {
-        "time": 0.1833,
-        "damage_multiplier": 0.2386,
+        "time": 0.8166666666666667,
+        "damage_category": "normal",
+        "damage_multiplier": 1.1932,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "fusion",
-          "basic"
+          "basic",
+          "mornye",
+          "source:excel"
         ],
-        "name": "A2-1"
-      },
-      {
-        "time": 0.4333,
-        "damage_multiplier": 0.2386,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "A2-2"
-      },
-      {
-        "time": 0.5,
-        "damage_multiplier": 0.179,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "A2-3 hit 1"
-      },
-      {
-        "time": 0.65,
-        "damage_multiplier": 0.179,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "A2-3 hit 2"
-      },
-      {
-        "time": 0.8,
-        "damage_multiplier": 0.179,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "A2-3 hit 3"
-      },
-      {
-        "time": 0.95,
-        "damage_multiplier": 0.179,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "A2-3 hit 4"
+        "name": "Mornye Basic Stage 2 hit"
       }
     ],
     "tags": [
@@ -242,83 +189,35 @@
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
-    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
+    "damage_multiplier": 1.1932,
+    "tune_break_multiplier": 0.0
   },
   {
     "id": "mornye_basic_stage_3",
     "name": "Mornye Basic Stage 3",
     "character_id": "mornye",
     "action_type": "basic_attack",
-    "duration": 1.5167,
-    "action_time": 1.5167,
-    "combat_time_cost": 1.5167,
+    "duration": 0.8333333333333334,
+    "action_time": 0.8333333333333334,
+    "combat_time_cost": 0.8333333333333334,
     "cooldown": 0,
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
+    "resonance_energy_gain": 1.67,
+    "concerto_energy_gain": 5.2,
     "resonance_energy_cost": 0,
     "hits": [
       {
-        "time": 0.4,
-        "damage_multiplier": 0.4136,
+        "time": 0.8333333333333334,
+        "damage_category": "normal",
+        "damage_multiplier": 1.034,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "fusion",
-          "basic"
+          "basic",
+          "mornye",
+          "source:excel"
         ],
-        "name": "A3-1"
-      },
-      {
-        "time": 0.5167,
-        "damage_multiplier": 0.1034,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "A3-2 hit 1"
-      },
-      {
-        "time": 0.6667,
-        "damage_multiplier": 0.1034,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "A3-2 hit 2"
-      },
-      {
-        "time": 0.8167,
-        "damage_multiplier": 0.1034,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "A3-2 hit 3"
-      },
-      {
-        "time": 0.9667,
-        "damage_multiplier": 0.1034,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "A3-2 hit 4"
-      },
-      {
-        "time": 1.1167,
-        "damage_multiplier": 0.1034,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "A3-2 hit 5"
-      },
-      {
-        "time": 1.2667,
-        "damage_multiplier": 0.1034,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "A3-2 hit 6"
+        "name": "Mornye Basic Stage 3 hit"
       }
     ],
     "tags": [
@@ -341,29 +240,35 @@
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
-    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
+    "damage_multiplier": 1.034,
+    "tune_break_multiplier": 0.0
   },
   {
     "id": "mornye_basic_stage_4",
     "name": "Mornye Basic Stage 4",
     "character_id": "mornye",
     "action_type": "basic_attack",
-    "duration": 2.8333,
-    "action_time": 2.8333,
-    "combat_time_cost": 2.8333,
+    "duration": 1.9333333333333333,
+    "action_time": 1.9333333333333333,
+    "combat_time_cost": 1.9333333333333333,
     "cooldown": 0,
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
+    "resonance_energy_gain": 2.13,
+    "concerto_energy_gain": 6.8,
     "resonance_energy_cost": 0,
     "hits": [
       {
-        "time": 0.85,
+        "time": 1.9333333333333333,
+        "damage_category": "normal",
         "damage_multiplier": 1.352,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "fusion",
-          "basic"
+          "basic",
+          "mornye",
+          "source:excel"
         ],
-        "name": "A4"
+        "name": "Mornye Basic Stage 4 hit"
       }
     ],
     "tags": [
@@ -386,56 +291,36 @@
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
-    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
+    "damage_multiplier": 1.352,
+    "tune_break_multiplier": 0.0
   },
   {
     "id": "mornye_wfo_basic_stage_1",
     "name": "Mornye Wide Field Observation Basic Stage 1",
     "character_id": "mornye",
     "action_type": "basic_attack",
-    "duration": 0.7167,
-    "action_time": 0.7167,
-    "combat_time_cost": 0.7167,
+    "duration": 0.35,
+    "action_time": 0.35,
+    "combat_time_cost": 0.35,
     "cooldown": 0,
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
+    "resonance_energy_gain": 0.88,
+    "concerto_energy_gain": 1.4,
     "resonance_energy_cost": 0,
     "hits": [
       {
-        "time": 0.2333,
-        "damage_multiplier": 0.1392,
+        "time": 0.35,
+        "damage_category": "normal",
+        "damage_multiplier": 0.5568,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "fusion",
-          "basic"
+          "basic",
+          "wide_field_observation",
+          "mornye",
+          "source:excel"
         ],
-        "name": "Observation A1 hit 1"
-      },
-      {
-        "time": 0.3667,
-        "damage_multiplier": 0.1392,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "Observation A1 hit 2"
-      },
-      {
-        "time": 0.5,
-        "damage_multiplier": 0.1392,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "Observation A1 hit 3"
-      },
-      {
-        "time": 0.6333,
-        "damage_multiplier": 0.1392,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "Observation A1 hit 4"
+        "name": "Mornye Wide Field Observation Basic Stage 1 hit"
       }
     ],
     "tags": [
@@ -468,56 +353,36 @@
     "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
     "off_tune_value": 7.0,
     "off_tune_value_source_status": "workbook_confirmed",
-    "off_tune_value_source_ref": "角色-女!S4128"
+    "off_tune_value_source_ref": "角色-女!S4128",
+    "damage_multiplier": 0.5568,
+    "tune_break_multiplier": 0.0
   },
   {
     "id": "mornye_wfo_basic_stage_2",
     "name": "Mornye Wide Field Observation Basic Stage 2",
     "character_id": "mornye",
     "action_type": "basic_attack",
-    "duration": 1.1333,
-    "action_time": 1.1333,
-    "combat_time_cost": 1.1333,
+    "duration": 0.7166666666666667,
+    "action_time": 0.7166666666666667,
+    "combat_time_cost": 0.7166666666666667,
     "cooldown": 0,
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
+    "resonance_energy_gain": 1.64,
+    "concerto_energy_gain": 2.56,
     "resonance_energy_cost": 0,
     "hits": [
       {
-        "time": 0.2833,
-        "damage_multiplier": 0.2585,
+        "time": 0.7166666666666667,
+        "damage_category": "normal",
+        "damage_multiplier": 1.034,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "fusion",
-          "basic"
+          "basic",
+          "wide_field_observation",
+          "mornye",
+          "source:excel"
         ],
-        "name": "Observation A2 hit 1"
-      },
-      {
-        "time": 0.5667,
-        "damage_multiplier": 0.2585,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "Observation A2 hit 2"
-      },
-      {
-        "time": 0.85,
-        "damage_multiplier": 0.2585,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "Observation A2 hit 3"
-      },
-      {
-        "time": 1.1333,
-        "damage_multiplier": 0.2585,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "Observation A2 hit 4"
+        "name": "Mornye Wide Field Observation Basic Stage 2 hit"
       }
     ],
     "tags": [
@@ -550,74 +415,36 @@
     "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
     "off_tune_value": 13.0,
     "off_tune_value_source_status": "workbook_confirmed",
-    "off_tune_value_source_ref": "角色-女!S4129"
+    "off_tune_value_source_ref": "角色-女!S4129",
+    "damage_multiplier": 1.034,
+    "tune_break_multiplier": 0.0
   },
   {
     "id": "mornye_wfo_basic_stage_3",
     "name": "Mornye Wide Field Observation Basic Stage 3",
     "character_id": "mornye",
     "action_type": "basic_attack",
-    "duration": 1.0167,
-    "action_time": 1.0167,
-    "combat_time_cost": 1.0167,
+    "duration": 0.65,
+    "action_time": 0.65,
+    "combat_time_cost": 0.65,
     "cooldown": 0,
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 20,
+    "resonance_energy_gain": 1.64,
+    "concerto_energy_gain": 22.56,
     "resonance_energy_cost": 0,
     "hits": [
       {
-        "time": 0.2167,
-        "damage_multiplier": 0.0931,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "Observation A3 hit 1"
-      },
-      {
-        "time": 0.5167,
-        "damage_multiplier": 0.0931,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "Observation A3 hit 2"
-      },
-      {
         "time": 0.65,
-        "damage_multiplier": 0.0931,
+        "damage_category": "normal",
+        "damage_multiplier": 1.0342,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "fusion",
-          "basic"
+          "basic",
+          "wide_field_observation",
+          "mornye",
+          "source:excel"
         ],
-        "name": "Observation A3 hit 3"
-      },
-      {
-        "time": 0.8167,
-        "damage_multiplier": 0.0931,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "Observation A3 hit 4"
-      },
-      {
-        "time": 0.65,
-        "damage_multiplier": 0.3309,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "Observation A3 finisher hit 1"
-      },
-      {
-        "time": 1.0167,
-        "damage_multiplier": 0.3309,
-        "tags": [
-          "fusion",
-          "basic"
-        ],
-        "name": "Observation A3 finisher hit 2"
+        "name": "Mornye Wide Field Observation Basic Stage 3 hit"
       }
     ],
     "tags": [
@@ -648,47 +475,35 @@
     "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
     "off_tune_value": 30.68,
     "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
-    "off_tune_value_source_ref": "角色-女!S4131:S4134"
+    "off_tune_value_source_ref": "角色-女!S4131:S4134",
+    "damage_multiplier": 1.0342,
+    "tune_break_multiplier": 0.0
   },
   {
     "id": "mornye_heavy_attack_normal",
     "name": "Mornye Heavy Attack Normal",
     "character_id": "mornye",
     "action_type": "heavy_attack",
-    "duration": 2.3333,
-    "action_time": 2.3333,
-    "combat_time_cost": 2.3333,
+    "duration": 1.5833333333333333,
+    "action_time": 1.5833333333333333,
+    "combat_time_cost": 1.5833333333333333,
     "cooldown": 0,
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
+    "resonance_energy_gain": 0.79,
+    "concerto_energy_gain": 2.5,
     "resonance_energy_cost": 0,
     "hits": [
       {
-        "time": 0.3167,
-        "damage_multiplier": 0.111,
+        "time": 1.5833333333333333,
+        "damage_category": "normal",
+        "damage_multiplier": 0.37,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "fusion",
-          "heavy"
+          "heavy",
+          "mornye",
+          "source:excel"
         ],
-        "name": "Heavy hit 1"
-      },
-      {
-        "time": 0.6667,
-        "damage_multiplier": 0.111,
-        "tags": [
-          "fusion",
-          "heavy"
-        ],
-        "name": "Heavy hit 2"
-      },
-      {
-        "time": 1.1667,
-        "damage_multiplier": 0.148,
-        "tags": [
-          "fusion",
-          "heavy"
-        ],
-        "name": "Heavy hit 3"
+        "name": "Mornye Heavy Attack Normal hit"
       }
     ],
     "tags": [
@@ -710,38 +525,35 @@
     "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
     "off_tune_value": 24.8,
     "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
-    "off_tune_value_source_ref": "角色-女!S4114:S4116"
+    "off_tune_value_source_ref": "角色-女!S4114:S4116",
+    "damage_multiplier": 0.37,
+    "tune_break_multiplier": 0.0
   },
   {
     "id": "mornye_heavy_geopotential_shift",
     "name": "Mornye Heavy Geopotential Shift",
     "character_id": "mornye",
     "action_type": "heavy_attack",
-    "duration": 1.2,
-    "action_time": 1.2,
-    "combat_time_cost": 1.2,
+    "duration": 1.3333333333333333,
+    "action_time": 1.3333333333333333,
+    "combat_time_cost": 1.3333333333333333,
     "cooldown": 0,
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
+    "resonance_energy_gain": 0.93,
+    "concerto_energy_gain": 2.96,
     "resonance_energy_cost": 0,
     "hits": [
       {
-        "time": 0.3667,
+        "time": 1.3333333333333333,
+        "damage_category": "normal",
         "damage_multiplier": 0.4414,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "fusion",
-          "heavy"
+          "heavy",
+          "mornye",
+          "source:excel"
         ],
-        "name": "Geopotential Shift"
-      },
-      {
-        "time": 1.2,
-        "damage_multiplier": 0.9902,
-        "tags": [
-          "fusion",
-          "heavy"
-        ],
-        "name": "Syntony field heavy follow-up"
+        "name": "Mornye Heavy Geopotential Shift hit"
       }
     ],
     "tags": [
@@ -751,9 +563,7 @@
       "source:excel"
     ],
     "policy_selectable": false,
-    "mechanic_event_tags": [
-      "team_heal"
-    ],
+    "mechanic_event_tags": [],
     "mechanic_effects": {
       "consume_rest_mass_energy": true,
       "wide_field_observation_duration": 30,
@@ -761,14 +571,31 @@
       "syntony_field_off_tune_buildup_rate_add": 0.5,
       "syntony_field_off_tune_bonus_source": "角色-女!D4122",
       "heal_event_mode_support": [
+        "scheduled_180f_exact",
         "field_creation_only",
         "simplified_syntony_field_uptime"
       ],
-      "team_heal_event_tag": "team_heal",
-      "healing_proxy_source": "角色-女!D4120",
-      "healing_proxy_implementation_status": "simplified_field_uptime_heal_proxy",
       "set_wfo_combo_stage": 1,
-      "source_character_name": "莫宁"
+      "source_character_name": "莫宁",
+      "healing_implementation_status": "scheduled_180f_exact",
+      "scheduled_healing_first_tick_frames": 1,
+      "scheduled_healing_interval_frames": 180,
+      "scheduled_healing_duration_frames": 1500,
+      "scheduled_healing_max_trigger_count": 9,
+      "scheduled_healing_relative_tick_frames": [
+        1,
+        181,
+        361,
+        541,
+        721,
+        901,
+        1081,
+        1261,
+        1441
+      ],
+      "scheduled_healing_target_scope": "host_action_actor_else_active_character",
+      "scheduled_healing_payload_action_id": "mornye_syntony_field_heal",
+      "scheduled_healing_source_ref": "角色-女!4120 / 角色技能类型!533"
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame row 4117 and skill rows 2654/2656. Enters Wide Field Observation and generates Syntony Field.",
@@ -778,29 +605,36 @@
     "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
     "off_tune_value": 29.6,
     "off_tune_value_source_status": "workbook_confirmed",
-    "off_tune_value_source_ref": "角色-女!S4117"
+    "off_tune_value_source_ref": "角色-女!S4117",
+    "damage_multiplier": 0.4414,
+    "tune_break_multiplier": 0.0
   },
   {
     "id": "mornye_heavy_inversion",
     "name": "Mornye Heavy Inversion",
     "character_id": "mornye",
     "action_type": "heavy_attack",
-    "duration": 1.3,
-    "action_time": 1.3,
-    "combat_time_cost": 1.3,
+    "duration": 1.4333333333333333,
+    "action_time": 1.4333333333333333,
+    "combat_time_cost": 1.4333333333333333,
     "cooldown": 0,
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
+    "resonance_energy_gain": 3.25,
+    "concerto_energy_gain": 11.96,
     "resonance_energy_cost": 0,
     "hits": [
       {
-        "time": 1.1,
+        "time": 1.4333333333333333,
+        "damage_category": "normal",
         "damage_multiplier": 2.5846,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "fusion",
-          "heavy"
+          "heavy",
+          "wide_field_observation",
+          "mornye",
+          "source:excel"
         ],
-        "name": "Inversion"
+        "name": "Mornye Heavy Inversion hit"
       }
     ],
     "tags": [
@@ -822,7 +656,7 @@
       ],
       "time_dilation_type": "时停",
       "has_global_time_stop": false,
-      "combat_time_cost_source": "No 全局时停 row for 观测重击; use 78F / 60",
+      "combat_time_cost_source": "No 全局时停 row for 观测重击; use 78F base ready + 8F self hitstop = 86F / 60",
       "source_status": "not_source_confirmed_direct_interfered"
     },
     "data_status": "partial_real_support_v1",
@@ -833,21 +667,23 @@
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
-    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
+    "damage_multiplier": 2.5846,
+    "tune_break_multiplier": 0.0
   },
   {
     "id": "mornye_skill_expectation_error",
     "name": "Mornye Skill Expectation Error",
     "character_id": "mornye",
     "action_type": "resonance_skill",
-    "duration": 0.8667,
-    "action_time": 0.8667,
-    "combat_time_cost": 0.8667,
+    "duration": 0.35,
+    "action_time": 0.35,
+    "combat_time_cost": 0.35,
     "cooldown": 5,
     "cooldown_group": "mornye_expectation_error",
-    "damage_multiplier": 0,
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
+    "damage_multiplier": 0.0,
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 0.0,
     "resonance_energy_cost": 0,
     "tags": [
       "fusion",
@@ -861,30 +697,36 @@
     "scaling_stat": "none",
     "off_tune_value": 0.0,
     "off_tune_value_source_status": "not_found_or_non_damaging",
-    "off_tune_value_source_ref": "角色-女!S4137"
+    "off_tune_value_source_ref": "角色-女!S4137",
+    "tune_break_multiplier": 0.0,
+    "hits": []
   },
   {
     "id": "mornye_skill_optimal_solution",
     "name": "Mornye Skill Optimal Solution",
     "character_id": "mornye",
     "action_type": "resonance_skill",
-    "duration": 1.8333,
-    "action_time": 1.8333,
-    "combat_time_cost": 1.8333,
+    "duration": 2.0166666666666666,
+    "action_time": 2.0166666666666666,
+    "combat_time_cost": 2.0166666666666666,
     "cooldown": 5,
     "cooldown_group": "mornye_expectation_error",
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
+    "resonance_energy_gain": 3.96,
+    "concerto_energy_gain": 9.04,
     "resonance_energy_cost": 0,
     "hits": [
       {
-        "time": 0.7333,
+        "time": 2.0166666666666666,
+        "damage_category": "normal",
         "damage_multiplier": 1.7973,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "fusion",
-          "resonance_skill"
+          "resonance_skill",
+          "mornye",
+          "source:excel"
         ],
-        "name": "Optimal Solution"
+        "name": "Mornye Skill Optimal Solution hit"
       }
     ],
     "tags": [
@@ -907,7 +749,9 @@
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
-    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
+    "damage_multiplier": 1.7973,
+    "tune_break_multiplier": 0.0
   },
   {
     "id": "mornye_skill_distributed_array",
@@ -919,45 +763,23 @@
     "combat_time_cost": 1.0,
     "cooldown": 16,
     "cooldown_group": "mornye_distributed_array",
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 10,
+    "resonance_energy_gain": 18.52,
+    "concerto_energy_gain": 10.0,
     "resonance_energy_cost": 0,
     "hits": [
       {
-        "time": 0.3667,
-        "damage_multiplier": 0.3977,
+        "time": 1.0,
+        "damage_category": "normal",
+        "damage_multiplier": 1.5908,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "fusion",
-          "resonance_skill"
+          "resonance_skill",
+          "wide_field_observation",
+          "mornye",
+          "source:excel"
         ],
-        "name": "Distributed Array hit 1"
-      },
-      {
-        "time": 0.3667,
-        "damage_multiplier": 0.3977,
-        "tags": [
-          "fusion",
-          "resonance_skill"
-        ],
-        "name": "Distributed Array hit 2"
-      },
-      {
-        "time": 0.6,
-        "damage_multiplier": 0.3977,
-        "tags": [
-          "fusion",
-          "resonance_skill"
-        ],
-        "name": "Distributed Array hit 3"
-      },
-      {
-        "time": 0.6,
-        "damage_multiplier": 0.3977,
-        "tags": [
-          "fusion",
-          "resonance_skill"
-        ],
-        "name": "Distributed Array hit 4"
+        "name": "Mornye Skill Distributed Array hit"
       }
     ],
     "tags": [
@@ -1003,29 +825,35 @@
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
-    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
+    "damage_multiplier": 1.5908,
+    "tune_break_multiplier": 0.0
   },
   {
     "id": "mornye_liberation_critical_protocol",
     "name": "Mornye Liberation Critical Protocol",
     "character_id": "mornye",
     "action_type": "resonance_liberation",
-    "duration": 4.9333,
-    "action_time": 4.9333,
+    "duration": 4.7,
+    "action_time": 4.7,
     "combat_time_cost": 0.0,
     "cooldown": 25,
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 20,
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 20.0,
     "resonance_energy_cost": 175,
     "hits": [
       {
-        "time": 4.6167,
+        "time": 4.7,
+        "damage_category": "normal",
         "damage_multiplier": 5.2233,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "fusion",
-          "resonance_liberation"
+          "resonance_liberation",
+          "mornye",
+          "source:excel"
         ],
-        "name": "Critical Protocol"
+        "name": "Mornye Liberation Critical Protocol hit"
       }
     ],
     "tags": [
@@ -1035,21 +863,18 @@
       "source:excel"
     ],
     "policy_selectable": false,
-    "mechanic_event_tags": [
-      "team_heal"
-    ],
+    "mechanic_event_tags": [],
     "mechanic_effects": {
       "upgrade_syntony_to_high": true,
       "high_syntony_field_duration": 25,
       "high_syntony_field_healing_metadata_present": true,
-      "high_syntony_field_healing_source": "角色-女!D4121",
+      "high_syntony_field_healing_source": "角色-女!4121",
       "high_syntony_field_def_percent_bonus": 0.2,
       "high_syntony_field_def_bonus_source": "角色-女!D4124",
       "high_syntony_field_off_tune_bonus_status": "implemented_simplified_inheritance",
       "high_syntony_field_off_tune_buildup_rate_add": 0.5,
       "high_syntony_field_healing_multiplier_bonus": 0.4,
       "implementation_timing_mode": "same_action_high_syntony_field_creation_approximation",
-      "team_heal_event_tag": "team_heal",
       "energy_regen_scaling_metadata_only": true,
       "source_character_name": "莫宁",
       "source_sheet": "角色-女",
@@ -1062,7 +887,31 @@
       "global_time_stop_frames": 300,
       "damage_end_frame": 296,
       "combat_time_cost_source": "大招-全局时停 covers damage end frame",
-      "has_global_time_stop": true
+      "has_global_time_stop": true,
+      "healing_implementation_status": "scheduled_180f_exact",
+      "scheduled_healing_first_tick_frames": 1,
+      "scheduled_healing_interval_frames": 180,
+      "scheduled_healing_duration_frames": 1500,
+      "scheduled_healing_max_trigger_count": 9,
+      "scheduled_healing_relative_tick_frames": [
+        1,
+        181,
+        361,
+        541,
+        721,
+        901,
+        1081,
+        1261,
+        1441
+      ],
+      "scheduled_healing_target_scope": "host_action_actor_else_active_character",
+      "scheduled_healing_payload_action_id": "mornye_high_syntony_field_heal",
+      "scheduled_healing_source_ref": "角色-女!4121 / 角色技能类型!533",
+      "heal_event_mode_support": [
+        "scheduled_180f_exact",
+        "field_creation_only",
+        "simplified_syntony_field_uptime"
+      ]
     },
     "data_status": "partial_real_support_v1",
     "notes": "Workbook \\u83ab\\u5b81 frame rows 4150-4154 and skill row 2671. Energy Regen crit scaling is metadata-only in v1.",
@@ -1072,70 +921,50 @@
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
-    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation."
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
+    "timing_overrides": {
+      "wide_field_observation": {
+        "action_time": 4.933333333333334,
+        "combat_time_cost": 0.0
+      }
+    },
+    "damage_multiplier": 5.2233,
+    "tune_break_multiplier": 0.0
   },
   {
     "id": "mornye_syntony_field_damage",
-    "name": "Mornye Syntony Field Damage",
+    "name": "Mornye Syntony Field Damage 1 Payload",
     "character_id": "mornye",
     "action_type": "resonance_liberation",
-    "duration": 2.0,
-    "action_time": 2.0,
-    "combat_time_cost": 2.0,
+    "duration": 0.016666666666666666,
+    "action_time": 0.016666666666666666,
+    "combat_time_cost": 0.0,
     "cooldown": 0,
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
-    "resonance_energy_cost": 0,
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 0.0,
+    "resonance_energy_cost": 0.0,
+    "damage_bonus_category": "resonance_liberation",
+    "damage_element": "fusion",
+    "raw_skill_category": "Resonance Liberation",
+    "raw_damage_type": "Resonance Liberation damage",
+    "scaling_stat": "def",
+    "scaling_stat_source": "user_supplied_skill_screenshot",
+    "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
+    "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
     "hits": [
       {
-        "time": 0.45,
+        "time": 0.0,
+        "damage_category": "normal",
         "damage_multiplier": 0.3977,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "fusion",
           "field",
-          "resonance_liberation"
+          "resonance_liberation",
+          "mornye",
+          "scheduled_payload"
         ],
-        "name": "Syntony Field hit 1"
-      },
-      {
-        "time": 0.9,
-        "damage_multiplier": 0.3977,
-        "tags": [
-          "fusion",
-          "field",
-          "resonance_liberation"
-        ],
-        "name": "Syntony Field hit 2"
-      },
-      {
-        "time": 1.35,
-        "damage_multiplier": 0.3977,
-        "tags": [
-          "fusion",
-          "field",
-          "resonance_liberation"
-        ],
-        "name": "Syntony Field hit 3"
-      },
-      {
-        "time": 1.8,
-        "damage_multiplier": 0.3977,
-        "tags": [
-          "fusion",
-          "field",
-          "resonance_liberation"
-        ],
-        "name": "Syntony Field hit 4"
-      },
-      {
-        "time": 2.0,
-        "damage_multiplier": 0.3977,
-        "tags": [
-          "fusion",
-          "field",
-          "resonance_liberation"
-        ],
-        "name": "Syntony Field hit 5"
+        "name": "Syntony Field Damage 1 scheduled tick"
       }
     ],
     "tags": [
@@ -1143,18 +972,218 @@
       "field",
       "resonance_liberation",
       "mornye",
-      "metadata_optional"
+      "scheduled_payload",
+      "source:excel"
     ],
     "policy_selectable": false,
-    "data_status": "review_optional_v1",
-    "notes": "Syntony Field damage is available as reviewed data but is not auto-scheduled by v1 mechanics.",
+    "mechanic_effects": {
+      "scheduled_payload": true,
+      "scheduled_resource_policy": "none",
+      "source_status": "workbook_confirmed_scheduled_tick",
+      "source_ref": "角色-女!4126 / dmg/角色技能类型!2655",
+      "relative_tick_frames": [
+        1,
+        28,
+        55,
+        82,
+        109
+      ]
+    },
+    "data_status": "workbook_confirmed_scheduled_tick",
+    "notes": "Payload for scheduler-supplied Syntony Field Damage 1 ticks. Scheduler supplies five executions at relative frames 1, 28, 55, 82, and 109; this record intentionally contains one 0.3977 hit and no Off-Tune/resources.",
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "workbook_confirmed_zero_for_damage_1",
+    "off_tune_value_source_ref": "角色-女!4126 / dmg/角色技能类型!2655",
+    "damage_multiplier": 0.3977,
+    "tune_break_multiplier": 0.0
+  },
+  {
+    "id": "mornye_syntony_field_target_damage",
+    "name": "Mornye Syntony Field Damage 2 Target Payload",
+    "character_id": "mornye",
+    "action_type": "heavy_attack",
+    "duration": 0.016666666666666666,
+    "action_time": 0.016666666666666666,
+    "combat_time_cost": 0.0,
+    "cooldown": 0,
+    "resonance_energy_gain": 2.08,
+    "concerto_energy_gain": 6.65,
+    "resonance_energy_cost": 0.0,
+    "damage_bonus_category": "heavy_attack",
+    "damage_element": "fusion",
+    "raw_skill_category": "Heavy Attack",
+    "raw_damage_type": "Heavy Attack damage",
     "scaling_stat": "def",
     "scaling_stat_source": "user_supplied_skill_screenshot",
     "scaling_stat_source_status": "user_supplied_screenshot_not_embedded",
     "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
+    "hits": [
+      {
+        "time": 0.0,
+        "damage_category": "normal",
+        "damage_multiplier": 0.9902,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "fusion",
+          "field",
+          "heavy",
+          "mornye",
+          "scheduled_payload"
+        ],
+        "name": "Syntony Field Damage 2 scheduled target hit"
+      }
+    ],
+    "tags": [
+      "fusion",
+      "field",
+      "heavy",
+      "mornye",
+      "scheduled_payload",
+      "source:excel"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "scheduled_payload": true,
+      "scheduled_resource_policy": "source_confirmed_positive_gains",
+      "source_status": "workbook_confirmed_scheduled_target_damage",
+      "source_ref": "角色-女!4127 / dmg/角色技能类型!2656",
+      "relative_tick_frames": [
+        23
+      ],
+      "qte_restricted": true
+    },
+    "data_status": "workbook_confirmed_scheduled_target_damage",
+    "notes": "Payload for the non-QTE Syntony Field Damage 2 deployment event. Scheduled once at relative frame 23 for Geopotential Shift-created normal fields only; grants source-confirmed positive resources through the scheduled-resource opt-in path.",
     "off_tune_value": 66.4,
     "off_tune_value_source_status": "workbook_confirmed",
-    "off_tune_value_source_ref": "角色-女!S4127"
+    "off_tune_value_source_ref": "角色-女!4127 / dmg/角色技能类型!2656",
+    "damage_multiplier": 0.9902,
+    "tune_break_multiplier": 0.0
+  },
+  {
+    "id": "mornye_syntony_field_heal",
+    "name": "Mornye Syntony Field Scheduled Heal Payload",
+    "character_id": "mornye",
+    "action_type": "resonance_liberation",
+    "scheduled_event_type": "healing",
+    "duration": 0.016666666666666666,
+    "action_time": 0.016666666666666666,
+    "combat_time_cost": 0.0,
+    "cooldown": 0,
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 0.0,
+    "resonance_energy_cost": 0.0,
+    "damage_multiplier": 0.0,
+    "tune_break_multiplier": 0.0,
+    "hits": [],
+    "tags": [
+      "field",
+      "healing",
+      "mornye",
+      "scheduled_payload",
+      "source:excel"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "scheduled_payload": true,
+      "payload_event_type": "healing",
+      "scheduled_event_type": "healing",
+      "source_status": "workbook_confirmed_scheduled_heal",
+      "source_ref": "角色-女!4120 / 角色技能类型!533",
+      "relative_tick_frames": [
+        1,
+        181,
+        361,
+        541,
+        721,
+        901,
+        1081,
+        1261,
+        1441
+      ],
+      "first_tick_frames": 1,
+      "tick_interval_frames": 180,
+      "field_duration_frames": 1500,
+      "max_trigger_count": 9,
+      "target_scope": "host_action_actor_else_active_character",
+      "healing_metadata": {
+        "base_heal": 1805.0,
+        "scaling_stat": "def",
+        "scaling_multiplier": 0.945,
+        "field_healing_multiplier": 1.0,
+        "healing_bonus_applied": 0.0,
+        "healing_bonus_source_status": "metadata_only_not_applied",
+        "hp_application_mode": "diagnostic_no_hp_state"
+      }
+    },
+    "data_status": "workbook_confirmed_scheduled_heal",
+    "notes": "Payload for exact scheduled normal Syntony Field healing. Scheduler supplies nine executions at relative frames 1, 181, 361, 541, 721, 901, 1081, 1261, and 1441; this record intentionally deals no damage and grants no Off-Tune/resources.",
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "workbook_confirmed_zero_for_healing_payload",
+    "off_tune_value_source_ref": "角色-女!4120 / 角色技能类型!533"
+  },
+  {
+    "id": "mornye_high_syntony_field_heal",
+    "name": "Mornye High Syntony Field Scheduled Heal Payload",
+    "character_id": "mornye",
+    "action_type": "resonance_liberation",
+    "scheduled_event_type": "healing",
+    "duration": 0.016666666666666666,
+    "action_time": 0.016666666666666666,
+    "combat_time_cost": 0.0,
+    "cooldown": 0,
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 0.0,
+    "resonance_energy_cost": 0.0,
+    "damage_multiplier": 0.0,
+    "tune_break_multiplier": 0.0,
+    "hits": [],
+    "tags": [
+      "field",
+      "healing",
+      "mornye",
+      "scheduled_payload",
+      "source:excel"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "scheduled_payload": true,
+      "payload_event_type": "healing",
+      "scheduled_event_type": "healing",
+      "source_status": "workbook_confirmed_scheduled_heal",
+      "source_ref": "角色-女!4121 / 角色技能类型!533",
+      "relative_tick_frames": [
+        1,
+        181,
+        361,
+        541,
+        721,
+        901,
+        1081,
+        1261,
+        1441
+      ],
+      "first_tick_frames": 1,
+      "tick_interval_frames": 180,
+      "field_duration_frames": 1500,
+      "max_trigger_count": 9,
+      "target_scope": "host_action_actor_else_active_character",
+      "healing_metadata": {
+        "base_heal": 1805.0,
+        "scaling_stat": "def",
+        "scaling_multiplier": 0.945,
+        "field_healing_multiplier": 1.4,
+        "healing_bonus_applied": 0.0,
+        "healing_bonus_source_status": "metadata_only_not_applied",
+        "hp_application_mode": "diagnostic_no_hp_state",
+        "c4_healing_bonus_status": "excluded_c0_task"
+      }
+    },
+    "data_status": "workbook_confirmed_scheduled_heal",
+    "notes": "Payload for exact scheduled High Syntony Field healing. Scheduler supplies nine executions at relative frames 1, 181, 361, 541, 721, 901, 1081, 1261, and 1441; this C0 record applies the inherited 1.40 High Field healing multiplier and intentionally deals no damage and grants no Off-Tune/resources.",
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "workbook_confirmed_zero_for_healing_payload",
+    "off_tune_value_source_ref": "角色-女!4121 / 角色技能类型!533"
   },
   {
     "id": "mornye_high_syntony_field_state",
@@ -1184,15 +1213,15 @@
     "name": "Mornye Tune Break",
     "character_id": "mornye",
     "action_type": "tune_break",
-    "duration": 1.5667,
-    "action_time": 1.5667,
+    "duration": 1.5666666666666667,
+    "action_time": 1.5666666666666667,
     "combat_time_cost": 0.0,
     "cooldown": 0,
     "damage_category": "tune_break",
     "damage_bonus_category": "tune_break",
     "damage_element": "unresolved",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 0.0,
+    "tune_break_multiplier": 12.0,
     "tune_break_boost_points": 0,
     "off_tune_value": 0.0,
     "off_tune_value_source_status": "workbook_confirmed_tune_break_rows_zero",
@@ -1201,38 +1230,20 @@
     "tune_break_element_source_status": "unresolved",
     "hits": [
       {
-        "time": 0.0667,
+        "time": 1.5666666666666667,
         "damage_category": "tune_break",
-        "damage_multiplier": 0,
-        "tune_break_multiplier": 1.7334,
-        "tags": [
-          "tune_break"
-        ],
-        "name": "mornye_tune_break_1"
-      },
-      {
-        "time": 0.4333,
-        "damage_category": "tune_break",
-        "damage_multiplier": 0,
-        "tune_break_multiplier": 2.2666,
-        "tags": [
-          "tune_break"
-        ],
-        "name": "mornye_tune_break_2"
-      },
-      {
-        "time": 1.1,
-        "damage_category": "tune_break",
-        "damage_multiplier": 0,
+        "damage_multiplier": 0.0,
         "tune_break_multiplier": 12.0,
         "tags": [
-          "tune_break"
+          "tune_break",
+          "mornye",
+          "source:excel"
         ],
-        "name": "mornye_tune_break_3"
+        "name": "Mornye Tune Break tune break"
       }
     ],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 0.0,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -1274,22 +1285,26 @@
     "name": "Mornye Intro Convergence",
     "character_id": "mornye",
     "action_type": "swap",
-    "duration": 1.7,
-    "action_time": 1.7,
-    "combat_time_cost": 1.7,
+    "duration": 1.8333333333333333,
+    "action_time": 1.8333333333333333,
+    "combat_time_cost": 1.8333333333333333,
     "cooldown": 0,
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 30,
+    "resonance_energy_gain": 10.0,
+    "concerto_energy_gain": 30.0,
     "resonance_energy_cost": 0,
     "hits": [
       {
-        "time": 0.6333,
+        "time": 1.8333333333333333,
+        "damage_category": "normal",
         "damage_multiplier": 2.0279,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "fusion",
-          "intro"
+          "intro",
+          "transition",
+          "mornye"
         ],
-        "name": "Convergence"
+        "name": "Mornye Intro Convergence hit"
       }
     ],
     "tags": [
@@ -1315,7 +1330,7 @@
       "passive_concerto_gain": 20,
       "final_concerto_gain": 30,
       "passive_concerto_source": "角色-女!4164",
-      "combat_time_cost_source": "QTE has 时停 but no 全局时停 row; use 102F / 60"
+      "combat_time_cost_source": "102F base ready + 8F self hitstop = 110F; no 全局时停, so combat_time_cost is 110F / 60."
     },
     "data_status": "transition_review_only_v1",
     "notes": "Intro/QTE convergence data from workbook rows 4148-4149 plus passive row 4164. State effects are recorded in data/transition_actions.json and not auto-applied by default.",
@@ -1325,7 +1340,9 @@
     "scaling_stat_note": "Mornye damage is DEF-scaling per user-provided skill description; project should archive source screenshot or text before final validation.",
     "off_tune_value": 136.0,
     "off_tune_value_source_status": "workbook_confirmed",
-    "off_tune_value_source_ref": "角色-女!S4149"
+    "off_tune_value_source_ref": "角色-女!S4149",
+    "damage_multiplier": 2.0279,
+    "tune_break_multiplier": 0.0
   },
   {
     "id": "mornye_outro_recursion",
@@ -2195,8 +2212,8 @@
     "damage_category": "tune_break",
     "damage_bonus_category": "tune_break",
     "damage_element": "unresolved",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 0.0,
+    "tune_break_multiplier": 12.0,
     "tune_break_boost_points": 0,
     "off_tune_value": 0.0,
     "off_tune_value_source_status": "workbook_confirmed_tune_break_rows_zero",
@@ -2205,28 +2222,20 @@
     "tune_break_element_source_status": "unresolved",
     "hits": [
       {
-        "time": 0.5,
+        "time": 1.5,
         "damage_category": "tune_break",
-        "damage_multiplier": 0,
-        "tune_break_multiplier": 1.0,
-        "tags": [
-          "tune_break"
-        ],
-        "name": "aemeath_tune_break_1"
-      },
-      {
-        "time": 1.2,
-        "damage_category": "tune_break",
-        "damage_multiplier": 0,
+        "damage_multiplier": 0.0,
         "tune_break_multiplier": 12.0,
         "tags": [
-          "tune_break"
+          "tune_break",
+          "aemeath",
+          "source:excel"
         ],
-        "name": "aemeath_tune_break_2"
+        "name": "Aemeath Tune Break tune break"
       }
     ],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 0,
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 0.0,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -2238,32 +2247,41 @@
     "policy_selectable": true,
     "data_status": "excel_tune_break_single_target_v1",
     "notes": "Workbook rows 2802 and 2804-2805 define Aemeath Tune Break timing/Interfered application rows. Coefficients use the workbook-identified Tune Break coefficient source from the audit.",
-    "scaling_stat": "none"
+    "scaling_stat": "none",
+    "timing_overrides": {
+      "form_mech": {
+        "action_time": 1.5666666666666667,
+        "combat_time_cost": 0.0
+      }
+    }
   },
   {
     "id": "aemeath_basic_form_stage_1",
     "name": "Aemeath Form Basic Stage 1",
     "character_id": "aemeath",
     "action_type": "basic_attack",
-    "duration": 0.45,
-    "action_time": 0.45,
+    "duration": 0.38333333333333336,
+    "action_time": 0.38333333333333336,
     "cooldown": 0,
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 0.4635,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.22,
+        "time": 0.38333333333333336,
         "damage_category": "normal",
         "damage_multiplier": 0.4635,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath form basic 1"
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal"
+        ],
+        "name": "Aemeath Form Basic Stage 1 hit"
       }
     ],
-    "resonance_energy_gain": 5,
-    "concerto_energy_gain": 4,
+    "resonance_energy_gain": 0.84,
+    "concerto_energy_gain": 1.67,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -2283,48 +2301,36 @@
     "scaling_stat": "atk",
     "off_tune_value": 26.64,
     "off_tune_value_source_status": "workbook_confirmed",
-    "off_tune_value_source_ref": "角色-女!S2739"
+    "off_tune_value_source_ref": "角色-女!S2739",
+    "combat_time_cost": 0.38333333333333336
   },
   {
     "id": "aemeath_basic_form_stage_2",
     "name": "Aemeath Form Basic Stage 2",
     "character_id": "aemeath",
     "action_type": "basic_attack",
-    "duration": 0.5,
-    "action_time": 0.5,
+    "duration": 0.6833333333333333,
+    "action_time": 0.6833333333333333,
     "cooldown": 0,
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 0.6946,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.16,
+        "time": 0.6833333333333333,
         "damage_category": "normal",
-        "damage_multiplier": 0.1389,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath form basic 2a"
-      },
-      {
-        "time": 0.28,
-        "damage_category": "normal",
-        "damage_multiplier": 0.2084,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath form basic 2b"
-      },
-      {
-        "time": 0.4,
-        "damage_category": "normal",
-        "damage_multiplier": 0.3473,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath form basic 2c"
+        "damage_multiplier": 0.6946,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal"
+        ],
+        "name": "Aemeath Form Basic Stage 2 hit"
       }
     ],
-    "resonance_energy_gain": 5,
-    "concerto_energy_gain": 4,
+    "resonance_energy_gain": 1.26,
+    "concerto_energy_gain": 2.5,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -2344,64 +2350,36 @@
     "scaling_stat": "atk",
     "off_tune_value": 39.93,
     "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
-    "off_tune_value_source_ref": "角色-女!S2740:S2742"
+    "off_tune_value_source_ref": "角色-女!S2740:S2742",
+    "combat_time_cost": 0.6833333333333333
   },
   {
     "id": "aemeath_basic_form_stage_3",
     "name": "Aemeath Form Basic Stage 3",
     "character_id": "aemeath",
     "action_type": "basic_attack",
-    "duration": 0.65,
-    "action_time": 0.65,
+    "duration": 0.7333333333333333,
+    "action_time": 0.7333333333333333,
     "cooldown": 0,
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 0.9315,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.18,
+        "time": 0.7333333333333333,
         "damage_category": "normal",
-        "damage_multiplier": 0.0932,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath form basic 3a"
-      },
-      {
-        "time": 0.26,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0932,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath form basic 3b"
-      },
-      {
-        "time": 0.34,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0932,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath form basic 3c"
-      },
-      {
-        "time": 0.46,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1863,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath form basic 3d"
-      },
-      {
-        "time": 0.58,
-        "damage_category": "normal",
-        "damage_multiplier": 0.4656,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath form basic 3e"
+        "damage_multiplier": 0.9315,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal"
+        ],
+        "name": "Aemeath Form Basic Stage 3 hit"
       }
     ],
-    "resonance_energy_gain": 6,
-    "concerto_energy_gain": 5,
+    "resonance_energy_gain": 1.69,
+    "concerto_energy_gain": 3.37,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -2435,72 +2413,36 @@
     "scaling_stat": "atk",
     "off_tune_value": 53.55,
     "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
-    "off_tune_value_source_ref": "角色-女!S2743:S2747"
+    "off_tune_value_source_ref": "角色-女!S2743:S2747",
+    "combat_time_cost": 0.7333333333333333
   },
   {
     "id": "aemeath_basic_form_stage_4",
     "name": "Aemeath Form Basic Stage 4",
     "character_id": "aemeath",
     "action_type": "basic_attack",
-    "duration": 0.85,
-    "action_time": 0.85,
+    "duration": 0.9833333333333333,
+    "action_time": 0.9833333333333333,
     "cooldown": 0,
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 1.3459,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.18,
+        "time": 0.9833333333333333,
         "damage_category": "normal",
-        "damage_multiplier": 0.0673,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath form basic 4a"
-      },
-      {
-        "time": 0.28,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0673,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath form basic 4b"
-      },
-      {
-        "time": 0.38,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0673,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath form basic 4c"
-      },
-      {
-        "time": 0.48,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0673,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath form basic 4d"
-      },
-      {
-        "time": 0.58,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0673,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath form basic 4e"
-      },
-      {
-        "time": 0.72,
-        "damage_category": "normal",
-        "damage_multiplier": 1.0094,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath form basic 4f"
+        "damage_multiplier": 1.3459,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal"
+        ],
+        "name": "Aemeath Form Basic Stage 4 hit"
       }
     ],
-    "resonance_energy_gain": 7,
-    "concerto_energy_gain": 6,
+    "resonance_energy_gain": 2.47,
+    "concerto_energy_gain": 4.88,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -2535,48 +2477,36 @@
     "scaling_stat": "atk",
     "off_tune_value": 65.76,
     "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
-    "off_tune_value_source_ref": "角色-女!S2753:S2755"
+    "off_tune_value_source_ref": "角色-女!S2753:S2755",
+    "combat_time_cost": 0.9833333333333333
   },
   {
     "id": "aemeath_mech_basic_stage_1",
     "name": "Aemeath Mech Basic Stage 1",
     "character_id": "aemeath",
     "action_type": "basic_attack",
-    "duration": 0.55,
-    "action_time": 0.55,
+    "duration": 0.5,
+    "action_time": 0.5,
     "cooldown": 0,
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 0.696,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.16,
+        "time": 0.5,
         "damage_category": "normal",
-        "damage_multiplier": 0.232,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath mech basic 1a"
-      },
-      {
-        "time": 0.28,
-        "damage_category": "normal",
-        "damage_multiplier": 0.232,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath mech basic 1b"
-      },
-      {
-        "time": 0.4,
-        "damage_category": "normal",
-        "damage_multiplier": 0.232,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath mech basic 1c"
+        "damage_multiplier": 0.696,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal"
+        ],
+        "name": "Aemeath Mech Basic Stage 1 hit"
       }
     ],
-    "resonance_energy_gain": 6,
-    "concerto_energy_gain": 5,
+    "resonance_energy_gain": 1.26,
+    "concerto_energy_gain": 2.52,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -2596,40 +2526,36 @@
     "scaling_stat": "atk",
     "off_tune_value": 13.34,
     "off_tune_value_source_status": "workbook_confirmed",
-    "off_tune_value_source_ref": "角色-女!S2886"
+    "off_tune_value_source_ref": "角色-女!S2886",
+    "combat_time_cost": 0.5
   },
   {
     "id": "aemeath_mech_basic_stage_2",
     "name": "Aemeath Mech Basic Stage 2",
     "character_id": "aemeath",
     "action_type": "basic_attack",
-    "duration": 0.6,
-    "action_time": 0.6,
+    "duration": 0.7666666666666667,
+    "action_time": 0.7666666666666667,
     "cooldown": 0,
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 0.9283,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.24,
+        "time": 0.7666666666666667,
         "damage_category": "normal",
-        "damage_multiplier": 0.1857,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath mech basic 2a"
-      },
-      {
-        "time": 0.46,
-        "damage_category": "normal",
-        "damage_multiplier": 0.7426,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath mech basic 2b"
+        "damage_multiplier": 0.9283,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal"
+        ],
+        "name": "Aemeath Mech Basic Stage 2 hit"
       }
     ],
-    "resonance_energy_gain": 6,
-    "concerto_energy_gain": 5,
+    "resonance_energy_gain": 1.68,
+    "concerto_energy_gain": 3.34,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -2649,81 +2575,36 @@
     "scaling_stat": "atk",
     "off_tune_value": 53.37,
     "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
-    "off_tune_value_source_ref": "角色-女!S2887:S2888"
+    "off_tune_value_source_ref": "角色-女!S2887:S2888",
+    "combat_time_cost": 0.7666666666666667
   },
   {
     "id": "aemeath_mech_basic_stage_3",
     "name": "Aemeath Mech Basic Stage 3",
     "character_id": "aemeath",
     "action_type": "basic_attack",
-    "duration": 0.75,
-    "action_time": 0.75,
+    "duration": 0.9666666666666667,
+    "action_time": 0.9666666666666667,
     "cooldown": 0,
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 1.0875,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.14,
+        "time": 0.9666666666666667,
         "damage_category": "normal",
-        "damage_multiplier": 0.1165,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "A3-1",
-        "source_ref": "角色技能类型!I2746 / 角色-女!C2889:S2889"
-      },
-      {
-        "time": 0.2,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0389,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "A3-2 repeat hit 1",
-        "source_ref": "角色技能类型!I2747 / 角色-女!C2890:S2890",
-        "repeat_source_note": "角色-女!D2890 says max 3 hits"
-      },
-      {
-        "time": 0.26,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0389,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "A3-2 repeat hit 2",
-        "source_ref": "角色技能类型!I2747 / 角色-女!C2890:S2890",
-        "repeat_source_note": "角色-女!D2890 says max 3 hits"
-      },
-      {
-        "time": 0.32,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0389,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "A3-2 repeat hit 3",
-        "source_ref": "角色技能类型!I2747 / 角色-女!C2890:S2890",
-        "repeat_source_note": "角色-女!D2890 says max 3 hits"
-      },
-      {
-        "time": 0.38,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0389,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "A3-3",
-        "source_ref": "角色技能类型!I2748 / 角色-女!C2891:S2891"
-      },
-      {
-        "time": 0.58,
-        "damage_category": "normal",
-        "damage_multiplier": 0.8154,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "A3-4",
-        "source_ref": "角色技能类型!I2749 / 角色-女!C2892:S2892"
+        "damage_multiplier": 1.0875,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal"
+        ],
+        "name": "Aemeath Mech Basic Stage 3 hit"
       }
     ],
-    "resonance_energy_gain": 7,
-    "concerto_energy_gain": 6,
+    "resonance_energy_gain": 1.96,
+    "concerto_energy_gain": 3.91,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -2762,40 +2643,36 @@
     "off_tune_value_repeat_source_ref": "角色-女!D2890",
     "off_tune_value_repeat_note": "A3-2 checks once every 9F during active frames, up to 3 times; repeat-aware Off-Tune applies A3-2 three times.",
     "sync_delta_source_status": "workbook_confirmed_repeat_aware",
-    "sync_delta_repeat_formula": "1.99 + 0.67 * 3 + 0.67 + 13.87"
+    "sync_delta_repeat_formula": "1.99 + 0.67 * 3 + 0.67 + 13.87",
+    "combat_time_cost": 0.9666666666666667
   },
   {
     "id": "aemeath_mech_basic_stage_4",
     "name": "Aemeath Mech Basic Stage 4",
     "character_id": "aemeath",
     "action_type": "basic_attack",
-    "duration": 0.9,
-    "action_time": 0.9,
+    "duration": 1.0166666666666666,
+    "action_time": 1.0166666666666666,
     "cooldown": 0,
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 1.3459,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.32,
+        "time": 1.0166666666666666,
         "damage_category": "normal",
-        "damage_multiplier": 0.4038,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath mech basic 4a"
-      },
-      {
-        "time": 0.68,
-        "damage_category": "normal",
-        "damage_multiplier": 0.9421,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath mech basic 4b"
+        "damage_multiplier": 1.3459,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal"
+        ],
+        "name": "Aemeath Mech Basic Stage 4 hit"
       }
     ],
-    "resonance_energy_gain": 8,
-    "concerto_energy_gain": 7,
+    "resonance_energy_gain": 2.43,
+    "concerto_energy_gain": 4.85,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -2830,50 +2707,38 @@
     "scaling_stat": "atk",
     "off_tune_value": 77.37,
     "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
-    "off_tune_value_source_ref": "角色-女!S2897:S2898"
+    "off_tune_value_source_ref": "角色-女!S2897:S2898",
+    "combat_time_cost": 1.0166666666666666
   },
   {
     "id": "aemeath_form_switch_to_mech_normal",
     "name": "Aemeath Normal Form Switch to Mech",
     "character_id": "aemeath",
     "action_type": "resonance_skill",
-    "duration": 0.35,
-    "action_time": 0.55,
-    "combat_time_cost": 0.55,
+    "duration": 0.5,
+    "action_time": 0.5,
+    "combat_time_cost": 0.5,
     "cooldown": 1,
     "cooldown_group": "aemeath_form_switch",
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 0.696,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.16,
+        "time": 0.5,
         "damage_category": "normal",
-        "damage_multiplier": 0.232,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "normal form switch mech basic 1a"
-      },
-      {
-        "time": 0.28,
-        "damage_category": "normal",
-        "damage_multiplier": 0.232,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "normal form switch mech basic 1b"
-      },
-      {
-        "time": 0.4,
-        "damage_category": "normal",
-        "damage_multiplier": 0.232,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "normal form switch mech basic 1c"
+        "damage_multiplier": 0.696,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal"
+        ],
+        "name": "Aemeath Normal Form Switch to Mech hit"
       }
     ],
-    "resonance_energy_gain": 6,
-    "concerto_energy_gain": 4,
+    "resonance_energy_gain": 1.26,
+    "concerto_energy_gain": 2.52,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -2899,27 +2764,30 @@
     "name": "Aemeath Normal Form Switch to Aemeath",
     "character_id": "aemeath",
     "action_type": "resonance_skill",
-    "duration": 0.35,
-    "action_time": 0.45,
-    "combat_time_cost": 0.45,
+    "duration": 0.38333333333333336,
+    "action_time": 0.38333333333333336,
+    "combat_time_cost": 0.38333333333333336,
     "cooldown": 1,
     "cooldown_group": "aemeath_form_switch",
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 0.4635,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.22,
+        "time": 0.38333333333333336,
         "damage_category": "normal",
         "damage_multiplier": 0.4635,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "normal form switch aemeath basic 1"
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal"
+        ],
+        "name": "Aemeath Normal Form Switch to Aemeath hit"
       }
     ],
-    "resonance_energy_gain": 5,
-    "concerto_energy_gain": 4,
+    "resonance_energy_gain": 0.84,
+    "concerto_energy_gain": 1.67,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -2945,43 +2813,30 @@
     "name": "Aemeath Post-Overdrive Form Switch to Aemeath",
     "character_id": "aemeath",
     "action_type": "resonance_skill",
-    "duration": 0.35,
-    "action_time": 0.5,
-    "combat_time_cost": 0.5,
+    "duration": 0.6833333333333333,
+    "action_time": 0.6833333333333333,
+    "combat_time_cost": 0.6833333333333333,
     "cooldown": 1,
     "cooldown_group": "aemeath_form_switch",
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 0.6946,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.16,
+        "time": 0.6833333333333333,
         "damage_category": "normal",
-        "damage_multiplier": 0.1389,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "post-overdrive form switch aemeath basic 2a"
-      },
-      {
-        "time": 0.28,
-        "damage_category": "normal",
-        "damage_multiplier": 0.2084,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "post-overdrive form switch aemeath basic 2b"
-      },
-      {
-        "time": 0.4,
-        "damage_category": "normal",
-        "damage_multiplier": 0.3473,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "post-overdrive form switch aemeath basic 2c"
+        "damage_multiplier": 0.6946,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal"
+        ],
+        "name": "Aemeath Post-Overdrive Form Switch to Aemeath hit"
       }
     ],
-    "resonance_energy_gain": 5,
-    "concerto_energy_gain": 4,
+    "resonance_energy_gain": 1.26,
+    "concerto_energy_gain": 2.5,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -3007,43 +2862,31 @@
     "name": "Aemeath Sync Strike Armament Merge",
     "character_id": "aemeath",
     "action_type": "resonance_skill",
-    "duration": 0.35,
-    "action_time": 1.1667,
-    "combat_time_cost": 1.1667,
+    "duration": 1.2833333333333334,
+    "action_time": 1.2833333333333334,
+    "combat_time_cost": 1.2833333333333334,
     "cooldown": 1,
     "cooldown_group": "aemeath_sync_strike_armament_merge",
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 1.3459,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.12,
+        "time": 1.2833333333333334,
         "damage_category": "normal",
-        "damage_multiplier": 0.2692,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "sync strike armament merge 1"
-      },
-      {
-        "time": 0.22,
-        "damage_category": "normal",
-        "damage_multiplier": 0.4038,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "sync strike armament merge 2"
-      },
-      {
-        "time": 0.31,
-        "damage_category": "normal",
-        "damage_multiplier": 0.6729,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "sync strike armament merge 3"
+        "damage_multiplier": 1.3459,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal",
+          "sync-strike"
+        ],
+        "name": "Aemeath Sync Strike Armament Merge hit"
       }
     ],
-    "resonance_energy_gain": 10,
-    "concerto_energy_gain": 8,
+    "resonance_energy_gain": 2.43,
+    "concerto_energy_gain": 4.85,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -3082,51 +2925,31 @@
     "name": "Aemeath Sync Strike Call of Dawn",
     "character_id": "aemeath",
     "action_type": "resonance_skill",
-    "duration": 0.35,
-    "action_time": 0.9667,
-    "combat_time_cost": 0.9667,
+    "duration": 1.1833333333333333,
+    "action_time": 1.1833333333333333,
+    "combat_time_cost": 1.1833333333333333,
     "cooldown": 1,
     "cooldown_group": "aemeath_sync_strike_call_of_dawn",
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 1.6327,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.1,
+        "time": 1.1833333333333333,
         "damage_category": "normal",
-        "damage_multiplier": 0.1633,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "sync strike call of dawn 1"
-      },
-      {
-        "time": 0.17,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1633,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "sync strike call of dawn 2"
-      },
-      {
-        "time": 0.24,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1633,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "sync strike call of dawn 3"
-      },
-      {
-        "time": 0.31,
-        "damage_category": "normal",
-        "damage_multiplier": 1.1428,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "sync strike call of dawn 4"
+        "damage_multiplier": 1.6327,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal",
+          "sync-strike"
+        ],
+        "name": "Aemeath Sync Strike Call of Dawn hit"
       }
     ],
-    "resonance_energy_gain": 10,
-    "concerto_energy_gain": 8,
+    "resonance_energy_gain": 2.96,
+    "concerto_energy_gain": 5.88,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -3165,123 +2988,30 @@
     "name": "Aemeath Seraphic Duet Overture",
     "character_id": "aemeath",
     "action_type": "resonance_skill",
-    "duration": 0.45,
-    "action_time": 3.0,
-    "combat_time_cost": 1.3167,
+    "duration": 3.0833333333333335,
+    "action_time": 3.0833333333333335,
+    "combat_time_cost": 1.4,
     "cooldown": 0.5,
     "cooldown_group": "aemeath_seraphic_duet",
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 3.5795,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.0321,
+        "time": 3.0833333333333335,
         "damage_category": "normal",
-        "damage_multiplier": 0.179,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet overture 1"
-      },
-      {
-        "time": 0.0643,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1492,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet overture 2"
-      },
-      {
-        "time": 0.0964,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1492,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet overture 3"
-      },
-      {
-        "time": 0.1286,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1492,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet overture 4"
-      },
-      {
-        "time": 0.1607,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1492,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet overture 5"
-      },
-      {
-        "time": 0.1929,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1492,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet overture 6"
-      },
-      {
-        "time": 0.225,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1492,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet overture 7"
-      },
-      {
-        "time": 0.2571,
-        "damage_category": "normal",
-        "damage_multiplier": 0.2386,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet overture 8"
-      },
-      {
-        "time": 0.2893,
-        "damage_category": "normal",
-        "damage_multiplier": 0.2386,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet overture 9"
-      },
-      {
-        "time": 0.3214,
-        "damage_category": "normal",
-        "damage_multiplier": 0.2386,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet overture 10"
-      },
-      {
-        "time": 0.3536,
-        "damage_category": "normal",
-        "damage_multiplier": 0.5965,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet overture 11"
-      },
-      {
-        "time": 0.3857,
-        "damage_category": "normal",
-        "damage_multiplier": 0.5965,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet overture 12"
-      },
-      {
-        "time": 0.4179,
-        "damage_category": "normal",
-        "damage_multiplier": 0.5965,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet overture 13"
+        "damage_multiplier": 3.5795,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal"
+        ],
+        "name": "Aemeath Seraphic Duet Overture hit"
       }
     ],
-    "resonance_energy_gain": 8,
-    "concerto_energy_gain": 8,
+    "resonance_energy_gain": 5.05,
+    "concerto_energy_gain": 10.04,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -3311,83 +3041,30 @@
     "name": "Aemeath Seraphic Duet Encore",
     "character_id": "aemeath",
     "action_type": "resonance_skill",
-    "duration": 0.55,
-    "action_time": 2.4167,
-    "combat_time_cost": 1.3333,
+    "duration": 2.4166666666666665,
+    "action_time": 2.4166666666666665,
+    "combat_time_cost": 1.3333333333333333,
     "cooldown": 0.5,
     "cooldown_group": "aemeath_seraphic_duet",
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 3.579,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.0611,
+        "time": 2.4166666666666665,
         "damage_category": "normal",
-        "damage_multiplier": 0.179,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet encore 1"
-      },
-      {
-        "time": 0.1222,
-        "damage_category": "normal",
-        "damage_multiplier": 0.179,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet encore 2"
-      },
-      {
-        "time": 0.1833,
-        "damage_category": "normal",
-        "damage_multiplier": 0.3579,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet encore 3"
-      },
-      {
-        "time": 0.2444,
-        "damage_category": "normal",
-        "damage_multiplier": 0.3579,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet encore 4"
-      },
-      {
-        "time": 0.3056,
-        "damage_category": "normal",
-        "damage_multiplier": 0.179,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet encore 5"
-      },
-      {
-        "time": 0.3667,
-        "damage_category": "normal",
-        "damage_multiplier": 0.179,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet encore 6"
-      },
-      {
-        "time": 0.4278,
-        "damage_category": "normal",
-        "damage_multiplier": 1.7893,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet encore 7"
-      },
-      {
-        "time": 0.4889,
-        "damage_category": "normal",
-        "damage_multiplier": 0.3579,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "seraphic duet encore 8"
+        "damage_multiplier": 3.579,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal"
+        ],
+        "name": "Aemeath Seraphic Duet Encore hit"
       }
     ],
-    "resonance_energy_gain": 8,
-    "concerto_energy_gain": 10,
+    "resonance_energy_gain": 5.0,
+    "concerto_energy_gain": 10.0,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -3417,34 +3094,30 @@
     "name": "Aemeath Heavy Attack Charged I",
     "character_id": "aemeath",
     "action_type": "heavy_attack",
-    "duration": 0.55,
-    "action_time": 1.8333,
-    "combat_time_cost": 1.8333,
+    "duration": 1.2,
+    "action_time": 1.2,
+    "combat_time_cost": 1.2,
     "cooldown": 0,
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 0.9283,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.2,
+        "time": 1.2,
         "damage_category": "normal",
-        "damage_multiplier": 0.1857,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath heavy charged i 1"
-      },
-      {
-        "time": 0.48,
-        "damage_category": "normal",
-        "damage_multiplier": 0.7426,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath heavy charged i 2"
+        "damage_multiplier": 0.9283,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal",
+          "heavy"
+        ],
+        "name": "Aemeath Heavy Attack Charged I hit"
       }
     ],
-    "resonance_energy_gain": 5,
-    "concerto_energy_gain": 4,
+    "resonance_energy_gain": 1.68,
+    "concerto_energy_gain": 3.34,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -3473,58 +3146,32 @@
     "name": "Aemeath Heavy Attack Charged II",
     "character_id": "aemeath",
     "action_type": "heavy_attack",
-    "duration": 0.45,
-    "action_time": 3.6667,
-    "combat_time_cost": 3.6667,
+    "duration": 2.4166666666666665,
+    "action_time": 2.4166666666666665,
+    "combat_time_cost": 2.4166666666666665,
     "cooldown": 0,
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 2.32,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.08,
+        "time": 2.4166666666666665,
         "damage_category": "normal",
-        "damage_multiplier": 0.116,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath heavy charged ii 1"
-      },
-      {
-        "time": 0.16,
-        "damage_category": "normal",
-        "damage_multiplier": 0.116,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath heavy charged ii 2"
-      },
-      {
-        "time": 0.24,
-        "damage_category": "normal",
-        "damage_multiplier": 0.116,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath heavy charged ii 3"
-      },
-      {
-        "time": 0.32,
-        "damage_category": "normal",
-        "damage_multiplier": 0.116,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath heavy charged ii 4"
-      },
-      {
-        "time": 0.42,
-        "damage_category": "normal",
-        "damage_multiplier": 1.856,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath heavy charged ii 5"
+        "damage_multiplier": 2.32,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal",
+          "heavy",
+          "instant-response"
+        ],
+        "name": "Aemeath Heavy Attack Charged II hit",
+        "hit_time_mode": "resolved_action_end"
       }
     ],
-    "resonance_energy_gain": 5,
-    "concerto_energy_gain": 5,
+    "resonance_energy_gain": 4.18,
+    "concerto_energy_gain": 8.35,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -3544,8 +3191,8 @@
     },
     "timing_overrides": {
       "instant_response": {
-        "action_time": 1.8333,
-        "combat_time_cost": 1.8333
+        "action_time": 1.5166666666666666,
+        "combat_time_cost": 1.5166666666666666
       }
     },
     "notes": "Aemeath normal Charged II timing: 220F / 3.6667s. Instant Response Charged II uses the Charged I timing override and keeps AemeathMechanic x3.0 damage amplification.",
@@ -3563,26 +3210,30 @@
     "name": "Aemeath Mech Heavy Attack Charged I",
     "character_id": "aemeath",
     "action_type": "heavy_attack",
-    "duration": 0.5,
-    "action_time": 1.0333,
-    "combat_time_cost": 1.0333,
+    "duration": 0.9333333333333333,
+    "action_time": 0.9333333333333333,
+    "combat_time_cost": 0.9333333333333333,
     "cooldown": 0,
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 0.9283,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.38,
+        "time": 0.9333333333333333,
         "damage_category": "normal",
         "damage_multiplier": 0.9283,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath mech heavy charged i"
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal",
+          "heavy"
+        ],
+        "name": "Aemeath Mech Heavy Attack Charged I hit"
       }
     ],
-    "resonance_energy_gain": 6,
-    "concerto_energy_gain": 4,
+    "resonance_energy_gain": 1.67,
+    "concerto_energy_gain": 3.34,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -3611,26 +3262,32 @@
     "name": "Aemeath Mech Heavy Attack Charged II",
     "character_id": "aemeath",
     "action_type": "heavy_attack",
-    "duration": 0.4,
-    "action_time": 2.0667,
-    "combat_time_cost": 2.0667,
+    "duration": 1.9333333333333333,
+    "action_time": 1.9333333333333333,
+    "combat_time_cost": 1.9333333333333333,
     "cooldown": 0,
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 2.32,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.32,
+        "time": 1.9333333333333333,
         "damage_category": "normal",
         "damage_multiplier": 2.32,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "aemeath mech heavy charged ii"
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal",
+          "heavy",
+          "instant-response"
+        ],
+        "name": "Aemeath Mech Heavy Attack Charged II hit",
+        "hit_time_mode": "resolved_action_end"
       }
     ],
-    "resonance_energy_gain": 6,
-    "concerto_energy_gain": 5,
+    "resonance_energy_gain": 4.17,
+    "concerto_energy_gain": 8.34,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -3650,8 +3307,8 @@
     },
     "timing_overrides": {
       "instant_response": {
-        "action_time": 1.0333,
-        "combat_time_cost": 1.0333
+        "action_time": 0.9333333333333333,
+        "combat_time_cost": 0.9333333333333333
       }
     },
     "notes": "Aemeath Mech normal Charged II timing: 124F / 2.0667s. Instant Response Charged II uses the Charged I timing override and keeps AemeathMechanic x3.0 damage amplification.",
@@ -3669,51 +3326,30 @@
     "name": "Aemeath Liberation Overdrive",
     "character_id": "aemeath",
     "action_type": "resonance_liberation",
-    "duration": 0.6,
-    "action_time": 4.3667,
+    "duration": 4.366666666666666,
+    "action_time": 4.366666666666666,
     "combat_time_cost": 0.0,
     "cooldown": 25,
     "cooldown_group": "aemeath_overdrive",
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 10.0402,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.12,
+        "time": 4.366666666666666,
         "damage_category": "normal",
-        "damage_multiplier": 2.008,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "overdrive hit 1"
-      },
-      {
-        "time": 0.26,
-        "damage_category": "normal",
-        "damage_multiplier": 2.6774,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "overdrive hit 2"
-      },
-      {
-        "time": 0.4,
-        "damage_category": "normal",
-        "damage_multiplier": 2.6774,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "overdrive hit 3"
-      },
-      {
-        "time": 0.54,
-        "damage_category": "normal",
-        "damage_multiplier": 2.6774,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "overdrive hit 4"
+        "damage_multiplier": 10.0402,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal"
+        ],
+        "name": "Aemeath Liberation Overdrive hit"
       }
     ],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 20,
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 20.0,
     "resonance_energy_cost": 125,
     "applies_buffs": [],
     "required_buffs": [],
@@ -3745,27 +3381,30 @@
     "name": "Aemeath Heavenfall Finale",
     "character_id": "aemeath",
     "action_type": "resonance_liberation",
-    "duration": 0.75,
-    "action_time": 5.6667,
+    "duration": 5.666666666666667,
+    "action_time": 5.666666666666667,
     "combat_time_cost": 0.0,
     "cooldown": 25,
     "cooldown_group": "aemeath_finale",
     "damage_category": "normal",
-    "damage_multiplier": 0,
-    "tune_break_multiplier": 0,
+    "damage_multiplier": 17.8929,
+    "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0,
     "hits": [
       {
-        "time": 0.6,
+        "time": 5.666666666666667,
         "damage_category": "normal",
         "damage_multiplier": 17.8929,
-        "tune_break_multiplier": 0,
-        "tags": [],
-        "name": "heavenfall finale"
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "aemeath-lite",
+          "internal"
+        ],
+        "name": "Aemeath Heavenfall Finale hit"
       }
     ],
-    "resonance_energy_gain": 0,
-    "concerto_energy_gain": 20,
+    "resonance_energy_gain": 20.0,
+    "concerto_energy_gain": 20.0,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -4055,7 +3694,7 @@
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_status": "non_damaging_selector",
     "off_tune_value_source_ref": null,
     "hits": [],
     "resonance_energy_gain": 0.0,
@@ -4081,9 +3720,9 @@
     "name": "Lynae Basic Stage 1",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 0.65,
-    "action_time": 0.65,
-    "combat_time_cost": 0.65,
+    "duration": 0.5166666666666667,
+    "action_time": 0.5166666666666667,
+    "combat_time_cost": 0.5166666666666667,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -4091,19 +3730,21 @@
     "damage_multiplier": 0.8619,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 40.8,
+    "off_tune_value_source_status": "workbook_confirmed",
+    "off_tune_value_source_ref": "角色-女!S2577",
     "hits": [
       {
-        "time": 0.6,
+        "time": 0.5166666666666667,
         "damage_category": "normal",
         "damage_multiplier": 0.8619,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "spectro",
-          "basic_attack"
+          "basic_attack",
+          "lynae"
         ],
-        "name": "Lynae Basic Stage 1"
+        "name": "Lynae Basic Stage 1 hit"
       }
     ],
     "resonance_energy_gain": 1.28,
@@ -4132,9 +3773,9 @@
     "name": "Lynae Basic Stage 2",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 0.95,
-    "action_time": 0.95,
-    "combat_time_cost": 0.95,
+    "duration": 1.0833333333333333,
+    "action_time": 1.0833333333333333,
+    "combat_time_cost": 1.0833333333333333,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -4142,39 +3783,21 @@
     "damage_multiplier": 1.5717,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 74.4,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2578:S2580",
     "hits": [
       {
-        "time": 0.25,
+        "time": 1.0833333333333333,
         "damage_category": "normal",
-        "damage_multiplier": 0.5239,
+        "damage_multiplier": 1.5717,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "spectro",
-          "basic_attack"
+          "basic_attack",
+          "lynae"
         ],
-        "name": "Lynae Basic Stage 2 hit 1"
-      },
-      {
-        "time": 0.55,
-        "damage_category": "normal",
-        "damage_multiplier": 0.5239,
-        "tags": [
-          "spectro",
-          "basic_attack"
-        ],
-        "name": "Lynae Basic Stage 2 hit 2"
-      },
-      {
-        "time": 0.9,
-        "damage_category": "normal",
-        "damage_multiplier": 0.5239,
-        "tags": [
-          "spectro",
-          "basic_attack"
-        ],
-        "name": "Lynae Basic Stage 2 hit 3"
+        "name": "Lynae Basic Stage 2 hit"
       }
     ],
     "resonance_energy_gain": 2.34,
@@ -4207,9 +3830,9 @@
     "name": "Lynae Basic Stage 3",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 1.0,
-    "action_time": 1.0,
-    "combat_time_cost": 1.0,
+    "duration": 0.7333333333333333,
+    "action_time": 0.7333333333333333,
+    "combat_time_cost": 0.7333333333333333,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -4217,19 +3840,21 @@
     "damage_multiplier": 1.2337,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 58.4,
+    "off_tune_value_source_status": "workbook_confirmed",
+    "off_tune_value_source_ref": "角色-女!S2581",
     "hits": [
       {
-        "time": 0.95,
+        "time": 0.7333333333333333,
         "damage_category": "normal",
         "damage_multiplier": 1.2337,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "spectro",
-          "basic_attack"
+          "basic_attack",
+          "lynae"
         ],
-        "name": "Lynae Basic Stage 3"
+        "name": "Lynae Basic Stage 3 hit"
       }
     ],
     "resonance_energy_gain": 1.83,
@@ -4289,16 +3914,19 @@
     ],
     "source_status": "user_tooltip_confirmed_timing_simplified",
     "data_status": "user_tooltip_confirmed_timing_simplified",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "non_damaging_selector",
+    "off_tune_value_source_ref": null
   },
   {
     "id": "lynae_kaleidoscopic_basic_stage_1",
     "name": "Lynae Kaleidoscopic Basic Stage 1",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 0.6,
-    "action_time": 0.6,
-    "combat_time_cost": 0.6,
+    "duration": 0.5833333333333334,
+    "action_time": 0.5833333333333334,
+    "combat_time_cost": 0.5833333333333334,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -4306,19 +3934,21 @@
     "damage_multiplier": 0.8281,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 39.2,
+    "off_tune_value_source_status": "workbook_confirmed_mode_representative",
+    "off_tune_value_source_ref": "角色-女!S2592:S2594",
     "hits": [
       {
-        "time": 0.5499999999999999,
+        "time": 0.5833333333333334,
         "damage_category": "normal",
         "damage_multiplier": 0.8281,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "spectro",
-          "basic_attack"
+          "basic_attack",
+          "lynae"
         ],
-        "name": "Lynae Kaleidoscopic Basic Stage 1"
+        "name": "Lynae Kaleidoscopic Basic Stage 1 hit"
       }
     ],
     "resonance_energy_gain": 1.23,
@@ -4339,16 +3969,26 @@
       2423
     ],
     "scaling_stat": "atk",
-    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled."
+    "notes": "Lynae v1 skeleton; complex movement/resource branches remain metadata-only unless specifically modeled.",
+    "timing_overrides": {
+      "lumiflow_gt_119": {
+        "action_time": 0.6666666666666666,
+        "combat_time_cost": 0.6666666666666666
+      },
+      "no_target": {
+        "action_time": 0.75,
+        "combat_time_cost": 0.75
+      }
+    }
   },
   {
     "id": "lynae_kaleidoscopic_basic_stage_2",
     "name": "Lynae Kaleidoscopic Basic Stage 2",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 0.8,
-    "action_time": 0.8,
-    "combat_time_cost": 0.8,
+    "duration": 0.4666666666666667,
+    "action_time": 0.4666666666666667,
+    "combat_time_cost": 0.4666666666666667,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -4356,29 +3996,21 @@
     "damage_multiplier": 0.7774,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 36.8,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2596:S2597",
     "hits": [
       {
-        "time": 0.3,
+        "time": 0.4666666666666667,
         "damage_category": "normal",
-        "damage_multiplier": 0.3887,
+        "damage_multiplier": 0.7774,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "spectro",
-          "basic_attack"
+          "basic_attack",
+          "lynae"
         ],
-        "name": "Lynae Kaleidoscopic Basic Stage 2 hit 1"
-      },
-      {
-        "time": 0.65,
-        "damage_category": "normal",
-        "damage_multiplier": 0.3887,
-        "tags": [
-          "spectro",
-          "basic_attack"
-        ],
-        "name": "Lynae Kaleidoscopic Basic Stage 2 hit 2"
+        "name": "Lynae Kaleidoscopic Basic Stage 2 hit"
       }
     ],
     "resonance_energy_gain": 1.16,
@@ -4407,9 +4039,9 @@
     "name": "Lynae Kaleidoscopic Basic Stage 3",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 0.9167,
-    "action_time": 0.9167,
-    "combat_time_cost": 0.9167,
+    "duration": 0.6666666666666666,
+    "action_time": 0.6666666666666666,
+    "combat_time_cost": 0.6666666666666666,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -4417,39 +4049,21 @@
     "damage_multiplier": 1.1325,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 53.61,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2598:S2600",
     "hits": [
       {
-        "time": 0.25,
+        "time": 0.6666666666666666,
         "damage_category": "normal",
-        "damage_multiplier": 0.3775,
+        "damage_multiplier": 1.1325,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "spectro",
-          "basic_attack"
+          "basic_attack",
+          "lynae"
         ],
-        "name": "Lynae Kaleidoscopic Basic Stage 3 hit 1"
-      },
-      {
-        "time": 0.5,
-        "damage_category": "normal",
-        "damage_multiplier": 0.3775,
-        "tags": [
-          "spectro",
-          "basic_attack"
-        ],
-        "name": "Lynae Kaleidoscopic Basic Stage 3 hit 2"
-      },
-      {
-        "time": 0.8,
-        "damage_category": "normal",
-        "damage_multiplier": 0.3775,
-        "tags": [
-          "spectro",
-          "basic_attack"
-        ],
-        "name": "Lynae Kaleidoscopic Basic Stage 3 hit 3"
+        "name": "Lynae Kaleidoscopic Basic Stage 3 hit"
       }
     ],
     "resonance_energy_gain": 1.68,
@@ -4479,9 +4093,9 @@
     "name": "Lynae Kaleidoscopic Basic Stage 4",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 1.0,
-    "action_time": 1.0,
-    "combat_time_cost": 1.0,
+    "duration": 1.15,
+    "action_time": 1.15,
+    "combat_time_cost": 1.15,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -4489,49 +4103,21 @@
     "damage_multiplier": 1.4874,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 70.4,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2602:S2605",
     "hits": [
       {
-        "time": 0.25,
+        "time": 1.15,
         "damage_category": "normal",
-        "damage_multiplier": 0.2975,
+        "damage_multiplier": 1.4874,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "spectro",
-          "basic_attack"
+          "basic_attack",
+          "lynae"
         ],
-        "name": "Lynae Kaleidoscopic Basic Stage 4 hit 1"
-      },
-      {
-        "time": 0.5,
-        "damage_category": "normal",
-        "damage_multiplier": 0.2975,
-        "tags": [
-          "spectro",
-          "basic_attack"
-        ],
-        "name": "Lynae Kaleidoscopic Basic Stage 4 hit 2"
-      },
-      {
-        "time": 0.75,
-        "damage_category": "normal",
-        "damage_multiplier": 0.4462,
-        "tags": [
-          "spectro",
-          "basic_attack"
-        ],
-        "name": "Lynae Kaleidoscopic Basic Stage 4 hit 3"
-      },
-      {
-        "time": 0.95,
-        "damage_category": "normal",
-        "damage_multiplier": 0.4462,
-        "tags": [
-          "spectro",
-          "basic_attack"
-        ],
-        "name": "Lynae Kaleidoscopic Basic Stage 4 hit 4"
+        "name": "Lynae Kaleidoscopic Basic Stage 4 hit"
       }
     ],
     "resonance_energy_gain": 2.2,
@@ -4562,9 +4148,9 @@
     "name": "Lynae Kaleidoscopic Basic Stage 5",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 1.1,
-    "action_time": 1.1,
-    "combat_time_cost": 1.1,
+    "duration": 1.5166666666666666,
+    "action_time": 1.5166666666666666,
+    "combat_time_cost": 1.5166666666666666,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -4572,83 +4158,25 @@
     "damage_multiplier": 2.5181,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 119.24,
+    "off_tune_value_source_status": "workbook_confirmed_repeat_aware",
+    "off_tune_value_source_ref": "角色-女!S2611:S2614",
     "hits": [
       {
-        "time": 0.1571,
+        "time": 1.5166666666666666,
         "damage_category": "normal",
-        "damage_multiplier": 0.7554,
+        "damage_multiplier": 2.5181,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "spectro",
-          "basic_attack"
+          "basic_attack",
+          "lynae"
         ],
-        "name": "Lynae Kaleidoscopic Basic Stage 5 hit 1"
-      },
-      {
-        "time": 0.3143,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1511,
-        "tags": [
-          "spectro",
-          "basic_attack"
-        ],
-        "name": "Lynae Kaleidoscopic Basic Stage 5 hit 2"
-      },
-      {
-        "time": 0.4714,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1511,
-        "tags": [
-          "spectro",
-          "basic_attack"
-        ],
-        "name": "Lynae Kaleidoscopic Basic Stage 5 hit 3"
-      },
-      {
-        "time": 0.6286,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1511,
-        "tags": [
-          "spectro",
-          "basic_attack"
-        ],
-        "name": "Lynae Kaleidoscopic Basic Stage 5 hit 4"
-      },
-      {
-        "time": 0.7857,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1511,
-        "tags": [
-          "spectro",
-          "basic_attack"
-        ],
-        "name": "Lynae Kaleidoscopic Basic Stage 5 hit 5"
-      },
-      {
-        "time": 0.9429,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1511,
-        "tags": [
-          "spectro",
-          "basic_attack"
-        ],
-        "name": "Lynae Kaleidoscopic Basic Stage 5 hit 6"
-      },
-      {
-        "time": 1.1,
-        "damage_category": "normal",
-        "damage_multiplier": 1.0072,
-        "tags": [
-          "spectro",
-          "basic_attack"
-        ],
-        "name": "Lynae Kaleidoscopic Basic Stage 5 hit 7"
+        "name": "Lynae Kaleidoscopic Basic Stage 5 hit"
       }
     ],
-    "resonance_energy_gain": 2.84,
-    "concerto_energy_gain": 10.21,
+    "resonance_energy_gain": 3.76,
+    "concerto_energy_gain": 13.45,
     "resonance_energy_cost": 0,
     "applies_buffs": [],
     "required_buffs": [],
@@ -4698,7 +4226,7 @@
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_status": "non_damaging_selector",
     "off_tune_value_source_ref": null,
     "hits": [],
     "resonance_energy_gain": 0.0,
@@ -4725,9 +4253,9 @@
     "name": "Lynae Resonance Skill Palette",
     "character_id": "lynae",
     "action_type": "resonance_skill",
-    "duration": 1.1,
-    "action_time": 1.1,
-    "combat_time_cost": 1.1,
+    "duration": 1.2833333333333334,
+    "action_time": 1.2833333333333334,
+    "combat_time_cost": 1.2833333333333334,
     "cooldown": 6.0,
     "damage_category": "normal",
     "damage_bonus_category": "resonance_skill",
@@ -4735,49 +4263,21 @@
     "damage_multiplier": 2.7863,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 87.22,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2663:S2666",
     "hits": [
       {
-        "time": 0.25,
+        "time": 1.2833333333333334,
         "damage_category": "normal",
-        "damage_multiplier": 1.3931,
+        "damage_multiplier": 2.7863,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "spectro",
-          "resonance_skill"
+          "resonance_skill",
+          "lynae"
         ],
-        "name": "Palette hit 1"
-      },
-      {
-        "time": 0.5,
-        "damage_category": "normal",
-        "damage_multiplier": 0.4644,
-        "tags": [
-          "spectro",
-          "resonance_skill"
-        ],
-        "name": "Palette hit 2"
-      },
-      {
-        "time": 0.75,
-        "damage_category": "normal",
-        "damage_multiplier": 0.4644,
-        "tags": [
-          "spectro",
-          "resonance_skill"
-        ],
-        "name": "Palette hit 3"
-      },
-      {
-        "time": 1.0,
-        "damage_category": "normal",
-        "damage_multiplier": 0.4644,
-        "tags": [
-          "spectro",
-          "resonance_skill"
-        ],
-        "name": "Palette hit 4"
+        "name": "Lynae Resonance Skill Palette hit"
       }
     ],
     "resonance_energy_gain": 8.75,
@@ -4815,9 +4315,9 @@
     "name": "Lynae Resonance Skill Additive Color",
     "character_id": "lynae",
     "action_type": "resonance_skill",
-    "duration": 0.9167,
-    "action_time": 0.9167,
-    "combat_time_cost": 0.9167,
+    "duration": 1.2833333333333334,
+    "action_time": 1.2833333333333334,
+    "combat_time_cost": 1.2833333333333334,
     "cooldown": 6.0,
     "damage_category": "normal",
     "damage_bonus_category": "resonance_skill",
@@ -4825,29 +4325,21 @@
     "damage_multiplier": 2.3262,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 72.8,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2673:S2674",
     "hits": [
       {
-        "time": 0.35,
+        "time": 1.2833333333333334,
         "damage_category": "normal",
-        "damage_multiplier": 1.1631,
+        "damage_multiplier": 2.3262,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "spectro",
-          "resonance_skill"
+          "resonance_skill",
+          "lynae"
         ],
-        "name": "Additive Color hit 1"
-      },
-      {
-        "time": 0.75,
-        "damage_category": "normal",
-        "damage_multiplier": 1.1631,
-        "tags": [
-          "spectro",
-          "resonance_skill"
-        ],
-        "name": "Additive Color hit 2"
+        "name": "Lynae Resonance Skill Additive Color hit"
       }
     ],
     "resonance_energy_gain": 6.92,
@@ -4892,7 +4384,7 @@
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
+    "off_tune_value_source_status": "non_damaging_selector",
     "off_tune_value_source_ref": null,
     "hits": [],
     "resonance_energy_gain": 0,
@@ -4929,119 +4421,21 @@
     "damage_multiplier": 8.748,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 480.0,
+    "off_tune_value_source_status": "workbook_confirmed_repeat_aware",
+    "off_tune_value_source_ref": "角色-女!S2695",
     "hits": [
       {
-        "time": 2.6167,
+        "time": 4.0,
         "damage_category": "normal",
-        "damage_multiplier": 0.8748,
+        "damage_multiplier": 8.748,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "spectro",
           "resonance_liberation",
           "lynae"
         ],
-        "name": "Lynae Prismatic Overblast hit 1"
-      },
-      {
-        "time": 2.7167,
-        "damage_category": "normal",
-        "damage_multiplier": 0.8748,
-        "tags": [
-          "spectro",
-          "resonance_liberation",
-          "lynae"
-        ],
-        "name": "Lynae Prismatic Overblast hit 2"
-      },
-      {
-        "time": 2.8167,
-        "damage_category": "normal",
-        "damage_multiplier": 0.8748,
-        "tags": [
-          "spectro",
-          "resonance_liberation",
-          "lynae"
-        ],
-        "name": "Lynae Prismatic Overblast hit 3"
-      },
-      {
-        "time": 2.9167,
-        "damage_category": "normal",
-        "damage_multiplier": 0.8748,
-        "tags": [
-          "spectro",
-          "resonance_liberation",
-          "lynae"
-        ],
-        "name": "Lynae Prismatic Overblast hit 4"
-      },
-      {
-        "time": 3.0167,
-        "damage_category": "normal",
-        "damage_multiplier": 0.8748,
-        "tags": [
-          "spectro",
-          "resonance_liberation",
-          "lynae"
-        ],
-        "name": "Lynae Prismatic Overblast hit 5"
-      },
-      {
-        "time": 3.1167,
-        "damage_category": "normal",
-        "damage_multiplier": 0.8748,
-        "tags": [
-          "spectro",
-          "resonance_liberation",
-          "lynae"
-        ],
-        "name": "Lynae Prismatic Overblast hit 6"
-      },
-      {
-        "time": 3.2167,
-        "damage_category": "normal",
-        "damage_multiplier": 0.8748,
-        "tags": [
-          "spectro",
-          "resonance_liberation",
-          "lynae"
-        ],
-        "name": "Lynae Prismatic Overblast hit 7"
-      },
-      {
-        "time": 3.3167,
-        "damage_category": "normal",
-        "damage_multiplier": 0.8748,
-        "tags": [
-          "spectro",
-          "resonance_liberation",
-          "lynae"
-        ],
-        "name": "Lynae Prismatic Overblast hit 8"
-      },
-      {
-        "time": 3.4167,
-        "damage_category": "normal",
-        "damage_multiplier": 0.8748,
-        "tags": [
-          "spectro",
-          "resonance_liberation",
-          "lynae"
-        ],
-        "name": "Lynae Prismatic Overblast hit 9"
-      },
-      {
-        "time": 3.5167,
-        "damage_category": "normal",
-        "damage_multiplier": 0.8748,
-        "tags": [
-          "spectro",
-          "resonance_liberation",
-          "lynae"
-        ],
-        "name": "Lynae Prismatic Overblast hit 10"
+        "name": "Lynae Prismatic Overblast hit"
       }
     ],
     "resonance_energy_gain": 0.0,
@@ -5095,9 +4489,9 @@
     "name": "Lynae Intro Time to Show Some Colors",
     "character_id": "lynae",
     "action_type": "swap",
-    "duration": 1.0,
-    "action_time": 1.0,
-    "combat_time_cost": 1.0,
+    "duration": 1.3333333333333333,
+    "action_time": 1.3333333333333333,
+    "combat_time_cost": 1.3333333333333333,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "intro",
@@ -5105,133 +4499,26 @@
     "damage_multiplier": 2.248,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value": 106.4,
+    "off_tune_value_source_status": "workbook_confirmed_repeat_aware_mode_variant",
+    "off_tune_value_source_ref": "角色-女!S2689:S2691",
     "hits": [
       {
-        "time": 0.1,
+        "time": 1.3333333333333333,
         "damage_category": "normal",
-        "damage_multiplier": 0.2248,
+        "damage_multiplier": 2.248,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "spectro",
           "intro",
           "transition",
           "lynae"
         ],
-        "name": "Lynae Intro Time to Show Some Colors hit 1"
-      },
-      {
-        "time": 0.2,
-        "damage_category": "normal",
-        "damage_multiplier": 0.2248,
-        "tags": [
-          "spectro",
-          "intro",
-          "transition",
-          "lynae"
-        ],
-        "name": "Lynae Intro Time to Show Some Colors hit 2"
-      },
-      {
-        "time": 0.3,
-        "damage_category": "normal",
-        "damage_multiplier": 0.2248,
-        "tags": [
-          "spectro",
-          "intro",
-          "transition",
-          "lynae"
-        ],
-        "name": "Lynae Intro Time to Show Some Colors hit 3"
-      },
-      {
-        "time": 0.4,
-        "damage_category": "normal",
-        "damage_multiplier": 0.2248,
-        "tags": [
-          "spectro",
-          "intro",
-          "transition",
-          "lynae"
-        ],
-        "name": "Lynae Intro Time to Show Some Colors hit 4"
-      },
-      {
-        "time": 0.5,
-        "damage_category": "normal",
-        "damage_multiplier": 0.2248,
-        "tags": [
-          "spectro",
-          "intro",
-          "transition",
-          "lynae"
-        ],
-        "name": "Lynae Intro Time to Show Some Colors hit 5"
-      },
-      {
-        "time": 0.6,
-        "damage_category": "normal",
-        "damage_multiplier": 0.2248,
-        "tags": [
-          "spectro",
-          "intro",
-          "transition",
-          "lynae"
-        ],
-        "name": "Lynae Intro Time to Show Some Colors hit 6"
-      },
-      {
-        "time": 0.7,
-        "damage_category": "normal",
-        "damage_multiplier": 0.2248,
-        "tags": [
-          "spectro",
-          "intro",
-          "transition",
-          "lynae"
-        ],
-        "name": "Lynae Intro Time to Show Some Colors hit 7"
-      },
-      {
-        "time": 0.8,
-        "damage_category": "normal",
-        "damage_multiplier": 0.2248,
-        "tags": [
-          "spectro",
-          "intro",
-          "transition",
-          "lynae"
-        ],
-        "name": "Lynae Intro Time to Show Some Colors hit 8"
-      },
-      {
-        "time": 0.9,
-        "damage_category": "normal",
-        "damage_multiplier": 0.2248,
-        "tags": [
-          "spectro",
-          "intro",
-          "transition",
-          "lynae"
-        ],
-        "name": "Lynae Intro Time to Show Some Colors hit 9"
-      },
-      {
-        "time": 1.0,
-        "damage_category": "normal",
-        "damage_multiplier": 0.2248,
-        "tags": [
-          "spectro",
-          "intro",
-          "transition",
-          "lynae"
-        ],
-        "name": "Lynae Intro Time to Show Some Colors hit 10"
+        "name": "Lynae Intro Time to Show Some Colors hit"
       }
     ],
-    "resonance_energy_gain": 1.34,
-    "concerto_energy_gain": 1.2,
+    "resonance_energy_gain": 13.4,
+    "concerto_energy_gain": 12.0,
     "resonance_energy_cost": 0,
     "applies_buffs": [
       "lynae_intro_spectro_damage_bonus"
@@ -5283,9 +4570,9 @@
     "name": "Lynae Outro Let Us Hit the Road",
     "character_id": "lynae",
     "action_type": "swap",
-    "duration": 0.001,
-    "action_time": 0.001,
-    "combat_time_cost": 0.001,
+    "duration": 2.55,
+    "action_time": 2.55,
+    "combat_time_cost": 2.55,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "outro",
@@ -5294,20 +4581,21 @@
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value_source_status": "workbook_confirmed_zero",
+    "off_tune_value_source_ref": "角色-女!S2700:S2701",
     "hits": [
       {
-        "time": 0.0,
+        "time": 2.55,
         "damage_category": "normal",
         "damage_multiplier": 1.0,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "spectro",
           "outro",
           "transition",
           "lynae"
         ],
-        "name": "Lynae Outro Let Us Hit the Road"
+        "name": "Lynae Outro Let Us Hit the Road hit"
       }
     ],
     "resonance_energy_gain": 0.0,
@@ -5376,8 +4664,8 @@
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value_source_status": "unresolved_echo_off_tune",
+    "off_tune_value_source_ref": "声骸!371",
     "hits": [
       {
         "time": 0.1,
@@ -5517,8 +4805,8 @@
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value_source_status": "workbook_confirmed_zero",
+    "off_tune_value_source_ref": "角色-女!S2735",
     "hits": [],
     "resonance_energy_gain": 0.0,
     "concerto_energy_gain": 0.0,
@@ -5555,21 +4843,23 @@
     "damage_bonus_category": "tune_break",
     "damage_element": null,
     "damage_multiplier": 0.0,
-    "tune_break_multiplier": 0.0,
+    "tune_break_multiplier": 16.0,
     "tune_break_boost_points": 0.0,
     "off_tune_value": 0.0,
-    "off_tune_value_source_status": "unresolved_missing_excel_mapping",
-    "off_tune_value_source_ref": null,
+    "off_tune_value_source_status": "workbook_confirmed_zero",
+    "off_tune_value_source_ref": "角色-女!S2704",
     "hits": [
       {
-        "time": 1.2,
+        "time": 1.6,
         "damage_category": "tune_break",
         "damage_multiplier": 0.0,
         "tune_break_multiplier": 16.0,
         "tags": [
-          "tune_break"
+          "tune_break",
+          "spectro",
+          "lynae"
         ],
-        "name": "lynae_tune_break_1"
+        "name": "Lynae Tune Break tune break"
       }
     ],
     "resonance_energy_gain": 0.0,
@@ -5631,16 +4921,19 @@
     "mechanic_effects": {},
     "source_status": "selector_runtime_routes_to_workbook_confirmed_stage",
     "data_status": "selector_runtime_routes_to_workbook_confirmed_stage",
-    "notes": "Policy selector resolved by Lynae mechanic to the current Polychrome Leap stage; stage coefficients and timings remain on the resolved actions."
+    "notes": "Policy selector resolved by Lynae mechanic to the current Polychrome Leap stage; stage coefficients and timings remain on the resolved actions.",
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "non_damaging_selector",
+    "off_tune_value_source_ref": null
   },
   {
     "id": "lynae_visual_impact",
     "name": "Lynae Visual Impact",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 1.5,
-    "action_time": 1.5,
-    "combat_time_cost": 1.5,
+    "duration": 1.1666666666666667,
+    "action_time": 1.1666666666666667,
+    "combat_time_cost": 1.1666666666666667,
     "cooldown": 25.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -5660,7 +4953,52 @@
       "basic_attack"
     ],
     "policy_selectable": true,
-    "mechanic_effects": {},
+    "mechanic_effects": {
+      "spray_paint_status_schedule": {
+        "implementation_status": "scheduled_status_application_exact_c0_candidate",
+        "payload_action_id": "lynae_spray_paint_flux_application",
+        "effect_id": "lynae_spray_paint",
+        "instance_id": "lynae_spray_paint_flux:lynae",
+        "payload_event_type": "status_application",
+        "activation_combat_time": "visual_impact_final_combat_end",
+        "activation_timing_status": [
+          "source_confirmed_field_generation",
+          "activation_timing_approximation_action_end"
+        ],
+        "first_check_frames": 1,
+        "check_interval_frames": 120,
+        "field_duration_frames": 300,
+        "relative_application_frames": [
+          1,
+          121,
+          241
+        ],
+        "max_application_count": 3,
+        "refresh_rule": "replace",
+        "trigger_on_apply": false,
+        "mode_snapshot_source": "lynae_resonance_mode_at_field_creation",
+        "mode_mapping": {
+          "tune_strain": {
+            "target_shift_state": "tune_strain_shifting",
+            "source_row": "角色-女!2683"
+          },
+          "tune_rupture": {
+            "target_shift_state": "tune_rupture_shifting",
+            "source_row": "角色-女!2684"
+          }
+        },
+        "target_presence_assumption": "single_target_remains_inside_paint_area",
+        "scheduler_backed_window_mirror": "spray_paint_window_remaining",
+        "c1_rows_excluded": [
+          "角色-女!2685",
+          "角色-女!2686",
+          "角色-女!2687",
+          "角色-女!2688"
+        ],
+        "no_damage_resources_off_tune_reward": true,
+        "remove_on_max_trigger_count": false
+      }
+    },
     "source_rows": [
       2679,
       2680,
@@ -5678,16 +5016,32 @@
         2465
       ],
       "calculation_type": "mutually_exclusive_mode_variants_same_multiplier"
-    }
+    },
+    "hits": [
+      {
+        "time": 1.1666666666666667,
+        "damage_category": "normal",
+        "damage_multiplier": 12.1672,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Visual Impact hit"
+      }
+    ],
+    "off_tune_value": 609.6,
+    "off_tune_value_source_status": "workbook_confirmed_mode_representative",
+    "off_tune_value_source_ref": "角色-女!S2680:S2682"
   },
   {
     "id": "lynae_dodge_counter",
     "name": "Lynae Dodge Counter",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 1.1167,
-    "action_time": 1.1167,
-    "combat_time_cost": 1.1167,
+    "duration": 0.8166666666666667,
+    "action_time": 0.8166666666666667,
+    "combat_time_cost": 0.8166666666666667,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -5712,16 +5066,32 @@
     ],
     "source_status": "workbook_confirmed",
     "data_status": "workbook_confirmed",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "hits": [
+      {
+        "time": 0.8166666666666667,
+        "damage_category": "normal",
+        "damage_multiplier": 2.3997,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Dodge Counter hit"
+      }
+    ],
+    "off_tune_value": 65.6,
+    "off_tune_value_source_status": "workbook_confirmed",
+    "off_tune_value_source_ref": "角色-女!S2582"
   },
   {
     "id": "lynae_mid_air_attack",
     "name": "Lynae Mid-air Attack",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 1.0,
-    "action_time": 1.0,
-    "combat_time_cost": 1.0,
+    "duration": 0.95,
+    "action_time": 0.95,
+    "combat_time_cost": 0.95,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -5748,16 +5118,32 @@
     ],
     "source_status": "workbook_confirmed",
     "data_status": "workbook_confirmed",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "hits": [
+      {
+        "time": 0.95,
+        "damage_category": "normal",
+        "damage_multiplier": 1.4365,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Mid-air Attack hit"
+      }
+    ],
+    "off_tune_value": 68.0,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2583:S2584"
   },
   {
     "id": "lynae_spark_collision_lv1",
     "name": "Lynae Spark Collision Lv1",
     "character_id": "lynae",
     "action_type": "heavy_attack",
-    "duration": 1.5,
-    "action_time": 1.5,
-    "combat_time_cost": 1.5,
+    "duration": 1.2333333333333334,
+    "action_time": 1.2333333333333334,
+    "combat_time_cost": 1.2333333333333334,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -5784,16 +5170,32 @@
     ],
     "source_status": "workbook_confirmed",
     "data_status": "workbook_confirmed",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "hits": [
+      {
+        "time": 1.2333333333333334,
+        "damage_category": "normal",
+        "damage_multiplier": 1.1112,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Spark Collision Lv1 hit"
+      }
+    ],
+    "off_tune_value": 52.6,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2586:S2587"
   },
   {
     "id": "lynae_spark_collision_lv2",
     "name": "Lynae Spark Collision Lv2",
     "character_id": "lynae",
     "action_type": "heavy_attack",
-    "duration": 1.5,
-    "action_time": 1.5,
-    "combat_time_cost": 1.5,
+    "duration": 1.55,
+    "action_time": 1.55,
+    "combat_time_cost": 1.55,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -5820,16 +5222,32 @@
     ],
     "source_status": "workbook_confirmed",
     "data_status": "workbook_confirmed",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "hits": [
+      {
+        "time": 1.55,
+        "damage_category": "normal",
+        "damage_multiplier": 3.3334,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Spark Collision Lv2 hit"
+      }
+    ],
+    "off_tune_value": 157.8,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2588:S2589"
   },
   {
     "id": "lynae_spark_collision_lv3",
     "name": "Lynae Spark Collision Lv3",
     "character_id": "lynae",
     "action_type": "heavy_attack",
-    "duration": 1.5,
-    "action_time": 1.5,
-    "combat_time_cost": 1.5,
+    "duration": 1.55,
+    "action_time": 1.55,
+    "combat_time_cost": 1.55,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -5856,16 +5274,32 @@
     ],
     "source_status": "workbook_confirmed",
     "data_status": "workbook_confirmed",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "hits": [
+      {
+        "time": 1.55,
+        "damage_category": "normal",
+        "damage_multiplier": 5.5556,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Spark Collision Lv3 hit"
+      }
+    ],
+    "off_tune_value": 263.0,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2590:S2591"
   },
   {
     "id": "lynae_kaleidoscopic_dodge_counter",
     "name": "Lynae KP Dodge Counter",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 0.9,
-    "action_time": 0.9,
-    "combat_time_cost": 0.9,
+    "duration": 0.55,
+    "action_time": 0.55,
+    "combat_time_cost": 0.55,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -5890,16 +5324,32 @@
     ],
     "source_status": "workbook_confirmed",
     "data_status": "workbook_confirmed",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "hits": [
+      {
+        "time": 0.55,
+        "damage_category": "normal",
+        "damage_multiplier": 1.842,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae KP Dodge Counter hit"
+      }
+    ],
+    "off_tune_value": 39.2,
+    "off_tune_value_source_status": "workbook_confirmed",
+    "off_tune_value_source_ref": "角色-女!S2595"
   },
   {
     "id": "lynae_kaleidoscopic_mid_air_attack",
     "name": "Lynae KP Mid-air Attack",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 1.0,
-    "action_time": 1.0,
-    "combat_time_cost": 1.0,
+    "duration": 0.95,
+    "action_time": 0.95,
+    "combat_time_cost": 0.95,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -5926,16 +5376,32 @@
     ],
     "source_status": "workbook_confirmed",
     "data_status": "workbook_confirmed",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "hits": [
+      {
+        "time": 0.95,
+        "damage_category": "normal",
+        "damage_multiplier": 1.4365,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae KP Mid-air Attack hit"
+      }
+    ],
+    "off_tune_value": 68.0,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2615:S2616"
   },
   {
     "id": "lynae_kaleidoscopic_ground_heavy_hold",
     "name": "Lynae KP Ground Heavy Hold",
     "character_id": "lynae",
     "action_type": "heavy_attack",
-    "duration": 0.8333,
-    "action_time": 0.8333,
-    "combat_time_cost": 0.8333,
+    "duration": 0.7333333333333333,
+    "action_time": 0.7333333333333333,
+    "combat_time_cost": 0.7333333333333333,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -5972,16 +5438,32 @@
     ],
     "source_status": "workbook_confirmed",
     "data_status": "workbook_confirmed",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "hits": [
+      {
+        "time": 0.7333333333333333,
+        "damage_category": "normal",
+        "damage_multiplier": 1.2341,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae KP Ground Heavy Hold hit"
+      }
+    ],
+    "off_tune_value": 58.45,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2617:S2623"
   },
   {
     "id": "lynae_kaleidoscopic_graffiti_blast",
     "name": "Lynae KP Graffiti Blast",
     "character_id": "lynae",
     "action_type": "heavy_attack",
-    "duration": 0.6167,
-    "action_time": 0.6167,
-    "combat_time_cost": 0.6167,
+    "duration": 0.5166666666666667,
+    "action_time": 0.5166666666666667,
+    "combat_time_cost": 0.5166666666666667,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -6006,16 +5488,32 @@
     ],
     "source_status": "workbook_confirmed",
     "data_status": "workbook_confirmed",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "hits": [
+      {
+        "time": 0.5166666666666667,
+        "damage_category": "normal",
+        "damage_multiplier": 1.0478,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae KP Graffiti Blast hit"
+      }
+    ],
+    "off_tune_value": 49.6,
+    "off_tune_value_source_status": "workbook_confirmed",
+    "off_tune_value_source_ref": "角色-女!S2624"
   },
   {
     "id": "lynae_kaleidoscopic_mid_air_heavy",
     "name": "Lynae KP Mid-air Heavy",
     "character_id": "lynae",
     "action_type": "heavy_attack",
-    "duration": 2.6667,
-    "action_time": 2.6667,
-    "combat_time_cost": 2.6667,
+    "duration": 2.6666666666666665,
+    "action_time": 2.6666666666666665,
+    "combat_time_cost": 2.6666666666666665,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -6052,16 +5550,32 @@
     ],
     "source_status": "workbook_confirmed",
     "data_status": "workbook_confirmed",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "hits": [
+      {
+        "time": 2.6666666666666665,
+        "damage_category": "normal",
+        "damage_multiplier": 2.4339,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae KP Mid-air Heavy hit"
+      }
+    ],
+    "off_tune_value": 115.22,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2633:S2639"
   },
   {
     "id": "lynae_iridescent_splash",
     "name": "Lynae Iridescent Splash",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 0.6667,
-    "action_time": 0.6667,
-    "combat_time_cost": 0.6667,
+    "duration": 1.1666666666666667,
+    "action_time": 1.1666666666666667,
+    "combat_time_cost": 1.1666666666666667,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -6097,16 +5611,32 @@
         2461
       ],
       "calculation_type": "mutually_exclusive_mode_variants_same_multiplier"
-    }
+    },
+    "hits": [
+      {
+        "time": 1.1666666666666667,
+        "damage_category": "normal",
+        "damage_multiplier": 3.0418,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Iridescent Splash hit"
+      }
+    ],
+    "off_tune_value": 68.0,
+    "off_tune_value_source_status": "workbook_confirmed_mode_representative",
+    "off_tune_value_source_ref": "角色-女!S2677:S2678"
   },
   {
     "id": "lynae_iridescent_splash_c3",
     "name": "Lynae Iridescent Splash C3",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 0.6667,
-    "action_time": 0.6667,
-    "combat_time_cost": 0.6667,
+    "duration": 1.1666666666666667,
+    "action_time": 1.1666666666666667,
+    "combat_time_cost": 1.1666666666666667,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -6115,8 +5645,8 @@
     "damage_multiplier": 5.7795,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 8.13,
+    "concerto_energy_gain": 7.65,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -6131,16 +5661,34 @@
     ],
     "source_status": "constellation_gated_disabled_by_default",
     "data_status": "constellation_gated_disabled_by_default",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "hits": [
+      {
+        "time": 1.1666666666666667,
+        "damage_category": "normal",
+        "damage_multiplier": 5.7795,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Iridescent Splash C3 hit"
+      }
+    ],
+    "off_tune_value": 68.0,
+    "off_tune_value_source_status": "workbook_confirmed_internal_alias",
+    "off_tune_value_source_ref": "角色-女!S2677:S2678",
+    "off_tune_value_alias_of": "lynae_iridescent_splash",
+    "off_tune_value_alias_note": "Constellation changes the damage option but uses the same action-row Off-Tune value as the C0 action."
   },
   {
     "id": "lynae_visual_impact_c3",
     "name": "Lynae Visual Impact C3",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 1.5,
-    "action_time": 1.5,
-    "combat_time_cost": 1.5,
+    "duration": 1.1666666666666667,
+    "action_time": 1.1666666666666667,
+    "combat_time_cost": 1.1666666666666667,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -6149,8 +5697,8 @@
     "damage_multiplier": 23.1177,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 14.05,
+    "concerto_energy_gain": 14.58,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -6165,16 +5713,34 @@
     ],
     "source_status": "constellation_gated_disabled_by_default",
     "data_status": "constellation_gated_disabled_by_default",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "hits": [
+      {
+        "time": 1.1666666666666667,
+        "damage_category": "normal",
+        "damage_multiplier": 23.1177,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Visual Impact C3 hit"
+      }
+    ],
+    "off_tune_value": 609.6,
+    "off_tune_value_source_status": "workbook_confirmed_internal_alias",
+    "off_tune_value_source_ref": "角色-女!S2680:S2682",
+    "off_tune_value_alias_of": "lynae_visual_impact",
+    "off_tune_value_alias_note": "Constellation changes the damage option but uses the same action-row Off-Tune value as the C0 action."
   },
   {
     "id": "lynae_polychrome_leap_stage_1",
     "name": "Lynae Polychrome Leap Stage 1",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 0.8667,
-    "action_time": 0.8667,
-    "combat_time_cost": 0.8667,
+    "duration": 0.75,
+    "action_time": 0.75,
+    "combat_time_cost": 0.75,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -6205,16 +5771,32 @@
     ],
     "source_status": "workbook_confirmed",
     "data_status": "workbook_confirmed",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "hits": [
+      {
+        "time": 0.75,
+        "damage_category": "normal",
+        "damage_multiplier": 1.014,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Polychrome Leap Stage 1 hit"
+      }
+    ],
+    "off_tune_value": 48.0,
+    "off_tune_value_source_status": "workbook_confirmed_summed_from_rows",
+    "off_tune_value_source_ref": "角色-女!S2643:S2645"
   },
   {
     "id": "lynae_polychrome_leap_stage_2",
     "name": "Lynae Polychrome Leap Stage 2",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 0.8667,
-    "action_time": 0.8667,
-    "combat_time_cost": 0.8667,
+    "duration": 0.6,
+    "action_time": 0.6,
+    "combat_time_cost": 0.6,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -6223,8 +5805,8 @@
     "damage_multiplier": 1.014,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.38,
-    "concerto_energy_gain": 0.9,
+    "resonance_energy_gain": 2.28,
+    "concerto_energy_gain": 5.4,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -6246,64 +5828,15 @@
     "timing_source_status": "unresolved_timing",
     "hits": [
       {
-        "time": 0.1444,
+        "time": 0.6,
         "damage_category": "normal",
-        "damage_multiplier": 0.169,
+        "damage_multiplier": 1.014,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "lynae",
           "basic_attack"
         ],
-        "name": "Lynae Polychrome Leap Stage 2 hit 1"
-      },
-      {
-        "time": 0.2889,
-        "damage_category": "normal",
-        "damage_multiplier": 0.169,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae Polychrome Leap Stage 2 hit 2"
-      },
-      {
-        "time": 0.4334,
-        "damage_category": "normal",
-        "damage_multiplier": 0.169,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae Polychrome Leap Stage 2 hit 3"
-      },
-      {
-        "time": 0.5778,
-        "damage_category": "normal",
-        "damage_multiplier": 0.169,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae Polychrome Leap Stage 2 hit 4"
-      },
-      {
-        "time": 0.7222,
-        "damage_category": "normal",
-        "damage_multiplier": 0.169,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae Polychrome Leap Stage 2 hit 5"
-      },
-      {
-        "time": 0.8667,
-        "damage_category": "normal",
-        "damage_multiplier": 0.169,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae Polychrome Leap Stage 2 hit 6"
+        "name": "Lynae Polychrome Leap Stage 2 hit"
       }
     ],
     "metadata": {
@@ -6321,16 +5854,19 @@
         2649,
         2650
       ]
-    }
+    },
+    "off_tune_value": 48.0,
+    "off_tune_value_source_status": "workbook_confirmed_repeat_aware_mode_variant",
+    "off_tune_value_source_ref": "角色-女!S2649:S2650"
   },
   {
     "id": "lynae_polychrome_leap_stage_3",
     "name": "Lynae Polychrome Leap Stage 3",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 1.95,
-    "action_time": 1.95,
-    "combat_time_cost": 1.95,
+    "duration": 0.6166666666666667,
+    "action_time": 0.6166666666666667,
+    "combat_time_cost": 0.6166666666666667,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -6339,8 +5875,8 @@
     "damage_multiplier": 0.655,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.6,
-    "concerto_energy_gain": 1.4,
+    "resonance_energy_gain": 1.5,
+    "concerto_energy_gain": 3.5,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -6362,54 +5898,15 @@
     "timing_source_status": "unresolved_timing",
     "hits": [
       {
-        "time": 0.39,
+        "time": 0.6166666666666667,
         "damage_category": "normal",
-        "damage_multiplier": 0.131,
+        "damage_multiplier": 0.655,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "lynae",
           "basic_attack"
         ],
-        "name": "Lynae Polychrome Leap Stage 3 hit 1"
-      },
-      {
-        "time": 0.78,
-        "damage_category": "normal",
-        "damage_multiplier": 0.131,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae Polychrome Leap Stage 3 hit 2"
-      },
-      {
-        "time": 1.17,
-        "damage_category": "normal",
-        "damage_multiplier": 0.131,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae Polychrome Leap Stage 3 hit 3"
-      },
-      {
-        "time": 1.56,
-        "damage_category": "normal",
-        "damage_multiplier": 0.131,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae Polychrome Leap Stage 3 hit 4"
-      },
-      {
-        "time": 1.95,
-        "damage_category": "normal",
-        "damage_multiplier": 0.131,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae Polychrome Leap Stage 3 hit 5"
+        "name": "Lynae Polychrome Leap Stage 3 hit"
       }
     ],
     "metadata": {
@@ -6423,16 +5920,19 @@
       "additive_rows": [
         2477
       ]
-    }
+    },
+    "off_tune_value": 31.0,
+    "off_tune_value_source_status": "workbook_confirmed_repeat_aware",
+    "off_tune_value_source_ref": "角色-女!S2660:S2661"
   },
   {
     "id": "lynae_polychrome_leap_stage_1_c1",
     "name": "Lynae Polychrome Leap Stage 1 C1",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 0.8667,
-    "action_time": 0.8667,
-    "combat_time_cost": 0.8667,
+    "duration": 0.75,
+    "action_time": 0.75,
+    "combat_time_cost": 0.75,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -6441,8 +5941,8 @@
     "damage_multiplier": 2.2308,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 2.25,
+    "concerto_energy_gain": 5.4,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -6458,16 +5958,34 @@
     ],
     "source_status": "constellation_gated_disabled_by_default",
     "data_status": "constellation_gated_disabled_by_default",
-    "timing_source_status": "unresolved_timing"
+    "timing_source_status": "unresolved_timing",
+    "hits": [
+      {
+        "time": 0.75,
+        "damage_category": "normal",
+        "damage_multiplier": 2.2308,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Polychrome Leap Stage 1 C1 hit"
+      }
+    ],
+    "off_tune_value": 48.0,
+    "off_tune_value_source_status": "workbook_confirmed_internal_alias",
+    "off_tune_value_source_ref": "角色-女!S2643:S2645",
+    "off_tune_value_alias_of": "lynae_polychrome_leap_stage_1",
+    "off_tune_value_alias_note": "Constellation changes the damage option but uses the same action-row Off-Tune value as the C0 action."
   },
   {
     "id": "lynae_polychrome_leap_stage_2_c1",
     "name": "Lynae Polychrome Leap Stage 2 C1",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 0.8667,
-    "action_time": 0.8667,
-    "combat_time_cost": 0.8667,
+    "duration": 0.6,
+    "action_time": 0.6,
+    "combat_time_cost": 0.6,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -6476,8 +5994,8 @@
     "damage_multiplier": 2.2308,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 0.38,
+    "concerto_energy_gain": 0.9,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -6500,16 +6018,34 @@
           "max_hits": 6
         }
       ]
-    }
+    },
+    "hits": [
+      {
+        "time": 0.6,
+        "damage_category": "normal",
+        "damage_multiplier": 2.2308,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Polychrome Leap Stage 2 C1 hit"
+      }
+    ],
+    "off_tune_value": 48.0,
+    "off_tune_value_source_status": "workbook_confirmed_internal_alias",
+    "off_tune_value_source_ref": "角色-女!S2649:S2650",
+    "off_tune_value_alias_of": "lynae_polychrome_leap_stage_2",
+    "off_tune_value_alias_note": "Constellation changes the damage option but uses the same action-row Off-Tune value as the C0 action."
   },
   {
     "id": "lynae_polychrome_leap_stage_3_c1",
     "name": "Lynae Polychrome Leap Stage 3 C1",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 1.95,
-    "action_time": 1.95,
-    "combat_time_cost": 1.95,
+    "duration": 0.6166666666666667,
+    "action_time": 0.6166666666666667,
+    "combat_time_cost": 0.6166666666666667,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -6518,8 +6054,8 @@
     "damage_multiplier": 1.441,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "resonance_energy_gain": 0.6,
+    "concerto_energy_gain": 1.4,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -6546,16 +6082,34 @@
       "additive_rows": [
         2479
       ]
-    }
+    },
+    "hits": [
+      {
+        "time": 0.6166666666666667,
+        "damage_category": "normal",
+        "damage_multiplier": 1.441,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "basic_attack"
+        ],
+        "name": "Lynae Polychrome Leap Stage 3 C1 hit"
+      }
+    ],
+    "off_tune_value": 31.0,
+    "off_tune_value_source_status": "workbook_confirmed_internal_alias",
+    "off_tune_value_source_ref": "角色-女!S2660:S2661",
+    "off_tune_value_alias_of": "lynae_polychrome_leap_stage_3",
+    "off_tune_value_alias_note": "Constellation changes the damage option but uses the same action-row Off-Tune value as the C0 action."
   },
   {
     "id": "lynae_to_a_vivid_tomorrow",
     "name": "Lynae To a Vivid Tomorrow",
     "character_id": "lynae",
     "action_type": "basic_attack",
-    "duration": 3.0167,
-    "action_time": 3.0167,
-    "combat_time_cost": 3.0167,
+    "duration": 2.4833333333333334,
+    "action_time": 2.4833333333333334,
+    "combat_time_cost": 2.4833333333333334,
     "cooldown": 0.0,
     "damage_category": "normal",
     "damage_bonus_category": "basic_attack",
@@ -6564,8 +6118,8 @@
     "damage_multiplier": 2.0106,
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
-    "resonance_energy_gain": 0.5,
-    "concerto_energy_gain": 1.78,
+    "resonance_energy_gain": 5.46,
+    "concerto_energy_gain": 19.42,
     "resonance_energy_cost": 0.0,
     "applies_buffs": [],
     "tags": [
@@ -6586,224 +6140,15 @@
     "timing_source_status": "unresolved_timing",
     "hits": [
       {
-        "time": 0.1371,
+        "time": 2.4833333333333334,
         "damage_category": "normal",
-        "damage_multiplier": 0.0838,
+        "damage_multiplier": 2.0106,
+        "tune_break_multiplier": 0.0,
         "tags": [
           "lynae",
           "basic_attack"
         ],
-        "name": "Lynae To a Vivid Tomorrow hit 1"
-      },
-      {
-        "time": 0.2742,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0838,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 2"
-      },
-      {
-        "time": 0.4114,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0838,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 3"
-      },
-      {
-        "time": 0.5485,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0838,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 4"
-      },
-      {
-        "time": 0.6856,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0838,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 5"
-      },
-      {
-        "time": 0.8227,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0838,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 6"
-      },
-      {
-        "time": 0.9599,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0838,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 7"
-      },
-      {
-        "time": 1.097,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0838,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 8"
-      },
-      {
-        "time": 1.2341,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0838,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 9"
-      },
-      {
-        "time": 1.3712,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0838,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 10"
-      },
-      {
-        "time": 1.5084,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0838,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 11"
-      },
-      {
-        "time": 1.6455,
-        "damage_category": "normal",
-        "damage_multiplier": 0.0838,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 12"
-      },
-      {
-        "time": 1.7826,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1005,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 13"
-      },
-      {
-        "time": 1.9197,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1005,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 14"
-      },
-      {
-        "time": 2.0568,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1005,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 15"
-      },
-      {
-        "time": 2.194,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1005,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 16"
-      },
-      {
-        "time": 2.3311,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1005,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 17"
-      },
-      {
-        "time": 2.4682,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1005,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 18"
-      },
-      {
-        "time": 2.6053,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1005,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 19"
-      },
-      {
-        "time": 2.7425,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1005,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 20"
-      },
-      {
-        "time": 2.8796,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1005,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 21"
-      },
-      {
-        "time": 3.0167,
-        "damage_category": "normal",
-        "damage_multiplier": 0.1005,
-        "tags": [
-          "lynae",
-          "basic_attack"
-        ],
-        "name": "Lynae To a Vivid Tomorrow hit 22"
+        "name": "Lynae To a Vivid Tomorrow hit"
       }
     ],
     "metadata": {
@@ -6819,7 +6164,10 @@
           "max_hits": 10
         }
       ]
-    }
+    },
+    "off_tune_value": 171.28,
+    "off_tune_value_source_status": "workbook_confirmed_repeat_aware",
+    "off_tune_value_source_ref": "角色-女!S2697:S2698"
   },
   {
     "id": "lynae_resonance_liberation_prismatic_overblast_c5",
@@ -6838,7 +6186,7 @@
     "tune_break_multiplier": 0.0,
     "tune_break_boost_points": 0.0,
     "resonance_energy_gain": 0.0,
-    "concerto_energy_gain": 0.0,
+    "concerto_energy_gain": 20.0,
     "resonance_energy_cost": 125,
     "applies_buffs": [],
     "tags": [
@@ -6873,6 +6221,344 @@
       2694,
       2695
     ],
-    "notes": "Disabled-by-default C5 variant keeps the same Resonance Liberation cost/cooldown guard and global-time-stop decision timing as C0. The 299F row endpoint is not used as timed-combat duration."
+    "notes": "Disabled-by-default C5 variant keeps the same Resonance Liberation cost/cooldown guard and global-time-stop decision timing as C0. The 299F row endpoint is not used as timed-combat duration.",
+    "hits": [
+      {
+        "time": 4.0,
+        "damage_category": "normal",
+        "damage_multiplier": 14.871,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "lynae",
+          "resonance_liberation"
+        ],
+        "name": "Lynae Prismatic Overblast C5 hit"
+      }
+    ],
+    "off_tune_value": 480.0,
+    "off_tune_value_source_status": "workbook_confirmed_internal_alias",
+    "off_tune_value_source_ref": "角色-女!S2695",
+    "off_tune_value_alias_of": "lynae_resonance_liberation_prismatic_overblast",
+    "off_tune_value_alias_note": "Constellation changes the damage option but uses the same action-row Off-Tune value as the C0 action."
+  },
+  {
+    "id": "lynae_spray_paint_flux_application",
+    "name": "Lynae Spray Paint Flux Application",
+    "character_id": "lynae",
+    "action_type": "basic_attack",
+    "duration": 0.001,
+    "action_time": 0.001,
+    "combat_time_cost": 0.0,
+    "cooldown": 0.0,
+    "damage_category": "normal",
+    "damage_bonus_category": null,
+    "damage_element": "spectro",
+    "scaling_stat": "none",
+    "scheduled_event_type": "status_application",
+    "damage_multiplier": 0.0,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "workbook_confirmed_none_for_spray_paint_status_application",
+    "off_tune_value_source_ref": "角色-女!2683; 角色-女!2684",
+    "hits": [],
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 0.0,
+    "resonance_energy_cost": 0.0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "lynae",
+      "spray_paint",
+      "status_application"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "scheduled_payload": true,
+      "scheduled_event_type": "status_application",
+      "payload_event_type": "status_application",
+      "scheduled_status_effect_id": "lynae_photocromic_flux",
+      "effect_duration": 25.0,
+      "target_scope": "current_single_enemy",
+      "mode_source": "scheduled_effect_metadata_snapshot",
+      "source_status": "workbook_confirmed_scheduled_status_application",
+      "source_refs": [
+        "角色-女!2683",
+        "角色-女!2684"
+      ],
+      "tune_strain_source_row": "角色-女!2683",
+      "tune_rupture_source_row": "角色-女!2684",
+      "target_presence_assumption": "single_target_remains_inside_paint_area",
+      "damage": "none",
+      "off_tune": "none",
+      "resonance_energy": "none",
+      "concerto_energy": "none"
+    },
+    "source_rows": [
+      2683,
+      2684
+    ],
+    "source_status": "workbook_confirmed_scheduled_status_application",
+    "data_status": "workbook_confirmed_scheduled_status_application",
+    "notes": "Non-policy scheduled status payload. Applies/refreshes Photocromic Flux and snapshotted target Tune Shift; no damage, Off-Tune, resources, reward, cooldown, or combo progression."
+  },
+  {
+    "id": "mornye_echo_reactor_husk",
+    "name": "Mornye Echo Reactor Husk",
+    "character_id": "mornye",
+    "action_type": "echo_skill",
+    "duration": 1.1,
+    "action_time": 1.1,
+    "combat_time_cost": 1.1,
+    "cooldown": 20.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "echo_ability",
+    "damage_element": "fusion",
+    "damage_multiplier": 3.51,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_echo_off_tune",
+    "off_tune_value_source_ref": "声骸!383",
+    "hits": [
+      {
+        "time": 0.8166666666666667,
+        "damage_category": "normal",
+        "damage_multiplier": 3.51,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "fusion",
+          "echo",
+          "echo_ability",
+          "mornye"
+        ],
+        "name": "Reactor Husk hit"
+      }
+    ],
+    "resonance_energy_gain": 4.87,
+    "concerto_energy_gain": 0.0,
+    "resonance_energy_cost": 0.0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "fusion",
+      "echo",
+      "echo_ability",
+      "mornye",
+      "source:excel"
+    ],
+    "policy_selectable": true,
+    "cooldown_group": "mornye_echo_reactor_husk",
+    "mechanic_effects": {
+      "active_echo_id": "reactor_husk",
+      "echo_kind": "transformation",
+      "policy_order_append": true,
+      "source_sheet": "声骸",
+      "source_action_row": 383,
+      "source_damage_row": 2534,
+      "displayed_hit_frame": 49,
+      "source_end_frame": 66,
+      "source_end_frame_is_action_time": true,
+      "enemy_hitstop_frames_metadata_only": 8,
+      "toughness_metadata_only": 195,
+      "off_tune_value_status": "unresolved_echo_off_tune"
+    },
+    "data_status": "workbook_confirmed_active_echo",
+    "scaling_stat": "atk",
+    "notes": "Source-confirmed active Echo action from 声骸!383 and dmg!2534. Mornye main Echo Energy Regen passive is already included in the real profile and is not applied at runtime."
+  },
+  {
+    "id": "aemeath_echo_sigillum",
+    "name": "Aemeath Echo Sigillum",
+    "character_id": "aemeath",
+    "action_type": "echo_skill",
+    "duration": 0.0,
+    "action_time": 0.0,
+    "combat_time_cost": 0.0,
+    "cooldown": 20.0,
+    "damage_category": "normal",
+    "damage_bonus_category": "echo_ability",
+    "damage_element": "fusion",
+    "damage_multiplier": 0.0,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_echo_off_tune",
+    "off_tune_value_source_ref": "声骸!410:411",
+    "hits": [],
+    "resonance_energy_gain": 0.0,
+    "concerto_energy_gain": 0.0,
+    "resonance_energy_cost": 0.0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "fusion",
+      "echo",
+      "echo_ability",
+      "aemeath",
+      "source:excel"
+    ],
+    "policy_selectable": true,
+    "cooldown_group": "aemeath_echo_sigillum",
+    "mechanic_effects": {
+      "active_echo_id": "sigillum",
+      "echo_kind": "summon",
+      "auxiliary_zero_time_action": true,
+      "schedules_sigillum_hits": true,
+      "policy_order_append": true,
+      "source_sheet": "声骸",
+      "source_action_rows": [
+        410,
+        411
+      ],
+      "source_damage_rows": [
+        2632,
+        2633
+      ],
+      "source_end_frame": 80,
+      "source_end_frame_metadata_only": true,
+      "scheduled_hit_frames": [
+        25,
+        55
+      ],
+      "scheduled_payload_action_ids": [
+        "aemeath_echo_sigillum_hit_1",
+        "aemeath_echo_sigillum_hit_2"
+      ],
+      "off_tune_value_status": "unresolved_echo_off_tune"
+    },
+    "data_status": "workbook_confirmed_active_echo",
+    "scaling_stat": "atk",
+    "notes": "Zero-time active Echo summon. Activation starts the 20s cooldown and schedules two combat-time damage payloads; source end frame 80 is metadata/lifetime only, not player action time."
+  },
+  {
+    "id": "aemeath_echo_sigillum_hit_1",
+    "name": "Aemeath Echo Sigillum Hit 1 Payload",
+    "character_id": "aemeath",
+    "action_type": "echo_skill",
+    "duration": 0.016666666666666666,
+    "action_time": 0.016666666666666666,
+    "combat_time_cost": 0.0,
+    "cooldown": 0.0,
+    "scheduled_event_type": "damage",
+    "damage_category": "normal",
+    "damage_bonus_category": "echo_ability",
+    "damage_element": "fusion",
+    "damage_multiplier": 0.684,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_echo_off_tune",
+    "off_tune_value_source_ref": "声骸!410:411",
+    "hits": [
+      {
+        "time": 0.0,
+        "damage_category": "normal",
+        "damage_multiplier": 0.684,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "fusion",
+          "echo",
+          "echo_ability",
+          "aemeath",
+          "scheduled_payload"
+        ],
+        "name": "Sigillum scheduled hit 1"
+      }
+    ],
+    "resonance_energy_gain": 0.23,
+    "concerto_energy_gain": 0.0,
+    "resonance_energy_cost": 0.0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "fusion",
+      "echo",
+      "echo_ability",
+      "aemeath",
+      "scheduled_payload",
+      "source:excel"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "scheduled_payload": true,
+      "scheduled_resource_policy": "source_confirmed_positive_gains",
+      "source_status": "workbook_confirmed_active_echo_scheduled_hit",
+      "source_ref": "声骸!410 / dmg!2632",
+      "hit_index": 1,
+      "relative_due_frames": 25,
+      "source_end_frame": 80,
+      "source_end_frame_metadata_only": true,
+      "toughness_metadata_only": 38,
+      "ordinary_player_action_side_effects_applied": false
+    },
+    "data_status": "workbook_confirmed_active_echo_scheduled_payload",
+    "scaling_stat": "atk",
+    "notes": "Non-policy scheduled payload for Aemeath Sigillum. Scheduler controls timing and source-confirmed positive resource gains; no cooldown, buff, combo, or ordinary player-action side effects are applied by this payload."
+  },
+  {
+    "id": "aemeath_echo_sigillum_hit_2",
+    "name": "Aemeath Echo Sigillum Hit 2 Payload",
+    "character_id": "aemeath",
+    "action_type": "echo_skill",
+    "duration": 0.016666666666666666,
+    "action_time": 0.016666666666666666,
+    "combat_time_cost": 0.0,
+    "cooldown": 0.0,
+    "scheduled_event_type": "damage",
+    "damage_category": "normal",
+    "damage_bonus_category": "echo_ability",
+    "damage_element": "fusion",
+    "damage_multiplier": 2.052,
+    "tune_break_multiplier": 0.0,
+    "tune_break_boost_points": 0.0,
+    "off_tune_value": 0.0,
+    "off_tune_value_source_status": "unresolved_echo_off_tune",
+    "off_tune_value_source_ref": "声骸!410:411",
+    "hits": [
+      {
+        "time": 0.0,
+        "damage_category": "normal",
+        "damage_multiplier": 2.052,
+        "tune_break_multiplier": 0.0,
+        "tags": [
+          "fusion",
+          "echo",
+          "echo_ability",
+          "aemeath",
+          "scheduled_payload"
+        ],
+        "name": "Sigillum scheduled hit 2"
+      }
+    ],
+    "resonance_energy_gain": 2.13,
+    "concerto_energy_gain": 0.0,
+    "resonance_energy_cost": 0.0,
+    "applies_buffs": [],
+    "required_buffs": [],
+    "tags": [
+      "fusion",
+      "echo",
+      "echo_ability",
+      "aemeath",
+      "scheduled_payload",
+      "source:excel"
+    ],
+    "policy_selectable": false,
+    "mechanic_effects": {
+      "scheduled_payload": true,
+      "scheduled_resource_policy": "source_confirmed_positive_gains",
+      "source_status": "workbook_confirmed_active_echo_scheduled_hit",
+      "source_ref": "声骸!411 / dmg!2633",
+      "hit_index": 2,
+      "relative_due_frames": 55,
+      "source_end_frame": 80,
+      "source_end_frame_metadata_only": true,
+      "toughness_metadata_only": 114,
+      "ordinary_player_action_side_effects_applied": false
+    },
+    "data_status": "workbook_confirmed_active_echo_scheduled_payload",
+    "scaling_stat": "atk",
+    "notes": "Non-policy scheduled payload for Aemeath Sigillum. Scheduler controls timing and source-confirmed positive resource gains; no cooldown, buff, combo, or ordinary player-action side effects are applied by this payload."
   }
 ]

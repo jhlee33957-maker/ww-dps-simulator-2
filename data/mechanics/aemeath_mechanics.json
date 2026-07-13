@@ -27,13 +27,13 @@
       "Excel-based Aemeath Tune Break action",
       "Tune Rupture Response - Starburst off-field party response",
       "source-gated generated mechanic damage infrastructure",
-      "Aemeath Forte Circuit trail state scaffolding",
-      "Seraphic Duet follow-up source audit with unresolved runtime damage gate",
+      "Aemeath C0 Rupturous Trail source-confirmed target mechanic",
+      "Seraphic Duet source-confirmed Tune Rupture follow-up damage and target-stack multiplier",
       "QTE / Intro transition metadata and reviewed transition action candidates"
     ],
     "excluded": [
       "Fusion Burst explosion runtime damage without source-confirmed coefficient/formula",
-      "Fusion Trail / Rupturous Trail source-confirmed stack mutation rules",
+      "Fusion Trail source-confirmed stack mutation rules",
       "Seraphic Duet follow-up runtime damage without source-confirmed coefficient/formula",
       "full Starflux utility",
       "exact hitstop / enemy movement / hit loss",
@@ -106,8 +106,9 @@
       "name": "Trail No-cost",
       "modeled_behavior": [
         "Granted by Overdrive / 大招1 for 30 seconds.",
-        "Consumed by Seraphic Duet.",
-        "While consumed by Seraphic Duet, existing single-target trail scaffold stacks are preserved; unresolved S0 trail removal rules are not invented."
+        "Overdrive grants one preservation use for the next actual Seraphic Duet.",
+        "The first actual Seraphic Duet while preservation is active snapshots target Rupturous Trail stacks, preserves the target stacks, then consumes preservation.",
+        "Enhanced-use charges, preservation state, and target Rupturous Trail stacks are separate state concepts."
       ]
     },
     {
@@ -167,19 +168,73 @@
   },
   "rupturous_trail": {
     "title": "Rupturous Trail",
-    "implementation_status": "state_scaffold_only",
-    "source_status": "candidate_rows_reviewed_without_confirmed_stack_mutation_formula",
+    "implementation_status": "implemented_workbook_confirmed_c0_pending_external_review",
+    "source_status": "workbook_confirmed_c0",
+    "source_ref": "角色-女!2844",
     "state_fields": [
-      "rupturous_trail_stacks",
-      "rupturous_trail_remaining",
-      "rupturous_trail_max_stacks"
+      "CombatState.rupturous_trail_stacks",
+      "CombatState.rupturous_trail_remaining",
+      "CombatState.rupturous_trail_event_log"
     ],
     "modeled_behavior": [
-      "State is clamped to its configured max stack count.",
-      "Remaining duration ticks with action time and clears stacks when it reaches zero.",
-      "The current model is single-target only for observation and logging."
+      "Rupturous Trail is a source-confirmed C0 Tune Rupture target mechanic.",
+      "Each successfully executed party Tune Rupture response damage event grants 10 target stacks.",
+      "A response blocked by its response cooldown grants no stacks.",
+      "C0 maximum is 30 stacks.",
+      "Duration is 30 combat seconds and uses the combat_time clock.",
+      "Each successful application refreshes the aggregate target duration to 30 combat seconds.",
+      "Seraphic Duet snapshots the target stack count when committed.",
+      "Each stack increases the extra Tune Rupture multiplier by 4%.",
+      "Normal Seraphic Duet uses 5 repeats; Enhanced Seraphic Duet uses 10 repeats.",
+      "Overdrive grants two enhanced-use charges and one preservation use.",
+      "The first actual Seraphic Duet while preservation is active snapshots and preserves target stacks, then consumes preservation.",
+      "The next actual Seraphic Duet snapshots and removes the target stacks.",
+      "Enhanced-use charges, preservation state, and target trail stacks are separate state concepts.",
+      "Observation schema v5 exposes target stack and remaining ratios as fixed global channels.",
+      "Legacy character_mechanics_state[\"aemeath\"] personal Rupturous Trail keys are ignored and removed during Aemeath state normalization."
     ],
-    "runtime_damage": "none_until_source_confirmed"
+    "runtime_damage": "source_confirmed_seraphic_duet_tune_response_followup",
+    "source_refs": {
+      "mechanic_rule": [
+        "角色-女!2844"
+      ],
+      "overdrive_preservation": [
+        "角色-女!2806"
+      ],
+      "seraphic_normal_action_rows": [
+        "角色-女!2786",
+        "角色-女!2931"
+      ],
+      "seraphic_enhanced_action_rows": [
+        "角色-女!2787",
+        "角色-女!2932"
+      ],
+      "extra_tune_damage_rows": [
+        "dmg!2578",
+        "dmg!2579",
+        "dmg!2628",
+        "dmg!2629"
+      ]
+    },
+    "debug_fields": [
+      "target_rupturous_trail_stacks",
+      "target_rupturous_trail_remaining",
+      "target_rupturous_trail_max_stacks"
+    ],
+    "legacy_personal_state": "ignored_removed",
+    "target_scope": "single_enemy",
+    "gain_per_trigger": 10,
+    "max_stacks": 30,
+    "duration_seconds": 30.0,
+    "duration_clock": "combat_time",
+    "stack_bonus_per_stack": 0.04,
+    "duration_refresh_rule": "refresh aggregate target duration to 30 combat seconds on each successful application",
+    "normal_repeat_count": 5,
+    "enhanced_repeat_count": 10,
+    "preservation_uses": 1,
+    "owner_state": "CombatState.rupturous_trail_stacks",
+    "remaining_state": "CombatState.rupturous_trail_remaining",
+    "event_log_state": "CombatState.rupturous_trail_event_log"
   },
   "fusion_trail": {
     "title": "Fusion Trail",
@@ -202,8 +257,34 @@
     "implementation_status": "implemented_workbook_confirmed",
     "source_status": "workbook_confirmed",
     "confirmed_rows": [
-      {"variant": "normal", "action_rows": [2786, 2931], "dmg_rows": [2578, 2628], "repeat_count": 5, "hit_interval_frames": 4, "multiplier": 1.0935},
-      {"variant": "enhanced", "action_rows": [2787, 2932], "dmg_rows": [2579, 2629], "repeat_count": 10, "hit_interval_frames": 2, "multiplier": 1.0935}
+      {
+        "variant": "normal",
+        "action_rows": [
+          2786,
+          2931
+        ],
+        "dmg_rows": [
+          2578,
+          2628
+        ],
+        "repeat_count": 5,
+        "hit_interval_frames": 4,
+        "multiplier": 1.0935
+      },
+      {
+        "variant": "enhanced",
+        "action_rows": [
+          2787,
+          2932
+        ],
+        "dmg_rows": [
+          2579,
+          2629
+        ],
+        "repeat_count": 10,
+        "hit_interval_frames": 2,
+        "multiplier": 1.0935
+      }
     ],
     "modeled_behavior": [
       "Seraphic Duet asks the Forte Circuit config for follow-up packets in tune_rupture mode.",
@@ -250,32 +331,101 @@
     ]
   },
   "remaining_unresolved_mechanics": [
-    "Rupturous Trail source-confirmed stack gain, stack consumption, and duration refresh rules.",
     "Fusion Trail source-confirmed stack gain, stack consumption, duration refresh, and Fusion Burst explosion formula.",
     "C6 trail stack granting remains scaffolded and is not active for default S0.",
     "Exact hit-level timing, hitstop, enemy movement, hit loss, and multi-target trail state tracking."
   ],
   "action_resolution_priority": [
-    {"priority": 1, "rule": "Finale if ready"},
-    {"priority": 2, "rule": "Seraphic Duet if Seraphic Duo is active and Synchronization Rate is at least 100"},
-    {"priority": 3, "rule": "Sync Strike if a sync-strike window is active"},
-    {"priority": 4, "rule": "Special Overdrive E1 form switch if the Overdrive follow-up window is active"},
-    {"priority": 5, "rule": "Normal Form Switch"},
-    {"priority": 6, "rule": "Normal fallback behavior"}
+    {
+      "priority": 1,
+      "rule": "Finale if ready"
+    },
+    {
+      "priority": 2,
+      "rule": "Seraphic Duet if Seraphic Duo is active and Synchronization Rate is at least 100"
+    },
+    {
+      "priority": 3,
+      "rule": "Sync Strike if a sync-strike window is active"
+    },
+    {
+      "priority": 4,
+      "rule": "Special Overdrive E1 form switch if the Overdrive follow-up window is active"
+    },
+    {
+      "priority": 5,
+      "rule": "Normal Form Switch"
+    },
+    {
+      "priority": 6,
+      "rule": "Normal fallback behavior"
+    }
   ],
   "timing_model": [
-    {"name": "action_time", "action_time": null, "combat_time_cost": null, "notes": "Action lock, internal action progression, hit timing progression, buffs, anomalies, and mechanic state duration ticking."},
-    {"name": "combat_time_cost", "action_time": null, "combat_time_cost": null, "notes": "Timed combat clock cost and cooldown reduction time. If omitted from an action, it falls back to action_time."},
-    {"name": "Overdrive", "action_time": 4.3667, "combat_time_cost": 0.0, "notes": "Confirmed global time-stop style action in current source interpretation."},
-    {"name": "Finale", "action_time": 5.6667, "combat_time_cost": 0.0, "notes": "Confirmed global time-stop style action in current source interpretation."},
-    {"name": "Seraphic Duet Overturn/Ouverture", "action_time": 3.0, "combat_time_cost": 1.3167},
-    {"name": "Seraphic Duet Encore", "action_time": 2.4167, "combat_time_cost": 1.3333},
-    {"name": "Sync Strike Armament Merge", "action_time": 1.1667, "combat_time_cost": 1.1667},
-    {"name": "Sync Strike Call of Dawn", "action_time": 0.9667, "combat_time_cost": 0.9667},
-    {"name": "Human Charged II", "action_time": 3.6667, "combat_time_cost": 3.6667},
-    {"name": "Instant Response Human Charged II", "action_time": 1.8333, "combat_time_cost": 1.8333},
-    {"name": "Heavy Mech Charged II", "action_time": 2.0667, "combat_time_cost": 2.0667},
-    {"name": "Instant Response Mech Charged II", "action_time": 1.0333, "combat_time_cost": 1.0333}
+    {
+      "name": "action_time",
+      "action_time": null,
+      "combat_time_cost": null,
+      "notes": "Action lock, internal action progression, hit timing progression, buffs, anomalies, and mechanic state duration ticking."
+    },
+    {
+      "name": "combat_time_cost",
+      "action_time": null,
+      "combat_time_cost": null,
+      "notes": "Timed combat clock cost and cooldown reduction time. If omitted from an action, it falls back to action_time."
+    },
+    {
+      "name": "Overdrive",
+      "action_time": 4.3667,
+      "combat_time_cost": 0.0,
+      "notes": "Confirmed global time-stop style action in current source interpretation."
+    },
+    {
+      "name": "Finale",
+      "action_time": 5.6667,
+      "combat_time_cost": 0.0,
+      "notes": "Confirmed global time-stop style action in current source interpretation."
+    },
+    {
+      "name": "Seraphic Duet Overturn/Ouverture",
+      "action_time": 3.0,
+      "combat_time_cost": 1.3167
+    },
+    {
+      "name": "Seraphic Duet Encore",
+      "action_time": 2.4167,
+      "combat_time_cost": 1.3333
+    },
+    {
+      "name": "Sync Strike Armament Merge",
+      "action_time": 1.1667,
+      "combat_time_cost": 1.1667
+    },
+    {
+      "name": "Sync Strike Call of Dawn",
+      "action_time": 0.9667,
+      "combat_time_cost": 0.9667
+    },
+    {
+      "name": "Human Charged II",
+      "action_time": 3.6667,
+      "combat_time_cost": 3.6667
+    },
+    {
+      "name": "Instant Response Human Charged II",
+      "action_time": 1.8333,
+      "combat_time_cost": 1.8333
+    },
+    {
+      "name": "Heavy Mech Charged II",
+      "action_time": 2.0667,
+      "combat_time_cost": 2.0667
+    },
+    {
+      "name": "Instant Response Mech Charged II",
+      "action_time": 1.0333,
+      "combat_time_cost": 1.0333
+    }
   ],
   "form_switch": [
     "Normal Human -> Mech Form Switch immediately casts Mech Basic Stage 1.",
@@ -291,25 +441,96 @@
     "Heavy Charged source damage type maps to resonance_liberation damage_bonus_category in current action data."
   ],
   "sync_strike": [
-    {"name": "Armament Merge", "modeled_behavior": ["Human-side Sync Strike.", "Switches to Mech.", "Sets the next Mech Basic Attack to Stage 2.", "Can emit the selected Aemeath Resonance Mode event when it deals damage."]},
-    {"name": "Call of Dawn", "modeled_behavior": ["Mech-side Sync Strike.", "Switches to Human.", "Sets the next Human Basic Attack to Stage 2.", "Can emit the selected Aemeath Resonance Mode event when it deals damage."]}
+    {
+      "name": "Armament Merge",
+      "modeled_behavior": [
+        "Human-side Sync Strike.",
+        "Switches to Mech.",
+        "Sets the next Mech Basic Attack to Stage 2.",
+        "Can emit the selected Aemeath Resonance Mode event when it deals damage."
+      ]
+    },
+    {
+      "name": "Call of Dawn",
+      "modeled_behavior": [
+        "Mech-side Sync Strike.",
+        "Switches to Human.",
+        "Sets the next Human Basic Attack to Stage 2.",
+        "Can emit the selected Aemeath Resonance Mode event when it deals damage."
+      ]
+    }
   ],
   "seraphic_duet": [
-    {"name": "Overturn/Ouverture", "modeled_behavior": ["Human-side Seraphic Duet.", "Requires Seraphic Duo and Synchronization Rate at least 100.", "Costs 100 Synchronization Rate.", "Adds Resonance Rate.", "Switches to Mech.", "Uses resonance_liberation damage_bonus_category from source damage type."]},
-    {"name": "Encore", "modeled_behavior": ["Mech-side Seraphic Duet.", "Requires Seraphic Duo and Synchronization Rate at least 100.", "Costs 100 Synchronization Rate.", "Adds Resonance Rate.", "Switches to Human.", "Uses resonance_liberation damage_bonus_category from source damage type."]},
-    {"name": "Priority", "modeled_behavior": ["Seraphic Duet takes priority over normal Form Switch."]}
+    {
+      "name": "Overturn/Ouverture",
+      "modeled_behavior": [
+        "Human-side Seraphic Duet.",
+        "Requires Seraphic Duo and Synchronization Rate at least 100.",
+        "Costs 100 Synchronization Rate.",
+        "Adds Resonance Rate.",
+        "Switches to Mech.",
+        "Uses resonance_liberation damage_bonus_category from source damage type.",
+        "In Tune Rupture mode, source-confirmed Seraphic Duet follow-up damage snapshots target Rupturous Trail stacks and applies the C0 4% per-stack extra Tune Rupture multiplier."
+      ]
+    },
+    {
+      "name": "Encore",
+      "modeled_behavior": [
+        "Mech-side Seraphic Duet.",
+        "Requires Seraphic Duo and Synchronization Rate at least 100.",
+        "Costs 100 Synchronization Rate.",
+        "Adds Resonance Rate.",
+        "Switches to Human.",
+        "Uses resonance_liberation damage_bonus_category from source damage type.",
+        "In Tune Rupture mode, source-confirmed Seraphic Duet follow-up damage snapshots target Rupturous Trail stacks and applies the C0 4% per-stack extra Tune Rupture multiplier."
+      ]
+    },
+    {
+      "name": "Priority",
+      "modeled_behavior": [
+        "Seraphic Duet takes priority over normal Form Switch."
+      ]
+    }
   ],
   "overdrive_finale": [
-    {"name": "Overdrive", "modeled_behavior": ["Grants Unbound.", "Grants Stardust Resonance in the current implementation.", "Adds 30 Synchronization Rate.", "Adds 1 Resonance Rate.", "Grants 2 Forte Enhancement stacks for 30 seconds.", "Grants Trail No-cost for 30 seconds.", "Switches to Mech.", "Opens the special E1 follow-up window.", "Costs 0 timed combat seconds."]},
-    {"name": "Finale", "modeled_behavior": ["Requires Unbound, Synchronization Rate 200, and Resonance Rate 4.", "Clears Synchronization Rate and Resonance Rate.", "Ends Unbound and Seraphic Duo.", "Switches to Human.", "Costs 0 timed combat seconds."]}
+    {
+      "name": "Overdrive",
+      "modeled_behavior": [
+        "Grants Unbound.",
+        "Grants Stardust Resonance in the current implementation.",
+        "Adds 30 Synchronization Rate.",
+        "Adds 1 Resonance Rate.",
+        "Grants 2 Forte Enhancement stacks for 30 seconds.",
+        "Grants Trail No-cost for 30 seconds.",
+        "Switches to Mech.",
+        "Opens the special E1 follow-up window.",
+        "Costs 0 timed combat seconds."
+      ]
+    },
+    {
+      "name": "Finale",
+      "modeled_behavior": [
+        "Requires Unbound, Synchronization Rate 200, and Resonance Rate 4.",
+        "Clears Synchronization Rate and Resonance Rate.",
+        "Ends Unbound and Seraphic Duo.",
+        "Switches to Human.",
+        "Costs 0 timed combat seconds."
+      ]
+    }
   ],
   "echo_sets": [
     {
       "name": "Trailblazing Star 5-set",
       "implementation_status": "implemented_runtime_buff",
-      "trigger_event_tags": ["fusion_burst", "tune_rupture_shifting"],
+      "trigger_event_tags": [
+        "fusion_burst",
+        "tune_rupture_shifting"
+      ],
       "duration": 8.0,
-      "effects": ["Crit Rate +20%", "Fusion DMG +20%"],
+      "effects": [
+        "Crit Rate +20%",
+        "Fusion DMG +20%"
+      ],
       "timing": "same-action aggregate approximation for triggering damage",
       "notes": "The 2-set Fusion DMG bonus is treated as already reflected in the selected Aemeath real profile."
     }
@@ -333,7 +554,10 @@
         },
         {
           "name": "Resonance Liberation Penetration",
-          "trigger_event_tags": ["fusion_burst", "tune_rupture_shifting"],
+          "trigger_event_tags": [
+            "fusion_burst",
+            "tune_rupture_shifting"
+          ],
           "trigger_description": "Tune Rupture - Shifting / Fusion Burst triggers an 8s resonance_liberation penetration buff.",
           "duration": "8s",
           "r1_formula_modifiers": {
@@ -355,7 +579,10 @@
       "implementation_status": "implemented_excel_single_target",
       "availability": "Conditional on enemy Mistune / Tune Break availability.",
       "formula": "base-10000 Tune Break formula",
-      "hit_multipliers": [1.0, 12.0],
+      "hit_multipliers": [
+        1.0,
+        12.0
+      ],
       "notes": "Uses Tune formula damage, not normal damage bonus or Everbright conditional penetration."
     }
   ],
@@ -378,28 +605,81 @@
     }
   ],
   "sync_delta_table": [
-    {"name": "Human Basic 1", "sync_delta": 3.29},
-    {"name": "Human Basic 2", "sync_delta": 6.44},
-    {"name": "Human Basic 3", "sync_delta": 16.66},
-    {"name": "Human Basic 4", "sync_delta": 23.31},
-    {"name": "Mech Basic 1", "sync_delta": 6.45},
-    {"name": "Mech Basic 2", "sync_delta": 9.6},
-    {"name": "Mech Basic 3", "sync_delta": 18.54},
-    {"name": "Mech Basic 4", "sync_delta": 23.28},
-    {"name": "Armament Merge", "sync_delta": 18.29},
-    {"name": "Call of Dawn", "sync_delta": 22.18},
-    {"name": "Form Switch to Mech Normal", "sync_delta": 6.45},
-    {"name": "Form Switch to Aemeath Normal", "sync_delta": 3.29},
-    {"name": "Form Switch to Aemeath After Overdrive", "sync_delta": 6.44},
-    {"name": "Overdrive", "sync_delta": 30},
-    {"name": "Seraphic Duet", "sync_delta": -100},
-    {"name": "Finale", "sync_delta": null, "notes": "Clears Synchronization Rate."}
+    {
+      "name": "Human Basic 1",
+      "sync_delta": 3.29
+    },
+    {
+      "name": "Human Basic 2",
+      "sync_delta": 6.44
+    },
+    {
+      "name": "Human Basic 3",
+      "sync_delta": 16.66
+    },
+    {
+      "name": "Human Basic 4",
+      "sync_delta": 23.31
+    },
+    {
+      "name": "Mech Basic 1",
+      "sync_delta": 6.45
+    },
+    {
+      "name": "Mech Basic 2",
+      "sync_delta": 9.6
+    },
+    {
+      "name": "Mech Basic 3",
+      "sync_delta": 18.54
+    },
+    {
+      "name": "Mech Basic 4",
+      "sync_delta": 23.28
+    },
+    {
+      "name": "Armament Merge",
+      "sync_delta": 18.29
+    },
+    {
+      "name": "Call of Dawn",
+      "sync_delta": 22.18
+    },
+    {
+      "name": "Form Switch to Mech Normal",
+      "sync_delta": 6.45
+    },
+    {
+      "name": "Form Switch to Aemeath Normal",
+      "sync_delta": 3.29
+    },
+    {
+      "name": "Form Switch to Aemeath After Overdrive",
+      "sync_delta": 6.44
+    },
+    {
+      "name": "Overdrive",
+      "sync_delta": 30
+    },
+    {
+      "name": "Seraphic Duet",
+      "sync_delta": -100
+    },
+    {
+      "name": "Finale",
+      "sync_delta": null,
+      "notes": "Clears Synchronization Rate."
+    }
   ],
   "resonance_mode_mechanic_events": {
     "title": "Aemeath Resonance Mode Mechanic Events",
     "implementation_status": "implemented_event_trigger",
     "source_status": "user_supplied_skill_screenshot_not_embedded",
-    "supported_modes": ["fusion_burst", "tune_rupture", "unresolved"],
+    "supported_modes": [
+      "fusion_burst",
+      "tune_rupture",
+      "unresolved"
+    ],
     "mode_behavior": [
       "fusion_burst mode emits event tag fusion_burst when a listed trigger action deals damage.",
       "tune_rupture mode emits event tag tune_rupture_shifting when a listed trigger action deals damage.",
@@ -429,12 +709,36 @@
       "Overdrive and Finale are Resonance Liberation actions and use Resonance Liberation damage bonus."
     ],
     "explicit_actions": [
-      {"action_id": "aemeath_liberation_overdrive", "action_type": "resonance_liberation", "damage_bonus_category": "resonance_liberation"},
-      {"action_id": "aemeath_heavenfall_finale", "action_type": "resonance_liberation", "damage_bonus_category": "resonance_liberation"},
-      {"action_id": "aemeath_basic_form_stage_1..4", "action_type": "basic_attack", "damage_bonus_category": "basic_attack"},
-      {"action_id": "aemeath_mech_basic_stage_1..4", "action_type": "basic_attack", "damage_bonus_category": "basic_attack"},
-      {"action_id": "aemeath_heavy_*_charged_*", "action_type": "heavy_attack", "damage_bonus_category": "resonance_liberation"},
-      {"action_id": "aemeath_seraphic_duet_*", "action_type": "resonance_skill", "damage_bonus_category": "resonance_liberation"}
+      {
+        "action_id": "aemeath_liberation_overdrive",
+        "action_type": "resonance_liberation",
+        "damage_bonus_category": "resonance_liberation"
+      },
+      {
+        "action_id": "aemeath_heavenfall_finale",
+        "action_type": "resonance_liberation",
+        "damage_bonus_category": "resonance_liberation"
+      },
+      {
+        "action_id": "aemeath_basic_form_stage_1..4",
+        "action_type": "basic_attack",
+        "damage_bonus_category": "basic_attack"
+      },
+      {
+        "action_id": "aemeath_mech_basic_stage_1..4",
+        "action_type": "basic_attack",
+        "damage_bonus_category": "basic_attack"
+      },
+      {
+        "action_id": "aemeath_heavy_*_charged_*",
+        "action_type": "heavy_attack",
+        "damage_bonus_category": "resonance_liberation"
+      },
+      {
+        "action_id": "aemeath_seraphic_duet_*",
+        "action_type": "resonance_skill",
+        "damage_bonus_category": "resonance_liberation"
+      }
     ]
   },
   "build_profile_damage_type_bonus_notes": {
@@ -445,12 +749,30 @@
       "aemeath_user_real_01": "User-supplied profile with Trailblazing Star 2-set and Everbright Polestar static stats already reflected where marked."
     },
     "damage_categories": [
-      {"action_id": "aemeath_liberation_overdrive", "damage_bonus_category": "resonance_liberation"},
-      {"action_id": "aemeath_heavenfall_finale", "damage_bonus_category": "resonance_liberation"},
-      {"action_id": "aemeath_basic_form_stage_1..4", "damage_bonus_category": "basic_attack"},
-      {"action_id": "aemeath_mech_basic_stage_1..4", "damage_bonus_category": "basic_attack"},
-      {"action_id": "aemeath_heavy_*_charged_*", "damage_bonus_category": "resonance_liberation"},
-      {"action_id": "aemeath_seraphic_duet_*", "damage_bonus_category": "resonance_liberation"}
+      {
+        "action_id": "aemeath_liberation_overdrive",
+        "damage_bonus_category": "resonance_liberation"
+      },
+      {
+        "action_id": "aemeath_heavenfall_finale",
+        "damage_bonus_category": "resonance_liberation"
+      },
+      {
+        "action_id": "aemeath_basic_form_stage_1..4",
+        "damage_bonus_category": "basic_attack"
+      },
+      {
+        "action_id": "aemeath_mech_basic_stage_1..4",
+        "damage_bonus_category": "basic_attack"
+      },
+      {
+        "action_id": "aemeath_heavy_*_charged_*",
+        "damage_bonus_category": "resonance_liberation"
+      },
+      {
+        "action_id": "aemeath_seraphic_duet_*",
+        "damage_bonus_category": "resonance_liberation"
+      }
     ],
     "notes": "Build profiles are stat overlays only. They do not change Aemeath action routing, coefficients, timings, resources, or policy action availability."
   },
@@ -458,7 +780,7 @@
     "This page describes the simulator's modeled interpretation, not a complete game-client recreation.",
     "The current goal is DPS comparison, not exact frame-perfect combat reproduction.",
     "Fusion Burst explosion runtime damage remains omitted until coefficient/formula data is source-confirmed.",
-    "Fusion Trail / Rupturous Trail stack state is scaffolded, but source-confirmed stack mutation and damage rules remain unresolved.",
+    "Fusion Trail stack state remains scaffolded until source-confirmed stack mutation and damage rules are available.",
     "Seraphic Duet Tune Rupture follow-up damage is implemented only for the source-confirmed tune_response formula; Fusion Burst follow-up damage remains omitted.",
     "full Starflux utility remains omitted.",
     "exact hitstop, enemy movement, hit loss, and multi-target state tracking remain omitted.",
@@ -469,8 +791,8 @@
     "Trailblazing Star 5-set uses same-action aggregate approximation for triggering damage.",
     "Tune Break and Tune Response are modeled as single-target formula damage.",
     "QTE / Intro transition data is represented through reviewed metadata and transition actions, not a full cinematic/client transition recreation.",
-    "Aemeath Forte Trail observation is modeled as a single-target trail state rather than full multi-target client state.",
-    "Observation schema slot_generic_mechanics_v3 exposes Forte Enhancement, Trail No-cost, Rupturous Trail, and Fusion Trail as generic mechanic channels."
+    "Aemeath Rupturous Trail is modeled as a single-target CombatState trail state rather than full multi-target client state.",
+    "Observation schema slot_generic_mechanics_v5 exposes target Rupturous Trail as fixed global channels."
   ],
   "legacy_modes": []
 }

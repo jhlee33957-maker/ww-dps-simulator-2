@@ -66,7 +66,7 @@ def test_distributed_array_wfo_combo_reaches_inversion() -> None:
 
     state = mornye_state(sim)
     assert_close(state["relative_momentum"], 100.0, "Relative Momentum after DA + WFO A1/A2/A3")
-    assert_close(sim.state.combat_time, 3.8667, "time to 100 Relative Momentum")
+    assert_close(sim.state.combat_time, 2.7167, "time to 100 Relative Momentum")
     assert sim.is_action_available(sim.actions["mornye_heavy_attack"]) is True
 
     assert sim.execute_action("mornye_heavy_attack")
@@ -78,7 +78,7 @@ def test_distributed_array_wfo_combo_reaches_inversion() -> None:
     assert state["relative_momentum"] == 0.0
     assert state["observation_marker_active"] is True
     assert state["observation_marker_remaining"] == 30.0
-    assert_close(sim.state.combat_time, 5.1667, "time through Heavy Inversion")
+    assert_close(sim.state.combat_time, 4.15, "time through Heavy Inversion")
 
 
 def main() -> None:

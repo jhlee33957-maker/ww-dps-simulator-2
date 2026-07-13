@@ -15,18 +15,19 @@ def main() -> None:
     actions = {item["id"]: item for item in json.loads((ROOT / "data/actions.json").read_text(encoding="utf-8"))}
 
     intro = actions["lynae_intro_time_to_show_some_colors"]
-    assert len(intro["hits"]) == 10
-    assert all(abs(hit["damage_multiplier"] - 0.2248) < 1e-9 for hit in intro["hits"])
+    assert len(intro["hits"]) == 1
+    assert abs(intro["hits"][0]["damage_multiplier"] - 2.2480) < 1e-9
     assert abs(hit_sum(intro) - 2.2480) < 1e-9
     assert abs(intro["damage_multiplier"] - 2.2480) < 1e-9
 
     liberation = actions["lynae_resonance_liberation_prismatic_overblast"]
-    assert len(liberation["hits"]) == 10
-    assert all(abs(hit["damage_multiplier"] - 0.8748) < 1e-9 for hit in liberation["hits"])
+    assert len(liberation["hits"]) == 1
+    assert abs(liberation["hits"][0]["damage_multiplier"] - 8.7480) < 1e-9
     assert abs(hit_sum(liberation) - 8.7480) < 1e-9
 
     vivid = actions["lynae_to_a_vivid_tomorrow"]
-    assert len(vivid["hits"]) == 22
+    assert len(vivid["hits"]) == 1
+    assert abs(vivid["hits"][0]["damage_multiplier"] - 2.0106) < 1e-9
     assert abs(hit_sum(vivid) - 2.0106) < 1e-9
     assert abs(vivid["damage_multiplier"] - 2.0106) < 1e-9
     print("lynae_intro_liberation_vivid_tick_multiplier_smoke_test ok")

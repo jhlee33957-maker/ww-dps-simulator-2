@@ -83,6 +83,12 @@
       "id": "discord",
       "display_name": "Discord",
       "weapon_type": "broadblade",
+      "base_attack_level_90": 337,
+      "secondary_stat": {
+        "type": "energy_regen",
+        "value_level_90": 0.518
+      },
+      "static_stats_already_in_profile_supported": true,
       "rank_values": {
         "1": {
           "concerto_restore_on_resonance_skill": 8.0

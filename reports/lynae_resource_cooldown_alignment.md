@@ -27,7 +27,7 @@ Source action/resource rows: `角色-女!2577:2738`
 | `lynae_kaleidoscopic_basic_stage_2` | `[2596, 2597]` | `1.16` | `4.14` | `{}` | `0` | `0.0` | source_confirmed |  |
 | `lynae_kaleidoscopic_basic_stage_3` | `[2598, 2599, 2600]` | `1.68` | `6.03` | `{}` | `0` | `0.0` | source_confirmed |  |
 | `lynae_kaleidoscopic_basic_stage_4` | `[2601, 2602, 2603, 2604, 2605]` | `2.2` | `7.94` | `{}` | `0` | `0.0` | source_confirmed |  |
-| `lynae_kaleidoscopic_basic_stage_5` | `[2611, 2612, 2613, 2614]` | `2.84` | `10.21` | `{}` | `0` | `0.0` | source_confirmed |  |
+| `lynae_kaleidoscopic_basic_stage_5` | `[2611, 2612, 2613, 2614]` | `3.76` | `13.45` | `{}` | `0` | `0.0` | source_confirmed |  |
 | `lynae_kaleidoscopic_mid_air_attack` | `[2615, 2616]` | `2.14` | `7.66` | `{}` | `0.0` | `0.0` | source_confirmed |  |
 | `lynae_kaleidoscopic_ground_heavy_hold` | `[2617, 2618, 2619, 2620, 2621, 2622, 2623]` | `2.94` | `6.58` | `{}` | `0.0` | `0.0` | source_confirmed |  |
 | `lynae_kaleidoscopic_graffiti_blast` | `[2624]` | `1.55` | `5.58` | `{}` | `0.0` | `0.0` | source_confirmed |  |
@@ -37,13 +37,13 @@ Source action/resource rows: `角色-女!2577:2738`
 | `lynae_iridescent_splash` | `[2675, 2676, 2677, 2678]` | `8.13` | `7.65` | `{}` | `0.0` | `0.0` | source_confirmed |  |
 | `lynae_visual_impact` | `[2679, 2680, 2681, 2682]` | `14.05` | `14.58` | `{}` | `0.0` | `25.0` | source_confirmed |  |
 | `lynae_polychrome_leap_stage_1` | `[2641, 2642, 2643, 2644, 2645]` | `2.25` | `5.4` | `{"true_color_gain": 1.0, "lumiflow_cost": 40.0}` | `0.0` | `0.0` | source_confirmed |  |
-| `lynae_polychrome_leap_stage_2` | `[2647, 2648, 2649, 2650, 2651]` | `0.38` | `0.9` | `{"true_color_gain": 1.0, "lumiflow_cost": 40.0}` | `0.0` | `0.0` | source_confirmed |  |
-| `lynae_polychrome_leap_stage_3` | `[2653, 2654, 2660, 2661]` | `0.6` | `1.4` | `{"true_color_gain": 1.0, "lumiflow_cost": 40.0}` | `0.0` | `0.0` | source_confirmed |  |
-| `lynae_intro_time_to_show_some_colors` | `[2689, 2690, 2691]` | `1.34` | `1.2` | `{"source_core_gain_1": 100.0, "overflow_gain": 100.0}` | `0` | `0.0` | source_confirmed |  |
+| `lynae_polychrome_leap_stage_2` | `[2647, 2648, 2649, 2650, 2651]` | `2.28` | `5.4` | `{"true_color_gain": 1.0, "lumiflow_cost": 40.0}` | `0.0` | `0.0` | source_confirmed |  |
+| `lynae_polychrome_leap_stage_3` | `[2653, 2654, 2660, 2661]` | `1.5` | `3.5` | `{"true_color_gain": 1.0, "lumiflow_cost": 40.0}` | `0.0` | `0.0` | source_confirmed |  |
+| `lynae_intro_time_to_show_some_colors` | `[2689, 2690, 2691]` | `13.4` | `12.0` | `{"overflow_gain": 100.0}` | `0` | `0.0` | source_confirmed |  |
 | `lynae_resonance_liberation_prismatic_overblast` | `[2692, 2693, 2694, 2695]` | `0.0` | `20.0` | `{}` | `125` | `25` | source_confirmed |  |
-| `lynae_to_a_vivid_tomorrow` | `[2696, 2697, 2698]` | `0.5` | `1.78` | `{}` | `0.0` | `0.0` | source_confirmed |  |
+| `lynae_to_a_vivid_tomorrow` | `[2696, 2697, 2698]` | `5.46` | `19.42` | `{}` | `0.0` | `0.0` | source_confirmed |  |
 | `lynae_outro_lets_hit_the_road` | `[2699, 2700, 2701]` | `0.0` | `0.0` | `{}` | `0` | `0.0` | source_confirmed |  |
 | `lynae_tune_break` | `[2702, 2703, 2704]` | `0.0` | `0.0` | `{}` | `0` | `0.0` | source_confirmed |  |
 | `lynae_tune_response_spectral_analysis` | `[2735]` | `0.0` | `0.0` | `{}` | `0` | `0.0` | source_confirmed |  |
 | `lynae_resonance_liberation` | `[]` | `0` | `0` | `{}` | `125` | `25` | non_damaging_selector |  |
-| `lynae_resonance_liberation_prismatic_overblast_c5` | `[2692, 2693, 2694, 2695, 2483]` | `0.0` | `0.0` | `{}` | `125` | `25` | constellation_gated_disabled_by_default_workbook_confirmed_global_timestop_decision_frame_240F_damage_repeat_from_2695 |  |
+| `lynae_resonance_liberation_prismatic_overblast_c5` | `[2692, 2693, 2694, 2695, 2483]` | `0.0` | `20.0` | `{}` | `125` | `25` | constellation_gated_disabled_by_default_workbook_confirmed_global_timestop_decision_frame_240F_damage_repeat_from_2695 |  |

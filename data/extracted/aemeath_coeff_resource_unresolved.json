@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T01:52:37.328079+00:00",
+  "generated_at": "2026-07-10T13:48:43.395877+00:00",
   "source": "data\\source\\鸣潮动作数据汇总.xlsx",
   "rows": [
     {
@@ -1193,9 +1193,222 @@
     },
     {
       "reason": "unsafe_candidate_prevented",
+      "action_id": "aemeath_basic_form_stage_2",
+      "candidate_hit_count": 3,
+      "current_hit_count": 1,
+      "shape_status": "longer_than_current",
+      "safe_to_patch": false,
+      "safe_to_patch_reasons": [
+        "candidate_longer_than_current_requires_review"
+      ],
+      "critical_warnings": [],
+      "base_source_rows": [
+        {
+          "row_number": 2688,
+          "source_action_name": "A2-1",
+          "raw_coefficients": 0.1389,
+          "parsed_multipliers": [
+            0.1389
+          ],
+          "repeat_metadata": {
+            "raw_text": "A2-1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.1389 | 0.25 | 0 | 1.29 | 0 | 0 | 0 | 0.5 | 1 | 9.98 | 7.99 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A2-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.1389 | 大招能量 | 0.25 | 核心能量1 | 0 | 核心能量2 | 1.29 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.5 | 共振系数 | 1 | 削韧值 | 9.98 | 偏谐值 | 7.99 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_from_repeat": false,
+            "repeat_warning": null
+          }
+        },
+        {
+          "row_number": 2689,
+          "source_action_name": "A2-2",
+          "raw_coefficients": 0.2084,
+          "parsed_multipliers": [
+            0.2084
+          ],
+          "repeat_metadata": {
+            "raw_text": "A2-2 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.2084 | 0.38 | 0 | 1.93 | 0 | 0 | 0 | 0.75 | 1 | 14.97 | 11.98 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A2-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.2084 | 大招能量 | 0.38 | 核心能量1 | 0 | 核心能量2 | 1.93 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.75 | 共振系数 | 1 | 削韧值 | 14.97 | 偏谐值 | 11.98 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_from_repeat": false,
+            "repeat_warning": null
+          }
+        },
+        {
+          "row_number": 2690,
+          "source_action_name": "A2-3",
+          "raw_coefficients": 0.3473,
+          "parsed_multipliers": [
+            0.3473
+          ],
+          "repeat_metadata": {
+            "raw_text": "A2-3 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.3473 | 0.63 | 0 | 3.22 | 0 | 0 | 0 | 1.25 | 1 | 24.95 | 19.96 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A2-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.3473 | 大招能量 | 0.63 | 核心能量1 | 0 | 核心能量2 | 3.22 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 1.25 | 共振系数 | 1 | 削韧值 | 24.95 | 偏谐值 | 19.96 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_from_repeat": false,
+            "repeat_warning": null
+          }
+        }
+      ]
+    },
+    {
+      "reason": "unsafe_candidate_prevented",
+      "action_id": "aemeath_basic_form_stage_3",
+      "candidate_hit_count": 5,
+      "current_hit_count": 1,
+      "shape_status": "longer_than_current",
+      "safe_to_patch": false,
+      "safe_to_patch_reasons": [
+        "candidate_longer_than_current_requires_review"
+      ],
+      "critical_warnings": [],
+      "base_source_rows": [
+        {
+          "row_number": 2691,
+          "source_action_name": "A3-1",
+          "raw_coefficients": 0.0932,
+          "parsed_multipliers": [
+            0.0932
+          ],
+          "repeat_metadata": {
+            "raw_text": "A3-1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0932 | 0.17 | 0 | 1.67 | 0 | 0 | 0 | 0.34 | 1 | 6.69 | 5.36 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0932 | 大招能量 | 0.17 | 核心能量1 | 0 | 核心能量2 | 1.67 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.34 | 共振系数 | 1 | 削韧值 | 6.69 | 偏谐值 | 5.36 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_from_repeat": false,
+            "repeat_warning": null
+          }
+        },
+        {
+          "row_number": 2692,
+          "source_action_name": "A3-2",
+          "raw_coefficients": 0.0932,
+          "parsed_multipliers": [
+            0.0932
+          ],
+          "repeat_metadata": {
+            "raw_text": "A3-2 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0932 | 0.17 | 0 | 1.67 | 0 | 0 | 0 | 0.34 | 1 | 6.69 | 5.36 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0932 | 大招能量 | 0.17 | 核心能量1 | 0 | 核心能量2 | 1.67 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.34 | 共振系数 | 1 | 削韧值 | 6.69 | 偏谐值 | 5.36 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_from_repeat": false,
+            "repeat_warning": null
+          }
+        },
+        {
+          "row_number": 2693,
+          "source_action_name": "A3-3",
+          "raw_coefficients": 0.0932,
+          "parsed_multipliers": [
+            0.0932
+          ],
+          "repeat_metadata": {
+            "raw_text": "A3-3 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0932 | 0.17 | 0 | 1.67 | 0 | 0 | 0 | 0.34 | 1 | 6.69 | 5.36 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0932 | 大招能量 | 0.17 | 核心能量1 | 0 | 核心能量2 | 1.67 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.34 | 共振系数 | 1 | 削韧值 | 6.69 | 偏谐值 | 5.36 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_from_repeat": false,
+            "repeat_warning": null
+          }
+        },
+        {
+          "row_number": 2694,
+          "source_action_name": "A3-4",
+          "raw_coefficients": 0.1863,
+          "parsed_multipliers": [
+            0.1863
+          ],
+          "repeat_metadata": {
+            "raw_text": "A3-4 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.1863 | 0.34 | 0 | 3.33 | 0 | 0 | 0 | 0.67 | 1 | 13.38 | 10.71 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-4 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.1863 | 大招能量 | 0.34 | 核心能量1 | 0 | 核心能量2 | 3.33 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.67 | 共振系数 | 1 | 削韧值 | 13.38 | 偏谐值 | 10.71 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_from_repeat": false,
+            "repeat_warning": null
+          }
+        },
+        {
+          "row_number": 2695,
+          "source_action_name": "A3-5",
+          "raw_coefficients": 0.4656,
+          "parsed_multipliers": [
+            0.4656
+          ],
+          "repeat_metadata": {
+            "raw_text": "A3-5 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.4656 | 0.84 | 0 | 8.32 | 0 | 0 | 0 | 1.68 | 1 | 33.45 | 26.76 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-5 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.4656 | 大招能量 | 0.84 | 核心能量1 | 0 | 核心能量2 | 8.32 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 1.68 | 共振系数 | 1 | 削韧值 | 33.45 | 偏谐值 | 26.76 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_from_repeat": false,
+            "repeat_warning": null
+          }
+        }
+      ]
+    },
+    {
+      "reason": "unsafe_candidate_prevented",
+      "action_id": "aemeath_basic_form_stage_4",
+      "candidate_hit_count": 6,
+      "current_hit_count": 1,
+      "shape_status": "longer_than_current",
+      "safe_to_patch": false,
+      "safe_to_patch_reasons": [
+        "candidate_longer_than_current_requires_review"
+      ],
+      "critical_warnings": [],
+      "base_source_rows": [
+        {
+          "row_number": 2701,
+          "source_action_name": "A4-1",
+          "raw_coefficients": 0.0673,
+          "parsed_multipliers": [
+            0.0673
+          ],
+          "repeat_metadata": {
+            "raw_text": "A4-1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0673 | 0.13 | 0 | 1.17 | 0 | 0 | 0 | 0.25 | 1 | 4.84 | 3.87 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A4-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0673 | 大招能量 | 0.13 | 核心能量1 | 0 | 核心能量2 | 1.17 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.25 | 共振系数 | 1 | 削韧值 | 4.84 | 偏谐值 | 3.87 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_from_repeat": false,
+            "repeat_warning": null
+          }
+        },
+        {
+          "row_number": 2702,
+          "source_action_name": "A4-2",
+          "raw_coefficients": 0.0673,
+          "parsed_multipliers": [
+            0.0673,
+            0.0673,
+            0.0673,
+            0.0673
+          ],
+          "repeat_metadata": {
+            "raw_text": "A4-2 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0673 | 0.13 | 0 | 1.17 | 0 | 0 | 0 | 0.25 | 1 | 4.84 | 3.87 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A4-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0673 | 大招能量 | 0.13 | 核心能量1 | 0 | 核心能量2 | 1.17 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.25 | 共振系数 | 1 | 削韧值 | 4.84 | 偏谐值 | 3.87 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": 4,
+            "repeat_source": "frame_sheet_join",
+            "expanded_from_repeat": true,
+            "repeat_warning": null,
+            "repeat_metadata_row_number": 2754,
+            "repeat_metadata_source_text": "最多4次",
+            "repeat_join_method": "character_group_label"
+          }
+        },
+        {
+          "row_number": 2703,
+          "source_action_name": "A4-3",
+          "raw_coefficients": 1.0094,
+          "parsed_multipliers": [
+            1.0094
+          ],
+          "repeat_metadata": {
+            "raw_text": "A4-3 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 1.0094 | 1.82 | 0 | 17.46 | 0 | 0 | 0 | 3.63 | 1 | 72.53 | 58.02 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A4-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 1.0094 | 大招能量 | 1.82 | 核心能量1 | 0 | 核心能量2 | 17.46 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 3.63 | 共振系数 | 1 | 削韧值 | 72.53 | 偏谐值 | 58.02 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_from_repeat": false,
+            "repeat_warning": null
+          }
+        }
+      ]
+    },
+    {
+      "reason": "unsafe_candidate_prevented",
       "action_id": "aemeath_form_switch_to_mech_normal",
       "candidate_hit_count": 0,
-      "current_hit_count": 3,
+      "current_hit_count": 1,
       "shape_status": "empty_candidate",
       "safe_to_patch": false,
       "safe_to_patch_reasons": [
@@ -1211,86 +1424,16 @@
       "base_source_rows": []
     },
     {
-      "reason": "compressed_multihit_candidate",
-      "action_id": "aemeath_heavy_aemeath_charged_1",
-      "candidate_hit_count": 1,
-      "current_hit_count": 2,
-      "shape_status": "shorter_than_current",
-      "safe_to_patch": false,
-      "safe_to_patch_reasons": [
-        "candidate_shorter_than_current",
-        "shape_status_shorter_than_current",
-        "critical_warnings_present"
-      ],
-      "critical_warnings": [
-        "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
-      ],
-      "base_source_rows": [
-        {
-          "row_number": 2705,
-          "source_action_name": "重击-1",
-          "raw_coefficients": 0.1857,
-          "parsed_multipliers": [
-            0.1857
-          ],
-          "repeat_metadata": {
-            "raw_text": "重击-1 | 热熔 | 伤害 | 重击 | 共鸣解放伤害 | 0 | 攻击 | 0.1857 | 0.34 | 0 | 0 | 0 | 0 | 0 | 0.67 | 1 | 13.34 | 10.68 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | 重击-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 重击 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.1857 | 大招能量 | 0.34 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.67 | 共振系数 | 1 | 削韧值 | 13.34 | 偏谐值 | 10.68 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-            "repeat_count": null,
-            "repeat_source": null,
-            "expanded_from_repeat": false,
-            "repeat_warning": null
-          }
-        }
-      ]
-    },
-    {
-      "reason": "candidate_shorter_than_current",
-      "action_id": "aemeath_heavy_aemeath_charged_1",
-      "candidate_hit_count": 1,
-      "current_hit_count": 2,
-      "shape_status": "shorter_than_current",
-      "safe_to_patch": false,
-      "safe_to_patch_reasons": [
-        "candidate_shorter_than_current",
-        "shape_status_shorter_than_current",
-        "critical_warnings_present"
-      ],
-      "critical_warnings": [
-        "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
-      ],
-      "base_source_rows": [
-        {
-          "row_number": 2705,
-          "source_action_name": "重击-1",
-          "raw_coefficients": 0.1857,
-          "parsed_multipliers": [
-            0.1857
-          ],
-          "repeat_metadata": {
-            "raw_text": "重击-1 | 热熔 | 伤害 | 重击 | 共鸣解放伤害 | 0 | 攻击 | 0.1857 | 0.34 | 0 | 0 | 0 | 0 | 0 | 0.67 | 1 | 13.34 | 10.68 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | 重击-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 重击 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.1857 | 大招能量 | 0.34 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.67 | 共振系数 | 1 | 削韧值 | 13.34 | 偏谐值 | 10.68 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-            "repeat_count": null,
-            "repeat_source": null,
-            "expanded_from_repeat": false,
-            "repeat_warning": null
-          }
-        }
-      ]
-    },
-    {
       "reason": "unsafe_candidate_prevented",
       "action_id": "aemeath_heavy_aemeath_charged_1",
       "candidate_hit_count": 1,
-      "current_hit_count": 2,
-      "shape_status": "shorter_than_current",
+      "current_hit_count": 1,
+      "shape_status": "same_length_diff_values",
       "safe_to_patch": false,
       "safe_to_patch_reasons": [
-        "candidate_shorter_than_current",
-        "shape_status_shorter_than_current",
-        "critical_warnings_present"
+        "candidate_values_differ_from_current"
       ],
-      "critical_warnings": [
-        "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
-      ],
+      "critical_warnings": [],
       "base_source_rows": [
         {
           "row_number": 2705,
@@ -1313,7 +1456,7 @@
       "reason": "unsafe_candidate_prevented",
       "action_id": "aemeath_heavy_aemeath_charged_2",
       "candidate_hit_count": 6,
-      "current_hit_count": 5,
+      "current_hit_count": 1,
       "shape_status": "longer_than_current",
       "safe_to_patch": false,
       "safe_to_patch_reasons": [
@@ -1392,30 +1535,26 @@
       ]
     },
     {
-      "reason": "compressed_multihit_candidate",
-      "action_id": "aemeath_mech_basic_stage_3",
-      "candidate_hit_count": 6,
-      "current_hit_count": 8,
-      "shape_status": "shorter_than_current",
+      "reason": "unsafe_candidate_prevented",
+      "action_id": "aemeath_liberation_overdrive",
+      "candidate_hit_count": 4,
+      "current_hit_count": 1,
+      "shape_status": "longer_than_current",
       "safe_to_patch": false,
       "safe_to_patch_reasons": [
-        "candidate_shorter_than_current",
-        "shape_status_shorter_than_current",
-        "critical_warnings_present"
+        "candidate_longer_than_current_requires_review"
       ],
-      "critical_warnings": [
-        "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
-      ],
+      "critical_warnings": [],
       "base_source_rows": [
         {
-          "row_number": 2746,
-          "source_action_name": "A3-1",
-          "raw_coefficients": 0.1165,
+          "row_number": 2729,
+          "source_action_name": "C0大招1-1",
+          "raw_coefficients": 2.008,
           "parsed_multipliers": [
-            0.1165
+            2.008
           ],
           "repeat_metadata": {
-            "raw_text": "A3-1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.1165 | 0.21 | 0 | 1.99 | 0 | 0 | 0 | 0.42 | 1 | 8.37 | 6.7 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.1165 | 大招能量 | 0.21 | 核心能量1 | 0 | 核心能量2 | 1.99 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.42 | 共振系数 | 1 | 削韧值 | 8.37 | 偏谐值 | 6.7 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "raw_text": "C0大招1-1 | 热熔 | 伤害 | 共鸣解放 | 共鸣解放伤害 | 0 | 攻击 | 2.008 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 80 | 168 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0大招1-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣解放 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 2.008 | 大招能量 | 0 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0 | 共振系数 | 1 | 削韧值 | 80 | 偏谐值 | 168 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
             "repeat_count": null,
             "repeat_source": null,
             "expanded_from_repeat": false,
@@ -1423,34 +1562,82 @@
           }
         },
         {
-          "row_number": 2747,
-          "source_action_name": "A3-2",
-          "raw_coefficients": 0.0389,
+          "row_number": 2730,
+          "source_action_name": "C0大招1-2",
+          "raw_coefficients": 2.6774,
           "parsed_multipliers": [
-            0.0389,
-            0.0389,
-            0.0389
+            2.6774,
+            2.6774,
+            2.6774
           ],
           "repeat_metadata": {
-            "raw_text": "A3-2 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0389 | 0.07 | 0 | 0.67 | 0 | 0 | 0 | 0.14 | 1 | 2.79 | 2.24 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0389 | 大招能量 | 0.07 | 核心能量1 | 0 | 核心能量2 | 0.67 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.14 | 共振系数 | 1 | 削韧值 | 2.79 | 偏谐值 | 2.24 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "raw_text": "C0大招1-2 | 热熔 | 伤害 | 共鸣解放 | 共鸣解放伤害 | 0 | 攻击 | 2.6774 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 106.67 | 224 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0大招1-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣解放 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 2.6774 | 大招能量 | 0 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0 | 共振系数 | 1 | 削韧值 | 106.67 | 偏谐值 | 224 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
             "repeat_count": 3,
             "repeat_source": "frame_sheet_join",
             "expanded_from_repeat": true,
             "repeat_warning": null,
-            "repeat_metadata_row_number": 2890,
+            "repeat_metadata_row_number": 2797,
             "repeat_metadata_source_text": "最多3次",
             "repeat_join_method": "character_group_label"
           }
-        },
+        }
+      ]
+    },
+    {
+      "reason": "unsafe_candidate_prevented",
+      "action_id": "aemeath_mech_basic_stage_1",
+      "candidate_hit_count": 3,
+      "current_hit_count": 1,
+      "shape_status": "longer_than_current",
+      "safe_to_patch": false,
+      "safe_to_patch_reasons": [
+        "candidate_longer_than_current_requires_review"
+      ],
+      "critical_warnings": [],
+      "base_source_rows": [
         {
-          "row_number": 2748,
-          "source_action_name": "A3-3",
-          "raw_coefficients": 0.0389,
+          "row_number": 2743,
+          "source_action_name": "A1",
+          "raw_coefficients": 0.232,
           "parsed_multipliers": [
-            0.0389
+            0.232,
+            0.232,
+            0.232
           ],
           "repeat_metadata": {
-            "raw_text": "A3-3 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0389 | 0.07 | 0 | 0.67 | 0 | 0 | 0 | 0.14 | 1 | 2.79 | 2.24 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0389 | 大招能量 | 0.07 | 核心能量1 | 0 | 核心能量2 | 0.67 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.14 | 共振系数 | 1 | 削韧值 | 2.79 | 偏谐值 | 2.24 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "raw_text": "A1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.232 | 0.42 | 0 | 2.15 | 0 | 0 | 0 | 0.84 | 1 | 16.67 | 13.34 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.232 | 大招能量 | 0.42 | 核心能量1 | 0 | 核心能量2 | 2.15 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.84 | 共振系数 | 1 | 削韧值 | 16.67 | 偏谐值 | 13.34 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": 3,
+            "repeat_source": "frame_sheet_join",
+            "expanded_from_repeat": true,
+            "repeat_warning": null,
+            "repeat_metadata_row_number": 2886,
+            "repeat_metadata_source_text": "最多3次",
+            "repeat_join_method": "character_group_label"
+          }
+        }
+      ]
+    },
+    {
+      "reason": "unsafe_candidate_prevented",
+      "action_id": "aemeath_mech_basic_stage_2",
+      "candidate_hit_count": 2,
+      "current_hit_count": 1,
+      "shape_status": "longer_than_current",
+      "safe_to_patch": false,
+      "safe_to_patch_reasons": [
+        "candidate_longer_than_current_requires_review"
+      ],
+      "critical_warnings": [],
+      "base_source_rows": [
+        {
+          "row_number": 2744,
+          "source_action_name": "A2-1",
+          "raw_coefficients": 0.1857,
+          "parsed_multipliers": [
+            0.1857
+          ],
+          "repeat_metadata": {
+            "raw_text": "A2-1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.1857 | 0.34 | 0 | 1.92 | 0 | 0 | 0 | 0.67 | 1 | 13.34 | 10.68 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A2-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.1857 | 大招能量 | 0.34 | 核心能量1 | 0 | 核心能量2 | 1.92 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.67 | 共振系数 | 1 | 削韧值 | 13.34 | 偏谐值 | 10.68 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
             "repeat_count": null,
             "repeat_source": null,
             "expanded_from_repeat": false,
@@ -1458,14 +1645,14 @@
           }
         },
         {
-          "row_number": 2749,
-          "source_action_name": "A3-4",
-          "raw_coefficients": 0.8154,
+          "row_number": 2745,
+          "source_action_name": "A2-2",
+          "raw_coefficients": 0.7426,
           "parsed_multipliers": [
-            0.8154
+            0.7426
           ],
           "repeat_metadata": {
-            "raw_text": "A3-4 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.8154 | 1.47 | 0 | 13.87 | 0 | 0 | 0 | 2.93 | 1 | 58.59 | 46.88 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-4 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.8154 | 大招能量 | 1.47 | 核心能量1 | 0 | 核心能量2 | 13.87 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 2.93 | 共振系数 | 1 | 削韧值 | 58.59 | 偏谐值 | 46.88 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "raw_text": "A2-2 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.7426 | 1.34 | 0 | 7.68 | 0 | 0 | 0 | 2.67 | 1 | 53.36 | 42.69 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A2-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.7426 | 大招能量 | 1.34 | 核心能量1 | 0 | 核心能量2 | 7.68 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 2.67 | 共振系数 | 1 | 削韧值 | 53.36 | 偏谐值 | 42.69 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
             "repeat_count": null,
             "repeat_source": null,
             "expanded_from_repeat": false,
@@ -1475,20 +1662,16 @@
       ]
     },
     {
-      "reason": "candidate_shorter_than_current",
+      "reason": "unsafe_candidate_prevented",
       "action_id": "aemeath_mech_basic_stage_3",
       "candidate_hit_count": 6,
-      "current_hit_count": 8,
-      "shape_status": "shorter_than_current",
+      "current_hit_count": 1,
+      "shape_status": "longer_than_current",
       "safe_to_patch": false,
       "safe_to_patch_reasons": [
-        "candidate_shorter_than_current",
-        "shape_status_shorter_than_current",
-        "critical_warnings_present"
+        "candidate_longer_than_current_requires_review"
       ],
-      "critical_warnings": [
-        "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
-      ],
+      "critical_warnings": [],
       "base_source_rows": [
         {
           "row_number": 2746,
@@ -1559,29 +1742,25 @@
     },
     {
       "reason": "unsafe_candidate_prevented",
-      "action_id": "aemeath_mech_basic_stage_3",
-      "candidate_hit_count": 6,
-      "current_hit_count": 8,
-      "shape_status": "shorter_than_current",
+      "action_id": "aemeath_mech_basic_stage_4",
+      "candidate_hit_count": 2,
+      "current_hit_count": 1,
+      "shape_status": "longer_than_current",
       "safe_to_patch": false,
       "safe_to_patch_reasons": [
-        "candidate_shorter_than_current",
-        "shape_status_shorter_than_current",
-        "critical_warnings_present"
+        "candidate_longer_than_current_requires_review"
       ],
-      "critical_warnings": [
-        "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
-      ],
+      "critical_warnings": [],
       "base_source_rows": [
         {
-          "row_number": 2746,
-          "source_action_name": "A3-1",
-          "raw_coefficients": 0.1165,
+          "row_number": 2754,
+          "source_action_name": "A4-1",
+          "raw_coefficients": 0.4038,
           "parsed_multipliers": [
-            0.1165
+            0.4038
           ],
           "repeat_metadata": {
-            "raw_text": "A3-1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.1165 | 0.21 | 0 | 1.99 | 0 | 0 | 0 | 0.42 | 1 | 8.37 | 6.7 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.1165 | 大招能量 | 0.21 | 核心能量1 | 0 | 核心能量2 | 1.99 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.42 | 共振系数 | 1 | 削韧值 | 8.37 | 偏谐值 | 6.7 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "raw_text": "A4-1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.4038 | 0.73 | 0 | 6.99 | 0 | 0 | 0 | 1.46 | 1 | 29.01 | 23.21 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A4-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.4038 | 大招能量 | 0.73 | 核心能量1 | 0 | 核心能量2 | 6.99 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 1.46 | 共振系数 | 1 | 削韧值 | 29.01 | 偏谐值 | 23.21 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
             "repeat_count": null,
             "repeat_source": null,
             "expanded_from_repeat": false,
@@ -1589,49 +1768,14 @@
           }
         },
         {
-          "row_number": 2747,
-          "source_action_name": "A3-2",
-          "raw_coefficients": 0.0389,
+          "row_number": 2755,
+          "source_action_name": "A4-2",
+          "raw_coefficients": 0.9421,
           "parsed_multipliers": [
-            0.0389,
-            0.0389,
-            0.0389
+            0.9421
           ],
           "repeat_metadata": {
-            "raw_text": "A3-2 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0389 | 0.07 | 0 | 0.67 | 0 | 0 | 0 | 0.14 | 1 | 2.79 | 2.24 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0389 | 大招能量 | 0.07 | 核心能量1 | 0 | 核心能量2 | 0.67 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.14 | 共振系数 | 1 | 削韧值 | 2.79 | 偏谐值 | 2.24 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-            "repeat_count": 3,
-            "repeat_source": "frame_sheet_join",
-            "expanded_from_repeat": true,
-            "repeat_warning": null,
-            "repeat_metadata_row_number": 2890,
-            "repeat_metadata_source_text": "最多3次",
-            "repeat_join_method": "character_group_label"
-          }
-        },
-        {
-          "row_number": 2748,
-          "source_action_name": "A3-3",
-          "raw_coefficients": 0.0389,
-          "parsed_multipliers": [
-            0.0389
-          ],
-          "repeat_metadata": {
-            "raw_text": "A3-3 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0389 | 0.07 | 0 | 0.67 | 0 | 0 | 0 | 0.14 | 1 | 2.79 | 2.24 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0389 | 大招能量 | 0.07 | 核心能量1 | 0 | 核心能量2 | 0.67 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.14 | 共振系数 | 1 | 削韧值 | 2.79 | 偏谐值 | 2.24 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-            "repeat_count": null,
-            "repeat_source": null,
-            "expanded_from_repeat": false,
-            "repeat_warning": null
-          }
-        },
-        {
-          "row_number": 2749,
-          "source_action_name": "A3-4",
-          "raw_coefficients": 0.8154,
-          "parsed_multipliers": [
-            0.8154
-          ],
-          "repeat_metadata": {
-            "raw_text": "A3-4 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.8154 | 1.47 | 0 | 13.87 | 0 | 0 | 0 | 2.93 | 1 | 58.59 | 46.88 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-4 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.8154 | 大招能量 | 1.47 | 核心能量1 | 0 | 核心能量2 | 13.87 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 2.93 | 共振系数 | 1 | 削韧值 | 58.59 | 偏谐值 | 46.88 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "raw_text": "A4-2 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.9421 | 1.7 | 0 | 16.29 | 0 | 0 | 0 | 3.39 | 1 | 67.69 | 54.16 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A4-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.9421 | 大招能量 | 1.7 | 核心能量1 | 0 | 核心能量2 | 16.29 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 3.39 | 共振系数 | 1 | 削韧值 | 67.69 | 偏谐值 | 54.16 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
             "repeat_count": null,
             "repeat_source": null,
             "expanded_from_repeat": false,
@@ -1641,30 +1785,83 @@
       ]
     },
     {
-      "reason": "basic_repeat_unresolved",
-      "action_id": "aemeath_mech_basic_stage_3",
-      "candidate_hit_count": 6,
-      "current_hit_count": 8,
-      "shape_status": "shorter_than_current",
+      "reason": "unsafe_candidate_prevented",
+      "action_id": "aemeath_seraphic_duet_encore",
+      "candidate_hit_count": 8,
+      "current_hit_count": 1,
+      "shape_status": "longer_than_current",
       "safe_to_patch": false,
       "safe_to_patch_reasons": [
-        "candidate_shorter_than_current",
-        "shape_status_shorter_than_current",
-        "critical_warnings_present"
+        "candidate_longer_than_current_requires_review"
       ],
-      "critical_warnings": [
-        "Coefficient candidate has fewer hits than current actions.json and is likely compressed."
-      ],
+      "critical_warnings": [],
       "base_source_rows": [
         {
-          "row_number": 2746,
-          "source_action_name": "A3-1",
-          "raw_coefficients": 0.1165,
+          "row_number": 2769,
+          "source_action_name": "C0强化E-1",
+          "raw_coefficients": 0.179,
           "parsed_multipliers": [
-            0.1165
+            0.179,
+            0.179
           ],
           "repeat_metadata": {
-            "raw_text": "A3-1 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.1165 | 0.21 | 0 | 1.99 | 0 | 0 | 0 | 0.42 | 1 | 8.37 | 6.7 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.1165 | 大招能量 | 0.21 | 核心能量1 | 0 | 核心能量2 | 1.99 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.42 | 共振系数 | 1 | 削韧值 | 8.37 | 偏谐值 | 6.7 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "raw_text": "C0强化E-1 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.179 | 0.25 | 0 | 0 | 0 | 0 | 0 | 0.5 | 1 | 10 | 8 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.179 | 大招能量 | 0.25 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.5 | 共振系数 | 1 | 削韧值 | 10 | 偏谐值 | 8 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": 2,
+            "repeat_source": "frame_sheet_join",
+            "expanded_from_repeat": true,
+            "repeat_warning": null,
+            "repeat_metadata_row_number": 2925,
+            "repeat_metadata_source_text": "最多2次",
+            "repeat_join_method": "character_group_label"
+          }
+        },
+        {
+          "row_number": 2770,
+          "source_action_name": "C0强化E-2",
+          "raw_coefficients": 0.3579,
+          "parsed_multipliers": [
+            0.3579,
+            0.3579
+          ],
+          "repeat_metadata": {
+            "raw_text": "C0强化E-2 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.3579 | 0.5 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 20 | 16 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.3579 | 大招能量 | 0.5 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 1 | 共振系数 | 1 | 削韧值 | 20 | 偏谐值 | 16 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": 2,
+            "repeat_source": "frame_sheet_join",
+            "expanded_from_repeat": true,
+            "repeat_warning": null,
+            "repeat_metadata_row_number": 2926,
+            "repeat_metadata_source_text": "最多2次",
+            "repeat_join_method": "character_group_label"
+          }
+        },
+        {
+          "row_number": 2771,
+          "source_action_name": "C0强化E-3",
+          "raw_coefficients": 0.179,
+          "parsed_multipliers": [
+            0.179,
+            0.179
+          ],
+          "repeat_metadata": {
+            "raw_text": "C0强化E-3 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.179 | 0.25 | 0 | 0 | 0 | 0 | 0 | 0.5 | 1 | 10 | 8 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.179 | 大招能量 | 0.25 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.5 | 共振系数 | 1 | 削韧值 | 10 | 偏谐值 | 8 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": 2,
+            "repeat_source": "frame_sheet_join",
+            "expanded_from_repeat": true,
+            "repeat_warning": null,
+            "repeat_metadata_row_number": 2927,
+            "repeat_metadata_source_text": "最多2次",
+            "repeat_join_method": "character_group_label"
+          }
+        },
+        {
+          "row_number": 2772,
+          "source_action_name": "C0强化E-4",
+          "raw_coefficients": 1.7893,
+          "parsed_multipliers": [
+            1.7893
+          ],
+          "repeat_metadata": {
+            "raw_text": "C0强化E-4 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 1.7893 | 2.5 | 0 | 0 | 0 | 0 | 0 | 5 | 1 | 100 | 80 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-4 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 1.7893 | 大招能量 | 2.5 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 5 | 共振系数 | 1 | 削韧值 | 100 | 偏谐值 | 80 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
             "repeat_count": null,
             "repeat_source": null,
             "expanded_from_repeat": false,
@@ -1672,53 +1869,110 @@
           }
         },
         {
-          "row_number": 2747,
-          "source_action_name": "A3-2",
-          "raw_coefficients": 0.0389,
+          "row_number": 2773,
+          "source_action_name": "C0强化E-5",
+          "raw_coefficients": 0.3579,
           "parsed_multipliers": [
-            0.0389,
-            0.0389,
-            0.0389
+            0.3579
           ],
           "repeat_metadata": {
-            "raw_text": "A3-2 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0389 | 0.07 | 0 | 0.67 | 0 | 0 | 0 | 0.14 | 1 | 2.79 | 2.24 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0389 | 大招能量 | 0.07 | 核心能量1 | 0 | 核心能量2 | 0.67 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.14 | 共振系数 | 1 | 削韧值 | 2.79 | 偏谐值 | 2.24 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "raw_text": "C0强化E-5 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.3579 | 0.5 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 20 | 16 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-5 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.3579 | 大招能量 | 0.5 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 1 | 共振系数 | 1 | 削韧值 | 20 | 偏谐值 | 16 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_from_repeat": false,
+            "repeat_warning": null
+          }
+        }
+      ]
+    },
+    {
+      "reason": "unsafe_candidate_prevented",
+      "action_id": "aemeath_seraphic_duet_overturn",
+      "candidate_hit_count": 13,
+      "current_hit_count": 1,
+      "shape_status": "longer_than_current",
+      "safe_to_patch": false,
+      "safe_to_patch_reasons": [
+        "candidate_longer_than_current_requires_review"
+      ],
+      "critical_warnings": [],
+      "base_source_rows": [
+        {
+          "row_number": 2716,
+          "source_action_name": "C0强化E-1",
+          "raw_coefficients": 0.179,
+          "parsed_multipliers": [
+            0.179
+          ],
+          "repeat_metadata": {
+            "raw_text": "C0强化E-1 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.179 | 0.25 | 0 | 0 | 0 | 0 | 0 | 0.5 | 1 | 10 | 8 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-1 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.179 | 大招能量 | 0.25 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.5 | 共振系数 | 1 | 削韧值 | 10 | 偏谐值 | 8 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": null,
+            "repeat_source": null,
+            "expanded_from_repeat": false,
+            "repeat_warning": null
+          }
+        },
+        {
+          "row_number": 2717,
+          "source_action_name": "C0强化E-2",
+          "raw_coefficients": 0.1492,
+          "parsed_multipliers": [
+            0.1492,
+            0.1492,
+            0.1492,
+            0.1492,
+            0.1492,
+            0.1492
+          ],
+          "repeat_metadata": {
+            "raw_text": "C0强化E-2 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.1492 | 0.21 | 0 | 0 | 0 | 0 | 0 | 0.42 | 1 | 8.34 | 6.67 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-2 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.1492 | 大招能量 | 0.21 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.42 | 共振系数 | 1 | 削韧值 | 8.34 | 偏谐值 | 6.67 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": 6,
+            "repeat_source": "frame_sheet_join",
+            "expanded_from_repeat": true,
+            "repeat_warning": null,
+            "repeat_metadata_row_number": 2781,
+            "repeat_metadata_source_text": "最多6次",
+            "repeat_join_method": "character_group_label"
+          }
+        },
+        {
+          "row_number": 2718,
+          "source_action_name": "C0强化E-3",
+          "raw_coefficients": 0.2386,
+          "parsed_multipliers": [
+            0.2386,
+            0.2386,
+            0.2386
+          ],
+          "repeat_metadata": {
+            "raw_text": "C0强化E-3 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.2386 | 0.34 | 0 | 0 | 0 | 0 | 0 | 0.67 | 1 | 53.34 | 10.67 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.2386 | 大招能量 | 0.34 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.67 | 共振系数 | 1 | 削韧值 | 53.34 | 偏谐值 | 10.67 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
             "repeat_count": 3,
             "repeat_source": "frame_sheet_join",
             "expanded_from_repeat": true,
             "repeat_warning": null,
-            "repeat_metadata_row_number": 2890,
+            "repeat_metadata_row_number": 2782,
             "repeat_metadata_source_text": "最多3次",
             "repeat_join_method": "character_group_label"
           }
         },
         {
-          "row_number": 2748,
-          "source_action_name": "A3-3",
-          "raw_coefficients": 0.0389,
+          "row_number": 2719,
+          "source_action_name": "C0强化E-4",
+          "raw_coefficients": 0.5965,
           "parsed_multipliers": [
-            0.0389
+            0.5965,
+            0.5965,
+            0.5965
           ],
           "repeat_metadata": {
-            "raw_text": "A3-3 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.0389 | 0.07 | 0 | 0.67 | 0 | 0 | 0 | 0.14 | 1 | 2.79 | 2.24 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-3 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.0389 | 大招能量 | 0.07 | 核心能量1 | 0 | 核心能量2 | 0.67 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 0.14 | 共振系数 | 1 | 削韧值 | 2.79 | 偏谐值 | 2.24 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-            "repeat_count": null,
-            "repeat_source": null,
-            "expanded_from_repeat": false,
-            "repeat_warning": null
-          }
-        },
-        {
-          "row_number": 2749,
-          "source_action_name": "A3-4",
-          "raw_coefficients": 0.8154,
-          "parsed_multipliers": [
-            0.8154
-          ],
-          "repeat_metadata": {
-            "raw_text": "A3-4 | 热熔 | 伤害 | 普攻 | 普攻伤害 | 0 | 攻击 | 0.8154 | 1.47 | 0 | 13.87 | 0 | 0 | 0 | 2.93 | 1 | 58.59 | 46.88 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | A3-4 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 普攻 | 伤害类型 | 普攻伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.8154 | 大招能量 | 1.47 | 核心能量1 | 0 | 核心能量2 | 13.87 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 2.93 | 共振系数 | 1 | 削韧值 | 58.59 | 偏谐值 | 46.88 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
-            "repeat_count": null,
-            "repeat_source": null,
-            "expanded_from_repeat": false,
-            "repeat_warning": null
+            "raw_text": "C0强化E-4 | 热熔 | 伤害 | 共鸣技能 | 共鸣解放伤害 | 0 | 攻击 | 0.5965 | 0.84 | 0 | 0 | 0 | 0 | 0 | 1.67 | 1 | 33.34 | 26.67 | - | - | - | - | - | - | - | - | - | - | 0 | 角色/动作 | C0强化E-4 | 属性 | 热熔 | 结算类型 | 伤害 | 技能类型 | 共鸣技能 | 伤害类型 | 共鸣解放伤害 | 基础治疗 | 0 | 倍率关联 | 攻击 | 倍率 | 0.5965 | 大招能量 | 0.84 | 核心能量1 | 0 | 核心能量2 | 0 | 核心能量3 | 0 | 核心能量4 | 0 | 核心能量5 | 0 | 协奏能量 | 1.67 | 共振系数 | 1 | 削韧值 | 33.34 | 偏谐值 | 26.67 | 参数1 | - | 参数2 | - | 参数3 | - | 参数4 | - | 参数5 | - | 参数6 | - | 参数7 | - | 参数8 | - | 参数9 | - | 参数10 | - | 共振削减 | 0",
+            "repeat_count": 3,
+            "repeat_source": "frame_sheet_join",
+            "expanded_from_repeat": true,
+            "repeat_warning": null,
+            "repeat_metadata_row_number": 2783,
+            "repeat_metadata_source_text": "最多3次",
+            "repeat_join_method": "character_group_label"
           }
         }
       ]

@@ -32,7 +32,7 @@ Source name: 琳奈
 - `lynae_resonance_skill_palette`: Lynae-Style Palettes; action rows [2662, 2663, 2664, 2665, 2666]; damage rows [2454, 2455, 2456, 2457]; multiplier 2.7863; calculation additive_hits; status implemented_v2
 - `lynae_resonance_skill_additive_color`: Additive Color; action rows [2672, 2673, 2674]; damage rows [2458, 2459]; multiplier 2.3262; calculation additive_hits; status implemented_v2
 - `lynae_iridescent_splash`: Iridescent Splash C0; action rows [2675, 2676, 2677, 2678]; damage rows [2460, 2461]; multiplier 3.0418; calculation mutually_exclusive_mode_variants_same_multiplier; status implemented_v2
-- `lynae_visual_impact`: Visual Impact C0; action rows [2679, 2680, 2681, 2682]; damage rows [2464, 2465]; multiplier 12.1672; calculation mutually_exclusive_mode_variants_same_multiplier; status implemented_v2_periodic_spray_metadata_only
+- `lynae_visual_impact`: Visual Impact C0; action rows [2679, 2680, 2681, 2682]; damage rows [2464, 2465]; multiplier 12.1672; calculation mutually_exclusive_mode_variants_same_multiplier; status implemented_v3_spray_paint_scheduled_status_application
 - `lynae_polychrome_leap_stage_1`: Polychrome Leap Stage 1 C0; action rows [2641, 2642, 2643, 2644, 2645]; damage rows [2468, 2469, 2470]; multiplier 1.014; calculation additive_hits; status implemented_v2
 - `lynae_polychrome_leap_stage_2`: Polychrome Leap Stage 2 C0; action rows [2647, 2648, 2649, 2650, 2651]; damage rows [2474]; multiplier 1.014; calculation repeated_tick_mode_variants_same_multiplier; status implemented_v2
 - `lynae_polychrome_leap_stage_3`: Polychrome Leap Stage 3 C0; action rows [2653, 2654, 2660, 2661]; damage rows [2476, 2477]; multiplier 0.655; calculation additive_hits_with_repeated_tick; status implemented_v2
@@ -91,10 +91,10 @@ Source name: 琳奈
 - `lynae_tune_response_spectral_analysis_c2`: multiplier 31.9727; rows dmg!2490; disabled by default.
 
 ## Implemented Single-Target Mechanics
+- spray_paint_scheduled_flux_application: implemented_scheduled_status_application_single_target (角色-女!2683, 角色-女!2684) - Visual Impact schedules Spray Paint as periodic status application checks at +1F, +121F, and +241F over a 300F combat-time field. The event reapplies Photocromic Flux with the resonance mode snapshotted when the field was created and assumes the current single target remains inside the area. C1 rows 角色-女!2685:2688 are constellation-gated, out of scope, and not enabled for the C0 party.
 - tune_strain_stack_limit_and_per_stack_damage: implemented_single_target (角色-女!2728) - Current single-target Endgame Matrix model increments Tune Strain Interfered stacks on Tune Break, caps at 1 stack for C0 and 2 stacks for C2+, lasts 30s, and applies only to Lynae damage. This is not a multi-target implementation claim.
 
 ## Unresolved / Metadata-Only Rows
 - continuous_lumiflow_movement_recovery: user_tooltip_confirmed_timing_simplified (角色-女!2709) - Simulator is action-step based and has no continuous movement/skating state.
-- spray_paint_periodic_ticks: metadata_only_window_recorded (角色-女!2683:2688) - Visual Impact records the 5s window and immediate Flux; periodic 2s field scheduling is not added.
 - constellation_variants: constellation_gated_disabled_by_default (dmg!2462:2463, dmg!2466:2467, dmg!2471:2473, dmg!2475, dmg!2478:2479, dmg!2483, dmg!2490) - Non-S0 variants are retained as source-aligned records but not selected by default.
 - skill_type_reference_region: workbook_reference_corrected (角色技能类型!2553:2635) - Rows 772:784 are not the Lynae skill type region and are no longer used for Lynae.

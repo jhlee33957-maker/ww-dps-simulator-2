@@ -180,7 +180,7 @@ class MornyeMechanic(CharacterMechanic):
                 "source_rows": [4135, 4136],
                 "has_global_time_stop": False,
                 "global_time_stop_frames": None,
-                "combat_time_cost_source": "No 全局时停 row for 观测重击; use 78F / 60",
+                "combat_time_cost_source": "No 全局时停 row for 观测重击; use 78F base ready + 8F self hitstop = 86F / 60",
                 "relative_momentum_gain": -100.0,
                 "relative_momentum_gain_source_rows": [4135],
                 "time_dilation_type": "时停",
@@ -234,7 +234,7 @@ class MornyeMechanic(CharacterMechanic):
                 "source_rows": [4148, 4149, 4164],
                 "has_global_time_stop": False,
                 "global_time_stop_frames": None,
-                "combat_time_cost_source": "QTE has 时停 but no 全局时停 row; use 102F / 60",
+                "combat_time_cost_source": "102F base ready + 8F self hitstop = 110F; no 全局时停, so combat_time_cost is 110F / 60.",
                 "base_concerto_gain": 10.0,
                 "passive_concerto_gain": 20.0,
                 "final_concerto_gain": 30.0,
@@ -302,7 +302,7 @@ class MornyeMechanic(CharacterMechanic):
             self._resolve_interfered_marker(state, result)
         data["last_resolved_action_id"] = action.id
 
-    def advance_time(self, state: Any, elapsed_time: float) -> None:
+    def advance_time(self, state: Any, combat_elapsed: float, action_elapsed: float | None = None) -> None:
         data = self._state(state)
         for key in (
             "wide_field_observation_remaining",
@@ -311,7 +311,7 @@ class MornyeMechanic(CharacterMechanic):
             "observation_marker_remaining",
         ):
             if data[key] > 0.0:
-                data[key] = max(0.0, float(data[key]) - elapsed_time)
+                data[key] = max(0.0, float(data[key]) - combat_elapsed)
         if data["wide_field_observation_remaining"] <= 0.0 and data["mode"] == "wide_field_observation":
             data["mode"] = "baseline"
             data["relative_momentum"] = 0.0

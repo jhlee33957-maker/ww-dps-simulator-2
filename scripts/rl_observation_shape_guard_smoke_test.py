@@ -64,6 +64,7 @@ def test_shape_is_label_derived_and_deterministic() -> None:
     observation = env._get_observation()
     assert env.observation_version == OBSERVATION_VERSION
     assert env.observation_metadata()["observation_version"] == OBSERVATION_VERSION
+    assert "observation_action_slot_mapping" in env.observation_metadata()
     assert len(labels) == len(observation)
     assert env.observation_space.shape == (len(labels),)
     assert env._get_observation_size() == len(labels)
@@ -97,6 +98,15 @@ def test_metadata_mismatch_helper_detects_old_shape() -> None:
     stale_metadata["observation_version"] = "off_tune_tune_break_weapon_state_v1"
     mismatches = observation_metadata_mismatches(stale_metadata, env)
     assert "observation_version" in mismatches
+
+    stale_metadata = dict(metadata)
+    stale_metadata["observation_version"] = "slot_generic_mechanics_v3"
+    stale_metadata["observation_shape"] = [204]
+    stale_metadata["observation_labels"] = metadata["observation_labels"][:-1]
+    mismatches = observation_metadata_mismatches(stale_metadata, env)
+    assert "observation_version" in mismatches
+    assert "observation_shape" in mismatches
+    assert "observation_labels" in mismatches
 
 
 def main() -> None:

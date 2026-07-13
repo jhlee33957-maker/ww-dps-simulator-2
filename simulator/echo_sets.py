@@ -503,9 +503,17 @@ def _record_team_heal_event(
     state.mechanic_event_log.append(
         {
             "event_tag": TEAM_HEAL_EVENT_TAG,
-            "trigger_id": "mornye_syntony_field_heal_proxy",
+            "trigger_id": (
+                "mornye_syntony_field_scheduled_heal"
+                if event_source == "scheduled_180f_exact"
+                else "mornye_syntony_field_heal_proxy"
+            ),
             "character_id": source_character_id,
-            "source_status": "simplified_field_uptime_heal_proxy",
+            "source_status": (
+                "workbook_confirmed_scheduled_heal"
+                if event_source == "scheduled_180f_exact"
+                else "simplified_field_uptime_heal_proxy"
+            ),
             "combat_time": application_time,
             "damage_added": 0.0,
             "event_source": event_source,

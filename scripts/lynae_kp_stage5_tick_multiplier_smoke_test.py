@@ -11,7 +11,7 @@ def main() -> None:
     actions = {item["id"]: item for item in json.loads((ROOT / "data/actions.json").read_text(encoding="utf-8"))}
     action = actions["lynae_kaleidoscopic_basic_stage_5"]
     multipliers = [hit["damage_multiplier"] for hit in action["hits"]]
-    assert multipliers == [0.7554, 0.1511, 0.1511, 0.1511, 0.1511, 0.1511, 1.0072]
+    assert multipliers == [2.5181]
     assert abs(sum(multipliers) - 2.5181) < 1e-9
     assert abs(action["damage_multiplier"] - 2.5181) < 1e-9
     assert action["metadata"]["repeated_tick_rows"][0]["max_hits"] == 5

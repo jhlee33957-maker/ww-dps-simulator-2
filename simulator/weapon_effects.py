@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from simulator.action_start_snapshot import ActionStartEffectSnapshot
 from simulator.buff_system import apply_buff, get_active_buffs_for_action
 from simulator.models import ActionData, BuffData, CharacterData, CombatState
 from simulator.resource_system import add_concerto_energy, sync_concerto_state
@@ -379,6 +380,7 @@ def weapon_runtime_damage_effects(
     damage_bonus_category: str,
     hit_damage_category: str,
     time_offset: float = 0.0,
+    action_start_snapshot: ActionStartEffectSnapshot | None = None,
 ) -> dict[str, Any]:
     weapon = get_character_weapon(character)
     weapon_def = _weapon_definition(weapon_definitions, weapon)
@@ -432,6 +434,7 @@ def weapon_runtime_damage_effects(
         state,
         buffs,
         time_offset=time_offset,
+        force_active_buff_ids=set(action_start_snapshot.active_buff_ids) if action_start_snapshot is not None else None,
     ):
         if buff.metadata.get("source_type") != "weapon":
             continue
@@ -450,9 +453,18 @@ def weapon_runtime_damage_effects(
         if element_filter and element_key == element_filter:
             res_ignore_bonus = float(active.metadata.get("dynamic_fusion_res_ignore", 0.0) or 0.0)
         base["everbright_polestar_liberation_penetration_active"] = True
+        snapshot_remaining = (
+            action_start_snapshot.buff_remaining(active.buff_id)
+            if action_start_snapshot is not None and action_start_snapshot.buff_active(active.buff_id)
+            else None
+        )
         base["everbright_polestar_liberation_penetration_remaining"] = max(
             float(base["everbright_polestar_liberation_penetration_remaining"]),
-            max(0.0, float(active.remaining_duration) - time_offset),
+            _remaining_for_damage_context(
+                active_remaining=float(active.remaining_duration),
+                time_offset=time_offset,
+                snapshot_remaining=snapshot_remaining,
+            ),
         )
         if weapon_id == "everbright_polestar":
             base["everbright_polestar_def_ignore_bonus"] = max(
@@ -476,6 +488,17 @@ def advance_weapon_effect_cooldowns(state: CombatState, elapsed: float) -> None:
             state.weapon_effect_cooldowns[key] = updated
         else:
             del state.weapon_effect_cooldowns[key]
+
+
+def _remaining_for_damage_context(
+    *,
+    active_remaining: float,
+    time_offset: float,
+    snapshot_remaining: float | None,
+) -> float:
+    if snapshot_remaining is not None:
+        return max(0.0, snapshot_remaining)
+    return max(0.0, active_remaining - time_offset)
 
 
 def weapon_effect_uptime_seconds(state: CombatState, buff_id: str, combat_time: float | None = None) -> float:

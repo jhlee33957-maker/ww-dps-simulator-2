@@ -85,10 +85,10 @@ def test_seraphic_duet_consumes_one_enhancement_stack_and_trail_no_cost() -> Non
             "forte_enhancement_stacks": 2,
             "forte_enhancement_remaining": 30.0,
             "trail_no_cost_remaining": 30.0,
-            "rupturous_trail_stacks": 3,
-            "rupturous_trail_remaining": 30.0,
         }
     )
+    state.rupturous_trail_stacks = 30
+    state.rupturous_trail_remaining = 30.0
     result = execute_action(
         load_action("aemeath_seraphic_duet_overturn"),
         state,
@@ -102,9 +102,12 @@ def test_seraphic_duet_consumes_one_enhancement_stack_and_trail_no_cost() -> Non
     assert result.aemeath_forte_enhancement_stacks_consumed == 1
     assert result.aemeath_forte_enhancement_stacks_after == 1
     assert result.aemeath_trail_no_cost_consumed is True
+    assert result.aemeath_seraphic_duet_trail_stack_snapshot == 30
+    assert result.aemeath_seraphic_duet_trail_preservation_active is True
+    assert result.aemeath_seraphic_duet_trail_consumed is False
     assert data["forte_enhancement_stacks"] == 1
     assert data["trail_no_cost_remaining"] == 0.0
-    assert data["rupturous_trail_stacks"] == 3
+    assert state.rupturous_trail_stacks == 30
 
 
 def main() -> None:

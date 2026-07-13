@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 from extract_aemeath_excel_data import (
@@ -20,6 +21,9 @@ from extract_aemeath_excel_data import (
     extract,
     resolve_workbook_path,
 )
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
 
 
 def workbook_exists() -> bool:

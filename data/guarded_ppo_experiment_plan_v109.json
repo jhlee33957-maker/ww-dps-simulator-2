@@ -1,0 +1,107 @@
+{
+  "schema_version": "guarded_ppo_experiment_plan_v109",
+  "candidate": "109",
+  "latest_verified_baseline_label": "108",
+  "latest_verified_archive": "ww-dps-simulator-2(108).zip",
+  "objective": "deterministic_120s_total_damage_only",
+  "party": "aemeath_mornye_lynae_enabled_test_party",
+  "deterministic_evaluation": true,
+  "initial_active_character": "aemeath",
+  "curriculum_reset_mode": "none",
+  "evaluation_interval_timesteps": 10000,
+  "evaluation_after_every_chunk": true,
+  "checkpoint_root": "models/guarded_ppo_v109",
+  "results_root": "results/guarded_ppo_v109",
+  "incumbents": {
+    "manual_baseline": {
+      "summary_path": "results/manual_120s_baseline_v104_summary.json",
+      "total_damage": 5165134.682363359,
+      "status": "externally_verified_lower_bound"
+    },
+    "bc_model": {
+      "model_path": "models/maskable_ppo_bc_v105.zip",
+      "model_sha256": "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e",
+      "summary_path": "results/ppo_evaluation_summary.json",
+      "total_damage": 5165134.682363356,
+      "status": "current_best"
+    },
+    "regressed_ppo_100k": {
+      "model_path": "models/maskable_ppo_candidate_after_bc_v105.zip",
+      "model_sha256": "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513",
+      "summary_path": "results/ppo_100k_evaluation_summary.json",
+      "total_damage": 3600637.129626801,
+      "status": "valid_but_regressed"
+    }
+  },
+  "global_optimum_claimed": false,
+  "route_similarity_objective": false,
+  "character_specific_reward": false,
+  "bc_refresh_enabled": false,
+  "branch_independence": true,
+  "early_stopping_enabled": false,
+  "rollback_enabled": false,
+  "branch_continuation_rule": "each branch resumes from its own latest immutable checkpoint; global best is recorded only as metadata and is never loaded by default",
+  "best_checkpoint_copy_enabled": false,
+  "branches": [
+    {
+      "branch_id": "bc_conservative_seed_11",
+      "role": "BC warm start, conservative PPO continuation",
+      "initialization": {
+        "mode": "model",
+        "source_model_path": "models/maskable_ppo_bc_v105.zip",
+        "source_model_sha256": "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e"
+      },
+      "seed": 11,
+      "initial_active_character": "aemeath",
+      "curriculum_reset_mode": "none",
+      "continuation_mode": "continue_from_latest_branch_checkpoint",
+      "total_timesteps": 100000,
+      "chunk_timesteps": 10000,
+      "learning_rate": 0.0001,
+      "ent_coef": 0.005,
+      "n_steps": 512,
+      "batch_size": 64,
+      "gamma": 0.999
+    },
+    {
+      "branch_id": "bc_exploratory_seed_73",
+      "role": "BC warm start, exploratory PPO continuation",
+      "initialization": {
+        "mode": "model",
+        "source_model_path": "models/maskable_ppo_bc_v105.zip",
+        "source_model_sha256": "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e"
+      },
+      "seed": 73,
+      "initial_active_character": "aemeath",
+      "curriculum_reset_mode": "none",
+      "continuation_mode": "continue_from_latest_branch_checkpoint",
+      "total_timesteps": 100000,
+      "chunk_timesteps": 10000,
+      "learning_rate": 0.0003,
+      "ent_coef": 0.02,
+      "n_steps": 512,
+      "batch_size": 64,
+      "gamma": 0.999
+    },
+    {
+      "branch_id": "scratch_control_seed_137",
+      "role": "scratch PPO control branch",
+      "initialization": {
+        "mode": "scratch",
+        "source_model_path": null,
+        "source_model_sha256": null
+      },
+      "seed": 137,
+      "initial_active_character": "aemeath",
+      "curriculum_reset_mode": "none",
+      "continuation_mode": "continue_from_latest_branch_checkpoint",
+      "total_timesteps": 100000,
+      "chunk_timesteps": 10000,
+      "learning_rate": 0.0003,
+      "ent_coef": 0.02,
+      "n_steps": 512,
+      "batch_size": 64,
+      "gamma": 0.999
+    }
+  ]
+}

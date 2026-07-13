@@ -16,6 +16,25 @@ from scripts.source_ref_canonicalization import (
     bad_markers,
 )
 
+SPRAY_PAINT_REFS = [f"{CANONICAL_LYNAE_ACTION_SHEET}!{row}" for row in range(2683, 2689)]
+SPRAY_PAINT_PATHS = [
+    ROOT / "data" / "actions.json",
+    ROOT / "characters" / "lynae.py",
+    ROOT / "simulator" / "simulation.py",
+    ROOT / "direct_action_data_patch_manifest_v61.json",
+    ROOT / "data" / "source" / "direct_action_data_patch_manifest_v61.json",
+    ROOT / "reports" / "lynae_spray_paint_scheduler_audit.md",
+]
+
+
+def spray_paint_extra_bad_markers() -> list[str]:
+    return [
+        chr(0x6B32) + chr(0xB000),
+        chr(0x6B32) + chr(0xB000) + chr(0x3F) + chr(0x3F) + chr(0x3F) + chr(0x963F) + chr(0x3F),
+        chr(0x963F) + chr(0x3F),
+        chr(0xFFFD),
+    ]
+
 
 def scan_paths() -> list[Path]:
     paths: set[Path] = set()
@@ -29,8 +48,11 @@ def scan_paths() -> list[Path]:
 
 def assert_no_corrupt_markers() -> None:
     for path in scan_paths():
-        text = path.read_text(encoding="utf-8")
-        for marker in bad_markers():
+        raw = path.read_bytes()
+        if raw.startswith(b"\xef\xbb\xbf"):
+            raise AssertionError(f"UTF-8 BOM found in {path}")
+        text = raw.decode("utf-8")
+        for marker in [*bad_markers(), *spray_paint_extra_bad_markers()]:
             if marker in text:
                 raise AssertionError(f"corrupt source encoding marker {marker!r} found in {path}")
 
@@ -65,10 +87,24 @@ def assert_lynae_generator_and_outputs() -> None:
     assert f"{CANONICAL_LYNAE_ACTION_SHEET}2704" in alignment_report
 
 
+def assert_spray_paint_source_refs() -> None:
+    combined = "\n".join(path.read_text(encoding="utf-8") for path in SPRAY_PAINT_PATHS)
+    for ref in SPRAY_PAINT_REFS:
+        assert ref in combined, ref
+
+    actions = json.loads((ROOT / "data" / "actions.json").read_text(encoding="utf-8"))
+    by_id = {record["id"]: record for record in actions}
+    schedule = by_id["lynae_visual_impact"]["mechanic_effects"]["spray_paint_status_schedule"]
+    assert schedule["mode_mapping"]["tune_strain"]["source_row"] == SPRAY_PAINT_REFS[0]
+    assert schedule["mode_mapping"]["tune_rupture"]["source_row"] == SPRAY_PAINT_REFS[1]
+    assert schedule["c1_rows_excluded"] == SPRAY_PAINT_REFS[2:]
+
+
 def main() -> None:
     assert_no_corrupt_markers()
     assert_tune_break_source_refs()
     assert_lynae_generator_and_outputs()
+    assert_spray_paint_source_refs()
     print("lynae_source_ref_encoding_guard_smoke_test ok")
 
 

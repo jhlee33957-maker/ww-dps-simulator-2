@@ -49,12 +49,17 @@ def _recalculate_attack_stats(stats: dict[str, Any]) -> None:
     _recalculate_scaling_stats(stats)
 
 
-def tick_buffs(state: CombatState, elapsed: float) -> None:
+def tick_buffs(state: CombatState, combat_elapsed: float) -> None:
+    combat_elapsed = max(0.0, float(combat_elapsed or 0.0))
+    combat_tick_start = max(0.0, float(getattr(state, "combat_time", 0.0) or 0.0) - combat_elapsed)
     remaining: list[ActiveBuff] = []
     for buff in state.active_buffs:
-        buff.remaining_duration = max(0.0, buff.remaining_duration - elapsed)
+        previous_remaining = float(buff.remaining_duration)
+        buff.remaining_duration = max(0.0, buff.remaining_duration - combat_elapsed)
         if buff.remaining_duration > 0.0:
             remaining.append(buff)
+        elif previous_remaining > 0.0:
+            _cap_combat_uptime_windows(state, buff.buff_id, combat_tick_start + min(previous_remaining, combat_elapsed))
     state.active_buffs = remaining
     state.team_buffs = list(remaining)
 
@@ -78,8 +83,19 @@ def add_team_buff(party_state: CombatState, buff: BuffData, source_character_id:
     apply_buff(party_state, buff, source_character_id)
 
 
-def tick_team_buffs(party_state: CombatState, action_time: float) -> None:
-    tick_buffs(party_state, action_time)
+def tick_team_buffs(party_state: CombatState, combat_elapsed: float) -> None:
+    tick_buffs(party_state, combat_elapsed)
+
+
+def _cap_combat_uptime_windows(state: CombatState, buff_id: str, expiration_combat_time: float) -> None:
+    for windows_attr in ("weapon_effect_buff_windows", "echo_set_buff_windows"):
+        for window in getattr(state, windows_attr, []):
+            if window.get("buff_id") != buff_id:
+                continue
+            start = float(window.get("start_time", expiration_combat_time))
+            capped_end = max(start, min(float(window.get("end_time", start)), expiration_combat_time))
+            window["end_time"] = capped_end
+            window["duration"] = max(0.0, capped_end - start)
 
 
 def has_required_buffs(state: CombatState, required_buffs: list[str]) -> bool:
@@ -97,6 +113,30 @@ def _buff_applies(buff: BuffData, active: ActiveBuff, character: CharacterData, 
         or (target_scope == "self" and active.source_character_id == character.id)
         or (target_scope == "specific_character" and (buff.target_character_id or active.target_character_id) == character.id)
     )
+
+
+def buff_applies_to_character(buff: BuffData, active: ActiveBuff, character: CharacterData, state: CombatState) -> bool:
+    return _buff_applies(buff, active, character, state)
+
+
+def get_active_buffs_for_character(
+    character: CharacterData,
+    state: CombatState,
+    buffs: dict[str, BuffData],
+    *,
+    time_offset: float = 0.0,
+    force_active_buff_ids: set[str] | None = None,
+) -> list[tuple[ActiveBuff, BuffData]]:
+    active_pairs: list[tuple[ActiveBuff, BuffData]] = []
+    forced_ids = force_active_buff_ids or set()
+    for active in state.active_buffs:
+        if active.remaining_duration <= time_offset and active.buff_id not in forced_ids:
+            continue
+        buff = buffs[active.buff_id]
+        if not _buff_applies(buff, active, character, state):
+            continue
+        active_pairs.append((active, buff))
+    return active_pairs
 
 
 def _tags_match(buff: BuffData, action: Any | None) -> bool:
@@ -135,6 +175,46 @@ def get_active_buffs_for_action(
     return active_pairs
 
 
+def _dynamic_value(active: ActiveBuff, buff: BuffData) -> float:
+    return float((active.metadata or {}).get("dynamic_value", buff.value) or 0.0)
+
+
+def effective_damage_amp_contribution(
+    active: ActiveBuff,
+    buff: BuffData,
+    *,
+    action: Any | None = None,
+    category: str | None = None,
+) -> float:
+    damage_amp_modifiers = dict(buff.damage_amp_modifiers or {})
+    if damage_amp_modifiers:
+        if category is not None:
+            return float(damage_amp_modifiers.get(category, 0.0) or 0.0)
+        contribution = float(damage_amp_modifiers.get("all", 0.0) or 0.0)
+        action_categories = set(getattr(action, "tags", []) or [])
+        damage_bonus_category = getattr(action, "damage_bonus_category", None)
+        if damage_bonus_category:
+            action_categories.add(str(damage_bonus_category))
+        for tag in action_categories:
+            contribution += float(damage_amp_modifiers.get(tag, 0.0) or 0.0)
+        return contribution
+    if buff.modifier_type == "damage_amp":
+        return _dynamic_value(active, buff)
+    return 0.0
+
+
+def effective_atk_percent_contribution(active: ActiveBuff, buff: BuffData) -> float:
+    metadata = active.metadata or {}
+    if buff.modifier_type == "attack" and "dynamic_value" in metadata:
+        return float(metadata.get("dynamic_value") or 0.0)
+    explicit_atk_percent = float((buff.stat_modifiers or {}).get("atk_percent", 0.0) or 0.0)
+    if explicit_atk_percent != 0.0:
+        return explicit_atk_percent
+    if buff.modifier_type == "attack":
+        return float(buff.value or 0.0)
+    return 0.0
+
+
 def damage_amp_for_action(
     actor_character_id: str,
     action: Any,
@@ -153,12 +233,7 @@ def damage_amp_for_action(
         time_offset=time_offset,
         force_active_buff_ids=force_active_buff_ids,
     ):
-        buff_value = float(active.metadata.get("dynamic_value", buff.value))
-        damage_amp += buff.damage_amp_modifiers.get("all", 0.0)
-        for tag in getattr(action, "tags", []) or []:
-            damage_amp += buff.damage_amp_modifiers.get(tag, 0.0)
-        if buff.modifier_type == "damage_amp":
-            damage_amp += buff_value
+        damage_amp += effective_damage_amp_contribution(active, buff, action=action)
     return damage_amp
 
 
@@ -316,25 +391,26 @@ def buffed_combat_stats(
         buff = buffs[active.buff_id]
         if not _buff_applies(buff, active, character, state):
             continue
-        buff_value = float(active.metadata.get("dynamic_value", buff.value))
+        buff_value = _dynamic_value(active, buff)
+        atk_percent_contribution = effective_atk_percent_contribution(active, buff)
         active_buff_names.append(buff.id)
         if buff.id == "mornye_halo_of_starry_radiance_5set":
             stats["halo_of_starry_radiance_5set_active"] = True
             stats["halo_of_starry_radiance_5set_atk_percent_bonus"] = max(
                 float(stats.get("halo_of_starry_radiance_5set_atk_percent_bonus", 0.0)),
-                buff_value,
+                atk_percent_contribution,
             )
         if buff.id == "static_mist_incoming_atk":
             stats["static_mist_incoming_atk_buff_active"] = True
             stats["static_mist_incoming_atk_percent_bonus"] = max(
                 float(stats.get("static_mist_incoming_atk_percent_bonus", 0.0)),
-                buff_value,
+                atk_percent_contribution,
             )
         if buff.id == "pact_neonlight_incoming_atk":
             stats["pact_neonlight_incoming_atk_buff_active"] = True
             stats["pact_neonlight_incoming_atk_percent_bonus"] = max(
                 float(stats.get("pact_neonlight_incoming_atk_percent_bonus", 0.0)),
-                buff_value,
+                atk_percent_contribution,
             )
         if buff.id == "hyvatia_incoming_all_attribute_damage_bonus":
             stats["hyvatia_incoming_all_attribute_buff_active"] = True
@@ -357,8 +433,10 @@ def buffed_combat_stats(
                 float(stats.get("starfield_calibrator_party_crit_damage_bonus", 0.0)),
                 float(active.metadata.get("dynamic_value", buff.stat_modifiers.get("crit_damage", 0.0)) or 0.0),
             )
+        if atk_percent_contribution:
+            stats["runtime_atk_percent_bonus"] += atk_percent_contribution
         if buff.modifier_type == "attack":
-            stats["runtime_atk_percent_bonus"] += buff_value
+            pass
         elif buff.modifier_type == "damage_bonus":
             stats["dmg_bonus"] += buff_value
             stats["damage_bonus_buff"] += buff_value
@@ -368,7 +446,7 @@ def buffed_combat_stats(
             stats["dmg_taken"] += buff_value
         for stat_name, stat_value in buff.stat_modifiers.items():
             if stat_name == "atk_percent":
-                stats["runtime_atk_percent_bonus"] += stat_value
+                continue
             elif stat_name == "flat_atk":
                 stats["runtime_atk_flat_bonus"] += stat_value
                 stats["runtime_flat_atk_bonus"] += stat_value

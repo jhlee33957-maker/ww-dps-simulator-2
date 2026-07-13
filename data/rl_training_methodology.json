@@ -1,0 +1,53 @@
+{
+  "methodology_version": "2026-07-09-lynae-curriculum-v1",
+  "methodology_summary_id": "rl_training_methodology_lynae_curriculum_v1",
+  "algorithm": "MaskablePPO",
+  "objective": "Optimize total simulated damage over the 120s Wuwa DPS simulator episode.",
+  "reward_formula": "damage_this_action / 10000.0",
+  "final_metric": "total_damage and DPS over the normal 120s simulation",
+  "action_mask_description": "Action masks remove invalid policy actions such as cooldown-gated skills, resource-gated skills, unavailable swaps, and invalid state actions. Masks prevent illegal moves but do not tell PPO which valid route is best.",
+  "curriculum_modes": {
+    "none": "Normal reset. This is the default evaluation condition.",
+    "aemeath_ready_for_lynae": "Training reset with active Aemeath and Aemeath Concerto ready so swap_to_lynae can expose Lynae Intro reward immediately.",
+    "lynae_after_intro": "Training reset that executes Aemeath Concerto swap_to_lynae and starts after Lynae Intro.",
+    "lynae_kaleidoscopic_ready": "Training reset that executes Aemeath Concerto swap_to_lynae, Lynae resonance skill, and Spark Collision to start inside Kaleidoscopic Parade with full Lumiflow.",
+    "mixed_lynae_curriculum": "Training reset that samples among none and Lynae curriculum states with the env RNG/seed.",
+    "aemeath_post_liberation_ready_for_lynae": "Training reset with active Aemeath, Aemeath Concerto ready, and Aemeath Liberation artificially blocked so swap_to_lynae can be explored without immediate Liberation competition.",
+    "lynae_after_intro_liberation_used": "Training reset that executes real Lynae Intro and real Lynae Liberation, then starts with Lynae active after Liberation is consumed.",
+    "lynae_kaleidoscopic_ready_after_liberation": "Training reset that executes real Lynae Intro, real Lynae Liberation, Lynae Resonance Skill, and Spark Collision, then starts in Kaleidoscopic Parade with Liberation unavailable.",
+    "mixed_lynae_route_curriculum": "Training reset that samples among none, anti-Liberation Lynae route curriculum states, and the earlier Lynae curriculum states with the env RNG/seed."
+  },
+  "route_specific_curriculum_note": "Character/route-specific curriculum reset modes may exist for delayed-payoff branches. They adjust training start states only.",
+  "route_demonstration_warm_start": {
+    "description": "Route demonstrations and behavior-cloning warm-starts are training aids for long delayed-reward branches. They initialize the policy toward valid source-backed action sequences.",
+    "balanced_demonstrations": "Balanced route demonstrations may include both baseline party routes and delayed branch routes so BC does not overgeneralize toward immediate branch entry.",
+    "bc_refresh": "Small BC refresh stages may be interleaved between PPO fine-tuning stages to reduce catastrophic forgetting of delayed branches.",
+    "training_only": true,
+    "reward_shaping": false,
+    "character_usage_bonus": false,
+    "final_evaluation_reset_mode": "none",
+    "future_character_safe": true
+  },
+  "curriculum_training_only_note": "curriculum reset is training-only; it does not modify damage formulas, cooldowns, action masks, final evaluation reward, or default evaluation reset. Final fair evaluation should use curriculum_reset_mode = none unless explicitly studying curriculum starts.",
+  "evaluation_default": "none",
+  "no_character_specific_usage_reward_bonus": true,
+  "trust_notes": [
+    "The model is an RL-discovered policy under the simulator's current assumptions, not a mathematical proof of the optimal rotation.",
+    "No character-specific usage reward bonus is applied by default.",
+    "Action masks prevent illegal actions; they do not encode the best Lynae route."
+  ],
+  "known_limitations": [
+    "Single-target 120s Endgame Matrix-style setting.",
+    "Movement, stamina, continuous positioning, and some animation-cancel details are simplified.",
+    "Long delayed-reward branches may require curriculum, entropy, longer training, macro actions, or additional diagnostics.",
+    "Simulator output is only as reliable as the current action data, transition data, source refs, and implemented mechanics."
+  ],
+  "stale_model_warning": "old PPO models before Lynae fixes are stale; old PPO models before Lynae transition, reward exposure, observation, and source-ref fixes should not be compared with new results.",
+  "recommended_training_sequence": [
+    "Stage 0: generate balanced route demonstrations with scripts/generate_route_demonstrations.py --route-set aemeath_mornye_lynae_balanced_route_warm_start_v2 and run rl/pretrain_maskable_ppo_bc.py for a BC warm-start checkpoint",
+    "Stage 1: use rl/train_maskable_ppo_bc_refresh_plan.py to alternate mixed_lynae_route_curriculum PPO cycles with small BC refresh stages",
+    "Stage 2: final short curriculum_reset_mode=none PPO fine-tune from the last refreshed checkpoint",
+    "Final evaluation: curriculum_reset_mode=none with --diagnose-policy-probs"
+  ],
+  "old_model_invalidation_note": "Retrain or continue-training from a compatible checkpoint after transition/observation/source fixes; do not treat older local optima as current evidence."
+}
