@@ -430,42 +430,15 @@ def ensure_step_zero_records(
     state_path: Path | None,
     evaluation_timeout_seconds: float,
 ) -> None:
-    results_root = output_root / plan["results_root"]
-    alias_summary_path = results_root / "step_000000000_verified_bc_alias_summary.json"
-    alias_timeline_path = results_root / "step_000000000_verified_bc_alias_timeline.csv"
-    alias_logs = results_root / "logs" / "step_000000000_verified_bc_alias"
-    source_model_path: Path | None = None
-    for branch in plan["branches"]:
-        init = branch.get("initialization") or {}
-        if init.get("mode") == "model":
-            source_model_path = PROJECT_ROOT / init["source_model_path"]
-            break
+    source_model_path, alias_summary_path, alias_timeline_path, staged_records = _stage_step_zero_alias_records(
+        plan,
+        state=state,
+        output_root=output_root,
+    )
     if source_model_path is None:
         return
-    staged_records: list[dict[str, Any]] = []
-    for branch in plan["branches"]:
-        init = branch.get("initialization") or {}
-        if init.get("mode") != "model":
-            continue
-        branch_id = branch["branch_id"]
-        branch_state = state["branches"].setdefault(branch_id, {"chunks": []})
-        record = find_chunk(branch_state, 0)
-        if record is None:
-            record = {
-                "kind": "guarded_ppo_step0_verified_bc_alias",
-                "branch_id": branch_id,
-                "chunk_index": 0,
-                "status": "planned",
-                "source_status": "verified_canonical_alias_pending_evaluation",
-                "checkpoint_path": init["source_model_path"],
-                "checkpoint_sha256": sha256_file(source_model_path),
-                "model_sha256": sha256_file(source_model_path),
-                "step0_alias_summary_path": path_for_state(alias_summary_path, output_root=output_root),
-                "step0_alias_timeline_path": path_for_state(alias_timeline_path, output_root=output_root),
-            }
-            branch_state.setdefault("chunks", []).append(record)
-        if record.get("status") != "completed":
-            staged_records.append(record)
+    results_root = output_root / plan["results_root"]
+    alias_logs = results_root / "logs" / "step_000000000_verified_bc_alias"
     if staged_records and state_path is not None:
         write_json_atomic(state_path, state)
     if staged_records and (not alias_summary_path.exists() or not alias_timeline_path.exists()):
@@ -480,18 +453,48 @@ def ensure_step_zero_records(
         )
     else:
         log_result = None
+    populate_step_zero_alias_records_from_verified_artifacts(
+        plan,
+        state=state,
+        output_root=output_root,
+        state_path=state_path,
+        log_result=log_result,
+    )
+
+
+def populate_step_zero_alias_records_from_verified_artifacts(
+    plan: dict[str, Any],
+    *,
+    state: dict[str, Any],
+    output_root: Path,
+    state_path: Path | None,
+    log_result: dict[str, Any] | None = None,
+) -> None:
+    """Build shared step-0 alias records from existing verified artifacts only.
+
+    This helper never evaluates or loads a model. Callers must provide the shared
+    summary and timeline at the plan-derived alias paths before invoking it.
+    """
+    source_model_path, alias_summary_path, alias_timeline_path, _ = _stage_step_zero_alias_records(
+        plan,
+        state=state,
+        output_root=output_root,
+    )
+    if source_model_path is None:
+        return
     if not alias_summary_path.exists() or not alias_timeline_path.exists():
-        raise ValueError("Step-0 alias evaluation is incomplete and cannot be resumed")
+        raise ValueError("Verified step-0 alias artifacts are missing")
+    if alias_summary_path.stat().st_size == 0 or alias_timeline_path.stat().st_size == 0:
+        raise ValueError("Verified step-0 alias artifacts must be non-empty")
     summary = json.loads(alias_summary_path.read_text(encoding="utf-8"))
+    if summary.get("model_training_metadata_source") != "bc_model_sidecar":
+        raise ValueError("Verified step-0 alias summary must use bc_model_sidecar metadata")
     for index, branch in enumerate(plan["branches"]):
         init = branch.get("initialization") or {}
         if init.get("mode") != "model":
             continue
         branch_id = branch["branch_id"]
         branch_state = state["branches"].setdefault(branch_id, {"chunks": []})
-        record = find_chunk(branch_state, 0)
-        if record is None:
-            raise ValueError(f"Step-0 record missing after staging: {branch_id}")
         record = record_from_summary(
             summary,
             kind="guarded_ppo_step0_verified_bc_alias",
@@ -529,6 +532,50 @@ def ensure_step_zero_records(
     state["global_best"] = build_best_manifest(select_best_candidate(all_records(state)), reason="initial incumbent selection")
     if state_path is not None:
         write_json_atomic(state_path, state)
+
+
+def _stage_step_zero_alias_records(
+    plan: dict[str, Any],
+    *,
+    state: dict[str, Any],
+    output_root: Path,
+) -> tuple[Path | None, Path, Path, list[dict[str, Any]]]:
+    results_root = output_root / plan["results_root"]
+    alias_summary_path = results_root / "step_000000000_verified_bc_alias_summary.json"
+    alias_timeline_path = results_root / "step_000000000_verified_bc_alias_timeline.csv"
+    source_model_path: Path | None = None
+    for branch in plan["branches"]:
+        init = branch.get("initialization") or {}
+        if init.get("mode") == "model":
+            source_model_path = PROJECT_ROOT / init["source_model_path"]
+            break
+    if source_model_path is None:
+        return None, alias_summary_path, alias_timeline_path, []
+    staged_records: list[dict[str, Any]] = []
+    for branch in plan["branches"]:
+        init = branch.get("initialization") or {}
+        if init.get("mode") != "model":
+            continue
+        branch_id = branch["branch_id"]
+        branch_state = state["branches"].setdefault(branch_id, {"chunks": []})
+        record = find_chunk(branch_state, 0)
+        if record is None:
+            record = {
+                "kind": "guarded_ppo_step0_verified_bc_alias",
+                "branch_id": branch_id,
+                "chunk_index": 0,
+                "status": "planned",
+                "source_status": "verified_canonical_alias_pending_evaluation",
+                "checkpoint_path": init["source_model_path"],
+                "checkpoint_sha256": sha256_file(source_model_path),
+                "model_sha256": sha256_file(source_model_path),
+                "step0_alias_summary_path": path_for_state(alias_summary_path, output_root=output_root),
+                "step0_alias_timeline_path": path_for_state(alias_timeline_path, output_root=output_root),
+            }
+            branch_state.setdefault("chunks", []).append(record)
+        if record.get("status") != "completed":
+            staged_records.append(record)
+    return source_model_path, alias_summary_path, alias_timeline_path, staged_records
 
 
 def build_incumbent_records(plan: dict[str, Any], *, output_root: Path) -> list[dict[str, Any]]:

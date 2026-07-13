@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import io
 import json
 import os
 import signal
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -13,22 +15,13 @@ import zipfile
 from pathlib import Path
 from typing import Any
 
-import numpy as np
-
-
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
-
-from rl.demo_contract import (  # noqa: E402
-    DEFAULT_DEMO_PATH,
-    DIRECT_ACTION_MANIFEST_SHA256,
-    SOURCE_ROUTE_FILE_SHA256,
-    bytes_sha256,
-    file_sha256,
-)
+DEFAULT_DEMO_PATH = ROOT / "data" / "generated" / "manual_120s_bc_demonstration_v105.npz"
+DIRECT_ACTION_MANIFEST_SHA256 = "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d"
+SOURCE_ROUTE_FILE_SHA256 = "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a"
 
 
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-111.zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-112.zip"
 EXPECTED_BC_MODEL_SHA256 = "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e"
 EXPECTED_PPO_MODEL_SHA256 = "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513"
 EXPECTED_EVAL_SELECTED_SEQUENCE_SHA256 = "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1"
@@ -72,7 +65,14 @@ REQUIRED_FILES = (
     "reports/guarded_ppo_experiment_v109.md",
     "reports/guarded_ppo_experiment_v109_results.md",
     "reports/beam_search_v111.md",
+    "reports/beam_search_v111_calibration_results.md",
     "data/beam_search_plan_v111.json",
+    "results/beam_search_v111/execution_result.json",
+    "results/beam_search_v111/search_state.json",
+    "results/beam_search_v111/leaderboard.json",
+    "results/beam_search_v111/best_route.json",
+    "results/beam_search_v111/final_summary.json",
+    "results/beam_search_v111/calibration_result_summary.json",
     "models/maskable_ppo_bc_v105.zip",
     "models/maskable_ppo_bc_v105.zip.bc_metadata.json",
     "models/maskable_ppo_candidate_after_bc_v105.zip",
@@ -180,6 +180,24 @@ REQUIRED_FILES = (
     "scripts/beam_search_cli_execution_gate_smoke_test.py",
     "scripts/beam_search_bounded_integration_smoke_test.py",
     "scripts/project_progress_beam_search_alignment_smoke_test.py",
+    "scripts/project_progress_beam_search_calibration_alignment_smoke_test.py",
+    "scripts/beam_search_calibration_result_integrity_smoke_test.py",
+    "scripts/beam_search_calibration_ingestion_idempotence_smoke_test.py",
+    "scripts/beam_search_calibration_artifact_path_smoke_test.py",
+    "scripts/beam_search_calibration_report_format_smoke_test.py",
+    "scripts/progress_dashboard_beam_calibration_alignment_smoke_test.py",
+    "scripts/progress_dashboard_beam_calibration_render_smoke_test.py",
+    "scripts/final_archive_suite_utils.py",
+    "scripts/final_archive_project_progress_suite.py",
+    "scripts/final_archive_guarded_ppo_lightweight_suite.py",
+    "scripts/final_archive_guarded_ppo_lightweight_contract_smoke_test.py",
+    "scripts/final_archive_guarded_ppo_suite_repeatability_smoke_test.py",
+    "scripts/final_archive_beam_calibration_suite.py",
+    "scripts/final_archive_beam_helper_suite.py",
+    "scripts/final_archive_dataset_metadata_suite.py",
+    "scripts/final_archive_checker_repeatability_smoke_test.py",
+    "scripts/guarded_ppo_state_integrity_repeatability_smoke_test.py",
+    "scripts/ingest_beam_search_v111_calibration_results.py",
 )
 EXPECTED_GUARDED_PLAN_SHA256 = "0306c734347e49460fd7273bce546eed80a2db657e460eb707f5cab961a9e0e6"
 TEXT_SUFFIXES = (".py", ".json", ".md", ".txt")
@@ -199,17 +217,25 @@ ESTABLISHED_MOJIBAKE_MARKERS = (
 def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--archive", type=Path, default=DEFAULT_ARCHIVE)
+    parser.add_argument(
+        "--orchestration-smoke",
+        action="store_true",
+        help="Run static archive validation plus aggregate helper suites, without the evaluator lifecycle.",
+    )
     return parser
 
 
 def main() -> None:
     args = build_arg_parser().parse_args()
-    stats = validate_archive(args.archive)
+    started = time.perf_counter()
+    stats = validate_archive(args.archive, orchestration_smoke=args.orchestration_smoke)
+    stats["total_elapsed_seconds"] = round(time.perf_counter() - started, 6)
+    stats["orchestration_smoke"] = args.orchestration_smoke
     print(json.dumps(stats, indent=2, ensure_ascii=False))
     print("manual_120s_bc_final_archive_integrity_smoke_test ok")
 
 
-def validate_archive(archive: Path) -> dict[str, Any]:
+def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dict[str, Any]:
     assert archive.exists(), archive
     with zipfile.ZipFile(archive) as zf:
         names = [info.filename for info in zf.infolist()]
@@ -281,9 +307,6 @@ def validate_archive(archive: Path) -> dict[str, Any]:
         npz_sha = bytes_sha256(npz_bytes)
         assert summary["dataset_sha256"] == npz_sha
         assert _progress_contains(progress, npz_sha)
-        with np.load(io.BytesIO(npz_bytes), allow_pickle=False) as data:
-            metadata = json.loads(str(np.asarray(data["metadata_json"]).item()))
-        assert metadata["source_route_file_sha256"] == SOURCE_ROUTE_FILE_SHA256
         assert summary["metadata"]["source_route_file_sha256"] == SOURCE_ROUTE_FILE_SHA256
 
         manifest_a = zf.read("direct_action_data_patch_manifest_v61.json")
@@ -299,12 +322,12 @@ def validate_archive(archive: Path) -> dict[str, Any]:
         assert text_stats["correct_sheet_occurrence_count"] > 0
         assert text_stats["authoritative_correct_sheet_occurrence_count"] > 0
 
-    fresh_extraction_results = run_fresh_extraction_checks(archive)
+    fresh_extraction_results = run_fresh_extraction_checks(archive, orchestration_smoke=orchestration_smoke)
     if DEFAULT_DEMO_PATH.exists():
-        assert file_sha256(DEFAULT_DEMO_PATH) == npz_sha
+        assert _sha256_file(DEFAULT_DEMO_PATH) == npz_sha
     return {
         "archive": archive.as_posix(),
-        "archive_sha256": file_sha256(archive),
+        "archive_sha256": _sha256_file(archive),
         "zip_entry_count": len(names),
         "cache_entry_count": len(cache_entries),
         "obsolete_bc_eval_bundle_entry_count": len(obsolete_bundle_entries),
@@ -429,130 +452,24 @@ def scan_archive_text(zf: zipfile.ZipFile, names: list[str]) -> dict[str, int]:
     return stats
 
 
-def run_fresh_extraction_checks(archive: Path) -> list[dict[str, Any]]:
+def run_fresh_extraction_checks(archive: Path, *, orchestration_smoke: bool) -> list[dict[str, Any]]:
+    # Lightweight contracts share four bounded interpreter lifecycles. This avoids
+    # repeatedly importing numerical/ML modules in the checker process tree.
     checks = [
-        [sys.executable, "scripts/project_progress_active_echo_alignment_smoke_test.py"],
-        [sys.executable, "scripts/project_progress_manual_120s_baseline_alignment_smoke_test.py"],
-        [sys.executable, "scripts/project_progress_bc_demo_alignment_smoke_test.py"],
-        [sys.executable, "scripts/project_progress_ppo_100k_alignment_smoke_test.py"],
-        [sys.executable, "scripts/project_progress_guarded_ppo_alignment_smoke_test.py"],
-        [sys.executable, "scripts/project_progress_guarded_ppo_results_alignment_smoke_test.py"],
-        [sys.executable, "scripts/guarded_ppo_completed_experiment_integrity_smoke_test.py"],
-        [sys.executable, "scripts/guarded_ppo_route_similarity_diagnostic_only_smoke_test.py"],
-        [sys.executable, "scripts/guarded_ppo_plan_contract_smoke_test.py"],
-        [sys.executable, "scripts/guarded_ppo_branch_continuation_smoke_test.py"],
-        [sys.executable, "scripts/guarded_ppo_damage_only_objective_smoke_test.py"],
-        [sys.executable, "scripts/guarded_ppo_scratch_control_smoke_test.py"],
-        [sys.executable, "scripts/guarded_ppo_cli_execution_gate_smoke_test.py"],
-        [sys.executable, "scripts/guarded_ppo_seed_contract_smoke_test.py"],
-        [sys.executable, "scripts/guarded_ppo_incumbent_best_retention_smoke_test.py"],
-        [sys.executable, "scripts/guarded_ppo_state_integrity_smoke_test.py"],
-        [sys.executable, "scripts/guarded_ppo_route_diagnostics_smoke_test.py"],
+        [sys.executable, "scripts/final_archive_project_progress_suite.py"],
+        [sys.executable, "scripts/final_archive_guarded_ppo_lightweight_suite.py"],
         [sys.executable, "scripts/guarded_ppo_stage_timeout_smoke_test.py"],
-        [sys.executable, "scripts/guarded_ppo_cross_platform_path_canonicalization_smoke_test.py"],
-        [sys.executable, "scripts/guarded_ppo_checkpoint_sidecar_strict_contract_smoke_test.py"],
-        [sys.executable, "scripts/guarded_ppo_completed_experiment_spot_evaluation_smoke_test.py"],
-        [sys.executable, "scripts/guarded_ppo_dry_run_step0_alias_smoke_test.py"],
-        [sys.executable, "scripts/guarded_ppo_short_integration_smoke_test.py"],
-        [sys.executable, "scripts/manual_120s_bc_demo_contract_smoke_test.py"],
-        [sys.executable, "scripts/manual_120s_bc_packaged_generation_parity_smoke_test.py"],
-        [sys.executable, "scripts/manual_120s_bc_report_portability_smoke_test.py"],
-        [sys.executable, "scripts/bc_pretrain_evaluator_contract_smoke_test.py"],
-        [sys.executable, "scripts/evaluation_event_source_damage_attribution_smoke_test.py"],
-        [sys.executable, "scripts/evaluation_scheduled_damage_role_breakdown_smoke_test.py"],
-        [sys.executable, "scripts/bc_evaluation_manual_baseline_parity_smoke_test.py"],
-        [sys.executable, "scripts/ppo_100k_evaluation_contract_smoke_test.py"],
-        [sys.executable, "scripts/manual_bc_ppo_comparison_smoke_test.py"],
-        [sys.executable, "scripts/build_candidate_archive_output_guard_smoke_test.py"],
-        [sys.executable, "scripts/project_progress_beam_search_alignment_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_plan_contract_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_clone_isolation_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_clone_behavioral_parity_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_state_roundtrip_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_state_fingerprint_contract_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_state_payload_size_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_exact_dedup_dominance_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_true_time_bucket_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_legal_action_expansion_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_zero_time_action_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_cutoff_scheduler_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_delayed_payoff_diversity_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_real_diversity_key_contract_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_damage_only_winner_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_manual_route_independence_guard_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_resume_integrity_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_resume_equivalence_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_realistic_2000_resume_equivalence_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_hot_path_scalability_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_checkpoint_interval_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_route_store_compaction_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_diversity_phase_contract_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_future_field_classification_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_short_window_diversity_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_horizon_comparison_guard_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_pending_frontier_bound_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_peak_live_metric_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_intra_bucket_budget_guard_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_partial_node_resume_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_final_replay_reporting_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_terminal_replay_parity_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_completed_route_reporting_contract_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_completion_order_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_memory_bound_contract_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_destination_accumulator_hot_path_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_destination_accumulator_spill_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_destination_accumulator_manifest_size_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_compact_cli_output_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_accumulator_metrics_contract_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_duplicate_lineage_tie_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_destination_bucket_order_independence_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_destination_bucket_batch_equivalence_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_destination_bucket_partition_merge_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_destination_bucket_resume_equivalence_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_diversity_quota_fill_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_cli_execution_gate_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_bounded_integration_smoke_test.py"],
-        [
-            sys.executable,
-            "rl/pretrain_maskable_ppo_bc.py",
-            "--party",
-            "aemeath_mornye_lynae_enabled_test_party",
-            "--initial-active-character",
-            "aemeath",
-            "--demo-path",
-            "data/generated/manual_120s_bc_demonstration_v105.npz",
-            "--model-path",
-            "models/maskable_ppo_bc_v105.zip",
-            "--dry-run",
-        ],
-        [
-            sys.executable,
-            "rl/evaluate_maskable_ppo.py",
-            "--model-path",
-            "models/maskable_ppo_candidate_after_bc_v105.zip",
-            "--party",
-            "aemeath_mornye_lynae_enabled_test_party",
-            "--initial-active-character",
-            "aemeath",
-            "--summary-path",
-            "results/ppo_100k_evaluation_summary.json",
-            "--timeline-path",
-            "results/ppo_100k_timeline.csv",
-        ],
-        [
-            sys.executable,
-            "rl/evaluate_maskable_ppo.py",
-            "--model-path",
-            "models/maskable_ppo_bc_v105.zip",
-            "--party",
-            "aemeath_mornye_lynae_enabled_test_party",
-            "--initial-active-character",
-            "aemeath",
-        ],
+        [sys.executable, "scripts/final_archive_beam_calibration_suite.py"],
+        [sys.executable, "scripts/final_archive_beam_helper_suite.py"],
+        [sys.executable, "scripts/final_archive_dataset_metadata_suite.py"],
     ]
+    if not orchestration_smoke:
+        # One evaluator lifecycle validates the packaged BC model without training.
+        checks.append([sys.executable, "scripts/bc_evaluation_manual_baseline_parity_smoke_test.py"])
     passed: list[dict[str, Any]] = []
-    with tempfile.TemporaryDirectory() as temp_dir:
-        extract_root = Path(temp_dir) / "project"
+    temp_dir = Path(tempfile.mkdtemp(prefix="archive-integrity-"))
+    try:
+        extract_root = temp_dir / "project"
         with zipfile.ZipFile(archive) as zf:
             zf.extractall(extract_root)
         for command in checks:
@@ -563,6 +480,8 @@ def run_fresh_extraction_checks(archive: Path) -> list[dict[str, Any]]:
                     "elapsed_seconds": round(result["elapsed_seconds"], 6),
                 }
             )
+    finally:
+        shutil.rmtree(temp_dir, ignore_errors=False)
     return passed
 
 
@@ -636,6 +555,18 @@ def _assert_close(actual: float, expected: float, *, tolerance: float = 1e-6) ->
     assert abs(float(actual) - expected) <= tolerance, (actual, expected)
 
 
+def bytes_sha256(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as file:
+        for chunk in iter(lambda: file.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def _is_cache_entry(name: str) -> bool:
     normalized = name.replace("\\", "/")
     parts = normalized.split("/")
@@ -662,6 +593,7 @@ def _run(command: list[str], *, cwd: Path, timeout: float) -> dict[str, Any]:
             "MKL_NUM_THREADS": "1",
             "OPENBLAS_NUM_THREADS": "1",
             "NUMEXPR_NUM_THREADS": "1",
+            "PYTHONDONTWRITEBYTECODE": "1",
         }
     )
     label = " ".join(command[1:])

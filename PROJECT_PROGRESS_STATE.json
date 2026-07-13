@@ -13,14 +13,14 @@
     "language_preference": "설명은 한국어, Codex 프롬프트와 코드 식별자는 영어 가능"
   },
   "status": {
-    "last_updated": "2026-07-13T00:00:00+09:00",
-    "latest_verified_archive": "ww-dps-simulator-2-110.zip",
-    "latest_verified_baseline_label": "110",
-    "current_task_status": "implemented_tests_passed_pending_external_review",
-    "current_task": "independent deterministic diverse Beam Search infrastructure",
-    "current_task_expected_next_archive": "111",
+    "last_updated": "2026-07-14T00:00:00+09:00",
+    "latest_verified_archive": "ww-dps-simulator-2-111.zip",
+    "latest_verified_baseline_label": "111",
+    "current_task_status": "candidate_pending_external_review",
+    "current_task": "30-second Beam Search calibration result ingestion and full-search readiness review",
+    "current_task_expected_next_archive": "112",
     "do_not_treat_current_task_as_complete_until_reviewed": true,
-    "candidate_expected_next_archive": "ww-dps-simulator-2-111.zip"
+    "candidate_expected_next_archive": "ww-dps-simulator-2-112.zip"
   },
   "source_of_truth": {
     "raw_action_workbook": "鸣潮动作数据汇总(5).xlsx",
@@ -577,18 +577,18 @@
     }
   ],
   "current_in_progress_task": {
-    "task": "independent deterministic diverse Beam Search infrastructure",
-    "status": "implemented_tests_passed_pending_external_review",
-    "candidate": "111",
+    "task": "30-second Beam Search calibration result ingestion and full-search readiness review",
+    "status": "candidate_pending_external_review",
+    "candidate": "112",
     "external_review_required": true,
     "external_review_status": "pending",
     "external_verification_claimed": false,
-    "latest_externally_verified_baseline": "110",
-    "baseline_archive": "ww-dps-simulator-2-110.zip",
-    "candidate_expected_next_archive": "ww-dps-simulator-2-111.zip",
+    "latest_externally_verified_baseline": "111",
+    "baseline_archive": "ww-dps-simulator-2-111.zip",
+    "candidate_expected_next_archive": "ww-dps-simulator-2-112.zip",
     "beam_search_long_execution": false,
     "mcts_execution": false,
-    "calibration_stage_executed": false,
+    "calibration_stage_executed": true,
     "full_search_stage_executed": false,
     "current_best_model": "models/maskable_ppo_bc_v105.zip",
     "current_best_result": 5165134.682363356,
@@ -600,7 +600,7 @@
     "global_optimum_claimed": false,
     "plan_path": "data/beam_search_plan_v111.json",
     "plan_sha256": "b504def4e0c1da82ef2a6024d19ccac76fe175df51899e50d12f3bff99a17998",
-    "report": "reports/beam_search_v111.md",
+    "report": "reports/beam_search_v111_calibration_results.md",
     "stages": [
       {
         "stage_id": "calibration_30s",
@@ -624,23 +624,19 @@
       }
     ],
     "notes": [
-      "Candidate 111 implements Beam Search infrastructure only and remains pending external review.",
-      "Calibration 30s and full 120s Beam Search stages were not run for this candidate.",
-      "Beam Search is independent of manual route, BC/PPO policy probabilities, route similarity bonuses, and learned value functions.",
-      "Winner selection remains deterministic 120-second total damage only; route similarity is diagnostic only.",
-      "MCTS remains a later option only if reviewed Beam Search coverage is inadequate or excessively myopic."
+      "Candidate 112 ingests the externally reviewed candidate-111 calibration; candidate 112 itself remains pending external review.",
+      "The completed 30-second calibration has valid completed routes but declares no project winner or global optimum.",
+      "The verified 120-second BC model remains the current best project result.",
+      "Full 120-second Beam Search, MCTS, BC training, and PPO training were not run for candidate 112."
     ],
     "validation_summary": {
       "status": "pending_final_archive_validation",
-      "archive_path": "../ww-dps-simulator-2-111.zip",
+      "archive_path": "../ww-dps-simulator-2-112.zip",
       "archive_exact_validation_passed": false,
       "archive_sha256_reported_outside_progress_state": true,
-      "canonical_beam_search_results_written": false,
-      "smoke_max_combat_duration": 3.0,
-      "smoke_max_expansions": 2000,
+      "canonical_beam_search_results_written": true,
       "notes": [
-        "Candidate 111 destination-accumulator hot-path, spill, compact manifest/CLI, metrics, and lineage-tie correction passed bounded smoke validation; final archive validation is pending.",
-        "30-second calibration, full 120-second Beam Search, MCTS, BC training, and PPO training were not run."
+        "Calibration result ingestion and integrity guards completed without rerunning search."
       ]
     },
     "alias_preserving_clone_contract": "character_states is restored as the same object as character_mechanics_state after every clone/restore",
@@ -671,7 +667,39 @@
     "destination_accumulator_compact_manifest": true,
     "beam_search_compact_cli_output": true,
     "destination_accumulator_metric_conservation": true,
-    "destination_accumulator_lineage_tie_key": true
+    "destination_accumulator_lineage_tie_key": true,
+    "canonical_beam_search_results_written": true,
+    "calibration_result_summary": "results/beam_search_v111/calibration_result_summary.json",
+    "calibration_metrics": {
+      "maximum_expansions": 500000,
+      "actual_expansions": 381918,
+      "elapsed_seconds": 923.3255433000159,
+      "expansions_per_second": 413.6330926522451,
+      "deduplicated_states": 17452,
+      "pruned_states": 287717,
+      "zero_time_expansions": 4605,
+      "completed_time_buckets": 60,
+      "retained_completed_routes": 128,
+      "observed_completed_routes_before_retention": 12906,
+      "final_pending_buckets": 0,
+      "final_destination_accumulators": 0,
+      "checkpoint_count": 5,
+      "frontier_file_writes": 17,
+      "accumulator_finalizations": 18
+    },
+    "calibration_best_route": {
+      "route_id": "a301f753b3ddf6e4",
+      "completion_order": 6908,
+      "total_damage": 1369674.294344379,
+      "dps": 45655.8098114793,
+      "final_combat_time": 30.0,
+      "final_current_time": 54.949999999999974,
+      "selected_action_count": 45,
+      "resolved_action_count": 45,
+      "selected_sequence_sha256": "a301f753b3ddf6e47acc5aa4b3325ac2465f36db102974fc72bcedb64af82011",
+      "resolved_sequence_sha256": "d476c49e7aeba150d11fee9b23ccbc9047f5a4f8c8a5c462f6f9265423702fd5"
+    },
+    "reference_damage_comparison_status": "horizon_mismatch_not_comparable"
   },
   "manual_cycle_reference": {
     "status": "externally_verified_complete",
@@ -769,22 +797,19 @@
   ],
   "next_planned_tasks": [
     {
-      "task": "external review of candidate 111"
+      "task": "external review of candidate 112"
     },
     {
-      "task": "run the 30-second Beam Search calibration stage"
+      "task": "run the reviewed 120-second Beam Search stage"
     },
     {
-      "task": "review expansion rate, memory, diversity, and pruning diagnostics"
+      "task": "resume rather than restart if interrupted"
     },
     {
-      "task": "run the 120-second full Beam Search stage only after calibration review"
+      "task": "compare only completed 120-second routes with the verified BC result"
     },
     {
-      "task": "compare the best search route against manual, BC, and all PPO checkpoints"
-    },
-    {
-      "task": "use MCTS only if Beam Search coverage is inadequate or excessively myopic"
+      "task": "consider MCTS only after reviewing the full Beam result"
     }
   ],
   "validation_invariants": [
@@ -1354,7 +1379,7 @@
       ]
     }
   ],
-  "next_planned_task": "after candidate 111 external review, run the 30-second Beam Search calibration stage before any full 120-second search",
+  "next_planned_task": "run the reviewed 120-second Beam Search stage after candidate 112 external verification",
   "candidate_history": [
     {
       "candidate": "106",
@@ -1502,26 +1527,24 @@
     {
       "candidate": "111",
       "task": "independent deterministic diverse Beam Search infrastructure",
-      "status": "implemented_tests_passed_pending_external_review",
+      "status": "externally_verified_complete",
       "latest_externally_verified_baseline": "110",
-      "external_review_status": "pending",
-      "external_verification_claimed": false,
+      "external_review_status": "passed",
+      "external_verification_claimed": true,
       "beam_search_long_execution": false,
       "mcts_execution": false,
       "plan_path": "data/beam_search_plan_v111.json",
       "plan_sha256": "b504def4e0c1da82ef2a6024d19ccac76fe175df51899e50d12f3bff99a17998",
       "archive_path": "../ww-dps-simulator-2-111.zip",
       "validation_summary": {
-        "status": "pending_final_archive_validation",
+        "status": "externally_verified_complete",
         "archive_path": "../ww-dps-simulator-2-111.zip",
-        "archive_exact_validation_passed": false,
-        "archive_sha256_reported_outside_progress_state": true,
+        "archive_exact_validation_passed": true,
+        "archive_sha256_reported_outside_progress_state": false,
         "canonical_beam_search_results_written": false,
-        "smoke_max_combat_duration": 3.0,
-        "smoke_max_expansions": 2000,
         "notes": [
-          "Candidate 111 destination-accumulator hot-path, spill, compact manifest/CLI, metrics, and lineage-tie correction passed bounded smoke validation; final archive validation is pending.",
-          "30-second calibration, full 120-second Beam Search, MCTS, BC training, and PPO training were not run."
+          "Candidate 111 infrastructure archive was externally verified.",
+          "Candidate 111 did not run the 30-second calibration, full 120-second Beam Search, MCTS, BC training, or PPO training."
         ]
       },
       "corrected_after_external_review": true,
@@ -1563,7 +1586,24 @@
         "beam_search_compact_cli_output": true,
         "destination_accumulator_metric_conservation": true,
         "destination_accumulator_lineage_tie_key": true
-      }
+      },
+      "external_verification_label": "111",
+      "baseline_archive": "ww-dps-simulator-2-111.zip",
+      "archive_sha256": "9577ee38ebbf655d51ab854970f01d6f10920b48b1abfd947080972592bc93a6"
+    },
+    {
+      "candidate": "112",
+      "task": "30-second Beam Search calibration result ingestion and full-search readiness review",
+      "status": "candidate_pending_external_review",
+      "latest_externally_verified_baseline": "111",
+      "external_review_status": "pending",
+      "external_verification_claimed": false,
+      "calibration_stage_executed": true,
+      "full_search_stage_executed": false,
+      "mcts_execution": false,
+      "calibration_result_summary": "results/beam_search_v111/calibration_result_summary.json",
+      "report": "reports/beam_search_v111_calibration_results.md",
+      "global_optimum_claimed": false
     }
   ]
 }

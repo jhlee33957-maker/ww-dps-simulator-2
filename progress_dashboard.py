@@ -21,6 +21,9 @@ SOURCE_FILES = {
     / "reports"
     / "guarded_ppo_experiment_v109_results.md",
     "reports/beam_search_v111.md": BASE_DIR / "reports" / "beam_search_v111.md",
+    "reports/beam_search_v111_calibration_results.md": BASE_DIR
+    / "reports"
+    / "beam_search_v111_calibration_results.md",
     "reports/manual_120s_baseline_v104.md": BASE_DIR
     / "reports"
     / "manual_120s_baseline_v104.md",
@@ -54,11 +57,11 @@ EMBEDDED_PROGRESS_SNAPSHOT: dict[str, Any] = {
     ),
     "combat_duration_seconds": 120,
     "primary_party": ["aemeath", "mornye", "lynae"],
-    "externally_verified_baseline": "ww-dps-simulator-2-110.zip",
-    "current_candidate_version": "ww-dps-simulator-2-111.zip",
-    "current_review_status": "구현 및 내부 테스트 통과, 외부 검토 대기",
-    "review_status_key": "implemented_tests_passed_pending_external_review",
-    "last_updated_label": "2026-07-13",
+    "externally_verified_baseline": "ww-dps-simulator-2-111.zip",
+    "current_candidate_version": "ww-dps-simulator-2-112.zip",
+    "current_review_status": "구현 완료, 외부 검토 대기",
+    "review_status_key": "candidate_pending_external_review",
+    "last_updated_label": "2026-07-14",
     "best_total_damage": 5_165_134.68,
     "best_dps": 43_042.79,
     "best_method": "행동 복제(Behavior Cloning, BC)",
@@ -82,16 +85,15 @@ EMBEDDED_PROGRESS_SNAPSHOT: dict[str, Any] = {
         {"name": "Scratch PPO", "damage": 2_566_933.38, "status": "BC 대비 약 49.70%"},
     ],
     "beam_search": {
-        "implementation_status": "구현 완료",
+        "implementation_status": "외부 검증",
         "internal_tests": "내부 검증",
         "external_review": "외부 검토 대기",
-        "calibration_30s_status": "미실행",
+        "calibration_30s_status": "실행됨",
         "full_120s_status": "미실행",
-        "has_confirmed_damage_result": False,
+        "has_confirmed_damage_result": True,
         "has_bc_beating_route": False,
         "summary": (
-            "독립 결정론 Beam Search 인프라가 구현되었고 내부 테스트는 통과했지만, "
-            "30초 보정과 120초 전체 탐색은 아직 실행되지 않았습니다."
+            "30초 보정은 완료되어 유효한 완료 경로를 생성했고, 120초 전체 탐색은 아직 실행되지 않았습니다."
         ),
     },
     "mcts": {
@@ -171,7 +173,7 @@ EMBEDDED_PROGRESS_SNAPSHOT: dict[str, Any] = {
             "max_expansions": 500_000,
             "checkpoint": "주기적 체크포인트 계획",
             "resume": "중단 후 재개 가능",
-            "status": "미실행",
+            "status": "내부 검증",
         },
         {
             "name": "120초 전체 탐색",
@@ -183,7 +185,7 @@ EMBEDDED_PROGRESS_SNAPSHOT: dict[str, Any] = {
             "max_expansions": 5_000_000,
             "checkpoint": "장기 실행 체크포인트 계획",
             "resume": "중단 후 재개 가능",
-            "status": "미실행",
+            "status": "미착수",
         },
     ],
     "stage_status": [
@@ -192,9 +194,9 @@ EMBEDDED_PROGRESS_SNAPSHOT: dict[str, Any] = {
         {"stage": "수동 기준선", "status": "외부 검증"},
         {"stage": "행동 복제", "status": "외부 검증"},
         {"stage": "PPO 실험", "status": "내부 검증"},
-        {"stage": "Beam Search 인프라", "status": "내부 검증"},
-        {"stage": "Beam Search 30초 보정", "status": "계획"},
-        {"stage": "Beam Search 120초 탐색", "status": "계획"},
+        {"stage": "Beam Search 인프라", "status": "외부 검증"},
+        {"stage": "Beam Search 30초 보정", "status": "내부 검증"},
+        {"stage": "Beam Search 120초 탐색", "status": "미착수"},
         {"stage": "MCTS", "status": "미착수"},
     ],
     "development_flow": [
@@ -305,6 +307,7 @@ def normalize_stage_mapping(raw_stages: Any) -> dict[str, dict[str, Any]]:
                 raw_name = (
                     stage.get("name")
                     or stage.get("id")
+                    or stage.get("stage_id")
                     or stage.get("stage")
                     or stage.get("stage_name")
                     or stage.get("key")
@@ -378,6 +381,20 @@ def merge_progress_data(
         merged["beam_search"]["has_confirmed_damage_result"] = bool(
             current.get("canonical_beam_search_results_written")
         )
+        if current.get("calibration_stage_executed"):
+            merged["beam_search"]["summary"] = (
+                "30초 보정은 완료되어 유효한 완료 경로를 생성했습니다. "
+                "120초 전체 탐색은 후보 112 외부 검토 후에만 실행합니다."
+            )
+        stage_status = {item["stage"]: item for item in merged["stage_status"]}
+        stage_status["Beam Search 인프라"]["status"] = "외부 검증"
+        stage_status["Beam Search 30초 보정"]["status"] = (
+            "내부 검증" if current.get("calibration_stage_executed") else "미착수"
+        )
+        stage_status["Beam Search 120초 탐색"]["status"] = (
+            "내부 검증" if current.get("full_search_stage_executed") else "미착수"
+        )
+        stage_status["MCTS"]["status"] = "미착수"
 
     if isinstance(beam_plan, dict):
         raw_stages = beam_plan.get("stages")
@@ -398,7 +415,11 @@ def merge_progress_data(
                     "max_expansions": stage.get("max_expansions"),
                     "checkpoint": stage.get("checkpoint_behavior", "계획됨"),
                     "resume": stage.get("resume_behavior", "계획됨"),
-                    "status": "미실행",
+                    "status": (
+                        "내부 검증"
+                        if "calibration" in raw_name and current.get("calibration_stage_executed")
+                        else "미착수"
+                    ),
                 }
             )
         if planned_stages:
@@ -588,7 +609,11 @@ def render_header(data: dict[str, Any], source_mode: str) -> None:
         render_status_badge(source_mode, source_mode)
     st.markdown("**현재 검토 상태**")
     render_status_badge(data["current_review_status"], data["current_review_status"])
-    st.caption("내부 테스트 통과와 외부 검증 완료는 별도 상태입니다. Beam Search와 MCTS 결과는 아직 확정되지 않았습니다.")
+    st.caption(
+        "내부 테스트 통과와 외부 검증 완료는 별도 상태입니다. "
+        "Beam Search 30초 보정은 완료됐지만 후보 112는 외부 검토 대기 상태이며, "
+        "120초 전체 탐색과 MCTS는 아직 실행되지 않았습니다."
+    )
 
 
 def render_project_overview(data: dict[str, Any]) -> None:
@@ -654,7 +679,10 @@ def render_performance_chart(data: dict[str, Any]) -> None:
         "height": max(220, 42 * len(rows)),
     }
     st.vega_lite_chart(chart, use_container_width=True)
-    st.info("PPO는 검증된 BC 결과를 넘지 못했습니다. Beam Search와 MCTS는 유효 실행 결과가 없어 0 피해량 막대로 표시하지 않습니다.")
+    st.info(
+        "PPO는 검증된 BC 결과를 넘지 못했습니다. Beam Search는 유효한 30초 보정 결과가 있지만 "
+        "120초 비교와 시간 지평이 달라 이 차트에 표시하지 않습니다. MCTS는 아직 실행되지 않았습니다."
+    )
 
 
 def render_stage_chart(data: dict[str, Any]) -> None:
@@ -695,6 +723,11 @@ def render_stage_chart(data: dict[str, Any]) -> None:
 
 def render_current_status(data: dict[str, Any]) -> None:
     render_section_header("현재 개발 상태")
+    beam = data["beam_search"]
+    candidate = "후보 112" if data.get("review_status_key") == "candidate_pending_external_review" else "현재 후보"
+    calibration_status = beam["calibration_30s_status"]
+    full_search_status = beam["full_120s_status"]
+    mcts_status = data["mcts"]["status"]
     done, current, unresolved = st.columns(3)
     with done:
         st.markdown('<div class="status-card">', unsafe_allow_html=True)
@@ -715,18 +748,18 @@ def render_current_status(data: dict[str, Any]) -> None:
         st.markdown('<div class="status-card">', unsafe_allow_html=True)
         st.markdown("**현재 진행 중**")
         st.markdown(
-            """
-            - 독립 결정론 diverse Beam Search 인프라 구현
-            - 동등 미래 상태 deduplication 구현
-            - 상태 다양성 보존 구현
-            - 체크포인트 및 재개 지원 구현
-            - 최종 경로 결정론 replay 검증 구현
-            - 내부 테스트 통과
-            - 외부 검토 대기
-            - 30초 보정 미실행
-            - 120초 전체 탐색 미실행
-            - BC 초과 Beam 경로 없음
-            """
+            "\n".join(
+                [
+                    "- 독립 결정론 diverse Beam Search 인프라 외부 검증 완료",
+                    "- 동등 미래 상태 deduplication 및 상태 다양성 보존 구현",
+                    "- 체크포인트, 재개, 최종 경로 결정론 replay 검증 구현",
+                    f"- 30초 보정 {calibration_status} 완료 ({candidate} 외부 검토 대기)",
+                    f"- 120초 전체 탐색 {full_search_status}",
+                    f"- MCTS {mcts_status}",
+                    "- 현재 프로젝트 최고 검증 결과는 120초 BC 모델",
+                    "- 30초 보정 피해는 120초 BC와 직접 수치 비교하지 않음",
+                ]
+            )
         )
         st.markdown("</div>", unsafe_allow_html=True)
     with unresolved:
@@ -812,8 +845,8 @@ def render_learning_methods(data: dict[str, Any]) -> None:
             - 목적 함수는 결정론적 120초 총 피해량입니다.
             - 수동 경로, BC/PPO 행동 확률, 경로 유사도 보너스, 학습 가치 함수와 독립적입니다.
             - 시연 정책 밖의 경로를 조사할 수 있지만, pruning이 과격하면 좋은 경로를 놓칠 수 있습니다.
-            - 30초 보정을 검토한 뒤 120초 전체 탐색으로 넘어가야 합니다.
-            - 현재 후보는 인프라이지, 향상된 경로 확정 결과가 아닙니다.
+            - 완료된 30초 보정 결과를 외부 검토한 뒤 120초 전체 탐색으로 넘어가야 합니다.
+            - 현재 후보는 30초 보정 완료 경로이며, 120초 향상 경로는 아직 확정되지 않았습니다.
             """
         )
         st.info(
@@ -867,8 +900,8 @@ def render_algorithm_comparison() -> None:
             "출발점": "시뮬레이터 상태 확장",
             "강점": "학습 정책 밖 경로 탐색",
             "한계": "pruning에 민감",
-            "현재 결과": "인프라 구현, 장기 탐색 미실행",
-            "현재 판단": "외부 검토 대기",
+            "현재 결과": "30초 보정 완료, 120초 전체 탐색 미실행",
+            "현재 판단": "후보 112 외부 검토 대기",
         },
         {
             "방식": "MCTS",
@@ -924,12 +957,11 @@ def render_beam_plan(data: dict[str, Any]) -> None:
     st.markdown(
         """
         **계획 순서**
-        1. 후보 외부 검토
-        2. 30초 보정
-        3. 확장률, 메모리, 다양성, pruning 검토
-        4. 120초 전체 탐색
-        5. 수동 기준선, BC, PPO와 비교
-        6. 필요할 때만 MCTS 검토
+        1. 후보 112 외부 검토
+        2. 120초 전체 Beam Search 실행
+        3. 중단되면 재시작 대신 체크포인트에서 재개
+        4. 완료된 120초 경로만 검증된 BC 결과와 비교
+        5. 전체 Beam 결과 검토 후 필요할 때만 MCTS 검토
         """
     )
 

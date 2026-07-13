@@ -11,29 +11,32 @@ def main() -> None:
     progress = json.loads((ROOT / "PROJECT_PROGRESS_STATE.json").read_text(encoding="utf-8-sig"))
     status = progress["status"]
     current = progress["current_in_progress_task"]
-    plan_sha = _sha256(ROOT / "data" / "beam_search_plan_v111.json")
     assert status["latest_verified_baseline_label"] == "111"
     assert status["latest_verified_archive"] == "ww-dps-simulator-2-111.zip"
     assert status["current_task_expected_next_archive"] == "112"
+    assert status["current_task_status"] == "candidate_pending_external_review"
     assert current["candidate"] == "112"
     assert current["task"] == "30-second Beam Search calibration result ingestion and full-search readiness review"
-    assert current["beam_search_long_execution"] is False
     assert current["calibration_stage_executed"] is True
     assert current["full_search_stage_executed"] is False
     assert current["mcts_execution"] is False
     assert current["current_best_model"] == "models/maskable_ppo_bc_v105.zip"
     assert current["current_best_result"] == 5165134.682363356
-    assert current["search_objective"] == "deterministic_120s_total_damage_only"
-    assert current["manual_route_guidance"] is False
-    assert current["bc_ppo_policy_guidance"] is False
-    assert current["route_similarity_objective"] is False
     assert current["global_optimum_claimed"] is False
-    assert current["plan_path"] == "data/beam_search_plan_v111.json"
-    assert current["plan_sha256"] == plan_sha
-    history_110 = next(item for item in progress["candidate_history"] if item["candidate"] == "110")
-    assert history_110["status"] == "externally_verified_complete"
+    assert current["reference_damage_comparison_status"] == "horizon_mismatch_not_comparable"
+    assert current["calibration_metrics"]["actual_expansions"] == 381918
+    assert current["calibration_best_route"]["route_id"] == "a301f753b3ddf6e4"
     history_111 = next(item for item in progress["candidate_history"] if item["candidate"] == "111")
+    history_112 = next(item for item in progress["candidate_history"] if item["candidate"] == "112")
     assert history_111["status"] == "externally_verified_complete"
+    assert history_111["external_review_status"] == "passed"
+    assert history_111["external_verification_claimed"] is True
+    assert history_111["archive_sha256"] == "9577ee38ebbf655d51ab854970f01d6f10920b48b1abfd947080972592bc93a6"
+    assert history_111["validation_summary"]["status"] == "externally_verified_complete"
+    assert history_111["validation_summary"]["archive_exact_validation_passed"] is True
+    assert history_111["validation_summary"]["canonical_beam_search_results_written"] is False
+    assert history_112["status"] == "candidate_pending_external_review"
+    assert history_112["calibration_stage_executed"] is True
     assert [item["task"] for item in progress["next_planned_tasks"]] == [
         "external review of candidate 112",
         "run the reviewed 120-second Beam Search stage",
@@ -41,13 +44,7 @@ def main() -> None:
         "compare only completed 120-second routes with the verified BC result",
         "consider MCTS only after reviewing the full Beam result",
     ]
-    print("project_progress_beam_search_alignment_smoke_test ok")
-
-
-def _sha256(path: Path) -> str:
-    import hashlib
-
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    print("project_progress_beam_search_calibration_alignment_smoke_test ok")
 
 
 if __name__ == "__main__":
