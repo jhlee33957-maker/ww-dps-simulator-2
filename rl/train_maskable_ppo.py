@@ -4,6 +4,7 @@ import argparse
 from datetime import datetime, timezone
 import json
 from pathlib import Path
+import random
 import sys
 import time
 from typing import Any
@@ -29,6 +30,10 @@ from rl.demo_contract import (
     OBSERVATION_SHAPE,
     OBSERVATION_VERSION,
     POLICY_ACTION_COUNT,
+    action_data_hash,
+    file_sha256,
+    party_config_hash,
+    project_relative_posix,
 )
 
 
@@ -96,6 +101,15 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--log-interval", type=int, default=1)
     parser.add_argument("--progress-every-steps", type=int, default=10_000)
     parser.add_argument("--dry-run-train-config", action="store_true")
+    parser.add_argument("--metadata-path", type=Path, default=None)
+    parser.add_argument("--skip-global-metadata", action="store_true")
+    parser.add_argument("--branch-id", type=str, default=None)
+    parser.add_argument("--branch-base-seed", type=int, default=None)
+    parser.add_argument("--effective-chunk-seed", type=int, default=None)
+    parser.add_argument("--chunk-index", type=int, default=None)
+    parser.add_argument("--cumulative-timesteps", type=int, default=None)
+    parser.add_argument("--experiment-plan-path", type=Path, default=None)
+    parser.add_argument("--parent-model-sha256", type=str, default=None)
     return parser
 
 
@@ -132,6 +146,7 @@ def main() -> None:
     try:
         from stable_baselines3.common.env_checker import check_env
         from stable_baselines3.common.callbacks import BaseCallback
+        from stable_baselines3.common.utils import set_random_seed
         from sb3_contrib import MaskablePPO
         from env.wuwa_env import WuwaDpsEnv
     except ModuleNotFoundError as exc:
@@ -175,7 +190,7 @@ def main() -> None:
             print(f"Cannot continue training: load model not found at {args.load_model}")
             raise SystemExit(2)
         try:
-            _load_bc_warm_start_metadata(args.load_model)
+            parent_checkpoint_metadata = _load_checkpoint_metadata(args.load_model, env=env)
         except ValueError as exc:
             print(f"Cannot continue training: {exc}")
             raise SystemExit(2) from None
@@ -196,6 +211,7 @@ def main() -> None:
         )
         _set_model_verbose(model, args.verbose)
     else:
+        parent_checkpoint_metadata = None
         model = MaskablePPO(
             "MlpPolicy",
             env,
@@ -207,6 +223,7 @@ def main() -> None:
             verbose=args.verbose,
             seed=args.seed,
         )
+    _apply_effective_seed(model=model, env=env, seed=args.seed, set_random_seed=set_random_seed)
     compatibility = _model_space_mismatches(model, env)
     startup_diagnostics = _build_startup_diagnostics(args, env, compatibility)
     print("training_config_startup_diagnostics")
@@ -227,12 +244,24 @@ def main() -> None:
         model_path=args.model_path,
         base_callback_class=BaseCallback,
     )
-    model.learn(total_timesteps=args.timesteps, callback=progress_callback, log_interval=args.log_interval)
+    model.learn(
+        total_timesteps=args.timesteps,
+        callback=progress_callback,
+        log_interval=args.log_interval,
+        reset_num_timesteps=args.load_model is None,
+    )
     elapsed_seconds = time.monotonic() - train_start_seconds
     train_finished_at = _utc_timestamp()
 
     args.model_path.parent.mkdir(parents=True, exist_ok=True)
     model.save(args.model_path)
+    model_sha256 = file_sha256(args.model_path)
+    parent_model_sha256 = None
+    if args.load_model is not None:
+        parent_model_sha256 = args.parent_model_sha256 or file_sha256(args.load_model)
+        if args.parent_model_sha256 and args.parent_model_sha256 != file_sha256(args.load_model):
+            print("Cannot save metadata: --parent-model-sha256 does not match --load-model bytes.")
+            raise SystemExit(2)
     mechanic_event_metadata = mechanic_event_metadata_for_config(transition_config.get("mechanics"))
     training_summary = env.simulation.summary()
     observation_meta = env.observation_metadata()
@@ -243,9 +272,36 @@ def main() -> None:
         "policy": "MlpPolicy",
         "timesteps": args.timesteps,
         "seed": args.seed,
-        "model_path": str(args.model_path),
-        "load_model": str(args.load_model) if args.load_model else None,
-        "route_demonstration_warm_start": _load_bc_warm_start_metadata(args.load_model),
+        "branch_base_seed": args.branch_base_seed if args.branch_base_seed is not None else args.seed,
+        "effective_chunk_seed": args.effective_chunk_seed if args.effective_chunk_seed is not None else args.seed,
+        "actual_model_seed": getattr(model, "seed", None),
+        "model_path": project_relative_posix(args.model_path, root=PROJECT_ROOT),
+        "model_sha256": model_sha256,
+        "load_model": project_relative_posix(args.load_model, root=PROJECT_ROOT) if args.load_model else None,
+        "parent_model_path": project_relative_posix(args.load_model, root=PROJECT_ROOT) if args.load_model else None,
+        "parent_model_sha256": parent_model_sha256,
+        "parent_checkpoint_metadata_source": parent_checkpoint_metadata.get("source") if parent_checkpoint_metadata else None,
+        "route_demonstration_warm_start": (
+            _summarize_warm_start_metadata(parent_checkpoint_metadata["metadata"])
+            if parent_checkpoint_metadata and parent_checkpoint_metadata.get("source") == "bc_model_sidecar"
+            else None
+        ),
+        "branch_id": args.branch_id,
+        "chunk_index": args.chunk_index,
+        "chunk_timesteps": args.timesteps,
+        "cumulative_branch_timesteps": args.cumulative_timesteps,
+        "experiment_plan_path": project_relative_posix(args.experiment_plan_path, root=PROJECT_ROOT)
+        if args.experiment_plan_path
+        else None,
+        "experiment_plan_sha256": file_sha256(args.experiment_plan_path)
+        if args.experiment_plan_path and args.experiment_plan_path.exists()
+        else None,
+        "source_experiment_plan_path": project_relative_posix(args.experiment_plan_path, root=PROJECT_ROOT)
+        if args.experiment_plan_path
+        else None,
+        "source_experiment_plan_sha256": file_sha256(args.experiment_plan_path)
+        if args.experiment_plan_path and args.experiment_plan_path.exists()
+        else None,
         "curriculum_reset_mode": args.curriculum_reset_mode,
         "selected_curriculum_submode": observation_meta["last_curriculum_reset_metadata"].get(
             "selected_curriculum_submode"
@@ -270,6 +326,7 @@ def main() -> None:
         "party_members": env.get_selected_party_character_ids(),
         "initial_active_character": env.get_initial_active_character(),
         "policy_action_ids": env.get_policy_action_ids(),
+        "policy_action_count": int(env.action_space.n),
         "transition_modes": transition_mode_summary(transition_config),
         "mechanics_modes": mechanics_mode_summary(transition_config),
         "aemeath_resonance_mode": mechanic_event_metadata["aemeath_resonance_mode"],
@@ -413,6 +470,12 @@ def main() -> None:
         "reward": "damage_this_action / 10000.0",
         "reward_formula": "damage_this_action / 10000.0",
         "no_character_specific_usage_reward_bonus": True,
+        "no_character_specific_reward": True,
+        "no_route_similarity_reward": True,
+        "route_similarity_reward": False,
+        "bc_refresh_used": False,
+        "action_data_hash": action_data_hash(root=PROJECT_ROOT),
+        "party_config_hash": party_config_hash(root=PROJECT_ROOT),
         "evaluation_default_reset_mode": "none",
         "methodology_summary_id": methodology.get("methodology_summary_id"),
         "methodology_version": methodology.get("methodology_version"),
@@ -421,11 +484,19 @@ def main() -> None:
         "note": "Maskable PPO models are party-specific because action space and observation shape can change.",
     }
     results_path = PROJECT_ROOT / "results" / "training_metadata.json"
-    results_path.parent.mkdir(parents=True, exist_ok=True)
-    results_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+    if not args.skip_global_metadata:
+        results_path.parent.mkdir(parents=True, exist_ok=True)
+        results_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+    sidecar_path = args.metadata_path or Path(str(args.model_path) + ".ppo_metadata.json")
+    sidecar_path.parent.mkdir(parents=True, exist_ok=True)
+    sidecar_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
 
     print(f"Saved model to {args.model_path}")
-    print(f"Saved metadata to {results_path}")
+    if not args.skip_global_metadata:
+        print(f"Saved metadata to {results_path}")
+    else:
+        print("Skipped legacy global training metadata write")
+    print(f"Saved PPO metadata sidecar to {sidecar_path}")
 
 
 def _deep_update(target: dict[str, Any], updates: dict[str, Any]) -> dict[str, Any]:
@@ -453,6 +524,24 @@ def _model_space_mismatches(model: Any, env: Any) -> dict[str, Any]:
 def _set_model_verbose(model: Any, verbose: int) -> None:
     if hasattr(model, "verbose"):
         model.verbose = verbose
+
+
+def _apply_effective_seed(*, model: Any, env: Any, seed: int, set_random_seed: Any) -> None:
+    seed = int(seed)
+    random.seed(seed)
+    try:
+        set_random_seed(seed, using_cuda=False)
+    except TypeError:
+        set_random_seed(seed)
+    if hasattr(env, "reset"):
+        env.reset(seed=seed)
+    for space_name in ("action_space", "observation_space"):
+        space = getattr(env, space_name, None)
+        if hasattr(space, "seed"):
+            space.seed(seed)
+    if hasattr(model, "set_random_seed"):
+        model.set_random_seed(seed)
+    model.seed = seed
 
 
 def _build_startup_diagnostics(args: argparse.Namespace, env: Any, compatibility: dict[str, Any]) -> dict[str, Any]:
@@ -553,19 +642,43 @@ def _load_methodology_summary() -> dict[str, Any]:
     return json.loads(METHODOLOGY_PATH.read_text(encoding="utf-8"))
 
 
-def _load_bc_warm_start_metadata(load_model_path: Path | None) -> dict[str, Any] | None:
+def _load_checkpoint_metadata(load_model_path: Path | None, *, env: Any | None = None) -> dict[str, Any] | None:
     if load_model_path is None:
         return None
-    sidecar = Path(str(load_model_path) + ".bc_metadata.json")
-    if not sidecar.exists():
+    ppo_sidecar = Path(str(load_model_path) + ".ppo_metadata.json")
+    bc_sidecar = Path(str(load_model_path) + ".bc_metadata.json")
+    if ppo_sidecar.exists():
+        sidecar = ppo_sidecar
+        source = "ppo_model_sidecar"
+    elif bc_sidecar.exists():
+        sidecar = bc_sidecar
+        source = "bc_model_sidecar"
+    else:
         return None
     data = json.loads(sidecar.read_text(encoding="utf-8"))
-    mismatches = _bc_sidecar_contract_mismatches(data)
+    mismatches = _checkpoint_sidecar_contract_mismatches(data, env=env)
     if mismatches:
         raise ValueError(
-            "Loaded BC warm-start sidecar is incompatible with the current v105 manual demo contract: "
+            "Loaded checkpoint sidecar is incompatible with the current training contract: "
             + json.dumps(mismatches, indent=2)
         )
+    stored_model_sha = data.get("model_sha256")
+    if stored_model_sha and stored_model_sha != file_sha256(load_model_path):
+        raise ValueError(
+            "Loaded checkpoint sidecar model_sha256 does not match model bytes: "
+            + json.dumps({"metadata": stored_model_sha, "actual": file_sha256(load_model_path)}, indent=2)
+        )
+    return {"source": source, "path": sidecar, "metadata": data}
+
+
+def _load_bc_warm_start_metadata(load_model_path: Path | None) -> dict[str, Any] | None:
+    info = _load_checkpoint_metadata(load_model_path)
+    if not info or info["source"] != "bc_model_sidecar":
+        return None
+    return _summarize_warm_start_metadata(info["metadata"])
+
+
+def _summarize_warm_start_metadata(data: dict[str, Any]) -> dict[str, Any]:
     return {
         "demo_path": data.get("demo_path"),
         "route_id": data.get("route_id") or data.get("route_set_id"),
@@ -585,7 +698,7 @@ def _load_bc_warm_start_metadata(load_model_path: Path | None) -> dict[str, Any]
     }
 
 
-def _bc_sidecar_contract_mismatches(data: dict[str, Any]) -> dict[str, Any]:
+def _checkpoint_sidecar_contract_mismatches(data: dict[str, Any], *, env: Any | None = None) -> dict[str, Any]:
     mismatches: dict[str, Any] = {}
     observation_shape = data.get("observation_shape")
     policy_action_count = data.get("policy_action_count")
@@ -595,7 +708,24 @@ def _bc_sidecar_contract_mismatches(data: dict[str, Any]) -> dict[str, Any]:
         mismatches["observation_version"] = {"metadata": data.get("observation_version"), "expected": OBSERVATION_VERSION}
     if policy_action_count is not None and int(policy_action_count) != POLICY_ACTION_COUNT:
         mismatches["policy_action_count"] = {"metadata": policy_action_count, "expected": POLICY_ACTION_COUNT}
+    if env is not None:
+        expected = {
+            "selected_party_character_ids": env.get_selected_party_character_ids(),
+            "initial_active_character": env.get_initial_active_character(),
+            "policy_action_ids": env.get_policy_action_ids(),
+            "active_build_profiles": env.get_active_build_profiles(),
+            "effective_build_stats_summary": env.get_effective_build_stats_summary(),
+            "action_data_hash": action_data_hash(root=PROJECT_ROOT),
+            "party_config_hash": party_config_hash(root=PROJECT_ROOT),
+        }
+        for key, expected_value in expected.items():
+            if key in data and data.get(key) != expected_value:
+                mismatches[key] = {"metadata": data.get(key), "expected": expected_value}
     return mismatches
+
+
+def _bc_sidecar_contract_mismatches(data: dict[str, Any]) -> dict[str, Any]:
+    return _checkpoint_sidecar_contract_mismatches(data)
 
 
 if __name__ == "__main__":

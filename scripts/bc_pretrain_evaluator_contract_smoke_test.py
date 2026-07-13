@@ -126,7 +126,7 @@ def main() -> None:
         )
         model = MaskablePPO.load(model_path, device="cpu")
         aemeath_result = _evaluate_contract(model, model_path, stale_global, initial_active_character="aemeath")
-        assert aemeath_result["metadata_source"] == "model_sidecar", aemeath_result
+        assert aemeath_result["metadata_source"] == "bc_model_sidecar", aemeath_result
         assert aemeath_result["metadata_mismatches"] == {}, aemeath_result
         assert aemeath_result["model_space_mismatches"] == {}, aemeath_result
 

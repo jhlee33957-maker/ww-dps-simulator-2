@@ -107,7 +107,7 @@ def main() -> None:
         result = subprocess.run(command, cwd=ROOT, text=True, capture_output=True, timeout=60, env=env_vars)
         if result.returncode != 0:
             raise AssertionError(result.stdout + result.stderr)
-        assert '"metadata_source": "model_sidecar"' in result.stdout, result.stdout
+        assert '"metadata_source": "bc_model_sidecar"' in result.stdout, result.stdout
         assert '"model_space_mismatches": {}' in result.stdout, result.stdout
         assert '"metadata_mismatches": {}' in result.stdout, result.stdout
         mismatch_command = [

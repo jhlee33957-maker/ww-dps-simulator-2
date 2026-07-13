@@ -28,7 +28,7 @@ from rl.demo_contract import (  # noqa: E402
 )
 
 
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-108.zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-109.zip"
 EXPECTED_BC_MODEL_SHA256 = "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e"
 EXPECTED_PPO_MODEL_SHA256 = "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513"
 EXPECTED_EVAL_SELECTED_SEQUENCE_SHA256 = "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1"
@@ -62,7 +62,9 @@ REQUIRED_FILES = (
     "results/ppo_100k_timeline.csv",
     "results/manual_bc_ppo_comparison_v108.json",
     "results/training_metadata.json",
+    "data/guarded_ppo_experiment_plan_v109.json",
     "reports/manual_120s_bc_demonstration_v105.md",
+    "reports/guarded_ppo_experiment_v109.md",
     "models/maskable_ppo_bc_v105.zip",
     "models/maskable_ppo_bc_v105.zip.bc_metadata.json",
     "models/maskable_ppo_candidate_after_bc_v105.zip",
@@ -70,6 +72,9 @@ REQUIRED_FILES = (
     "rl/demo_contract.py",
     "rl/evaluation_report.py",
     "rl/evaluate_maskable_ppo.py",
+    "rl/guarded_ppo.py",
+    "rl/run_guarded_ppo_experiment.py",
+    "rl/train_maskable_ppo.py",
     "rl/pretrain_maskable_ppo_bc.py",
     "scripts/manual_120s_bc_demo_contract_smoke_test.py",
     "scripts/manual_120s_bc_packaged_generation_parity_smoke_test.py",
@@ -81,13 +86,33 @@ REQUIRED_FILES = (
     "scripts/project_progress_manual_120s_baseline_alignment_smoke_test.py",
     "scripts/project_progress_bc_demo_alignment_smoke_test.py",
     "scripts/project_progress_ppo_100k_alignment_smoke_test.py",
+    "scripts/project_progress_guarded_ppo_alignment_smoke_test.py",
     "scripts/evaluation_event_source_damage_attribution_smoke_test.py",
     "scripts/evaluation_scheduled_damage_role_breakdown_smoke_test.py",
     "scripts/bc_evaluation_manual_baseline_parity_smoke_test.py",
     "scripts/ppo_100k_evaluation_contract_smoke_test.py",
     "scripts/manual_bc_ppo_comparison_smoke_test.py",
+    "scripts/guarded_ppo_plan_contract_smoke_test.py",
+    "scripts/guarded_ppo_branch_continuation_smoke_test.py",
+    "scripts/guarded_ppo_damage_only_objective_smoke_test.py",
+    "scripts/guarded_ppo_scratch_control_smoke_test.py",
+    "scripts/guarded_ppo_resume_smoke_test.py",
+    "scripts/guarded_ppo_cli_execution_gate_smoke_test.py",
+    "scripts/guarded_ppo_seed_contract_smoke_test.py",
+    "scripts/guarded_ppo_incumbent_best_retention_smoke_test.py",
+    "scripts/guarded_ppo_failure_resume_smoke_test.py",
+    "scripts/guarded_ppo_orphan_checkpoint_adoption_smoke_test.py",
+    "scripts/guarded_ppo_state_integrity_smoke_test.py",
+    "scripts/guarded_ppo_route_diagnostics_smoke_test.py",
+    "scripts/guarded_ppo_stage_timeout_smoke_test.py",
+    "scripts/guarded_ppo_cross_platform_path_canonicalization_smoke_test.py",
+    "scripts/guarded_ppo_checkpoint_sidecar_strict_contract_smoke_test.py",
+    "scripts/guarded_ppo_dry_run_step0_alias_smoke_test.py",
+    "scripts/ppo_checkpoint_sidecar_smoke_test.py",
+    "scripts/guarded_ppo_short_integration_smoke_test.py",
     "scripts/build_candidate_archive_output_guard_smoke_test.py",
 )
+EXPECTED_GUARDED_PLAN_SHA256 = "0306c734347e49460fd7273bce546eed80a2db657e460eb707f5cab961a9e0e6"
 TEXT_SUFFIXES = (".py", ".json", ".md", ".txt")
 AUTHORITATIVE_SOURCE_FILES = (
     "data/actions.json",
@@ -138,6 +163,15 @@ def validate_archive(archive: Path) -> dict[str, Any]:
         ppo_summary = json.loads(zf.read("results/ppo_100k_evaluation_summary.json").decode("utf-8"))
         comparison = json.loads(zf.read("results/manual_bc_ppo_comparison_v108.json").decode("utf-8"))
         progress = json.loads(zf.read("PROJECT_PROGRESS_STATE.json").decode("utf-8"))
+        guarded_plan_bytes = zf.read("data/guarded_ppo_experiment_plan_v109.json")
+        assert bytes_sha256(guarded_plan_bytes) == EXPECTED_GUARDED_PLAN_SHA256
+        guarded_plan = json.loads(guarded_plan_bytes.decode("utf-8"))
+        assert guarded_plan["schema_version"] == "guarded_ppo_experiment_plan_v109"
+        assert [branch["branch_id"] for branch in guarded_plan["branches"]] == [
+            "bc_conservative_seed_11",
+            "bc_exploratory_seed_73",
+            "scratch_control_seed_137",
+        ]
         model_bytes = zf.read("models/maskable_ppo_bc_v105.zip")
         assert bytes_sha256(model_bytes) == EXPECTED_BC_MODEL_SHA256
         ppo_model_bytes = zf.read("models/maskable_ppo_candidate_after_bc_v105.zip")
@@ -222,6 +256,21 @@ def run_fresh_extraction_checks(archive: Path) -> list[dict[str, Any]]:
         [sys.executable, "scripts/project_progress_manual_120s_baseline_alignment_smoke_test.py"],
         [sys.executable, "scripts/project_progress_bc_demo_alignment_smoke_test.py"],
         [sys.executable, "scripts/project_progress_ppo_100k_alignment_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_guarded_ppo_alignment_smoke_test.py"],
+        [sys.executable, "scripts/guarded_ppo_plan_contract_smoke_test.py"],
+        [sys.executable, "scripts/guarded_ppo_branch_continuation_smoke_test.py"],
+        [sys.executable, "scripts/guarded_ppo_damage_only_objective_smoke_test.py"],
+        [sys.executable, "scripts/guarded_ppo_scratch_control_smoke_test.py"],
+        [sys.executable, "scripts/guarded_ppo_cli_execution_gate_smoke_test.py"],
+        [sys.executable, "scripts/guarded_ppo_seed_contract_smoke_test.py"],
+        [sys.executable, "scripts/guarded_ppo_incumbent_best_retention_smoke_test.py"],
+        [sys.executable, "scripts/guarded_ppo_state_integrity_smoke_test.py"],
+        [sys.executable, "scripts/guarded_ppo_route_diagnostics_smoke_test.py"],
+        [sys.executable, "scripts/guarded_ppo_stage_timeout_smoke_test.py"],
+        [sys.executable, "scripts/guarded_ppo_cross_platform_path_canonicalization_smoke_test.py"],
+        [sys.executable, "scripts/guarded_ppo_checkpoint_sidecar_strict_contract_smoke_test.py"],
+        [sys.executable, "scripts/guarded_ppo_dry_run_step0_alias_smoke_test.py"],
+        [sys.executable, "scripts/guarded_ppo_short_integration_smoke_test.py"],
         [sys.executable, "scripts/manual_120s_bc_demo_contract_smoke_test.py"],
         [sys.executable, "scripts/manual_120s_bc_packaged_generation_parity_smoke_test.py"],
         [sys.executable, "scripts/manual_120s_bc_report_portability_smoke_test.py"],
@@ -276,7 +325,7 @@ def run_fresh_extraction_checks(archive: Path) -> list[dict[str, Any]]:
         with zipfile.ZipFile(archive) as zf:
             zf.extractall(extract_root)
         for command in checks:
-            result = _run(command, cwd=extract_root, timeout=120)
+            result = _run(command, cwd=extract_root, timeout=240)
             passed.append(
                 {
                     "command": " ".join(command[1:]),

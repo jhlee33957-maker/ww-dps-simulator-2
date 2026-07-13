@@ -32,6 +32,7 @@ from rl.demo_contract import (
     OBSERVATION_VERSION,
     POLICY_ACTION_COUNT,
     action_data_hash,
+    file_sha256,
     json_safe,
     party_config_hash,
     sequence_hash,
@@ -70,17 +71,33 @@ def observation_metadata_mismatches(metadata: dict[str, Any], env: Any) -> dict[
     }
 
 
+def ppo_metadata_path(model_path: Path) -> Path:
+    return Path(str(model_path) + ".ppo_metadata.json")
+
+
 def bc_metadata_path(model_path: Path) -> Path:
     return Path(str(model_path) + ".bc_metadata.json")
 
 
 def load_model_metadata(model_path: Path, global_metadata_path: Path) -> dict[str, Any]:
-    sidecar_path = bc_metadata_path(model_path)
-    if sidecar_path.exists():
+    ppo_sidecar = ppo_metadata_path(model_path)
+    bc_sidecar = bc_metadata_path(model_path)
+    if ppo_sidecar.exists() and bc_sidecar.exists() and ppo_sidecar.read_bytes() != bc_sidecar.read_bytes():
+        raise ValueError(
+            "Conflicting model sidecars found. PPO and BC sidecars may coexist only as byte-equivalent aliases: "
+            f"{ppo_sidecar} and {bc_sidecar}"
+        )
+    if ppo_sidecar.exists():
         return {
-            "source": "model_sidecar",
-            "path": sidecar_path,
-            "metadata": json.loads(sidecar_path.read_text(encoding="utf-8")),
+            "source": "ppo_model_sidecar",
+            "path": ppo_sidecar,
+            "metadata": json.loads(ppo_sidecar.read_text(encoding="utf-8")),
+        }
+    if bc_sidecar.exists():
+        return {
+            "source": "bc_model_sidecar",
+            "path": bc_sidecar,
+            "metadata": json.loads(bc_sidecar.read_text(encoding="utf-8")),
         }
     if global_metadata_path.exists():
         metadata = json.loads(global_metadata_path.read_text(encoding="utf-8"))
@@ -94,7 +111,12 @@ def load_model_metadata(model_path: Path, global_metadata_path: Path) -> dict[st
     return {"source": "none", "path": None, "metadata": {}}
 
 
-def model_metadata_mismatches(metadata: dict[str, Any], env: Any) -> dict[str, dict[str, Any]]:
+def model_metadata_mismatches(
+    metadata: dict[str, Any],
+    env: Any,
+    *,
+    model_path: Path | None = None,
+) -> dict[str, dict[str, Any]]:
     expected = {
         "selected_party_character_ids": env.get_selected_party_character_ids(),
         "initial_active_character": env.get_initial_active_character(),
@@ -115,6 +137,10 @@ def model_metadata_mismatches(metadata: dict[str, Any], env: Any) -> dict[str, d
         mismatches[f"missing_{key}"] = {"model": None, "evaluation": expected.get(key)}
     mismatches.update(observation_metadata_mismatches(metadata, env))
     mismatches.update(_stale_contract_mismatches(metadata))
+    if model_path is not None and metadata.get("model_sha256"):
+        actual_sha = file_sha256(model_path)
+        if metadata["model_sha256"] != actual_sha:
+            mismatches["model_sha256"] = {"model": metadata["model_sha256"], "evaluation": actual_sha}
     return mismatches
 
 
@@ -264,11 +290,15 @@ def main() -> None:
         raise SystemExit(2)
     for warning in validation.get("warnings", []):
         print(f"Build profile warning: {warning}")
-    metadata_info = load_model_metadata(args.model_path, args.training_metadata_path)
+    try:
+        metadata_info = load_model_metadata(args.model_path, args.training_metadata_path)
+    except ValueError as exc:
+        print(str(exc))
+        raise SystemExit(1) from None
     metadata: dict[str, Any] = metadata_info["metadata"]
     metadata_mismatches: dict[str, Any] = {}
     if metadata:
-        metadata_mismatches = model_metadata_mismatches(metadata, metadata_env)
+        metadata_mismatches = model_metadata_mismatches(metadata, metadata_env, model_path=args.model_path)
         if metadata_mismatches and not args.allow_mismatch:
             print(
                 "Model metadata does not match the requested evaluation roster, build profile config, "

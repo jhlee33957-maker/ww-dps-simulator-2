@@ -99,7 +99,7 @@ def main() -> None:
             ]
         )
         aemeath_payload = _first_json_object(aemeath_eval.stdout)
-        assert aemeath_payload["metadata_source"] == "model_sidecar"
+        assert aemeath_payload["metadata_source"] == "bc_model_sidecar"
         assert aemeath_payload["metadata_mismatches"] == {}
         assert aemeath_payload["model_space_mismatches"] == {}
 

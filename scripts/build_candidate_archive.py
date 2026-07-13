@@ -9,7 +9,7 @@ from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-108.zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-109.zip"
 EXCLUDED_DIRS = {".git", ".venv", "__pycache__", ".pytest_cache", ".mypy_cache", "bc_eval_bundle"}
 REQUIRED_ZIP_FILES = {
     "models/maskable_ppo_bc_v105.zip",

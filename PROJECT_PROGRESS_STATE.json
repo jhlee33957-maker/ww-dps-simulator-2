@@ -14,13 +14,13 @@
   },
   "status": {
     "last_updated": "2026-07-13T00:00:00+09:00",
-    "latest_verified_archive": "ww-dps-simulator-2(107).zip",
-    "latest_verified_baseline_label": "107",
+    "latest_verified_archive": "ww-dps-simulator-2(108).zip",
+    "latest_verified_baseline_label": "108",
     "current_task_status": "implemented_tests_passed_pending_external_review",
-    "current_task": "100000-step PPO continuation result ingestion, deterministic evaluation, and best-checkpoint comparison",
-    "current_task_expected_next_archive": "108",
+    "current_task": "guarded multi-branch PPO continuation infrastructure with immutable checkpoints and deterministic damage-only evaluation",
+    "current_task_expected_next_archive": "109",
     "do_not_treat_current_task_as_complete_until_reviewed": true,
-    "candidate_expected_next_archive": "ww-dps-simulator-2-108.zip"
+    "candidate_expected_next_archive": "ww-dps-simulator-2-109.zip"
   },
   "source_of_truth": {
     "raw_action_workbook": "鸣潮动作数据汇总(5).xlsx",
@@ -577,17 +577,27 @@
     }
   ],
   "current_in_progress_task": {
-    "task": "100000-step PPO continuation result ingestion, deterministic evaluation, and best-checkpoint comparison",
+    "task": "guarded multi-branch PPO continuation infrastructure with immutable checkpoints and deterministic damage-only evaluation",
     "status": "implemented_tests_passed_pending_external_review",
-    "candidate": "108",
+    "candidate": "109",
     "external_review_required": true,
     "external_verification_claimed": false,
-    "latest_externally_verified_baseline": "107",
-    "baseline_archive": "ww-dps-simulator-2(107).zip",
-    "candidate_expected_next_archive": "ww-dps-simulator-2-108.zip",
+    "latest_externally_verified_baseline": "108",
+    "baseline_archive": "ww-dps-simulator-2(108).zip",
+    "candidate_expected_next_archive": "ww-dps-simulator-2-109.zip",
     "bc_training_executed": true,
     "full_bc_training_executed": true,
     "ppo_training_executed": true,
+    "prior_ppo_training_executed": true,
+    "guarded_long_experiment_executed": false,
+    "objective": "deterministic_120s_total_damage_only",
+    "party": "aemeath_mornye_lynae_enabled_test_party",
+    "global_optimum_claimed": false,
+    "route_similarity_objective": false,
+    "character_specific_reward": false,
+    "bc_refresh_enabled": false,
+    "rollback_enabled": false,
+    "early_stopping_enabled": false,
     "ppo_training": {
       "source_bc_model": "models/maskable_ppo_bc_v105.zip",
       "source_bc_model_sha256": "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e",
@@ -640,9 +650,28 @@
       "model_space_mismatches": {}
     },
     "ppo_candidate_status": "valid_but_regressed",
+    "prior_ppo_status": "valid_but_regressed",
+    "prior_ppo_model": "models/maskable_ppo_candidate_after_bc_v105.zip",
     "current_best_model": "models/maskable_ppo_bc_v105.zip",
     "current_best_result": 5165134.682363356,
     "comparison_artifact": "results/manual_bc_ppo_comparison_v108.json",
+    "plan_path": "data/guarded_ppo_experiment_plan_v109.json",
+    "plan_sha256": "0306c734347e49460fd7273bce546eed80a2db657e460eb707f5cab961a9e0e6",
+    "checkpoint_root": "models/guarded_ppo_v109",
+    "results_root": "results/guarded_ppo_v109",
+    "immutable_checkpoint_pattern": "models/guarded_ppo_v109/<branch>/step_XXXXXXXXX.zip",
+    "branch_ids": [
+      "bc_conservative_seed_11",
+      "bc_exploratory_seed_73",
+      "scratch_control_seed_137"
+    ],
+    "branch_roles": {
+      "bc_conservative_seed_11": "BC warm start, conservative PPO continuation",
+      "bc_exploratory_seed_73": "BC warm start, exploratory PPO continuation",
+      "scratch_control_seed_137": "scratch PPO control branch"
+    },
+    "scratch_control_purpose": "separate control for BC warm-start lift; not a replacement for the incumbent BC model",
+    "branch_continuation_rule": "each branch resumes from its own latest immutable checkpoint; global best is recorded only as metadata and is never loaded by default",
     "winner": "bc_model",
     "winner_model": "models/maskable_ppo_bc_v105.zip",
     "observation_version": "slot_generic_mechanics_v5",
@@ -670,12 +699,21 @@
       ]
     },
     "notes": [
-      "Candidate 108 is pending external review and must not be treated as verified.",
+      "Candidate 108 has passed external review and is the latest verified baseline.",
       "The PPO 100k candidate is structurally valid but materially regressed versus the verified BC/manual result.",
       "The BC checkpoint remains the current best model and was not overwritten or demoted.",
-      "No combat formulas, action data, reward formula, observation schema, route, BC NPZ, BC model, or PPO model were modified."
+      "Candidate 109 remains pending external review; no guarded long PPO experiment has been executed.",
+      "Cross-platform guarded result ingestion now canonicalizes legacy Windows and POSIX project paths to project-relative POSIX paths.",
+      "Native project-relative resolution now precedes generic anchor recovery for guarded paths.",
+      "Parent directories named data no longer corrupt guarded canonical paths during fresh Linux extraction.",
+      "Strict guarded PPO checkpoint sidecar provenance validation now rejects missing required fields and wrong checkpoint associations.",
+      "Strict sidecar contract coverage now includes fresh Linux extraction paths whose parent directories contain data.",
+      "CLI execution-gate validation now uses bounded in-process parser validation instead of a nested multi-process chain.",
+      "Dry-run step-0 output now reports one shared verified BC alias evaluation with two branch aliases, matching execution.",
+      "Exact final ZIP validation must be performed only after final archive creation.",
+      "No combat formulas, action data, reward formula, observation schema, route, BC NPZ, BC model, prior PPO model, or runtime executor were modified."
     ],
-    "next_after_external_verification": "implement guarded PPO continuation with periodic deterministic evaluation and best-model retention"
+    "next_after_external_verification": "execute the reviewed guarded PPO continuation plan with deterministic evaluation after every 10000-step chunk and compare every immutable checkpoint against the verified BC incumbent"
   },
   "manual_cycle_reference": {
     "status": "externally_verified_complete",
@@ -773,18 +811,23 @@
   ],
   "next_planned_tasks": [
     {
-      "task": "implement guarded PPO continuation with periodic deterministic evaluation and best-model retention",
-      "status": "after_candidate_108_external_verification",
-      "note": "Do not overwrite or demote the verified BC checkpoint; retain the best deterministic 120-second model by total damage."
+      "task": "external review of candidate 109",
+      "status": "pending_external_review",
+      "note": "Candidate 109 remains pending review; do not claim external verification."
     },
     {
-      "task": "verify guarded PPO continuation infrastructure before allocating another PPO budget",
-      "status": "after_guard_implementation",
-      "note": "No unguarded PPO continuation should be launched from this candidate."
+      "task": "execute the reviewed v109 guarded PPO plan",
+      "status": "after_candidate_109_external_review",
+      "note": "Use the explicit --execute gate and do not launch the long guarded run before review."
     },
     {
-      "task": "compare against Beam Search and MCTS after guarded PPO workflow is verified",
-      "status": "after_guarded_ppo_verification",
+      "task": "deterministic evaluation after every 10k chunk and immutable-best comparison against BC",
+      "status": "during_reviewed_guarded_ppo_execution",
+      "note": "Every immutable checkpoint is compared by deterministic 120-second total damage against the externally verified BC incumbent."
+    },
+    {
+      "task": "compare guarded PPO results with Beam Search/MCTS afterward",
+      "status": "after_guarded_ppo_results",
       "note": "Use final 120-second total damage as the comparison objective unless a later reviewed contract changes it."
     }
   ],
@@ -1325,7 +1368,7 @@
       }
     }
   ],
-  "next_planned_task": "after candidate 108 external review, implement guarded PPO continuation with periodic deterministic evaluation and best-model retention; do not run immediate unguarded PPO training",
+  "next_planned_task": "after candidate 109 external review, execute the guarded PPO plan with deterministic 10000-step evaluations and compare against the verified BC incumbent",
   "candidate_history": [
     {
       "candidate": "106",
@@ -1401,10 +1444,12 @@
     {
       "candidate": "108",
       "task": "100000-step PPO continuation result ingestion, deterministic evaluation, and best-checkpoint comparison",
-      "status": "implemented_tests_passed_pending_external_review",
-      "latest_externally_verified_baseline": "107",
-      "external_review_status": "pending",
-      "external_verification_claimed": false,
+      "status": "externally_verified_complete",
+      "latest_externally_verified_baseline": "108",
+      "external_review_status": "passed",
+      "external_verification_claimed": true,
+      "external_verification_label": "108",
+      "baseline_archive": "ww-dps-simulator-2(108).zip",
       "full_bc_training_executed": true,
       "ppo_training_executed": true,
       "ppo_timesteps": 100000,
@@ -1417,7 +1462,33 @@
       "winner_model": "models/maskable_ppo_bc_v105.zip",
       "current_best_result": 5165134.682363356,
       "comparison_artifact": "results/manual_bc_ppo_comparison_v108.json",
-      "archive_path": "../ww-dps-simulator-2-108.zip"
+      "archive_path": "../ww-dps-simulator-2(108).zip"
+    },
+    {
+      "candidate": "109",
+      "task": "guarded multi-branch PPO continuation infrastructure with immutable checkpoints and deterministic damage-only evaluation",
+      "status": "implemented_tests_passed_pending_external_review",
+      "latest_externally_verified_baseline": "108",
+      "external_review_status": "pending",
+      "external_verification_claimed": false,
+      "full_bc_training_executed": true,
+      "prior_ppo_training_executed": true,
+      "guarded_long_experiment_executed": false,
+      "plan_path": "data/guarded_ppo_experiment_plan_v109.json",
+      "plan_sha256": "0306c734347e49460fd7273bce546eed80a2db657e460eb707f5cab961a9e0e6",
+      "branch_ids": [
+        "bc_conservative_seed_11",
+        "bc_exploratory_seed_73",
+        "scratch_control_seed_137"
+      ],
+      "objective": "deterministic_120s_total_damage_only",
+      "current_best_model": "models/maskable_ppo_bc_v105.zip",
+      "prior_ppo_status": "valid_but_regressed",
+      "global_optimum_claimed": false,
+      "route_similarity_objective": false,
+      "character_specific_reward": false,
+      "rollback_enabled": false,
+      "archive_path": "../ww-dps-simulator-2-109.zip"
     }
   ]
 }

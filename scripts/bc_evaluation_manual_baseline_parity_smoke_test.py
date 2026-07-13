@@ -51,7 +51,7 @@ def main() -> None:
     assert summary["manual_baseline_selected_sequence_match"] is True
     assert summary["manual_baseline_resolved_sequence_match"] is True
     assert summary["manual_baseline_character_damage_match"] is True
-    assert summary["model_training_metadata_source"] == "model_sidecar"
+    assert summary["model_training_metadata_source"] == "bc_model_sidecar"
     assert summary["model_metadata_mismatches"] == {}
     assert summary["model_space_mismatches"] == {}
     for character_id, expected in EXPECTED_DAMAGE_BY_CHARACTER.items():
