@@ -20,12 +20,18 @@ from rl.guarded_ppo import (  # noqa: E402
 )
 
 
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-111.zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-116.zip"
 STATE_PATH = ROOT / "results" / "guarded_ppo_v109" / "experiment_state.json"
 EXCLUDED_DIRS = {".git", ".venv", "__pycache__", ".pytest_cache", ".mypy_cache", "bc_eval_bundle"}
 IMMUTABLE_MODEL_ZIP_FILES = {
     "models/maskable_ppo_bc_v105.zip",
     "models/maskable_ppo_candidate_after_bc_v105.zip",
+}
+HEAVY_BEAM_OUTPUT = Path("results/beam_search_v114_lowmem_32gb")
+LOCAL_ONLY_BEAM_INVENTORY = Path("results/beam_search_v114_3m_checkpoint_inventory_v115.json")
+LOCAL_ONLY_REVIEW_PACKAGES = {
+    Path("beam_search_v114_3m_review"),
+    Path("beam_search_v115_6p5m_review"),
 }
 
 
@@ -56,6 +62,11 @@ def build_archive(output: Path) -> dict[str, Any]:
     excluded_zip_count = 0
     excluded_venv_or_git_count = 0
     entry_count = 0
+    excluded_heavy_checkpoint_count = 0
+    excluded_heavy_checkpoint_bytes = 0
+    excluded_local_inventory_bytes = 0
+    excluded_local_review_package_count = 0
+    excluded_local_review_package_bytes = 0
     with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
         for path in sorted(ROOT.rglob("*")):
             rel = path.relative_to(ROOT)
@@ -64,6 +75,17 @@ def build_archive(output: Path) -> dict[str, Any]:
                 continue
             if path.resolve() == output:
                 excluded_zip_count += 1
+                continue
+            if rel == HEAVY_BEAM_OUTPUT or HEAVY_BEAM_OUTPUT in rel.parents:
+                excluded_heavy_checkpoint_count += 1
+                excluded_heavy_checkpoint_bytes += path.stat().st_size
+                continue
+            if rel == LOCAL_ONLY_BEAM_INVENTORY:
+                excluded_local_inventory_bytes = path.stat().st_size
+                continue
+            if any(rel == package or package in rel.parents for package in LOCAL_ONLY_REVIEW_PACKAGES):
+                excluded_local_review_package_count += 1
+                excluded_local_review_package_bytes += path.stat().st_size
                 continue
             if "__pycache__" in parts or ".pytest_cache" in parts or path.suffix in {".pyc", ".pyo"}:
                 excluded_cache_count += 1
@@ -84,12 +106,20 @@ def build_archive(output: Path) -> dict[str, Any]:
         "excluded_cache_count": excluded_cache_count,
         "excluded_zip_count": excluded_zip_count,
         "excluded_venv_git_or_bundle_count": excluded_venv_or_git_count,
+        "excluded_heavy_checkpoint_path": HEAVY_BEAM_OUTPUT.as_posix(),
+        "excluded_heavy_checkpoint_count": excluded_heavy_checkpoint_count,
+        "excluded_heavy_checkpoint_bytes": excluded_heavy_checkpoint_bytes,
+        "excluded_local_inventory_path": LOCAL_ONLY_BEAM_INVENTORY.as_posix(),
+        "excluded_local_inventory_bytes": excluded_local_inventory_bytes,
+        "excluded_local_review_package_paths": sorted(path.as_posix() for path in LOCAL_ONLY_REVIEW_PACKAGES),
+        "excluded_local_review_package_count": excluded_local_review_package_count,
+        "excluded_local_review_package_bytes": excluded_local_review_package_bytes,
     }
 
 
 def _required_zip_files_from_completed_state() -> set[str]:
     if not STATE_PATH.exists():
-        raise ValueError(f"Completed guarded PPO state is required for candidate 111 archive: {STATE_PATH}")
+        raise ValueError(f"Completed guarded PPO state is required for candidate 114 archive: {STATE_PATH}")
     state = json.loads(STATE_PATH.read_text(encoding="utf-8"))
     plan = load_plan(DEFAULT_PLAN_PATH)
     branches_by_id = {branch["branch_id"]: branch for branch in plan["branches"]}

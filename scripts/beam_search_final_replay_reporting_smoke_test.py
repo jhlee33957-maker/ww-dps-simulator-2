@@ -50,7 +50,7 @@ def _run_search(output: Path, max_expansions: int) -> dict:
             sys.executable,
             "search/run_beam_search.py",
             "--plan",
-            "data/beam_search_plan_v111.json",
+            "data/beam_search_plan_v114_32gb.json",
             "--execute",
             "--smoke-run",
             "--output-root",

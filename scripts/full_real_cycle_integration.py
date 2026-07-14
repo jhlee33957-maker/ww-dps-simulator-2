@@ -30,8 +30,8 @@ CANDIDATE_LABEL = "104"
 PARTY_ID = "aemeath_mornye_lynae_enabled_test_party"
 INITIAL_ACTIVE_CHARACTER = "aemeath"
 FRAME_RATE = 60
-EXPECTED_FINAL_COMBAT_TIME = 32.95
-EXPECTED_FINAL_COMBAT_FRAMES = 1977
+EXPECTED_FINAL_COMBAT_TIME = 32.45
+EXPECTED_FINAL_COMBAT_FRAMES = 1947
 FLOAT_TOLERANCE = 1e-9
 FRAME_TOLERANCE = 1.0 / FRAME_RATE + 1e-9
 
@@ -553,9 +553,9 @@ def build_result(sim: Simulation, steps: list[dict[str, Any]]) -> dict[str, Any]
             "count": len(fallback_steps),
             "locations": fallback_steps,
             "known_limit": (
-                "Only the opening Aemeath -> Mornye normal swap uses the current generic 0.50-second "
-                "placeholder timing. The route is mechanically complete but not fully source-exact in "
-                "absolute timing until that normal-swap timing is resolved."
+                "Only the opening Aemeath -> Mornye transition uses the candidate-114 generic swap "
+                "fallback. Its exact-zero timing is an explicit user-approved benchmark assumption, "
+                "not placeholder timing."
             ),
         },
         "unresolved_limits": [
@@ -661,9 +661,9 @@ def assert_route_contract(run: FullCycleRun) -> None:
     assert_close(by_step[5]["off_tune"]["after"], 263.25, "after action 5 Off-Tune")
     assert by_step[6]["transition"]["transition_type"] == "normal_swap"
     assert by_step[6]["transition"]["fallback_swap_used"] is True
-    assert by_step[6]["transition"]["swap_timing_is_placeholder"] is True
-    assert_close(by_step[6]["action_time"], 0.5, "opening swap action time")
-    assert_close(by_step[6]["combat_time_cost"], 0.5, "opening swap combat time")
+    assert by_step[6]["transition"]["swap_timing_is_placeholder"] is False
+    assert_close(by_step[6]["action_time"], 0.0, "opening swap action time")
+    assert_close(by_step[6]["combat_time_cost"], 0.0, "opening swap combat time")
 
     reactor = by_step[13]
     assert reactor["resolved_action_id"] == "mornye_echo_reactor_husk"
@@ -828,10 +828,10 @@ def assert_scheduled_event_contract(run: FullCycleRun) -> None:
         }
     ]
     expected_field_events = [
-        ("scheduled_heal", "mornye_syntony_field_heal", 7.8),
-        ("scheduled_damage", "mornye_syntony_field_damage", 7.8),
-        ("scheduled_damage", "mornye_syntony_field_target_damage", 8.166666666666666),
-        ("scheduled_damage", "mornye_syntony_field_damage", 8.25),
+        ("scheduled_heal", "mornye_syntony_field_heal", 7.3),
+        ("scheduled_damage", "mornye_syntony_field_damage", 7.3),
+        ("scheduled_damage", "mornye_syntony_field_target_damage", 7.666666666666666),
+        ("scheduled_damage", "mornye_syntony_field_damage", 7.75),
     ]
     assert len(mornye_field_events) >= len(expected_field_events)
     for event, (event_type, payload_action_id, expected_time) in zip(
@@ -851,13 +851,13 @@ def assert_scheduled_event_contract(run: FullCycleRun) -> None:
     for event in damage_field_events:
         assert event.get("source_character_id") == "mornye"
         assert float(event.get("damage", 0.0) or 0.0) > 0.0
-    same_time_78 = [
+    same_time_73 = [
         event.get("payload_action_id")
         for event in events
-        if math.isclose(float(event.get("combat_time", -1.0)), 7.8, rel_tol=0.0, abs_tol=1e-9)
+        if math.isclose(float(event.get("combat_time", -1.0)), 7.3, rel_tol=0.0, abs_tol=1e-9)
         and event.get("payload_action_id") in {"mornye_syntony_field_heal", "mornye_syntony_field_damage"}
     ]
-    assert same_time_78[:2] == ["mornye_syntony_field_heal", "mornye_syntony_field_damage"]
+    assert same_time_73[:2] == ["mornye_syntony_field_heal", "mornye_syntony_field_damage"]
 
     spray_events = [
         event for event in events
@@ -1013,7 +1013,7 @@ def _render_report(result: dict[str, Any]) -> str:
     fallback = result["placeholder_fallback"]
     damage_by_character = totals["damage_by_character"]
     lines = [
-        "# Full Real-Cycle Integration Candidate 104",
+        "# Full Real-Cycle Integration Candidate 114",
         "",
         "This is a deterministic integration route through the verified active-Echo mechanics. It is not the 120-second manual baseline and is not claimed globally optimal.",
         "",

@@ -25,8 +25,14 @@ BC_NPZ_SHA256 = "b020a1b9309b46bd87eb3fff4837aead53035c4c84620962f47feb9fc11846f
 MANUAL_ROUTE_SHA256 = "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a"
 
 
-def select_damage_only_winner(candidates: list[dict[str, Any]], *, tolerance: float = 1e-6) -> dict[str, Any] | None:
-    incumbent = verified_bc_incumbent_manifest()
+def select_damage_only_winner(
+    candidates: list[dict[str, Any]],
+    *,
+    incumbent: dict[str, Any] | None = None,
+    tolerance: float = 1e-6,
+) -> dict[str, Any] | None:
+    """Select by completed 120-second damage, retaining the reviewed incumbent on ties."""
+    incumbent = dict(incumbent or historical_verified_bc_reference())
     all_candidates = [incumbent, *candidates]
     best = all_candidates[0]
     for candidate in all_candidates[1:]:
@@ -40,12 +46,12 @@ def select_damage_only_winner(candidates: list[dict[str, Any]], *, tolerance: fl
 
 
 def _tie_rank(candidate: dict[str, Any]) -> tuple[int, int]:
-    verified = int(bool(candidate.get("externally_verified_immutable")) or candidate.get("winner_kind") == "verified_bc_model")
+    verified = int(bool(candidate.get("externally_verified_immutable")) or bool(candidate.get("reviewed_project_incumbent")))
     earlier = -int(candidate.get("declared_order", 10_000_000))
     return (verified, earlier)
 
 
-def verified_bc_incumbent_manifest() -> dict[str, Any]:
+def historical_verified_bc_reference() -> dict[str, Any]:
     return {
         "schema_version": "beam_search_verified_bc_incumbent_v111",
         "winner_kind": "verified_bc_model",
@@ -59,10 +65,161 @@ def verified_bc_incumbent_manifest() -> dict[str, Any]:
         "declared_order": 0,
         "manual_bc_ratio": 1.0,
         "manual_bc_delta": 0.0,
-        "selection_reason": "externally verified BC incumbent is the damage-only incumbent until a completed 120s Beam route exceeds it",
+        "selection_reason": "historical verified BC reference; not the current v114 project incumbent",
         "objective": "deterministic_120s_total_damage_only",
         "global_optimum_proven": False,
     }
+
+
+def verified_bc_incumbent_manifest() -> dict[str, Any]:
+    """Backward-compatible name for the immutable historical BC reference."""
+    return historical_verified_bc_reference()
+
+
+def load_project_comparison_incumbent(plan: dict[str, Any], *, root: Path = ROOT) -> dict[str, Any]:
+    """Load the current incumbent from the hash-pinned reviewed comparison contract."""
+    contract = plan.get("comparison_incumbent_contract")
+    comparison = plan.get("comparison_reference")
+    if not isinstance(contract, dict) or not isinstance(comparison, dict):
+        raise ValueError("Plan must declare comparison_reference and comparison_incumbent_contract")
+    comparison_path = root / str(comparison.get("path", ""))
+    _require_file_hash(comparison_path, str(comparison.get("sha256", "")), "comparison manifest")
+    payload = json.loads(comparison_path.read_text(encoding="utf-8"))
+    current = payload.get("current_best")
+    if not isinstance(current, dict):
+        raise ValueError("Comparison manifest has no current_best record")
+    result_path = root / str(contract.get("result_path", ""))
+    model_path = root / str(contract.get("model_path", ""))
+    _require_file_hash(result_path, str(contract.get("result_sha256", "")), "incumbent result")
+    _require_file_hash(model_path, str(contract.get("model_sha256", "")), "incumbent model")
+    result = json.loads(result_path.read_text(encoding="utf-8"))
+    expected = {
+        "model_path": contract.get("model_path"),
+        "model_sha256": contract.get("model_sha256"),
+        "total_damage": contract.get("total_damage"),
+        "dps": contract.get("dps"),
+        "selected_route_sha256": contract.get("selected_sequence_sha256"),
+        "resolved_route_sha256": contract.get("resolved_sequence_sha256"),
+    }
+    for key, value in expected.items():
+        manifest_key = key
+        if current.get(manifest_key) != value:
+            raise ValueError(f"Comparison incumbent {manifest_key} mismatch")
+    result_checks = {
+        "model_path": contract.get("model_path"),
+        "model_sha256": contract.get("model_sha256"),
+        "total_damage": contract.get("total_damage"),
+        "dps": contract.get("dps"),
+        "selected_route_sha256": contract.get("selected_sequence_sha256"),
+        "resolved_route_sha256": contract.get("resolved_sequence_sha256"),
+    }
+    for key, value in result_checks.items():
+        if result.get(key) != value:
+            raise ValueError(f"Incumbent result {key} mismatch")
+    if current.get("result_path") not in {contract.get("result_path"), "results/transition_contract_v114_model_reevaluation/leaderboard.json"}:
+        raise ValueError("Comparison incumbent result path mismatch")
+    if current.get("completed_120s") is not True or result.get("completed_120s") is not True:
+        raise ValueError("Incumbent evaluation is not a completed deterministic 120-second result")
+    if float(result.get("final_combat_time", 0.0)) != 120.0:
+        raise ValueError("Incumbent evaluation final combat time is not 120 seconds")
+    return {
+        "schema_version": "beam_search_project_incumbent_v115",
+        "winner_kind": "reviewed_v114_model",
+        "model_path": contract["model_path"],
+        "model_sha256": contract["model_sha256"],
+        "result_path": contract["result_path"],
+        "result_sha256": contract["result_sha256"],
+        "total_damage": contract["total_damage"],
+        "dps": contract["dps"],
+        "selected_sequence_sha256": contract["selected_sequence_sha256"],
+        "resolved_sequence_sha256": contract["resolved_sequence_sha256"],
+        "completed_120s": True,
+        "externally_verified_immutable": True,
+        "reviewed_project_incumbent": True,
+        "declared_order": 0,
+        "objective": "deterministic_120s_total_damage_only",
+        "selection_reason": "reviewed v114 comparison incumbent retained unless a completed 120s Beam route exceeds its damage",
+        "global_optimum_proven": False,
+    }
+
+
+def load_current_comparison_references(*, root: Path = ROOT) -> dict[str, Any]:
+    """Load current manual/model references from the hash-pinned v115 contract."""
+    plan_path = root / "data" / "beam_search_plan_v115_32gb_resume_v114.json"
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    comparison = plan.get("comparison_reference") or {}
+    comparison_path = root / str(comparison.get("path", ""))
+    _require_file_hash(comparison_path, str(comparison.get("sha256", "")), "comparison manifest")
+    payload = json.loads(comparison_path.read_text(encoding="utf-8"))
+    manual = next(
+        (dict(item) for item in payload.get("entries", []) if item.get("kind") == "manual_v114"),
+        None,
+    )
+    if manual is None or manual.get("completed_120s") is not True:
+        raise ValueError("Comparison manifest has no completed manual_v114 reference")
+    incumbent = load_project_comparison_incumbent(plan, root=root)
+    return {
+        "schema_version": "beam_search_current_comparison_references_v116",
+        "source_path": comparison_path.relative_to(root).as_posix(),
+        "source_sha256": comparison["sha256"],
+        "manual_v114": manual,
+        "current_reviewed_model_incumbent": incumbent,
+        "historical_verified_bc": historical_verified_bc_reference(),
+    }
+
+
+def current_reference_comparisons(total_damage: float, *, root: Path = ROOT) -> dict[str, Any]:
+    references = load_current_comparison_references(root=root)
+    manual = references["manual_v114"]
+    incumbent = references["current_reviewed_model_incumbent"]
+    historical = references["historical_verified_bc"]
+    return {
+        "reference_damage_comparison_status": "comparable_120s_completed_route",
+        "route_horizon_seconds": 120.0,
+        "reference_horizon_seconds": 120.0,
+        "manual_v114": {
+            "label": "current reviewed manual v114 reference",
+            "total_damage": manual["total_damage"],
+            "dps": manual["dps"],
+            "delta": total_damage - float(manual["total_damage"]),
+        },
+        "current_reviewed_model_incumbent": {
+            "label": "best trained model under the reviewed v114 runtime",
+            **incumbent,
+            "delta": total_damage - float(incumbent["total_damage"]),
+        },
+        "historical_verified_bc": {
+            "label": "historical verified BC reference; retained for history only",
+            **historical,
+            "delta": total_damage - float(historical["total_damage"]),
+        },
+    }
+
+
+def load_overall_project_winner(*, root: Path = ROOT) -> dict[str, Any]:
+    manifest_path = root / "results" / "beam_search_v114_completed_v116" / "result_manifest.json"
+    if manifest_path.is_file():
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        winner = manifest.get("winning_route")
+        if manifest.get("termination_status") == "completed_search" and isinstance(winner, dict):
+            return dict(winner) | {
+                "winner_kind": "beam_search_route",
+                "overall_project_winner": True,
+                "global_optimum_proven": False,
+            }
+    plan = json.loads((root / "data" / "beam_search_plan_v115_32gb_resume_v114.json").read_text(encoding="utf-8"))
+    return load_project_comparison_incumbent(plan, root=root)
+
+
+def _require_file_hash(path: Path, expected: str, label: str) -> None:
+    if not path.is_file():
+        raise ValueError(f"Missing {label}: {path}")
+    digest = hashlib.sha256()
+    with path.open("rb") as file:
+        for chunk in iter(lambda: file.read(1024 * 1024), b""):
+            digest.update(chunk)
+    if digest.hexdigest() != expected:
+        raise ValueError(f"{label} SHA-256 mismatch")
 
 
 def replay_selected_route_to_files(
@@ -263,12 +420,13 @@ def _manual_route_reference() -> dict[str, Any]:
     path = ROOT / "data" / "manual_120s_baseline_routes_v104.json"
     data = json.loads(path.read_text(encoding="utf-8-sig"))
     primary = data["routes"]["primary"]
+    current = load_current_comparison_references()["manual_v114"]
     return {
         "selected": list(primary["selected_policy_actions"]),
         "resolved": list(primary["expected_resolved_actions"]),
         "selected_sequence_sha256": BC_SELECTED_SEQUENCE_SHA256,
         "resolved_sequence_sha256": BC_RESOLVED_SEQUENCE_SHA256,
-        "total_damage": BC_TOTAL_DAMAGE,
+        "total_damage": current["total_damage"],
     }
 
 
@@ -304,17 +462,14 @@ def _reference_comparisons(total_damage: float, *, combat_duration: float) -> di
             "reference_horizon_seconds": 120.0,
             "numeric_total_damage_ranking": None,
         }
+    current = current_reference_comparisons(total_damage)
     ppo = _load_json_if_exists(ROOT / "results" / "ppo_100k_evaluation_summary.json")
-    guarded = _load_json_if_exists(ROOT / "results" / "guarded_ppo_v109" / "experiment_state.json")
-    return {
-        "reference_damage_comparison_status": "comparable_120s_completed_route",
-        "route_horizon_seconds": float(combat_duration),
-        "reference_horizon_seconds": 120.0,
-        "manual_baseline": {"total_damage": BC_TOTAL_DAMAGE, "delta": total_damage - BC_TOTAL_DAMAGE},
-        "verified_bc": verified_bc_incumbent_manifest() | {"delta": total_damage - BC_TOTAL_DAMAGE},
-        "prior_ppo_100k": _comparison_from_summary(total_damage, ppo),
-        "guarded_ppo_v109": _guarded_comparison(total_damage, guarded),
-    }
+    current["prior_ppo_100k"] = _comparison_from_summary(total_damage, ppo)
+    # Backward-compatible aliases now point to clearly labeled current/historical records.
+    current["manual_baseline"] = dict(current["manual_v114"])
+    current["verified_bc"] = dict(current["historical_verified_bc"])
+    current["guarded_ppo_v109"] = dict(current["current_reviewed_model_incumbent"])
+    return current
 
 
 def _is_120s_horizon(combat_duration: float) -> bool:

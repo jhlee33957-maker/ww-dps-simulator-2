@@ -21,7 +21,7 @@ DIRECT_ACTION_MANIFEST_SHA256 = "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28
 SOURCE_ROUTE_FILE_SHA256 = "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a"
 
 
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-113.zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-116.zip"
 EXPECTED_BC_MODEL_SHA256 = "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e"
 EXPECTED_PPO_MODEL_SHA256 = "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513"
 EXPECTED_EVAL_SELECTED_SEQUENCE_SHA256 = "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1"
@@ -41,6 +41,9 @@ EXPECTED_PPO_DPS = 30005.309413556675
 EXPECTED_PPO_SCHEDULED_DAMAGE = 140026.5111366104
 EXPECTED_BEAM_PLAN_SHA256 = "b504def4e0c1da82ef2a6024d19ccac76fe175df51899e50d12f3bff99a17998"
 EXPECTED_LOWMEM_BEAM_PLAN_SHA256 = "ffd9ce47ec9b92b2c4b59f295d50d0ce5204fcba577af0f78b9fa917b19b291d"
+EXPECTED_V114_BEAM_PLAN_SHA256 = "e70826d0040444f834398d55c922aacb4ee5b484bc6ef2e75ca5a0ad603bc18c"
+EXPECTED_V114_TRANSITION_CONFIG_SHA256 = "210538d4bf99789d0af08ecff5fb76dc3f472f5b170a144d9f1b3b1f46116b9c"
+EXPECTED_V114_BUFFS_SHA256 = "fe8b8fc63e8b9a3405a61ebe08a2cafa13f94dd4af91d1670b968df727cb554d"
 EXPECTED_PPO_DAMAGE_BY_CHARACTER = {
     "aemeath": 2674131.053725695,
     "mornye": 201528.93426401448,
@@ -91,6 +94,7 @@ REQUIRED_FILES = (
     "rl/pretrain_maskable_ppo_bc.py",
     "search/__init__.py",
     "search/beam_plan.py",
+    "search/beam_resume_extension.py",
     "search/beam_reporting.py",
     "search/beam_spill.py",
     "search/beam_search.py",
@@ -219,6 +223,79 @@ REQUIRED_FILES = (
     "scripts/beam_search_lowmem_10000_probe_repeatability_smoke_test.py",
     "scripts/cleanup_unnecessary_runtime_artifacts_smoke_test.py",
     "scripts/project_progress_beam_search_lowmem_alignment_smoke_test.py",
+    "data/beam_search_plan_v114_32gb.json",
+    "data/beam_search_plan_v115_32gb_resume_v114.json",
+    "results/beam_search_v114_3m_checkpoint_review_v115.json",
+    "results/beam_search_v114_3m_reviewed_file_inventory_v115.json",
+    "results/beam_search_v114_3m_resume_extension_v115_receipt.json",
+    "reports/beam_search_v114_3m_checkpoint_review_v115.md",
+    "scripts/validate_beam_v114_3m_resume_extension_v115.py",
+    "scripts/build_candidate_115_preflight_archive.py",
+    "scripts/beam_search_v115_resume_test_utils.py",
+    "scripts/beam_search_v115_actual_runner_resume_extension_smoke_test.py",
+    "scripts/beam_search_v115_resume_preflight_no_mutation_smoke_test.py",
+    "scripts/beam_search_v115_lowmem_execution_gate_smoke_test.py",
+    "scripts/beam_search_v115_real_checkpoint_inventory_contract_smoke_test.py",
+    "scripts/beam_search_v114_full_stage_scope_smoke_test.py",
+    "scripts/beam_search_v114_current_incumbent_selection_smoke_test.py",
+    "scripts/beam_search_v115_resume_extension_plan_contract_smoke_test.py",
+    "scripts/beam_search_v115_resume_extension_validation_smoke_test.py",
+    "scripts/beam_search_v115_resume_extension_mutation_guard_smoke_test.py",
+    "scripts/beam_search_v114_3m_checkpoint_review_smoke_test.py",
+    "scripts/project_progress_beam_v115_alignment_smoke_test.py",
+    "search/beam_performance.py",
+    "search/beam_completed_result.py",
+    "scripts/ingest_completed_beam_result_v116.py",
+    "scripts/cleanup_completed_beam_payload_v116.py",
+    "scripts/beam_search_v116_completed_result_integrity_smoke_test.py",
+    "scripts/beam_search_v116_winner_replay_parity_smoke_test.py",
+    "scripts/beam_search_v116_current_winner_smoke_test.py",
+    "scripts/beam_search_resume_performance_accounting_smoke_test.py",
+    "scripts/beam_search_v116_route_reference_alignment_smoke_test.py",
+    "scripts/beam_search_v116_completed_inventory_smoke_test.py",
+    "scripts/beam_search_v116_completed_cleanup_smoke_test.py",
+    "scripts/project_progress_beam_completed_v116_alignment_smoke_test.py",
+    "scripts/progress_dashboard_beam_completed_v116_smoke_test.py",
+    "results/beam_search_v114_completed_v116/result_manifest.json",
+    "results/beam_search_v114_completed_v116/final_summary.json",
+    "results/beam_search_v114_completed_v116/leaderboard.json",
+    "results/beam_search_v114_completed_v116/best_route.json",
+    "results/beam_search_v114_completed_v116/winning_route_summary.json",
+    "results/beam_search_v114_completed_v116/winning_route_timeline.csv",
+    "results/beam_search_v114_completed_v116/corrected_execution_metrics.json",
+    "results/beam_search_v114_completed_v116/completed_routes_compact.json",
+    "results/beam_search_v114_completed_v116/full_result_inventory.json",
+    "results/beam_search_v114_completed_inventory_v116.json",
+    "reports/beam_search_v114_completed_v116.md",
+    "results/beam_search_v114_lowmem_10000_probe_summary.json",
+    "results/manual_120s_baseline_v114_summary.json",
+    "results/manual_120s_baseline_v114_timeline.csv",
+    "results/manual_model_comparison_v114.json",
+    "results/transition_contract_v114_model_reevaluation/leaderboard.json",
+    "reports/general_swap_aemeath_outro_v114.md",
+    "reports/beam_search_v114_32gb_lowmem.md",
+    "reports/manual_120s_baseline_v114.md",
+    "reports/transition_contract_v114_model_reevaluation.md",
+    "scripts/rebaseline_transition_contract_v114.py",
+    "scripts/qte_intro_outro_foundation_smoke_test.py",
+    "scripts/generic_swap_no_legacy_placeholder_warning_smoke_test.py",
+    "scripts/generic_swap_zero_time_reentry_cooldown_smoke_test.py",
+    "scripts/generic_swap_timed_intro_reentry_cooldown_smoke_test.py",
+    "scripts/generic_swap_action_mask_observation_smoke_test.py",
+    "scripts/generic_swap_zero_time_loop_guard_smoke_test.py",
+    "scripts/aemeath_outro_base_buff_smoke_test.py",
+    "scripts/aemeath_outro_per_character_upgrade_smoke_test.py",
+    "scripts/aemeath_outro_recast_reset_smoke_test.py",
+    "scripts/aemeath_outro_timed_intro_order_smoke_test.py",
+    "scripts/specific_character_multi_target_buff_smoke_test.py",
+    "scripts/swap_outro_clone_restore_resume_smoke_test.py",
+    "scripts/v114_excluded_scope_guard_smoke_test.py",
+    "scripts/transition_contract_v114_rebaseline_smoke_test.py",
+    "scripts/transition_contract_v114_model_reevaluation_smoke_test.py",
+    "scripts/beam_search_plan_v114_32gb_contract_smoke_test.py",
+    "scripts/beam_search_v114_streaming_spill_contract_smoke_test.py",
+    "scripts/aemeath_outro_cast_upgrade_reporting_smoke_test.py",
+    "scripts/project_progress_transition_contract_v114_alignment_smoke_test.py",
 )
 EXPECTED_GUARDED_PLAN_SHA256 = "0306c734347e49460fd7273bce546eed80a2db657e460eb707f5cab961a9e0e6"
 TEXT_SUFFIXES = (".py", ".json", ".md", ".txt")
@@ -269,6 +346,8 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         ]
         assert not cache_entries, cache_entries[:20]
         assert not obsolete_bundle_entries, obsolete_bundle_entries
+        assert not any(name.startswith("results/beam_search_v114_lowmem_32gb/") for name in names)
+        assert zf.testzip() is None
 
         route_bytes = zf.read("data/manual_120s_baseline_routes_v104.json")
         assert bytes_sha256(route_bytes) == SOURCE_ROUTE_FILE_SHA256
@@ -279,6 +358,29 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         ppo_summary = json.loads(zf.read("results/ppo_100k_evaluation_summary.json").decode("utf-8"))
         comparison = json.loads(zf.read("results/manual_bc_ppo_comparison_v108.json").decode("utf-8"))
         progress = json.loads(zf.read("PROJECT_PROGRESS_STATE.json").decode("utf-8"))
+        completed_manifest_path = "results/beam_search_v114_completed_v116/result_manifest.json"
+        completed_manifest_bytes = zf.read(completed_manifest_path)
+        completed_manifest = json.loads(completed_manifest_bytes.decode("utf-8"))
+        completed_progress = progress["current_in_progress_task"]["candidate_116_completed_beam"]
+        assert progress["status"]["latest_externally_verified_baseline"] == "115"
+        assert progress["status"]["current_candidate"] == "116"
+        assert bytes_sha256(completed_manifest_bytes) == completed_progress["result_manifest_sha256"]
+        assert completed_manifest["termination_status"] == "completed_search"
+        assert completed_manifest["completed_search"]["expansions"] == 4908270
+        assert completed_manifest["completed_search"]["completed_retained_route_count"] == 128
+        assert completed_manifest["completed_search"]["configured_maximum_expansions"] == 6500000
+        assert completed_manifest["winning_route"]["route_id"] == "67a4250b3b8d0de9"
+        assert completed_manifest["winning_route"]["total_damage"] == 5651892.274552992
+        assert completed_manifest["winning_route"]["dps"] == 47099.1022879416
+        assert completed_manifest["global_optimum_proven"] is False
+        assert completed_manifest["heavy_output_preserved_locally"] is True
+        assert completed_manifest["heavy_output_mutated_by_ingestion"] is False
+        for artifact, expected_sha256 in completed_manifest["artifact_sha256"].items():
+            archive_path = f"results/beam_search_v114_completed_v116/{artifact}"
+            assert bytes_sha256(zf.read(archive_path)) == expected_sha256, archive_path
+        assert bytes_sha256(zf.read("results/beam_search_v114_completed_inventory_v116.json")) == (
+            completed_manifest["external_inventory_artifact_sha256"]
+        )
         guarded_plan_bytes = zf.read("data/guarded_ppo_experiment_plan_v109.json")
         assert bytes_sha256(guarded_plan_bytes) == EXPECTED_GUARDED_PLAN_SHA256
         guarded_plan = json.loads(guarded_plan_bytes.decode("utf-8"))
@@ -343,6 +445,96 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         assert lowmem_stage["destination_accumulator_unique_fingerprint_bound"] == 16384
         assert lowmem_stage["in_memory_accumulator_candidate_limit"] == 4096
         assert lowmem_stage["disk_spill_enabled"] is True
+
+        v114_plan_bytes = zf.read("data/beam_search_plan_v114_32gb.json")
+        assert bytes_sha256(v114_plan_bytes) == EXPECTED_V114_BEAM_PLAN_SHA256
+        v114_plan = json.loads(v114_plan_bytes.decode("utf-8"))
+        assert v114_plan["schema_version"] == "beam_search_plan_v114_32gb"
+        assert v114_plan["candidate"] == 114
+        assert v114_plan["transition_contract"] == {
+            "version": "v114",
+            "generic_swap_action_time": 0.0,
+            "generic_swap_combat_time_cost": 0.0,
+            "generic_swap_source_status": "user_approved_benchmark_assumption_after_workbook_and_web_review",
+            "swap_reentry_cooldown_seconds": 1.0,
+            "swap_reentry_cooldown_clock": "combat_time",
+            "aemeath_outro_implementation_version": "implemented_v114",
+        }
+        assert v114_plan["output_contract"]["canonical_output_root"] == "results/beam_search_v114_lowmem_32gb"
+        assert set(v114_plan["output_contract"]["forbidden_resume_or_output_roots"]) == {
+            "results/beam_search_v111_full_120s",
+            "results/beam_search_v113_lowmem_32gb",
+        }
+        assert v114_plan["execution_boundary"] == {
+            "candidate_114_runs_3m_search": False,
+            "candidate_114_runs_5m_search": False,
+            "candidate_114_runs_mcts": False,
+            "candidate_114_runs_training": False,
+            "bounded_probe_max_expansions": 10000,
+        }
+        assert v114_plan["stages"][0]["stage_id"] == "full_120s_lowmem_32gb_v114"
+        assert v114_plan["stages"][0]["accumulator_spill_format"] == "streaming_jsonl_gzip_v113"
+        v115_plan_bytes = zf.read("data/beam_search_plan_v115_32gb_resume_v114.json")
+        v115_plan = json.loads(v115_plan_bytes.decode("utf-8"))
+        assert bytes_sha256(v115_plan_bytes) == progress["current_in_progress_task"]["candidate_115_beam_correction"]["plan_sha256"]
+        assert v115_plan["execution_contract"]["low_memory_32gb"] is True
+        assert v115_plan["execution_contract"]["hard_memory_budget_required"] is True
+        assert v115_plan["execution_contract"]["canonical_output_root_required_for_resume"] is True
+        assert v115_plan["stages"][0]["maximum_expansions"] == 6500000
+        reviewed_inventory_bytes = zf.read("results/beam_search_v114_3m_reviewed_file_inventory_v115.json")
+        assert bytes_sha256(reviewed_inventory_bytes) == v115_plan["source_checkpoint_contract"]["reviewed_inventory_file_sha256"]
+        reviewed_inventory = json.loads(reviewed_inventory_bytes.decode("utf-8"))
+        assert reviewed_inventory["file_count"] == 649
+        assert reviewed_inventory["total_bytes"] == 1752618157
+        assert reviewed_inventory["inventory_sha256"] == "0bb00535354717d05ae1761fe6522bcc5129cc598cc8aaf072843626a7d43f15"
+        receipt_bytes = zf.read("results/beam_search_v114_3m_resume_extension_v115_receipt.json")
+        assert bytes_sha256(receipt_bytes) == progress["current_in_progress_task"]["candidate_115_beam_correction"]["resume_receipt_sha256"]
+        receipt = json.loads(receipt_bytes.decode("utf-8"))
+        assert receipt["source_best_partial_combat_time"] == 67.48333333333329
+        assert receipt["source_best_partial_current_time"] == 107.75000000000001
+        assert receipt["source_best_partial_total_damage"] == 2850679.8061139295
+        assert receipt["source_best_partial_action_count"] == 92
+        assert bytes_sha256(zf.read("data/transition_config.json")) == EXPECTED_V114_TRANSITION_CONFIG_SHA256
+        assert bytes_sha256(zf.read("data/buffs.json")) == EXPECTED_V114_BUFFS_SHA256
+        v114_manual = json.loads(zf.read("results/manual_120s_baseline_v114_summary.json").decode("utf-8"))
+        assert v114_manual["candidate"] == 114
+        assert v114_manual["external_review_status"] == "pending"
+        assert v114_manual["route_valid"] is True
+        assert v114_manual["invalid_action_count"] == 0
+        _assert_close(v114_manual["total_damage"], 5268418.084869607)
+        _assert_close(v114_manual["dps"], 43903.484040580064)
+        assert v114_manual["aemeath_outro_cast_count"] == 3
+        assert v114_manual["aemeath_outro_upgrade_count"] == 3
+        v114_leaderboard = json.loads(
+            zf.read("results/transition_contract_v114_model_reevaluation/leaderboard.json").decode("utf-8")
+        )
+        v114_evaluation_entries = sorted(
+            name
+            for name in name_set
+            if name.startswith("results/transition_contract_v114_model_reevaluation/evaluations/")
+            and name.endswith(".json")
+        )
+        assert len(v114_evaluation_entries) == 32
+        for evaluation_entry in v114_evaluation_entries:
+            evaluation = json.loads(zf.read(evaluation_entry).decode("utf-8"))
+            assert evaluation["candidate"] == 114
+            assert evaluation["completed_120s"] is True
+            assert evaluation["invalid_action_count"] == 0
+        assert v114_leaderboard["candidate"] == 114
+        assert v114_leaderboard["evaluation_count"] == 32
+        assert v114_leaderboard["winner"]["model_path"] == (
+            "models/guarded_ppo_v109/bc_conservative_seed_11/step_000090000.zip"
+        )
+        _assert_close(v114_leaderboard["winner"]["total_damage"], 5276844.358692044)
+        assert v114_leaderboard["winner"]["invalid_action_count"] == 0
+        winner_result = json.loads(
+            zf.read(
+                "results/transition_contract_v114_model_reevaluation/evaluations/"
+                "guarded_ppo_v109__bc_conservative_seed_11__step_000090000.zip.json"
+            ).decode("utf-8")
+        )
+        assert winner_result["aemeath_outro_cast_count"] == 3
+        assert winner_result["aemeath_outro_upgrade_count"] == 3
         model_bytes = zf.read("models/maskable_ppo_bc_v105.zip")
         assert bytes_sha256(model_bytes) == EXPECTED_BC_MODEL_SHA256
         ppo_model_bytes = zf.read("models/maskable_ppo_candidate_after_bc_v105.zip")
@@ -378,6 +570,7 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         "archive_sha256": _sha256_file(archive),
         "zip_entry_count": len(names),
         "cache_entry_count": len(cache_entries),
+        "crc_error_entry": None,
         "obsolete_bc_eval_bundle_entry_count": len(obsolete_bundle_entries),
         "route_sha256": SOURCE_ROUTE_FILE_SHA256,
         "npz_sha256": npz_sha,
@@ -385,6 +578,9 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         "ppo_model_sha256": EXPECTED_PPO_MODEL_SHA256,
         **guarded_stats,
         "direct_action_manifest_sha256": DIRECT_ACTION_MANIFEST_SHA256,
+        "v114_beam_plan_sha256": EXPECTED_V114_BEAM_PLAN_SHA256,
+        "v114_transition_config_sha256": EXPECTED_V114_TRANSITION_CONFIG_SHA256,
+        "v114_buffs_sha256": EXPECTED_V114_BUFFS_SHA256,
         **text_stats,
         "fresh_extraction_checks": fresh_extraction_results,
     }
@@ -504,27 +700,80 @@ def run_fresh_extraction_checks(archive: Path, *, orchestration_smoke: bool) -> 
     # Lightweight contracts share four bounded interpreter lifecycles. This avoids
     # repeatedly importing numerical/ML modules in the checker process tree.
     checks = [
-        [sys.executable, "scripts/final_archive_project_progress_suite.py"],
+        [sys.executable, "scripts/qte_intro_outro_foundation_smoke_test.py"],
+        [sys.executable, "scripts/generic_swap_no_legacy_placeholder_warning_smoke_test.py"],
+        [sys.executable, "scripts/generic_swap_zero_time_reentry_cooldown_smoke_test.py"],
+        [sys.executable, "scripts/generic_swap_timed_intro_reentry_cooldown_smoke_test.py"],
+        [sys.executable, "scripts/generic_swap_action_mask_observation_smoke_test.py"],
+        [sys.executable, "scripts/generic_swap_zero_time_loop_guard_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_outro_base_buff_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_outro_per_character_upgrade_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_outro_recast_reset_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_outro_timed_intro_order_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_outro_cast_upgrade_reporting_smoke_test.py"],
+        [sys.executable, "scripts/specific_character_multi_target_buff_smoke_test.py"],
+        [sys.executable, "scripts/swap_outro_clone_restore_resume_smoke_test.py"],
+        [sys.executable, "scripts/v114_excluded_scope_guard_smoke_test.py"],
+        [sys.executable, "scripts/transition_contract_v114_rebaseline_smoke_test.py"],
+        [sys.executable, "scripts/transition_contract_v114_model_reevaluation_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_plan_v114_32gb_contract_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_v114_streaming_spill_contract_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_transition_contract_v114_alignment_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_v116_completed_result_integrity_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_v116_winner_replay_parity_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_v116_current_winner_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_resume_performance_accounting_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_v116_route_reference_alignment_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_v116_completed_inventory_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_v116_completed_cleanup_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_beam_completed_v116_alignment_smoke_test.py"],
+        [sys.executable, "scripts/progress_dashboard_beam_completed_v116_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_v115_actual_runner_resume_extension_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_v115_resume_preflight_no_mutation_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_v115_lowmem_execution_gate_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_v115_real_checkpoint_inventory_contract_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_v115_resume_extension_plan_contract_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_v115_resume_extension_validation_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_v115_resume_extension_mutation_guard_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_v114_full_stage_scope_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_v114_current_incumbent_selection_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_v114_3m_checkpoint_review_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_beam_v115_alignment_smoke_test.py"],
         [sys.executable, "scripts/final_archive_guarded_ppo_lightweight_suite.py"],
         [sys.executable, "scripts/guarded_ppo_stage_timeout_smoke_test.py"],
-        [sys.executable, "scripts/final_archive_beam_calibration_suite.py"],
-        [sys.executable, "scripts/final_archive_beam_helper_suite.py"],
+        [sys.executable, "scripts/beam_search_calibration_result_integrity_smoke_test.py"],
         [sys.executable, "scripts/final_archive_dataset_metadata_suite.py"],
-        [sys.executable, "scripts/beam_search_lowmem_32gb_plan_contract_smoke_test.py"],
         [sys.executable, "scripts/beam_search_lowmem_workspace_builder_smoke_test.py"],
         [sys.executable, "scripts/beam_search_lowmem_workspace_manifest_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_lowmem_output_isolation_smoke_test.py"],
         [sys.executable, "scripts/beam_search_lowmem_memory_guard_smoke_test.py"],
         [sys.executable, "scripts/beam_search_lowmem_spill_streaming_smoke_test.py"],
         [sys.executable, "scripts/beam_search_lowmem_spill_finalization_count_smoke_test.py"],
         [sys.executable, "scripts/beam_search_lowmem_spill_no_repeated_rescan_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_lowmem_10000_probe_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_destination_bucket_order_independence_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_destination_bucket_partition_merge_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_realistic_2000_resume_equivalence_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_terminal_replay_parity_smoke_test.py"],
+        [
+            sys.executable,
+            "search/run_beam_search.py",
+            "--plan",
+            "data/beam_search_plan_v114_32gb.json",
+            "--dry-run-plan",
+        ],
+        [
+            sys.executable,
+            "scripts/beam_search_lowmem_10000_probe_smoke_test.py",
+            "--plan",
+            "data/beam_search_plan_v114_32gb.json",
+        ],
+        [
+            sys.executable,
+            "scripts/beam_search_lowmem_10000_probe_repeatability_smoke_test.py",
+            "--plan",
+            "data/beam_search_plan_v114_32gb.json",
+        ],
         [sys.executable, "scripts/cleanup_unnecessary_runtime_artifacts_smoke_test.py"],
-        [sys.executable, "scripts/project_progress_beam_search_lowmem_alignment_smoke_test.py"],
     ]
-    if not orchestration_smoke:
-        # One evaluator lifecycle validates the packaged BC model without training.
-        checks.append([sys.executable, "scripts/bc_evaluation_manual_baseline_parity_smoke_test.py"])
     passed: list[dict[str, Any]] = []
     temp_dir = Path(tempfile.mkdtemp(prefix="archive-integrity-"))
     try:

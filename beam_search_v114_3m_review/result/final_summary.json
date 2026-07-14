@@ -1,0 +1,18 @@
+{
+  "schema_version": "beam_search_final_summary_v111",
+  "stage_id": "full_120s_lowmem_32gb_v114",
+  "status": "expansion_budget_exhausted",
+  "global_optimum_proven": false,
+  "route_similarity_usage": "diagnostic_only_not_used_for_winner_selection",
+  "calibration_only_no_project_winner": true,
+  "winner": null,
+  "expansions": 3000000,
+  "metrics": {
+    "peak_frontier_size": 1223,
+    "peak_live_nodes": 1223,
+    "peak_serialized_payload_bytes": 39049,
+    "estimated_peak_memory_bytes": 114638590,
+    "peak_process_rss_bytes": 1914478592,
+    "expansions_per_second": 334.9876393772433
+  }
+}

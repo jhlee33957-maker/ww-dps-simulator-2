@@ -17,14 +17,19 @@ from search.beam_plan import (
     DEFAULT_PLAN_PATH,
     FORBIDDEN_64GB_OUTPUT_ROOT,
     LOWMEM_32GB_SCHEMA,
+    STREAMING_ACCUMULATOR_SPILL_FORMAT,
+    V114_LOWMEM_32GB_SCHEMA,
     ROOT,
     load_plan,
     resolve_plan_data_hashes,
+    resolve_accumulator_spill_format,
     sha256_file,
     stage_by_id,
     validate_plan,
 )
-from search.beam_reporting import replay_selected_route_to_files, select_damage_only_winner, verified_bc_incumbent_manifest
+from search.beam_reporting import historical_verified_bc_reference, load_project_comparison_incumbent, replay_selected_route_to_files, select_damage_only_winner, verified_bc_incumbent_manifest
+from search.beam_performance import migrate_prior_accounting, performance_accounting
+from search.beam_resume_extension import extension_stage_compatible, validate_hash_pinned_extension
 from search.beam_spill import STREAMING_CHUNK_SCHEMA, iter_accumulator_chunk_nodes, write_accumulator_chunk_streaming
 from search.beam_state import (
     BeamNode,
@@ -85,7 +90,8 @@ class DestinationBucketAccumulator:
         self.output_root = output_root
         self.plan_sha256 = str(plan_sha256)
         self.stage_contract_sha256 = stage_contract_sha256 or _spill_stage_contract_sha256(stage)
-        self.streaming_spill = stage.get("stage_id") == "full_120s_lowmem_32gb"
+        self.accumulator_spill_format = resolve_accumulator_spill_format(self.stage)
+        self.streaming_spill = self.accumulator_spill_format == STREAMING_ACCUMULATOR_SPILL_FORMAT
         self.best_by_fingerprint: dict[str, BeamNode] = {}
         self.spill_chunks: list[dict[str, Any]] = []
         self.candidates_seen = 0
@@ -295,9 +301,9 @@ class DestinationBucketAccumulator:
                 yield from iter_accumulator_chunk_nodes(
                     path,
                     chunk,
-                    expected_plan_sha256=self.plan_sha256,
-                    expected_stage_id=str(self.stage["stage_id"]),
-                    expected_stage_contract_sha256=self.stage_contract_sha256,
+                    expected_plan_sha256=str(chunk.get("plan_sha256", self.plan_sha256)),
+                    expected_stage_id=str(chunk.get("stage_id", self.stage["stage_id"])),
+                    expected_stage_contract_sha256=str(chunk.get("stage_contract_sha256", self.stage_contract_sha256)),
                     metrics=restore_metrics,
                 )
                 self.peak_spill_restore_buffer_bytes = max(
@@ -334,6 +340,10 @@ class DestinationBucketAccumulator:
         return {
             "schema_version": self.schema_version,
             "bucket_index": self.bucket_index,
+            "accumulator_spill_format": self.accumulator_spill_format,
+            "accumulator_spill_chunk_schema": (
+                STREAMING_CHUNK_SCHEMA if self.streaming_spill else self.chunk_schema_version
+            ),
             "max_unique_fingerprints": self.max_unique_fingerprints,
             "candidates_seen": self.candidates_seen,
             "current_unique_fingerprint_count": len(self.best_by_fingerprint),
@@ -410,6 +420,10 @@ class DestinationBucketAccumulator:
         return {
             "schema_version": self.schema_version,
             "bucket_index": self.bucket_index,
+            "accumulator_spill_format": self.accumulator_spill_format,
+            "accumulator_spill_chunk_schema": (
+                STREAMING_CHUNK_SCHEMA if self.streaming_spill else self.chunk_schema_version
+            ),
             "max_unique_fingerprints": self.max_unique_fingerprints,
             "candidates_seen": self.candidates_seen,
             "hot_path_exact_fingerprint_duplicates": self.hot_path_exact_fingerprint_duplicates,
@@ -455,6 +469,12 @@ class DestinationBucketAccumulator:
             plan_sha256=plan_sha256,
             stage_contract_sha256=stage_contract_sha256,
         )
+        declared_spill_format = payload.get("accumulator_spill_format")
+        if declared_spill_format is not None and declared_spill_format != accumulator.accumulator_spill_format:
+            raise ValueError(
+                "Destination accumulator spill-format mismatch: "
+                f"{declared_spill_format!r} != {accumulator.accumulator_spill_format!r}"
+            )
         accumulator.candidates_seen = int(payload.get("candidates_seen", 0))
         accumulator.hot_path_exact_fingerprint_duplicates = int(payload.get("hot_path_exact_fingerprint_duplicates", payload.get("exact_fingerprint_duplicates", 0)))
         accumulator.hot_path_better_duplicate_replacements = int(payload.get("hot_path_better_duplicate_replacements", payload.get("better_duplicate_replacements", 0)))
@@ -548,7 +568,7 @@ def dry_run_plan(plan_path: Path) -> dict[str, Any]:
             "memory_estimates": memory_estimates,
         },
         "actual_data_hashes": validation["actual_data_hashes"],
-        "canonical_output_created": _canonical_output_root(plan).exists(),
+        "canonical_output_created": _canonical_output_root(plan, plan_path).exists(),
     }
 
 
@@ -571,16 +591,28 @@ def run_search_from_args(args: argparse.Namespace) -> dict[str, Any]:
         if configured_budget is not None and int(args.memory_budget_bytes) > int(configured_budget):
             raise ValueError("--memory-budget-bytes may lower, but may not raise, the reviewed stage budget")
         stage["memory_budget_bytes"] = int(args.memory_budget_bytes)
-    if plan.get("schema_version") == LOWMEM_32GB_SCHEMA and stage.get("memory_budget_bytes") is None:
+    lowmem_plan = is_low_memory_execution_plan(plan)
+    if lowmem_plan and stage.get("memory_budget_bytes") is None:
         raise ValueError("The 32 GB Beam stage requires a hard memory budget")
-    canonical_output_root = _canonical_output_root(plan)
+    canonical_output_root = _canonical_output_root(plan, args.plan)
     output_root = args.output_root or canonical_output_root
-    forbidden_output = (ROOT / FORBIDDEN_64GB_OUTPUT_ROOT).resolve()
     resolved_output = output_root.resolve()
-    if plan.get("schema_version") == LOWMEM_32GB_SCHEMA and (
+    forbidden_roots = [
+        (ROOT / str(relative)).resolve()
+        for relative in plan.get("output_contract", {}).get("forbidden_resume_or_output_roots", [])
+    ]
+    if lowmem_plan and any(
         resolved_output == forbidden_output or forbidden_output in resolved_output.parents
+        for forbidden_output in forbidden_roots
     ):
-        raise ValueError("Candidate 113 refuses output or resume under the abandoned 64 GB Beam root")
+        raise ValueError("Low-memory plan refuses output or resume under a forbidden legacy Beam root")
+    if (
+        args.resume
+        and plan.get("resume_extension_contract", {}).get("enabled") is True
+        and plan.get("execution_contract", {}).get("canonical_output_root_required_for_resume") is True
+        and resolved_output != canonical_output_root.resolve()
+    ):
+        raise ValueError("Hash-pinned extension resume requires the exact canonical output root")
     if args.smoke_run and output_root.resolve() == canonical_output_root.resolve():
         raise ValueError("--smoke-run requires a temporary/noncanonical output root")
     runner = BeamSearchRunner(plan=plan, stage=stage, plan_path=args.plan, output_root=output_root)
@@ -600,6 +632,12 @@ def compact_cli_summary(result: dict[str, Any]) -> dict[str, Any]:
         "expansions": result["expansions"],
         "elapsed_seconds": result["elapsed_seconds"],
         "expansions_per_second": result["expansions_per_second"],
+        "invocation_start_expansions": result["invocation_start_expansions"],
+        "invocation_expansions": result["invocation_expansions"],
+        "invocation_elapsed_seconds": result["invocation_elapsed_seconds"],
+        "invocation_expansions_per_second": result["invocation_expansions_per_second"],
+        "cumulative_elapsed_seconds": result["cumulative_elapsed_seconds"],
+        "cumulative_expansions_per_second": result["cumulative_expansions_per_second"],
         "output_root": output_root.as_posix(),
         "search_state_path": (output_root / "search_state.json").as_posix(),
         "execution_result_path": (output_root / "execution_result.json").as_posix(),
@@ -672,11 +710,17 @@ class BeamSearchRunner:
             "result_creation_count": 0,
             "result_creation_seconds": 0.0,
         }
+        self.invocation_started_at: float | None = None
+        self.invocation_start_expansions = 0
+        self.prior_cumulative_elapsed_seconds = 0.0
+        self.cumulative_accounting_complete = True
 
     def run(self, *, resume: bool = False) -> dict[str, Any]:
         started = time.perf_counter()
+        self.invocation_started_at = started
         if self.output_root.exists() and not resume and any(self.output_root.iterdir()):
             raise ValueError(f"Non-resume Beam Search cannot target non-empty output root: {self.output_root}")
+        resume_context = self._resolve_resume_context() if resume else None
         self.output_root.mkdir(parents=True, exist_ok=True)
         self.frontier_root.mkdir(parents=True, exist_ok=True)
         self.accumulator_root.mkdir(parents=True, exist_ok=True)
@@ -684,8 +728,9 @@ class BeamSearchRunner:
         self._write_log(f"stage {self.stage_id} start resume={resume}")
         template = self._create_simulation()
         if resume:
-            self._load_resume_state()
+            self._load_resume_state(resume_context)
         else:
+            self.invocation_start_expansions = 0
             root_node = make_node(simulation=template, node_id=0)
             self.route_store[root_node.node_id] = _route_edge(root_node)
             root_bucket = self._bucket(root_node.combat_time)
@@ -840,9 +885,10 @@ class BeamSearchRunner:
         self.phase_timing_metrics["result_creation_seconds"] = float(self.phase_timing_metrics["result_creation_seconds"]) + (time.perf_counter() - result_started)
         result["phase_timing_metrics"] = dict(self.phase_timing_metrics)
         self._atomic_json(self.output_root / "execution_result.json", result)
-        self._atomic_json(self.output_root / "leaderboard.json", _leaderboard_payload(result, self.stage_id))
-        self._atomic_json(self.output_root / "best_route.json", _best_route_payload(result, self.stage_id))
-        self._atomic_json(self.output_root / "final_summary.json", _summary_payload(result, self.stage_id))
+        incumbent = load_project_comparison_incumbent(self.plan) if self.stage.get("result_scope") == "completed_120s_project_comparison" else None
+        self._atomic_json(self.output_root / "leaderboard.json", _leaderboard_payload(result, self.stage_id, result_scope=self.stage.get("result_scope"), incumbent=incumbent))
+        self._atomic_json(self.output_root / "best_route.json", _best_route_payload(result, self.stage_id, result_scope=self.stage.get("result_scope"), incumbent=incumbent))
+        self._atomic_json(self.output_root / "final_summary.json", _summary_payload(result, self.stage_id, result_scope=self.stage.get("result_scope"), incumbent=incumbent))
         self._write_log(f"stage {self.stage_id} complete status={termination_status} expansions={self.expansions}")
         return result
 
@@ -977,6 +1023,18 @@ class BeamSearchRunner:
         }
         self._update_peak_metrics()
         self.checkpoint_count += 1
+        checkpoint_elapsed = (
+            time.perf_counter() - self.invocation_started_at
+            if self.invocation_started_at is not None
+            else 0.0
+        )
+        checkpoint_performance = performance_accounting(
+            cumulative_expansions=self.expansions,
+            invocation_start_expansions=self.invocation_start_expansions,
+            invocation_elapsed_seconds=checkpoint_elapsed,
+            prior_cumulative_elapsed_seconds=self.prior_cumulative_elapsed_seconds,
+            cumulative_accounting_complete=self.cumulative_accounting_complete,
+        )
         manifest = {
             "schema_version": "beam_search_resume_manifest_v111_corrected",
             "candidate": self.plan["candidate"],
@@ -985,8 +1043,15 @@ class BeamSearchRunner:
             "plan_sha256": sha256_file(self.plan_path),
             "stage": self.stage,
             "stage_sha256": _json_sha256(self.stage),
+            "accumulator_spill_format": resolve_accumulator_spill_format(self.stage),
+            "accumulator_spill_chunk_schema": (
+                STREAMING_CHUNK_SCHEMA
+                if resolve_accumulator_spill_format(self.stage) == STREAMING_ACCUMULATOR_SPILL_FORMAT
+                else DestinationBucketAccumulator.chunk_schema_version
+            ),
             "actual_data_hashes": resolve_plan_data_hashes(self.plan),
             "expansions": self.expansions,
+            **checkpoint_performance,
             "next_node_id": self.next_node_id,
             "next_completion_order": self.next_completion_order,
             "deduplicated_states": self.deduplicated_states,
@@ -1025,20 +1090,40 @@ class BeamSearchRunner:
         self._atomic_json(self.output_root / "search_state.json", manifest)
         self.phase_timing_metrics["checkpoint_manifest_generation_seconds"] = float(self.phase_timing_metrics["checkpoint_manifest_generation_seconds"]) + (time.perf_counter() - checkpoint_started)
 
-    def _load_resume_state(self) -> None:
+    def _resolve_resume_context(self) -> dict[str, Any]:
         state_path = self.output_root / "search_state.json"
         if not state_path.exists():
             raise ValueError(f"Cannot resume without search_state.json: {state_path}")
         state = json.loads(state_path.read_text(encoding="utf-8"))
         if state.get("schema_version") not in {"beam_search_resume_manifest_v111_corrected", "beam_search_state_v111_corrected"}:
             raise ValueError(f"Unsupported resume state schema: {state.get('schema_version')}")
-        if state["plan_sha256"] != sha256_file(self.plan_path):
+        if state["plan_sha256"] == sha256_file(self.plan_path):
+            if not _resume_stage_compatible(state["stage"], self.stage):
+                raise ValueError("Beam Search resume stage hash mismatch")
+            if state["actual_data_hashes"] != resolve_plan_data_hashes(self.plan):
+                raise ValueError("Beam Search resume data-contract hash mismatch")
+            return {"resume_mode": "exact_same_plan", "state": state}
+        if not _resume_extension_plan_compatible(state, self.plan):
             raise ValueError("Beam Search resume plan hash mismatch")
-        if not _resume_stage_compatible(state["stage"], self.stage):
-            raise ValueError("Beam Search resume stage hash mismatch")
-        if state["actual_data_hashes"] != resolve_plan_data_hashes(self.plan):
-            raise ValueError("Beam Search resume data-contract hash mismatch")
+        project_root = _project_root_for_plan(self.plan_path)
+        return validate_hash_pinned_extension(
+            project_root=project_root,
+            plan_path=self.plan_path,
+            plan=self.plan,
+            stage=self.stage,
+            output_root=self.output_root,
+            write_receipt=True,
+        )
+
+    def _load_resume_state(self, resume_context: dict[str, Any] | None = None) -> None:
+        context = resume_context or self._resolve_resume_context()
+        state = context["state"]
         self.expansions = int(state["expansions"])
+        self.invocation_start_expansions = self.expansions
+        (
+            self.prior_cumulative_elapsed_seconds,
+            self.cumulative_accounting_complete,
+        ) = migrate_prior_accounting(state)
         self.next_node_id = int(state["next_node_id"])
         self.next_completion_order = int(state.get("next_completion_order", _next_completion_order_from_records(state.get("completed_routes", []))))
         self.deduplicated_states = int(state["deduplicated_states"])
@@ -1108,6 +1193,10 @@ class BeamSearchRunner:
     def _result_payload(self, *, status: str, elapsed: float) -> dict[str, Any]:
         self._compact_route_store()
         self._save_manifest(status=status, force=True)
+        # Final reporting must exercise incremental restore/finalization so the
+        # packaged low-memory metrics prove the selected spill path was read.
+        for bucket_index, accumulator in sorted(self.pending_accumulators.items()):
+            self._finalize_accumulator(bucket_index, accumulator)
         best_live = self._best_live_node()
         completed_payloads = list(self.completed)
         route_replay_summaries = []
@@ -1116,7 +1205,14 @@ class BeamSearchRunner:
                 self._replay_completed_route(self.best_completed_search_route)
             )
         partial_payload = None if best_live is None else best_live.to_json() | {"selected_sequence": self.reconstruct_route(best_live.node_id)[0], "resolved_sequence": self.reconstruct_route(best_live.node_id)[1]}
-        return {
+        performance = performance_accounting(
+            cumulative_expansions=self.expansions,
+            invocation_start_expansions=self.invocation_start_expansions,
+            invocation_elapsed_seconds=elapsed,
+            prior_cumulative_elapsed_seconds=self.prior_cumulative_elapsed_seconds,
+            cumulative_accounting_complete=self.cumulative_accounting_complete,
+        )
+        payload = {
             "schema_version": "beam_search_state_v111_corrected",
             "status": status,
             "termination_status": status,
@@ -1127,6 +1223,12 @@ class BeamSearchRunner:
             "plan_sha256": sha256_file(self.plan_path),
             "stage": self.stage,
             "stage_sha256": _json_sha256(self.stage),
+            "accumulator_spill_format": resolve_accumulator_spill_format(self.stage),
+            "accumulator_spill_chunk_schema": (
+                STREAMING_CHUNK_SCHEMA
+                if resolve_accumulator_spill_format(self.stage) == STREAMING_ACCUMULATOR_SPILL_FORMAT
+                else DestinationBucketAccumulator.chunk_schema_version
+            ),
             "actual_data_hashes": resolve_plan_data_hashes(self.plan),
             "expansions": self.expansions,
             "next_node_id": self.next_node_id,
@@ -1146,8 +1248,7 @@ class BeamSearchRunner:
             "peak_process_rss_bytes": self.peak_process_rss_bytes,
             "estimated_peak_memory_bytes": self._tracked_memory_estimate()["conservative_total_bytes"],
             "tracked_memory_estimate": self._tracked_memory_estimate(),
-            "elapsed_seconds": elapsed,
-            "expansions_per_second": self.expansions / elapsed if elapsed > 0 else None,
+            **performance,
             "checkpoint_count": self.checkpoint_count,
             "frontier_file_write_count": self.frontier_file_write_count,
             "accumulator_finalization_count": self.accumulator_finalization_count,
@@ -1170,7 +1271,7 @@ class BeamSearchRunner:
             "completed_routes": completed_payloads,
             "best_completed_search_route": self.best_completed_search_route,
             "route_replay_summaries": route_replay_summaries,
-            "verified_bc_incumbent": verified_bc_incumbent_manifest(),
+            "historical_verified_bc_reference": verified_bc_incumbent_manifest(),
             "best_partial_frontier_node": partial_payload,
             "pending_buckets": [
                 {
@@ -1187,6 +1288,10 @@ class BeamSearchRunner:
             "route_store_entry_count": len(self.route_store),
             "canonical_path_policy": "project_relative_posix",
         }
+        if self.stage.get("result_scope") == "completed_120s_project_comparison":
+            payload["project_comparison_incumbent"] = load_project_comparison_incumbent(self.plan)
+            payload["partial_nodes_excluded_from_final_winner"] = True
+        return payload
 
     def _best_live_node(self) -> BeamNode | None:
         live = [node for nodes in self.pending.values() for node in nodes]
@@ -1545,14 +1650,29 @@ def _accumulator_in_memory_limit(stage: dict[str, Any]) -> int:
 
 def _spill_stage_contract_sha256(stage: dict[str, Any]) -> str:
     stable = dict(stage)
-    for key in ("maximum_expansions", "wall_clock_limit_seconds", "wall_clock_budget_seconds", "memory_budget_bytes"):
+    for key in ("maximum_expansions", "wall_clock_limit_seconds", "wall_clock_budget_seconds", "memory_budget_bytes", "result_scope"):
         stable.pop(key, None)
     return _json_sha256(stable)
 
 
-def _canonical_output_root(plan: dict[str, Any]) -> Path:
+def _canonical_output_root(plan: dict[str, Any], plan_path: Path | None = None) -> Path:
     relative = plan.get("output_contract", {}).get("canonical_output_root")
-    return ROOT / str(relative) if relative else CANONICAL_RESULTS_ROOT
+    project_root = _project_root_for_plan(plan_path) if plan_path is not None else ROOT
+    return project_root / str(relative) if relative else CANONICAL_RESULTS_ROOT
+
+
+def is_low_memory_execution_plan(plan: dict[str, Any]) -> bool:
+    execution = plan.get("execution_contract")
+    if isinstance(execution, dict) and "low_memory_32gb" in execution:
+        return execution.get("low_memory_32gb") is True
+    return plan.get("schema_version") in {LOWMEM_32GB_SCHEMA, V114_LOWMEM_32GB_SCHEMA}
+
+
+def _project_root_for_plan(plan_path: Path) -> Path:
+    resolved = plan_path.resolve()
+    if resolved.parent.name == "data":
+        return resolved.parent.parent
+    return ROOT
 
 
 def _process_peak_rss_bytes() -> int:
@@ -1705,7 +1825,10 @@ def _route_edge(node: BeamNode) -> dict[str, Any]:
     }
 
 
-def _leaderboard_payload(result: dict[str, Any], stage_id: str) -> dict[str, Any]:
+def _leaderboard_payload(
+    result: dict[str, Any], stage_id: str, *, result_scope: str | None = None,
+    incumbent: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     payload = {
         "schema_version": "beam_search_leaderboard_v111",
         "objective": "deterministic_120s_total_damage_only",
@@ -1714,7 +1837,8 @@ def _leaderboard_payload(result: dict[str, Any], stage_id: str) -> dict[str, Any
         "completed_search_routes": result.get("completed_routes", []),
         "partial_frontier_diagnostics": result.get("best_partial_frontier_node"),
     }
-    if _is_full_stage(stage_id):
+    full_scope = result_scope == "completed_120s_project_comparison"
+    if full_scope:
         candidates = [
             {
                 "winner_kind": "beam_search_route",
@@ -1725,17 +1849,22 @@ def _leaderboard_payload(result: dict[str, Any], stage_id: str) -> dict[str, Any
             }
             for index, route in enumerate(result.get("completed_routes", []))
         ]
-        payload["verified_bc_incumbent"] = select_damage_only_winner([])
-        payload["winner"] = select_damage_only_winner(candidates)
+        if incumbent is None:
+            raise ValueError("Completed-120s project reporting requires a validated incumbent")
+        payload["project_comparison_incumbent"] = incumbent
+        payload["historical_verified_bc_reference"] = historical_verified_bc_reference()
+        payload["calibration_only_no_project_winner"] = False
+        payload["partial_nodes_excluded_from_final_winner"] = True
+        payload["winner"] = select_damage_only_winner(candidates, incumbent=incumbent)
     else:
         payload["calibration_only_no_project_winner"] = True
         payload["winner"] = None
     return payload
 
 
-def _best_route_payload(result: dict[str, Any], stage_id: str) -> dict[str, Any]:
-    leaderboard = _leaderboard_payload(result, stage_id)
-    if _is_full_stage(stage_id):
+def _best_route_payload(result: dict[str, Any], stage_id: str, *, result_scope: str | None = None, incumbent: dict[str, Any] | None = None) -> dict[str, Any]:
+    leaderboard = _leaderboard_payload(result, stage_id, result_scope=result_scope, incumbent=incumbent)
+    if result_scope == "completed_120s_project_comparison":
         return {
             "schema_version": "beam_search_best_route_v111",
             "winner": leaderboard["winner"],
@@ -1749,15 +1878,17 @@ def _best_route_payload(result: dict[str, Any], stage_id: str) -> dict[str, Any]
     }
 
 
-def _summary_payload(result: dict[str, Any], stage_id: str) -> dict[str, Any]:
+def _summary_payload(result: dict[str, Any], stage_id: str, *, result_scope: str | None = None, incumbent: dict[str, Any] | None = None) -> dict[str, Any]:
     return {
         "schema_version": "beam_search_final_summary_v111",
         "stage_id": result["stage_id"],
         "status": result["status"],
         "global_optimum_proven": False,
         "route_similarity_usage": "diagnostic_only_not_used_for_winner_selection",
-        "calibration_only_no_project_winner": not _is_full_stage(stage_id),
-        "winner": _leaderboard_payload(result, stage_id)["winner"],
+        "result_scope": result_scope,
+        "calibration_only_no_project_winner": result_scope != "completed_120s_project_comparison",
+        "partial_nodes_excluded_from_final_winner": result_scope == "completed_120s_project_comparison",
+        "winner": _leaderboard_payload(result, stage_id, result_scope=result_scope, incumbent=incumbent)["winner"],
         "expansions": result["expansions"],
         "metrics": {
             "peak_frontier_size": result["peak_frontier_size"],
@@ -1766,12 +1897,31 @@ def _summary_payload(result: dict[str, Any], stage_id: str) -> dict[str, Any]:
             "estimated_peak_memory_bytes": result["estimated_peak_memory_bytes"],
             "peak_process_rss_bytes": result.get("peak_process_rss_bytes"),
             "expansions_per_second": result["expansions_per_second"],
+            "invocation_expansions_per_second": result["invocation_expansions_per_second"],
+            "cumulative_expansions_per_second": result["cumulative_expansions_per_second"],
         },
     }
 
 
 def _is_full_stage(stage_id: str) -> bool:
-    return stage_id in {"full_120s", "full_120s_lowmem_32gb"}
+    """Legacy classification helper; new plans must use the explicit result_scope."""
+    return stage_id in {"full_120s", "full_120s_lowmem_32gb", "full_120s_lowmem_32gb_v114"}
+
+
+def _resume_extension_plan_compatible(state: dict[str, Any], plan: dict[str, Any]) -> bool:
+    contract = plan.get("resume_extension_contract") or {}
+    if contract.get("enabled") is not True:
+        return False
+    if state.get("plan_sha256") != contract.get("source_plan_sha256"):
+        return False
+    if state.get("stage", {}).get("stage_id") != contract.get("source_stage_id"):
+        return False
+    if int(state.get("expansions", -1)) != int(contract.get("source_checkpoint_expansions", -2)):
+        return False
+    current = plan.get("stages", [None])[0]
+    if not isinstance(current, dict):
+        return False
+    return extension_stage_compatible(state.get("stage", {}), current, contract)
 
 
 def _json_sha256(payload: dict[str, Any]) -> str:
@@ -1797,7 +1947,10 @@ def _next_completion_order_from_records(records: list[dict[str, Any]]) -> int:
 
 
 def _project_relative(path: Path) -> str:
-    return path.resolve().relative_to(ROOT.resolve()).as_posix()
+    try:
+        return path.resolve().relative_to(ROOT.resolve()).as_posix()
+    except ValueError:
+        return path.resolve().as_posix()
 
 
 def _path_text(path: Path) -> str:

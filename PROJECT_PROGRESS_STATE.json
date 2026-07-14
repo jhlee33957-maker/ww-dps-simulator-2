@@ -13,17 +13,17 @@
     "language_preference": "설명은 한국어, Codex 프롬프트와 코드 식별자는 영어 가능"
   },
   "status": {
-    "last_updated": "2026-07-14T00:00:00+09:00",
-    "latest_verified_archive": "ww-dps-simulator-2-112.zip",
-    "latest_verified_archive_sha256": "b602af3cd1b87cac1529baa23042e023ce2c90e9d1560426567943da95515fc5",
-    "latest_verified_baseline_label": "112",
-    "latest_externally_verified_baseline": "112",
+    "last_updated": "2026-07-15T00:00:00+09:00",
+    "latest_verified_archive": "ww-dps-simulator-2-115(1).zip",
+    "latest_verified_archive_sha256": "46e4aa88bb7d6db6f4ea4595c69bce9b0dc12e2207c37831948c4a7cb73d1284",
+    "latest_verified_baseline_label": "115",
+    "latest_externally_verified_baseline": "115",
     "current_task_status": "candidate_pending_external_review",
-    "current_task": "32GB low-memory 120-second Beam Search plan and slim runtime workspace",
-    "current_task_expected_next_archive": "113",
+    "current_task": "completed v115 Beam result ingestion, accounting correction, and safe cleanup tooling",
+    "current_task_expected_next_archive": "116",
     "do_not_treat_current_task_as_complete_until_reviewed": true,
-    "candidate_expected_next_archive": "ww-dps-simulator-2-113.zip",
-    "current_candidate": "113"
+    "candidate_expected_next_archive": "ww-dps-simulator-2-116.zip",
+    "current_candidate": "116"
   },
   "source_of_truth": {
     "raw_action_workbook": "鸣潮动作数据汇总(5).xlsx",
@@ -579,7 +579,7 @@
       "resolved_sequence_sha256": "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229"
     }
   ],
-  "current_in_progress_task": {
+  "candidate_113_historical_task": {
     "task": "32GB low-memory 120-second Beam Search plan and slim runtime workspace",
     "status": "candidate_pending_external_review",
     "candidate": "113",
@@ -755,6 +755,261 @@
     },
     "reference_damage_comparison_status": "horizon_mismatch_not_comparable"
   },
+  "current_in_progress_task": {
+    "task": "completed v115 Beam result ingestion, accounting correction, and safe cleanup tooling",
+    "status": "candidate_pending_external_review",
+    "candidate": "116",
+    "current_candidate": "116",
+    "external_review_required": true,
+    "external_review_status": "pending",
+    "external_verification_claimed": false,
+    "latest_externally_verified_baseline": "115",
+    "baseline_archive": "ww-dps-simulator-2-115(1).zip",
+    "baseline_archive_sha256": "46e4aa88bb7d6db6f4ea4595c69bce9b0dc12e2207c37831948c4a7cb73d1284",
+    "candidate_expected_next_archive": "ww-dps-simulator-2-116.zip",
+    "transition_contract_version": "v114",
+    "diagnostic_regression_correction": "legacy placeholder warning leakage removed; unversioned transition foundation smoke test aligned with v114",
+    "generic_swap": {
+      "action_time": 0.0,
+      "combat_time_cost": 0.0,
+      "source_status": "user_approved_benchmark_assumption_after_workbook_and_web_review",
+      "reentry_cooldown_seconds": 1.0,
+      "reentry_cooldown_clock": "combat_time",
+      "cooldown_container": "CombatState.cooldowns",
+      "canonical_key": "swap_reentry:<character_id>"
+    },
+    "aemeath_outro": {
+      "event_id": "aemeath_outro_unseen_guard",
+      "buff_id": "aemeath_outro_unseen_guard_all_damage_amp",
+      "implementation_status": "implemented_v114",
+      "base_amp": 0.1,
+      "upgraded_total_amp": 0.2,
+      "duration_combat_seconds": 20.0,
+      "per_recipient_upgrade": true,
+      "upgrade_refreshes_duration": false,
+      "triggering_action_receives_upgrade": false
+    },
+    "runtime_contract_hashes": {
+      "transition_config_sha256": "210538d4bf99789d0af08ecff5fb76dc3f472f5b170a144d9f1b3b1f46116b9c",
+      "buffs_sha256": "fe8b8fc63e8b9a3405a61ebe08a2cafa13f94dd4af91d1670b968df727cb554d",
+      "party_config_hash": "baff722d9ce79cf7f57891c439b7b3fd746ad76e779e4d582eaa51802eba2684",
+      "action_data_hash": "d6377d54a1abb985dc5f58866321c61c7b904a6b73ddc1538be7e38d36a99ff1",
+      "direct_action_manifest_sha256": "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d",
+      "manual_route_raw_sha256": "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a",
+      "canonical_bc_npz_sha256": "b020a1b9309b46bd87eb3fff4837aead53035c4c84620962f47feb9fc11846ff",
+      "bc_model_sha256": "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e",
+      "prior_ppo_model_sha256": "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513"
+    },
+    "observation_version": "slot_generic_mechanics_v5",
+    "observation_shape": 314,
+    "policy_action_count": 25,
+    "max_policy_action_slots": 32,
+    "manual_v114": {
+      "result_path": "results/manual_120s_baseline_v114_summary.json",
+      "total_damage": 5268418.084869607,
+      "dps": 43903.484040580064,
+      "completed_120s": true,
+      "route_valid": true,
+      "invalid_action_count": 0,
+      "aemeath_outro_cast_count": 3,
+      "aemeath_outro_upgrade_annotation_count": 3,
+      "base_cast_and_upgrade_rows_disjoint": true
+    },
+    "model_reevaluation_v114": {
+      "leaderboard_path": "results/transition_contract_v114_model_reevaluation/leaderboard.json",
+      "evaluation_count": 32,
+      "winner_model": "models/guarded_ppo_v109/bc_conservative_seed_11/step_000090000.zip",
+      "winner_result_path": "results/transition_contract_v114_model_reevaluation/evaluations/guarded_ppo_v109__bc_conservative_seed_11__step_000090000.zip.json",
+      "winner_total_damage": 5276844.358692044,
+      "winner_dps": 43973.70298910037,
+      "winner_aemeath_outro_cast_count": 3,
+      "winner_aemeath_outro_upgrade_annotation_count": 3,
+      "manual_model_comparison_path": "results/manual_model_comparison_v114.json",
+      "manual_model_comparison_sha256": "81b34b01da6a93bb4d6c05e5d0c4e556073fb2268613afc96880010d339d62ba",
+      "winner_result_sha256": "8c0c47c3d266ba13d3e4658446a8b86b6c084678610baff61f94753190359f59"
+    },
+    "current_best_model": "models/guarded_ppo_v109/bc_conservative_seed_11/step_000090000.zip",
+    "current_best_model_semantics": "best_trained_model_only",
+    "current_best_result": 5651892.274552992,
+    "current_best_dps": 47099.1022879416,
+    "overall_project_winner": {
+      "winner_kind": "beam_search_route",
+      "method": "completed Beam route",
+      "route_id": "67a4250b3b8d0de9",
+      "total_damage": 5651892.274552992,
+      "dps": 47099.1022879416,
+      "combat_time": 120.0,
+      "manifest_path": "results/beam_search_v114_completed_v116/result_manifest.json"
+    },
+    "best_trained_model": {
+      "model_path": "models/guarded_ppo_v109/bc_conservative_seed_11/step_000090000.zip",
+      "total_damage": 5276844.358692044,
+      "dps": 43973.70298910037
+    },
+    "plan_path": "data/beam_search_plan_v114_32gb.json",
+    "plan_sha256": "e70826d0040444f834398d55c922aacb4ee5b484bc6ef2e75ca5a0ad603bc18c",
+    "active_stage_id": "full_120s_lowmem_32gb_v114",
+    "accumulator_spill_format": "streaming_jsonl_gzip_v113",
+    "accumulator_spill_chunk_schema": "beam_search_accumulator_chunk_jsonl_gzip_v113",
+    "output_root": "results/beam_search_v114_lowmem_32gb",
+    "forbidden_legacy_output_roots": [
+      "results/beam_search_v111_full_120s",
+      "results/beam_search_v113_lowmem_32gb"
+    ],
+    "interrupted_v113_beam_output": {
+      "status": "preserved_incompatible_interrupted_output",
+      "marker_path": "results/beam_search_v113_lowmem_32gb/CONTRACT_INCOMPATIBLE_WITH_V114.json",
+      "resume_allowed": false
+    },
+    "bounded_10000_probe": {
+      "executed": true,
+      "summary_path": "results/beam_search_v114_lowmem_10000_probe_summary.json",
+      "search_runtime_seconds": 30.282178199966438,
+      "total_process_runtime_seconds": 33.520874699926935,
+      "peak_process_rss_bytes": 395329536,
+      "spill_chunk_count": 6,
+      "spill_bytes": 2479653,
+      "maximum_spill_chunk_uncompressed_bytes": 55600032,
+      "maximum_spill_serialization_buffer_bytes": 24532,
+      "maximum_spill_restore_buffer_bytes": 24532,
+      "maximum_finalization_unique_set_bytes": 52866825,
+      "maximum_final_sort_list_bytes": 22208,
+      "deterministic_result_sha256": "aa758e746344fbe685467540f16bdcc3c6899fdd6cb03e81ac881ce0440d92ef",
+      "resolved_accumulator_spill_format": "streaming_jsonl_gzip_v113",
+      "accumulator_spill_chunk_schema": "beam_search_accumulator_chunk_jsonl_gzip_v113",
+      "normal_process_exit": true,
+      "cleanup_completed": true,
+      "canonical_output_mutated": false,
+      "two_isolated_process_repeatability_passed": true,
+      "repeat_search_runtime_seconds": [30.5355, 30.282178199966438],
+      "repeat_total_process_runtime_seconds": [33.7867, 33.520874699926935],
+      "repeat_peak_process_rss_bytes": [395542528, 395329536],
+      "repeat_spill_sha256s_identical": true
+    },
+    "fresh_slim_workspace_probe": {
+      "platform": "Windows fresh extraction using project-relative POSIX-style paths; no native POSIX runtime is installed on this host",
+      "repeat_search_runtime_seconds": [31.32864090008661, 31.34603750007227],
+      "repeat_total_process_runtime_seconds": [34.78666790004354, 34.76563769998029],
+      "repeat_peak_process_rss_bytes": [395472896, 395894784],
+      "deterministic_result_sha256": "aa758e746344fbe685467540f16bdcc3c6899fdd6cb03e81ac881ce0440d92ef",
+      "spill_sha256s_identical": true,
+      "normal_process_exit": true,
+      "cleanup_completed": true,
+      "canonical_output_mutated": false
+    },
+    "canonical_bc_npz_status": "immutable historical training data; stale for future retraining under v114",
+    "v114_3m_search_executed": true,
+    "v114_3m_checkpoint_status": "superseded_by_completed_6p5m_resume",
+    "v114_completed_route_count": 128,
+    "v114_best_partial_combat_time": 67.48333333333329,
+    "v114_best_partial_damage": 2850679.8061139295,
+    "v114_checkpoint_resumable": true,
+    "v114_5m_maximum_empirically_insufficient": "likely",
+    "new_reviewed_maximum_expansions": 6500000,
+    "long_v115_resume_executed": true,
+    "v114_5m_search_executed": false,
+    "mcts_executed": false,
+    "bc_training_executed": false,
+    "ppo_training_executed": false,
+    "global_optimum_claimed": false,
+    "excluded_scope": [
+      "Mornye counter automation",
+      "dodge counters",
+      "aerial attacks",
+      "enemy death and waves",
+      "MCTS",
+      "training"
+    ],
+    "reactor_husk_unchanged": {
+      "hit_frame": 49,
+      "uncancelled_end_frame": 66,
+      "action_time_seconds": 1.1
+    },
+    "reports": [
+      "reports/general_swap_aemeath_outro_v114.md",
+      "reports/beam_search_v114_32gb_lowmem.md",
+      "reports/manual_120s_baseline_v114.md",
+      "reports/transition_contract_v114_model_reevaluation.md"
+    ],
+    "slim_workspace_validation": {
+      "status": "passed",
+      "temporary_path": "external temporary validation workspace (removed after validation)",
+      "included_file_count": 682,
+      "included_bytes": 72024506,
+      "excluded_file_count": 25753,
+      "excluded_bytes": 1336421735,
+      "plan_dry_run_passed": true,
+      "bounded_10000_probe_passed": true,
+      "two_run_repeatability_passed": true,
+      "actual_v114_streaming_spill_contract_passed": true,
+      "current_best_comparison_readable": true,
+      "old_frontier_dependency": false,
+      "machine_specific_absolute_path_in_manifest": false,
+      "source_tree_mutated_by_builder": false
+    },
+    "archive_validation": "candidate_116_pending",
+    "candidate_115_beam_correction": {
+      "status": "candidate_pending_external_review",
+      "plan_path": "data/beam_search_plan_v115_32gb_resume_v114.json",
+      "plan_sha256": "2a0c60b73eb1760174bb867d886a45fd36dac42b019dac9d93dd360b1a44cd90",
+      "result_scope": "completed_120s_project_comparison",
+      "source_plan_sha256": "e70826d0040444f834398d55c922aacb4ee5b484bc6ef2e75ca5a0ad603bc18c",
+      "source_search_state_sha256": "f1ac52b960465a7ea71ea8495b1c1f2d89a79766d5cdf2f6ad3e4872d2e25630",
+      "resume_receipt_path": "results/beam_search_v114_3m_resume_extension_v115_receipt.json",
+      "resume_receipt_sha256": "6557151a1b4f8fc11e061e6341a8292b26cd0df255e4b81676a1b1b12a6870be",
+      "reviewed_inventory_path": "results/beam_search_v114_3m_reviewed_file_inventory_v115.json",
+      "reviewed_inventory_file_sha256": "9e4fc52836ba4986ba1d78c544120657ae1fb4593520fceabc71d2b527bf6a5a",
+      "reviewed_inventory_entry_digest_sha256": "0bb00535354717d05ae1761fe6522bcc5129cc598cc8aaf072843626a7d43f15",
+      "actual_runner_extension_fixture_passed": true,
+      "preflight_before_output_mutation": true,
+      "low_memory_capability_gate_enforced": true,
+      "external_review_blockers_corrected_pending_re_review": true,
+      "checkpoint_review_path": "results/beam_search_v114_3m_checkpoint_review_v115.json",
+      "checkpoint_review_sha256": "6388ab2829489465b14d77e4b9f23d1e902726a894e7bca36fd7d57fbd71ac26",
+      "heavy_output_excluded_from_source_archive": true,
+      "user_must_preserve_local_result_directory": true,
+      "mcts_executed": false,
+      "bc_ppo_training_executed": false,
+      "global_optimum_claimed": false
+    },
+    "candidate_116_completed_beam": {
+      "status": "candidate_pending_external_review",
+      "source_result_status": "completed",
+      "termination_status": "completed_search",
+      "source_result_root": "results/beam_search_v114_lowmem_32gb",
+      "compact_result_root": "results/beam_search_v114_completed_v116",
+      "result_manifest_path": "results/beam_search_v114_completed_v116/result_manifest.json",
+      "result_manifest_sha256": "247f2a912d05bd4d89a3a7bbcb16c0877515427a8b46f7dc1795501b255b03ef",
+      "full_result_inventory_path": "results/beam_search_v114_completed_inventory_v116.json",
+      "full_result_inventory_file_sha256": "9a469fc970b39be99f600861eb846679ce37454d02c1abaa823ce038f0f543d6",
+      "full_result_inventory_entry_digest_sha256": "19e808db96952ea9405ed4d9699075073fbf61dcbc68a8b12e83acfa3b2ed854",
+      "full_result_file_count": 1051,
+      "full_result_total_bytes": 2538957524,
+      "winner_route_id": "67a4250b3b8d0de9",
+      "winning_route_id": "67a4250b3b8d0de9",
+      "winner_total_damage": 5651892.274552992,
+      "winning_damage": 5651892.274552992,
+      "winner_dps": 47099.1022879416,
+      "winning_dps": 47099.1022879416,
+      "completed_route_count": 128,
+      "completed_120s_route_count": 128,
+      "expansions": 4908270,
+      "performance_accounting_corrected": true,
+      "legacy_elapsed_alias_semantics": "invocation_elapsed_seconds",
+      "cleanup_mode": "dry_run_only_until_candidate_116_archive_is_exactly_validated",
+      "cleanup_dry_run": {
+        "executed": true,
+        "eligible_file_count": 1043,
+        "reclaimable_bytes": 2533162874,
+        "apply_executed": false
+      },
+      "heavy_payload_preserved": true,
+      "mcts_executed": false,
+      "bc_training_executed": false,
+      "ppo_training_executed": false,
+      "global_optimum_claimed": false
+    }
+  },
   "manual_cycle_reference": {
     "status": "externally_verified_complete",
     "source_baseline_label": "104",
@@ -851,19 +1106,16 @@
   ],
   "next_planned_tasks": [
     {
-      "task": "external review of candidate 113"
+      "task": "external review of candidate 116 and its compact completed-Beam artifacts"
     },
     {
-      "task": "build the slim runtime workspace"
+      "task": "preserve the exact completed heavy Beam payload until candidate 116 is externally verified"
     },
     {
-      "task": "run the reviewed 32GB low-memory Beam plan to 3M expansions"
+      "task": "after exact candidate 116 archive validation, optionally apply the guarded cleanup tool"
     },
     {
-      "task": "review memory, runtime, and best completed 120-second result"
-    },
-    {
-      "task": "resume to 5M only if useful, then run MCTS as an independent complementary search"
+      "task": "decide independently whether MCTS is warranted; no MCTS or training has been run"
     }
   ],
   "validation_invariants": [
@@ -1433,7 +1685,7 @@
       ]
     }
   ],
-  "next_planned_task": "after candidate 113 external verification, build the slim workspace and run the reviewed 32GB low-memory Beam plan to the 3M first-run cap",
+  "next_planned_task": "externally review candidate 116, then optionally apply guarded cleanup before any independent MCTS decision",
   "candidate_history": [
     {
       "candidate": "106",
@@ -1683,6 +1935,72 @@
       "slim_workspace_manifest_path": "LOWMEM_WORKSPACE_MANIFEST.json",
       "current_best_model": "models/maskable_ppo_bc_v105.zip",
       "current_best_result": 5165134.682363356,
+      "global_optimum_claimed": false
+    },
+    {
+      "candidate": "115",
+      "task": "Beam reporting/incumbent/resume-budget correction",
+      "status": "externally_verified_complete",
+      "latest_externally_verified_baseline": "115",
+      "external_review_status": "passed",
+      "external_verification_claimed": true,
+      "external_verification_label": "115",
+      "baseline_archive": "ww-dps-simulator-2-115(1).zip",
+      "archive_sha256": "46e4aa88bb7d6db6f4ea4595c69bce9b0dc12e2207c37831948c4a7cb73d1284",
+      "v114_3m_search_executed": true,
+      "v114_3m_checkpoint_status": "superseded_by_completed_6p5m_resume",
+      "completed_route_count": 128,
+      "best_partial_combat_time": 67.48333333333329,
+      "best_partial_damage": 2850679.8061139295,
+      "checkpoint_resumable": true,
+      "old_5m_maximum_empirically_insufficient": "likely",
+      "new_reviewed_maximum_expansions": 6500000,
+      "long_resume_executed": true,
+      "current_project_winner_model": "models/guarded_ppo_v109/bc_conservative_seed_11/step_000090000.zip",
+      "current_project_winner_damage": 5276844.358692044,
+      "plan_path": "data/beam_search_plan_v115_32gb_resume_v114.json",
+      "plan_sha256": "2a0c60b73eb1760174bb867d886a45fd36dac42b019dac9d93dd360b1a44cd90",
+      "resume_receipt_path": "results/beam_search_v114_3m_resume_extension_v115_receipt.json",
+      "resume_receipt_sha256": "6557151a1b4f8fc11e061e6341a8292b26cd0df255e4b81676a1b1b12a6870be",
+      "reviewed_inventory_path": "results/beam_search_v114_3m_reviewed_file_inventory_v115.json",
+      "reviewed_inventory_file_sha256": "9e4fc52836ba4986ba1d78c544120657ae1fb4593520fceabc71d2b527bf6a5a",
+      "reviewed_inventory_entry_digest_sha256": "0bb00535354717d05ae1761fe6522bcc5129cc598cc8aaf072843626a7d43f15",
+      "actual_runner_extension_fixture_passed": true,
+      "preflight_no_mutation_guards_passed": true,
+      "low_memory_capability_gate_enforced": true,
+      "checkpoint_review_path": "results/beam_search_v114_3m_checkpoint_review_v115.json",
+      "checkpoint_review_sha256": "6388ab2829489465b14d77e4b9f23d1e902726a894e7bca36fd7d57fbd71ac26",
+      "source_plan_sha256": "e70826d0040444f834398d55c922aacb4ee5b484bc6ef2e75ca5a0ad603bc18c",
+      "source_search_state_sha256": "f1ac52b960465a7ea71ea8495b1c1f2d89a79766d5cdf2f6ad3e4872d2e25630",
+      "heavy_output_excluded_from_source_archive": true,
+      "mcts_executed": false,
+      "bc_training_executed": false,
+      "ppo_training_executed": false,
+      "global_optimum_claimed": false
+    },
+    {
+      "candidate": "116",
+      "task": "completed Beam result ingestion, performance accounting correction, current winner alignment, and guarded cleanup tooling",
+      "status": "candidate_pending_external_review",
+      "latest_externally_verified_baseline": "115",
+      "external_review_status": "pending",
+      "external_verification_claimed": false,
+      "baseline_archive": "ww-dps-simulator-2-115(1).zip",
+      "baseline_archive_sha256": "46e4aa88bb7d6db6f4ea4595c69bce9b0dc12e2207c37831948c4a7cb73d1284",
+      "source_result_status": "completed",
+      "completed_route_count": 128,
+      "expansions": 4908270,
+      "winner_route_id": "67a4250b3b8d0de9",
+      "winner_total_damage": 5651892.274552992,
+      "winner_dps": 47099.1022879416,
+      "result_manifest_path": "results/beam_search_v114_completed_v116/result_manifest.json",
+      "result_manifest_sha256": "247f2a912d05bd4d89a3a7bbcb16c0877515427a8b46f7dc1795501b255b03ef",
+      "full_result_inventory_path": "results/beam_search_v114_completed_inventory_v116.json",
+      "full_result_inventory_entry_digest_sha256": "19e808db96952ea9405ed4d9699075073fbf61dcbc68a8b12e83acfa3b2ed854",
+      "heavy_payload_preserved": true,
+      "mcts_executed": false,
+      "bc_training_executed": false,
+      "ppo_training_executed": false,
       "global_optimum_claimed": false
     }
   ]

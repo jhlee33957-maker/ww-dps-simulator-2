@@ -1,0 +1,111 @@
+{
+  "schema_version": "beam_search_plan_v114_32gb",
+  "candidate": 114,
+  "inherits_contracts_from": {
+    "path": "data/beam_search_plan_v111.json",
+    "sha256": "b504def4e0c1da82ef2a6024d19ccac76fe175df51899e50d12f3bff99a17998"
+  },
+  "algorithm": "deterministic_diverse_time_bucket_beam_search",
+  "objective": "deterministic_120s_total_damage_only",
+  "party": "aemeath_mornye_lynae_enabled_test_party",
+  "initial_active_character": "aemeath",
+  "curriculum_reset_mode": "none",
+  "combat_duration": 120.0,
+  "route_similarity_objective": false,
+  "bc_ppo_policy_guidance": false,
+  "manual_route_guidance": false,
+  "global_optimum_proven": false,
+  "initial_execution_policy": {
+    "first_run_max_expansions": 3000000,
+    "plan_maximum_expansions": 5000000,
+    "extension_requires_external_review": true,
+    "extension_mode": "resume_same_stage_and_output_root"
+  },
+  "output_contract": {
+    "canonical_output_root": "results/beam_search_v114_lowmem_32gb",
+    "forbidden_resume_or_output_roots": [
+      "results/beam_search_v111_full_120s",
+      "results/beam_search_v113_lowmem_32gb"
+    ],
+    "clean_workspace_required_for_first_run": true
+  },
+  "workspace_contract": {
+    "manifest_path": "LOWMEM_WORKSPACE_MANIFEST.json",
+    "canonical_historical_audit_archive": "candidate 113",
+    "historical_archive_sha256": "b8f6baf0f3c93b06c81b97cb034aa9141e9a0cc320660535889546bbb8ec5160"
+  },
+  "memory_estimate_contract": {
+    "limit_check_interval_expansions": 256,
+    "hard_memory_budget_required": true,
+    "windows_page_file_assumed": false,
+    "destination_accumulator_unique_fingerprint_bound": "stage.destination_accumulator_unique_fingerprint_bound",
+    "destination_accumulator_in_memory_limit": "stage.in_memory_accumulator_candidate_limit",
+    "destination_accumulator_spill_policy": "atomic_compressed_json_gz_chunks_hash_validated_resume_exact",
+    "destination_accumulator_checkpoint_manifest": "compact_manifest_with_paths_sha256_counts_and_metrics_no_node_payloads",
+    "destination_bucket_insertion_order_independent": true,
+    "destination_bucket_partition_merge_independent": true,
+    "compact_cli_output_contract": "stdout_summary_only_no_frontier_nodes_route_store_accumulator_payloads_or_timelines"
+  },
+  "execution_boundary": {
+    "candidate_114_runs_3m_search": false,
+    "candidate_114_runs_5m_search": false,
+    "candidate_114_runs_mcts": false,
+    "candidate_114_runs_training": false,
+    "bounded_probe_max_expansions": 10000
+  },
+  "transition_contract": {
+    "version": "v114",
+    "generic_swap_action_time": 0.0,
+    "generic_swap_combat_time_cost": 0.0,
+    "generic_swap_source_status": "user_approved_benchmark_assumption_after_workbook_and_web_review",
+    "swap_reentry_cooldown_seconds": 1.0,
+    "swap_reentry_cooldown_clock": "combat_time",
+    "aemeath_outro_implementation_version": "implemented_v114"
+  },
+  "comparison_reference": {
+    "path": "results/manual_model_comparison_v114.json",
+    "sha256": "81b34b01da6a93bb4d6c05e5d0c4e556073fb2268613afc96880010d339d62ba",
+    "current_best_result_path": "results/transition_contract_v114_model_reevaluation/evaluations/guarded_ppo_v109__bc_conservative_seed_11__step_000090000.zip.json",
+    "current_best_result_sha256": "8c0c47c3d266ba13d3e4658446a8b86b6c084678610baff61f94753190359f59",
+    "current_best_model_path": "models/guarded_ppo_v109/bc_conservative_seed_11/step_000090000.zip",
+    "current_best_total_damage": 5276844.358692044,
+    "current_best_dps": 43973.70298910037
+  },
+  "data_contract_hashes": {
+    "action_data_hash": "d6377d54a1abb985dc5f58866321c61c7b904a6b73ddc1538be7e38d36a99ff1",
+    "party_config_hash": "baff722d9ce79cf7f57891c439b7b3fd746ad76e779e4d582eaa51802eba2684",
+    "transition_config_sha256": "210538d4bf99789d0af08ecff5fb76dc3f472f5b170a144d9f1b3b1f46116b9c",
+    "buffs_sha256": "fe8b8fc63e8b9a3405a61ebe08a2cafa13f94dd4af91d1670b968df727cb554d",
+    "direct_action_manifest_sha256": "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d",
+    "bc_npz_sha256": "b020a1b9309b46bd87eb3fff4837aead53035c4c84620962f47feb9fc11846ff",
+    "bc_model_sha256": "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e",
+    "prior_ppo_model_sha256": "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513",
+    "guarded_ppo_plan_sha256": "0306c734347e49460fd7273bce546eed80a2db657e460eb707f5cab961a9e0e6",
+    "manual_route_raw_sha256": "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a",
+    "manual_model_comparison_v114_sha256": "81b34b01da6a93bb4d6c05e5d0c4e556073fb2268613afc96880010d339d62ba",
+    "current_best_v114_result_sha256": "8c0c47c3d266ba13d3e4658446a8b86b6c084678610baff61f94753190359f59"
+  },
+  "stages": [
+    {
+      "stage_id": "full_120s_lowmem_32gb_v114",
+      "purpose": "reviewed candidate-114 32GB low-memory deterministic 120-second Beam Search",
+      "combat_duration": 120.0,
+      "time_bucket_width": 0.5,
+      "beam_width": 1792,
+      "global_damage_quota": 896,
+      "diversity_retention_quota": 896,
+      "max_states_per_diversity_key": 8,
+      "maximum_expansions": 5000000,
+      "checkpoint_interval_expansions": 100000,
+      "limit_check_interval_expansions": 256,
+      "wall_clock_budget_seconds": 36000,
+      "wall_clock_limit_seconds": 36000.0,
+      "memory_budget_bytes": 23622320128,
+      "max_unique_fingerprints_per_destination_bucket": 16384,
+      "destination_accumulator_unique_fingerprint_bound": 16384,
+      "in_memory_accumulator_candidate_limit": 4096,
+      "accumulator_spill_format": "streaming_jsonl_gzip_v113",
+      "disk_spill_enabled": true
+    }
+  ]
+}

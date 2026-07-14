@@ -22,6 +22,14 @@ PLACEHOLDER_WARNING = (
     "QTE/Intro/Outro transition modeling."
 )
 
+GENERIC_SWAP_SOURCE_STATUS = "user_approved_benchmark_assumption_after_workbook_and_web_review"
+GENERIC_SWAP_SOURCE = "transition_config.generic_swap_zero_time_v114"
+SWAP_REENTRY_COOLDOWN_SECONDS = 1.0
+
+
+def swap_reentry_key(character_id: str) -> str:
+    return f"swap_reentry:{character_id}"
+
 
 @dataclass
 class TransitionResolution:
@@ -54,6 +62,16 @@ class TransitionResolution:
     swap_timing_source: str
     swap_timing_is_placeholder: bool
     fallback_swap_used: bool
+    generic_swap_zero_time: bool = False
+    swap_reentry_cooldown_seconds: float = SWAP_REENTRY_COOLDOWN_SECONDS
+    outgoing_swap_reentry_key: str | None = None
+    outgoing_swap_reentry_before: float = 0.0
+    outgoing_swap_reentry_after_set: float = 0.0
+    outgoing_swap_reentry_after_action: float = 0.0
+    incoming_swap_reentry_key: str | None = None
+    incoming_swap_reentry_before: float = 0.0
+    incoming_swap_reentry_blocked: bool = False
+    swap_contract_source_status: str | None = None
     transition_events: list[dict[str, Any]] = field(default_factory=list)
     transition_action: ActionData | None = None
     outgoing_outro_event_id: str | None = None
@@ -65,11 +83,14 @@ def default_transition_config() -> dict[str, Any]:
     return {
         "version": 1,
         "generic_swap_fallback": {
-            "action_time": 0.5,
-            "combat_time_cost": 0.5,
-            "is_placeholder": True,
-            "source": "built_in_generic_swap_fallback",
-            "warning": PLACEHOLDER_WARNING,
+            "action_time": 0.0,
+            "combat_time_cost": 0.0,
+            "is_placeholder": False,
+            "source": GENERIC_SWAP_SOURCE,
+            "source_status": GENERIC_SWAP_SOURCE_STATUS,
+            "reentry_cooldown_seconds": SWAP_REENTRY_COOLDOWN_SECONDS,
+            "reentry_cooldown_clock": "combat_time",
+            "warning": "",
         },
         "concerto_transition": {
             "enabled": True,
@@ -144,11 +165,27 @@ def fallback_swap_timing(
 ) -> dict[str, Any]:
     fallback = dict(transition_config.get("generic_swap_fallback") or {})
     fallback.update(preset_generic_swap or {})
-    fallback.setdefault("action_time", 0.5)
+    fallback.setdefault("action_time", 0.0)
     fallback.setdefault("combat_time_cost", fallback["action_time"])
-    fallback.setdefault("is_placeholder", True)
-    fallback.setdefault("source", "generic_swap_fallback")
-    fallback.setdefault("warning", PLACEHOLDER_WARNING)
+    fallback.setdefault("is_placeholder", False)
+    fallback.setdefault("source", GENERIC_SWAP_SOURCE)
+    fallback.setdefault("source_status", GENERIC_SWAP_SOURCE_STATUS)
+    fallback.setdefault("reentry_cooldown_seconds", SWAP_REENTRY_COOLDOWN_SECONDS)
+    fallback.setdefault("reentry_cooldown_clock", "combat_time")
+    fallback.setdefault("warning", "")
+    if float(fallback.get("action_time", 0.0) or 0.0) == 0.0 and float(
+        fallback.get("combat_time_cost", 0.0) or 0.0
+    ) == 0.0:
+        fallback.update(
+            {
+                "is_placeholder": False,
+                "source": GENERIC_SWAP_SOURCE,
+                "source_status": GENERIC_SWAP_SOURCE_STATUS,
+                "reentry_cooldown_seconds": SWAP_REENTRY_COOLDOWN_SECONDS,
+                "reentry_cooldown_clock": "combat_time",
+                "warning": "",
+            }
+        )
     return fallback
 
 
@@ -165,8 +202,8 @@ def build_transition_swap_action(
         name=selected_action.name,
         character_id=selected_action.character_id,
         action_type="swap",
-        duration=max(action_time, 0.001),
-        action_time=max(action_time, 0.001),
+        duration=action_time,
+        action_time=action_time,
         combat_time_cost=max(combat_time_cost, 0.0),
         cooldown=0.0,
         damage_multiplier=0.0,
@@ -175,6 +212,11 @@ def build_transition_swap_action(
         resonance_energy_cost=0.0,
         tags=sorted(set([*selected_action.tags, "swap", "party-transition"])),
         policy_selectable=selected_action.policy_selectable,
+        cooldown_group=None,
+        mechanic_effects={
+            "zero_time_transition_action": action_time == 0.0 and combat_time_cost == 0.0,
+            "swap_contract_source_status": str(fallback.get("source_status") or GENERIC_SWAP_SOURCE_STATUS),
+        },
         data_status="transition_request",
         notes=(
             "Generic party swap transition request. Timing is resolved from "
@@ -309,9 +351,11 @@ def resolve_party_transition(
         timing_source = str(fallback.get("source", "generic_swap_fallback"))
         is_placeholder = bool(fallback.get("is_placeholder", True))
         fallback_used = True
-        warning = str(fallback.get("warning") or PLACEHOLDER_WARNING)
-        if warning:
-            warnings.append(warning)
+        configured_warning = str(fallback.get("warning") or "")
+        if configured_warning:
+            warnings.append(configured_warning)
+        elif is_placeholder:
+            warnings.append(PLACEHOLDER_WARNING)
 
     return TransitionResolution(
         outgoing_character_id=outgoing_character_id,
@@ -343,6 +387,19 @@ def resolve_party_transition(
         swap_timing_source=timing_source,
         swap_timing_is_placeholder=is_placeholder,
         fallback_swap_used=fallback_used,
+        generic_swap_zero_time=(
+            fallback_used
+            and action_time == 0.0
+            and combat_time_cost == 0.0
+        ),
+        incoming_swap_reentry_key=swap_reentry_key(incoming_character_id),
+        incoming_swap_reentry_before=float(
+            state.cooldowns.get(swap_reentry_key(incoming_character_id), 0.0) or 0.0
+        ),
+        incoming_swap_reentry_blocked=(
+            float(state.cooldowns.get(swap_reentry_key(incoming_character_id), 0.0) or 0.0) > 0.0
+        ),
+        swap_contract_source_status=str(fallback.get("source_status") or GENERIC_SWAP_SOURCE_STATUS),
         transition_events=events,
         transition_action=transition_action,
         outgoing_outro_event_id=outgoing_event.get("action_id") if outgoing_event else None,

@@ -55,6 +55,8 @@ def is_action_valid(action: ActionData, state: CombatState) -> tuple[bool, str |
     if action.action_type == "swap":
         if action.character_id == state.active_character_id:
             return False, "Target character is already active."
+        if state.cooldowns.get(cooldown_key(action), 0.0) > 0.0:
+            return False, "Target character is on swap re-entry cooldown."
         return True, None
 
     if action.character_id != state.active_character_id:
@@ -2051,6 +2053,27 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         fallback_swap_used=result.fallback_swap_used,
         swap_timing_is_placeholder=result.swap_timing_is_placeholder,
         swap_timing_source=result.swap_timing_source,
+        generic_swap_zero_time=result.generic_swap_zero_time,
+        swap_reentry_cooldown_seconds=result.swap_reentry_cooldown_seconds,
+        outgoing_swap_reentry_key=result.outgoing_swap_reentry_key,
+        outgoing_swap_reentry_before=result.outgoing_swap_reentry_before,
+        outgoing_swap_reentry_after_set=result.outgoing_swap_reentry_after_set,
+        outgoing_swap_reentry_after_action=result.outgoing_swap_reentry_after_action,
+        incoming_swap_reentry_key=result.incoming_swap_reentry_key,
+        incoming_swap_reentry_before=result.incoming_swap_reentry_before,
+        incoming_swap_reentry_blocked=result.incoming_swap_reentry_blocked,
+        swap_contract_source_status=result.swap_contract_source_status,
+        aemeath_outro_applied=result.aemeath_outro_applied,
+        aemeath_outro_upgrade_applied=result.aemeath_outro_upgrade_applied,
+        aemeath_outro_mode_snapshot=result.aemeath_outro_mode_snapshot,
+        aemeath_outro_base_amp=result.aemeath_outro_base_amp,
+        aemeath_outro_duration=result.aemeath_outro_duration,
+        aemeath_outro_recipient_values_before=result.aemeath_outro_recipient_values_before,
+        aemeath_outro_recipient_values_after=result.aemeath_outro_recipient_values_after,
+        aemeath_outro_upgraded_character_ids=result.aemeath_outro_upgraded_character_ids,
+        aemeath_outro_upgrade_event_tag=result.aemeath_outro_upgrade_event_tag,
+        aemeath_outro_upgrade_duration_refreshed=result.aemeath_outro_upgrade_duration_refreshed,
+        aemeath_outro_unresolved_reason=result.aemeath_outro_unresolved_reason,
         transition_warnings=result.transition_warnings,
         active_character=active_character_name,
         base_resonance_energy_gain=result.base_resonance_energy_gain,

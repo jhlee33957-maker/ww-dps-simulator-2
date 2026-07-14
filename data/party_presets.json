@@ -24,11 +24,12 @@
     ],
     "initial_active": "aemeath",
     "generic_swap": {
-      "action_time": 0.5,
-      "combat_time_cost": 0.5,
-      "is_placeholder": true,
+      "action_time": 0.0,
+      "combat_time_cost": 0.0,
+      "is_placeholder": false,
+      "source_status": "user_approved_benchmark_assumption_after_workbook_and_web_review",
       "source": "party_presets.aemeath_test_party.generic_swap",
-      "warning": "Generic swap timing is a placeholder for party-structure testing. It is not sourced from Excel/client data. Real party DPS requires QTE/Intro/Outro transition modeling."
+      "warning": "User-approved fixed benchmark assumption after workbook and web review; not a workbook/client-frame-confirmed duration."
     },
     "mechanic_overrides": {
       "tune_break_system": {
@@ -69,11 +70,12 @@
       }
     },
     "generic_swap": {
-      "action_time": 0.5,
-      "combat_time_cost": 0.5,
-      "is_placeholder": true,
+      "action_time": 0.0,
+      "combat_time_cost": 0.0,
+      "is_placeholder": false,
+      "source_status": "user_approved_benchmark_assumption_after_workbook_and_web_review",
       "source": "party_presets.aemeath_mornye_test_party.generic_swap",
-      "warning": "Generic swap timing is a placeholder for party-structure testing. It is not sourced from Excel/client data. Real party DPS requires QTE/Intro/Outro transition modeling."
+      "warning": "User-approved fixed benchmark assumption after workbook and web review; not a workbook/client-frame-confirmed duration."
     }
   },
   {
@@ -131,11 +133,12 @@
       }
     },
     "generic_swap": {
-      "action_time": 0.5,
-      "combat_time_cost": 0.5,
-      "is_placeholder": true,
+      "action_time": 0.0,
+      "combat_time_cost": 0.0,
+      "is_placeholder": false,
+      "source_status": "user_approved_benchmark_assumption_after_workbook_and_web_review",
       "source": "party_presets.aemeath_mornye_enabled_test_party.generic_swap",
-      "warning": "Generic swap timing is a placeholder for party-structure testing. It is not sourced from Excel/client data. Real party DPS requires QTE/Intro/Outro transition modeling."
+      "warning": "User-approved fixed benchmark assumption after workbook and web review; not a workbook/client-frame-confirmed duration."
     }
   },
   {
@@ -209,11 +212,12 @@
       }
     },
     "generic_swap": {
-      "action_time": 0.5,
-      "combat_time_cost": 0.5,
-      "is_placeholder": true,
-      "source": "party_presets.aemeath_mornye_enabled_test_party.generic_swap",
-      "warning": "Generic swap timing is a placeholder for party-structure testing. It is not sourced from Excel/client data. Real party DPS requires QTE/Intro/Outro transition modeling."
+      "action_time": 0.0,
+      "combat_time_cost": 0.0,
+      "is_placeholder": false,
+      "source_status": "user_approved_benchmark_assumption_after_workbook_and_web_review",
+      "source": "party_presets.aemeath_mornye_lynae_enabled_test_party.generic_swap",
+      "warning": "User-approved fixed benchmark assumption after workbook and web review; not a workbook/client-frame-confirmed duration."
     }
   },
   {
@@ -268,11 +272,12 @@
       }
     },
     "generic_swap": {
-      "action_time": 0.5,
-      "combat_time_cost": 0.5,
-      "is_placeholder": true,
+      "action_time": 0.0,
+      "combat_time_cost": 0.0,
+      "is_placeholder": false,
+      "source_status": "user_approved_benchmark_assumption_after_workbook_and_web_review",
       "source": "party_presets.aemeath_mornye_optimistic_gp_test_party.generic_swap",
-      "warning": "Generic swap timing is a placeholder for party-structure testing. It is not sourced from Excel/client data. Real party DPS requires QTE/Intro/Outro transition modeling."
+      "warning": "User-approved fixed benchmark assumption after workbook and web review; not a workbook/client-frame-confirmed duration."
     }
   },
   {
@@ -326,11 +331,12 @@
       }
     },
     "generic_swap": {
-      "action_time": 0.5,
-      "combat_time_cost": 0.5,
-      "is_placeholder": true,
+      "action_time": 0.0,
+      "combat_time_cost": 0.0,
+      "is_placeholder": false,
+      "source_status": "user_approved_benchmark_assumption_after_workbook_and_web_review",
       "source": "party_presets.aemeath_lynae_enabled_test_party.generic_swap",
-      "warning": "Generic swap timing is a placeholder for party-structure testing."
+      "warning": "User-approved fixed benchmark assumption after workbook and web review; not a workbook/client-frame-confirmed duration."
     }
   }
 ]

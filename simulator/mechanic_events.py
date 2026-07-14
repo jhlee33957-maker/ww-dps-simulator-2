@@ -68,6 +68,12 @@ def preview_mechanic_event_trigger(
         "mechanic_event_source_status": None,
         "mechanic_event_unresolved_reason": None,
     }
+    if action.mechanic_event_tags:
+        log["emitted_mechanic_event_tags"] = list(dict.fromkeys(action.mechanic_event_tags))
+        log["mechanic_event_triggered"] = True
+        log["mechanic_event_trigger_id"] = "declared_mechanic_event_tags"
+        log["mechanic_event_source_status"] = action.data_status
+        return log
     if not action.mechanic_event_triggers:
         return log
 
@@ -114,7 +120,31 @@ def process_mechanic_event_triggers(
         "mechanic_event_source_status": None,
         "mechanic_event_unresolved_reason": None,
     }
-    if direct_damage <= 0.0 or not action.mechanic_event_triggers:
+    if direct_damage <= 0.0:
+        return log
+
+    if action.mechanic_event_tags:
+        event_tags = list(dict.fromkeys(action.mechanic_event_tags))
+        for event_tag in event_tags:
+            state.mechanic_event_emitted_counts[event_tag] = state.mechanic_event_emitted_counts.get(event_tag, 0) + 1
+            state.mechanic_event_log.append(
+                {
+                    "event_tag": event_tag,
+                    "trigger_id": "declared_mechanic_event_tags",
+                    "action_id": action.id,
+                    "character_id": action.character_id,
+                    "source_status": action.data_status,
+                    "combat_time": action_start_combat_time,
+                    "damage_added": 0.0,
+                }
+            )
+        log["emitted_mechanic_event_tags"] = event_tags
+        log["mechanic_event_triggered"] = True
+        log["mechanic_event_trigger_id"] = "declared_mechanic_event_tags"
+        log["mechanic_event_source_status"] = action.data_status
+        return log
+
+    if not action.mechanic_event_triggers:
         return log
 
     for trigger in action.mechanic_event_triggers:

@@ -9,16 +9,19 @@ from pathlib import Path
 from typing import Any
 
 
-SCHEMA = "lowmem_beam_workspace_manifest_v113"
-RECEIPT_SCHEMA = "lowmem_beam_workspace_build_receipt_v113"
-VERIFIED_ARCHIVE = "ww-dps-simulator-2-112.zip"
-VERIFIED_ARCHIVE_SHA256 = "b602af3cd1b87cac1529baa23042e023ce2c90e9d1560426567943da95515fc5"
-PLAN_REL = "data/beam_search_plan_v113_32gb.json"
+SCHEMA = "lowmem_beam_workspace_manifest_v114"
+RECEIPT_SCHEMA = "lowmem_beam_workspace_build_receipt_v114"
+VERIFIED_ARCHIVE = "candidate 113"
+VERIFIED_ARCHIVE_SHA256 = "b8f6baf0f3c93b06c81b97cb034aa9141e9a0cc320660535889546bbb8ec5160"
+PLAN_REL = "data/beam_search_plan_v114_32gb.json"
 REQUIRED_FILES = (
     PLAN_REL,
     "data/beam_search_plan_v111.json",
     "data/generated/manual_120s_bc_demonstration_v105.npz",
     "data/manual_120s_baseline_routes_v104.json",
+    "results/manual_120s_baseline_v104_summary.json",
+    "data/transition_config.json",
+    "data/buffs.json",
     "direct_action_data_patch_manifest_v61.json",
     "data/source/direct_action_data_patch_manifest_v61.json",
     "search/run_beam_search.py",
@@ -29,22 +32,67 @@ REQUIRED_FILES = (
     "search/beam_state.py",
     "scripts/build_lowmem_beam_result_archive.py",
     "scripts/beam_search_lowmem_spill_streaming_smoke_test.py",
+    "scripts/beam_search_v114_streaming_spill_contract_smoke_test.py",
     "scripts/beam_search_lowmem_spill_finalization_count_smoke_test.py",
     "scripts/beam_search_lowmem_spill_no_repeated_rescan_smoke_test.py",
     "scripts/beam_search_lowmem_probe_phase_timing_smoke_test.py",
     "scripts/beam_search_lowmem_10000_probe_smoke_test.py",
     "scripts/beam_search_lowmem_10000_probe_repeatability_smoke_test.py",
+    "scripts/beam_search_plan_v114_32gb_contract_smoke_test.py",
+    "scripts/generic_swap_zero_time_reentry_cooldown_smoke_test.py",
+    "scripts/generic_swap_timed_intro_reentry_cooldown_smoke_test.py",
+    "scripts/generic_swap_action_mask_observation_smoke_test.py",
+    "scripts/generic_swap_zero_time_loop_guard_smoke_test.py",
+    "scripts/aemeath_outro_base_buff_smoke_test.py",
+    "scripts/aemeath_outro_per_character_upgrade_smoke_test.py",
+    "scripts/aemeath_outro_recast_reset_smoke_test.py",
+    "scripts/aemeath_outro_timed_intro_order_smoke_test.py",
+    "scripts/aemeath_outro_cast_upgrade_reporting_smoke_test.py",
+    "scripts/specific_character_multi_target_buff_smoke_test.py",
+    "scripts/swap_outro_clone_restore_resume_smoke_test.py",
+    "scripts/v114_test_support.py",
+    "scripts/v114_excluded_scope_guard_smoke_test.py",
+    "scripts/rebaseline_transition_contract_v114.py",
+    "scripts/transition_contract_v114_rebaseline_smoke_test.py",
+    "scripts/transition_contract_v114_model_reevaluation_smoke_test.py",
+    "scripts/project_progress_transition_contract_v114_alignment_smoke_test.py",
+    "results/manual_120s_baseline_v114_summary.json",
+    "results/manual_120s_baseline_v114_timeline.csv",
+    "results/manual_model_comparison_v114.json",
+    "results/beam_search_v114_lowmem_10000_probe_summary.json",
+    "results/transition_contract_v114_model_reevaluation/leaderboard.json",
+    "results/transition_contract_v114_model_reevaluation/evaluations/guarded_ppo_v109__bc_conservative_seed_11__step_000090000.zip.json",
+    "reports/general_swap_aemeath_outro_v114.md",
+    "reports/beam_search_v114_32gb_lowmem.md",
+    "reports/manual_120s_baseline_v114.md",
+    "reports/transition_contract_v114_model_reevaluation.md",
     "PROJECT_PROGRESS_STATE.json",
     "progress_dashboard.py",
 )
 IMMUTABLE_HASHES = {
     "action_data_hash": "d6377d54a1abb985dc5f58866321c61c7b904a6b73ddc1538be7e38d36a99ff1",
-    "party_config_hash": "bd106ba1c0f5581436c35fea736a00fd6ad92b131f8b43ba8cf1e3dc89cbcb11",
+    "party_config_hash": "baff722d9ce79cf7f57891c439b7b3fd746ad76e779e4d582eaa51802eba2684",
     "direct_action_manifest_sha256": "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d",
     "bc_npz_sha256": "b020a1b9309b46bd87eb3fff4837aead53035c4c84620962f47feb9fc11846ff",
     "bc_model_sha256": "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e",
     "prior_ppo_model_sha256": "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513",
     "manual_route_raw_sha256": "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a",
+}
+
+V114_RESULT_ALLOWLIST = {
+    "results/manual_120s_baseline_v104_summary.json",
+    "results/manual_120s_baseline_v114_summary.json",
+    "results/manual_120s_baseline_v114_timeline.csv",
+    "results/manual_model_comparison_v114.json",
+    "results/beam_search_v114_lowmem_10000_probe_summary.json",
+    "results/transition_contract_v114_model_reevaluation/leaderboard.json",
+    "results/transition_contract_v114_model_reevaluation/evaluations/guarded_ppo_v109__bc_conservative_seed_11__step_000090000.zip.json",
+}
+V114_REPORT_ALLOWLIST = {
+    "reports/general_swap_aemeath_outro_v114.md",
+    "reports/beam_search_v114_32gb_lowmem.md",
+    "reports/manual_120s_baseline_v114.md",
+    "reports/transition_contract_v114_model_reevaluation.md",
 }
 
 
@@ -68,11 +116,17 @@ def exclusion_reason(relative: str) -> str | None:
         return "project/archive or historical model bytes not needed by Beam runtime"
     if lower.startswith("models/"):
         return "historical training/model artifact; immutable hash retained in manifest"
+    if lower.startswith("results/beam_search_v113_lowmem_32gb/"):
+        return "preserved interrupted v113 frontier/checkpoint output is forbidden under v114"
+    if lower.startswith("results/") and relative not in V114_RESULT_ALLOWLIST:
+        return "historical result artifact not required for v114 Beam execution"
+    if lower.startswith("reports/") and relative not in V114_REPORT_ALLOWLIST:
+        return "historical audit report preserved in the candidate-113 archive"
     if lower.startswith("results/beam_search_v111_full_120s/"):
         return "abandoned unverified 64GB Beam output"
     if "smoke" in lower and (lower.startswith("results/") or lower.startswith("tmp/")):
         return "temporary smoke output"
-    if lower.startswith("results/") and (
+    if lower.startswith("results/") and relative not in V114_RESULT_ALLOWLIST and (
         "/frontier/" in lower or "/accumulators/" in lower or lower.endswith(".log") or lower.endswith("timeline.csv")
     ):
         return "historical runtime frontier, accumulator, timeline, or log"
@@ -101,6 +155,8 @@ def build_manifest(source: Path, included: list[dict[str, Any]], excluded: list[
     if missing:
         raise ValueError(f"Required low-memory files are missing or excluded: {missing}")
     plan_path = source / PLAN_REL
+    plan = json.loads(plan_path.read_text(encoding="utf-8"))
+    active_stage = plan["stages"][0]
     return {
         "schema_version": SCHEMA,
         "source_project_path": ".",
@@ -116,8 +172,24 @@ def build_manifest(source: Path, included: list[dict[str, Any]], excluded: list[
         "excluded_files": excluded,
         "files_required_for_low_memory_execution": list(REQUIRED_FILES),
         "low_memory_beam_plan": {"path": PLAN_REL, "sha256": sha256_file(plan_path)},
+        "active_candidate": 114,
+        "active_beam_plan_path": PLAN_REL,
+        "active_beam_plan_sha256": sha256_file(plan_path),
+        "active_output_root": "results/beam_search_v114_lowmem_32gb",
+        "active_stage_id": active_stage["stage_id"],
+        "active_accumulator_spill_format": active_stage["accumulator_spill_format"],
+        "forbidden_legacy_output_roots": [
+            "results/beam_search_v111_full_120s",
+            "results/beam_search_v113_lowmem_32gb",
+        ],
+        "transition_contract_version": "v114",
+        "current_best_v114_result": (
+            "results/transition_contract_v114_model_reevaluation/evaluations/"
+            "guarded_ppo_v109__bc_conservative_seed_11__step_000090000.zip.json"
+        ),
+        "canonical_historical_audit_archive": "candidate 113",
         "verified_immutable_artifact_hashes": IMMUTABLE_HASHES,
-        "audit_preservation_statement": "full audit artifacts remain preserved in the externally verified candidate-112 archive",
+        "audit_preservation_statement": "full audit artifacts remain preserved in the externally verified candidate-113 archive",
         "global_optimum_claimed": False,
     }
 

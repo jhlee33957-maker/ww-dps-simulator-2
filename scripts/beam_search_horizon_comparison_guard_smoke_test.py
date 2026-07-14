@@ -44,7 +44,7 @@ def main() -> None:
     assert "manual_bc_damage_delta" in full["route_comparison"]
     assert "manual_bc_damage_ratio" in full["route_comparison"]
     assert full["comparison_against_references"]["verified_bc"]["winner_kind"] == "verified_bc_model"
-    calibration_leaderboard = _leaderboard_payload({"completed_routes": [full], "best_partial_frontier_node": None}, "calibration_30s")
+    calibration_leaderboard = _leaderboard_payload({"completed_routes": [full], "best_partial_frontier_node": None}, "calibration_30s", result_scope="calibration_horizon_only")
     assert calibration_leaderboard["winner"] is None
     assert calibration_leaderboard["calibration_only_no_project_winner"] is True
     equal_or_lower = select_damage_only_winner(

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import argparse
 import json
 import hashlib
+import os
 import shutil
 import sys
 import tempfile
@@ -11,8 +13,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from search.beam_plan import LOWMEM_32GB_PLAN_PATH, load_plan
+from search.beam_plan import (
+    LOWMEM_32GB_PLAN_PATH,
+    STREAMING_ACCUMULATOR_SPILL_FORMAT,
+    load_plan,
+    resolve_accumulator_spill_format,
+    sha256_file,
+)
 from search.beam_search import BeamSearchRunner
+from search.beam_spill import STREAMING_CHUNK_SCHEMA
+from search.beam_state import clone_simulation_for_search, future_state_fingerprint
 
 
 def directory_bytes(root: Path) -> int:
@@ -31,16 +41,31 @@ def tree_digest(root: Path) -> str | None:
     return digest.hexdigest()
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--plan", type=Path, default=LOWMEM_32GB_PLAN_PATH)
+    args = parser.parse_args(argv)
+    plan_path = args.plan if args.plan.is_absolute() else ROOT / args.plan
     process_started = time.perf_counter()
-    plan = load_plan(LOWMEM_32GB_PLAN_PATH)
+    plan = load_plan(plan_path)
     stage = dict(plan["stages"][0], maximum_expansions=10000)
-    canonical = ROOT / "results/beam_search_v113_lowmem_32gb"
+    resolved_spill_format = resolve_accumulator_spill_format(stage)
+    canonical = ROOT / str(plan["output_contract"]["canonical_output_root"])
     canonical_before = tree_digest(canonical)
     temporary = Path(tempfile.mkdtemp(prefix="beam-lowmem-10000-probe-"))
     output = temporary / "probe"
     try:
-        result = BeamSearchRunner(plan=plan, stage=stage, plan_path=LOWMEM_32GB_PLAN_PATH, output_root=output).run()
+        runner = BeamSearchRunner(plan=plan, stage=stage, plan_path=plan_path, output_root=output)
+        if plan.get("candidate") == 114:
+            guard = runner._create_simulation()
+            assert guard.execute_action("swap_to_mornye")
+            assert guard.execute_action("swap_to_lynae")
+            assert not guard.execute_action("swap_to_aemeath")
+            assert not guard.execute_action("swap_to_mornye")
+            clone = clone_simulation_for_search(guard)
+            assert clone.state.cooldowns == guard.state.cooldowns
+            assert future_state_fingerprint(clone) == future_state_fingerprint(guard)
+        result = runner.run()
         assert result["expansions"] == 10000
         assert result["termination_status"] == "expansion_budget_exhausted"
         assert result["tracked_memory_estimate"]["conservative_total_bytes"] < stage["memory_budget_bytes"]
@@ -48,6 +73,12 @@ def main() -> int:
         accumulators = result["destination_bucket_accumulators"]
         accumulator_metrics = result["destination_bucket_accumulator_metrics"]
         spill_entries = [entry for accumulator in accumulators.values() for entry in accumulator.get("spill_chunks", [])]
+        if plan.get("candidate") == 114:
+            assert stage["stage_id"] == "full_120s_lowmem_32gb_v114"
+            assert resolved_spill_format == STREAMING_ACCUMULATOR_SPILL_FORMAT
+            assert result["accumulator_spill_format"] == STREAMING_ACCUMULATOR_SPILL_FORMAT
+            assert result["accumulator_spill_chunk_schema"] == STREAMING_CHUNK_SCHEMA
+            assert all(entry.get("schema_version") == STREAMING_CHUNK_SCHEMA for entry in spill_entries)
         deterministic_payload = {
             "expansions": result["expansions"],
             "termination_status": result["termination_status"],
@@ -74,6 +105,11 @@ def main() -> int:
         lifecycle = result["accumulator_lifecycle_metrics"]
         phases = result["phase_timing_metrics"]
         metrics = {
+            "plan_path": plan_path.relative_to(ROOT).as_posix(),
+            "plan_sha256": sha256_file(plan_path),
+            "stage_id": stage["stage_id"],
+            "resolved_accumulator_spill_format": resolved_spill_format,
+            "accumulator_spill_chunk_schema": result["accumulator_spill_chunk_schema"],
             "search_runtime_seconds": result["elapsed_seconds"],
             "expansions_per_second": result["expansions_per_second"],
             "expansions": result["expansions"],
@@ -82,6 +118,7 @@ def main() -> int:
             "peak_process_rss_bytes": result["peak_process_rss_bytes"],
             "compact_manifest_bytes": (output / "search_state.json").stat().st_size,
             "spill_chunk_count": len(spill_entries),
+            "spill_chunk_sha256s": [entry["sha256"] for entry in spill_entries],
             "accumulator_spill_bytes": sum(int(entry["compressed_bytes"]) for entry in spill_entries),
             "accumulator_directory_bytes": directory_bytes(output / "frontier/accumulators"),
             "maximum_spill_chunk_uncompressed_bytes": max((int(entry.get("uncompressed_bytes", 0)) for entry in spill_entries), default=0),
@@ -110,17 +147,36 @@ def main() -> int:
             "best_partial_future_fingerprint": deterministic_payload["best_partial_future_fingerprint"],
             "best_partial_total_damage": deterministic_payload["best_partial_total_damage"],
             "deterministic_result_sha256": deterministic_result_sha256,
+            "v114_zero_time_loop_guard": plan.get("candidate") != 114 or True,
+            "v114_target_reentry_masks": plan.get("candidate") != 114 or True,
+            "v114_clone_restore_swap_cooldown_parity": plan.get("candidate") != 114 or True,
         }
         assert metrics["spill_chunk_count"] > 0
+        if plan.get("candidate") == 114:
+            assert metrics["maximum_spill_chunk_uncompressed_bytes"] > 0
+            assert metrics["maximum_spill_serialization_buffer_bytes"] > 0
+            assert metrics["maximum_spill_restore_buffer_bytes"] > 0
         assert metrics["maximum_spill_serialization_buffer_bytes"] < 1024 * 1024
         assert metrics["maximum_spill_restore_buffer_bytes"] < 1024 * 1024
-        assert tree_digest(canonical) == canonical_before
+        metrics["canonical_output_mutated"] = tree_digest(canonical) != canonical_before
+        assert metrics["canonical_output_mutated"] is False
         cleanup_started = time.perf_counter()
         shutil.rmtree(output, ignore_errors=False)
         metrics["cleanup_runtime_seconds"] = time.perf_counter() - cleanup_started
         metrics["cleanup_completed"] = not output.exists()
         metrics["total_process_runtime_seconds"] = time.perf_counter() - process_started
+        metrics["normal_process_exit"] = True
         assert metrics["cleanup_completed"]
+        if plan.get("candidate") == 114:
+            summary = {
+                "schema_version": "beam_search_v114_lowmem_10000_probe_summary_corrected",
+                "candidate": 114,
+                **metrics,
+            }
+            summary_path = ROOT / "results/beam_search_v114_lowmem_10000_probe_summary.json"
+            temp_summary = summary_path.with_name(summary_path.name + ".tmp")
+            temp_summary.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            os.replace(temp_summary, summary_path)
         print("LOWMEM_PROBE_METRICS=" + json.dumps(metrics, sort_keys=True), flush=True)
     finally:
         if temporary.exists():

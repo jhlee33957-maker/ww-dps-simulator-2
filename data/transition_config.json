@@ -1,11 +1,14 @@
 {
   "version": 1,
   "generic_swap_fallback": {
-    "action_time": 0.5,
-    "combat_time_cost": 0.5,
-    "is_placeholder": true,
-    "source": "transition_config.generic_swap_fallback",
-    "warning": "Generic swap timing is a placeholder for party-structure testing. It is not sourced from Excel/client data. Real party DPS requires QTE/Intro/Outro transition modeling."
+    "action_time": 0.0,
+    "combat_time_cost": 0.0,
+    "is_placeholder": false,
+    "source": "transition_config.generic_swap_zero_time_v114",
+    "source_status": "user_approved_benchmark_assumption_after_workbook_and_web_review",
+    "reentry_cooldown_seconds": 1.0,
+    "reentry_cooldown_clock": "combat_time",
+    "warning": ""
   },
   "concerto_transition": {
     "enabled": true,
@@ -102,9 +105,16 @@
         "notes": "Aemeath QTE/Intro rows are extracted for review only and are not executable."
       },
       "outro": {
-        "enabled": false,
-        "implementation_status": "not_implemented",
-        "notes": "Aemeath Outro execution is not implemented."
+        "enabled": true,
+        "implementation_status": "implemented_v114",
+        "action_id": "aemeath_outro_unseen_guard",
+        "action_time": 0.0,
+        "combat_time_cost": 0.0,
+        "applies_buffs": [],
+        "requires_concerto": true,
+        "consume_concerto_on_apply": true,
+        "source": "KuroBBS Wuthering Waves wiki item 1457744312692867072",
+        "notes": "Buff-only C0 Aemeath Outro. Runtime applies independent 10%/20s recipient buffs and mode-matched per-character upgrades."
       }
     },
     "dummy_support": {
@@ -123,7 +133,7 @@
         ],
         "requires_concerto": true,
         "source": "transition_config.dummy_support.outro",
-        "notes": "Zero-time test-only outgoing outro event. It is gated behind outgoing concerto_ready. Physical swap timing still uses generic placeholder fallback when no incoming timed intro exists."
+        "notes": "Zero-time test-only outgoing Outro event gated behind outgoing concerto_ready. If no timed Intro applies, the physical swap uses the user-approved zero-time benchmark assumption from transition_config.generic_swap_zero_time_v114."
       }
     },
     "dummy_sub_dps": {

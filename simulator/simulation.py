@@ -44,13 +44,16 @@ from simulator.lynae_tune_strain import (
     lynae_tune_strain_max_stacks,
     refresh_lynae_tune_strain_amp,
 )
-from simulator.mechanic_events import mechanic_event_metadata_for_config
+from simulator.mechanic_events import aemeath_resonance_mode_from_config, mechanic_event_metadata_for_config
 from simulator.models import ActionData, BuffData, CharacterData, CombatState, EnemyData, PartyState, SimulationSummary, TimelineEntry
 from simulator.party_transition import (
+    GENERIC_SWAP_SOURCE_STATUS,
+    SWAP_REENTRY_COOLDOWN_SECONDS,
     build_transition_swap_action,
     default_transition_config,
     fallback_swap_timing,
     resolve_party_transition,
+    swap_reentry_key,
 )
 from simulator.resource_system import apply_source_confirmed_scheduled_resource_gains, initialize_concerto_states
 from simulator.roster import (
@@ -982,6 +985,10 @@ class Simulation:
             return False
         transition_resolution = None
         if is_swap_action(selected_action):
+            # Check the policy-visible target re-entry cooldown before transition
+            # resolution can consume Concerto or otherwise mutate state.
+            if not self.is_resolved_action_available(selected_action):
+                return False
             transition_resolution = resolve_party_transition(
                 selected_action,
                 self.state,
@@ -996,16 +1003,28 @@ class Simulation:
             )
             if transition_resolution.transition_action is not None:
                 action = transition_resolution.transition_action
-            action.action_time = max(transition_resolution.action_time, 0.001)
-            action.duration = max(transition_resolution.action_time, 0.001)
+            action.action_time = transition_resolution.action_time
+            action.duration = transition_resolution.action_time
             action.combat_time_cost = max(transition_resolution.combat_time_cost, 0.0)
         else:
             action = self.resolve_action(selected_action)
         if not self.is_resolved_action_available(action):
             return False
 
+        if transition_resolution is not None:
+            outgoing_key = swap_reentry_key(transition_resolution.outgoing_character_id)
+            transition_resolution.outgoing_swap_reentry_key = outgoing_key
+            transition_resolution.outgoing_swap_reentry_before = float(
+                self.state.cooldowns.get(outgoing_key, 0.0) or 0.0
+            )
+            transition_resolution.outgoing_swap_reentry_after_set = SWAP_REENTRY_COOLDOWN_SECONDS
+            self.state.cooldowns[outgoing_key] = SWAP_REENTRY_COOLDOWN_SECONDS
+
         self._apply_pre_transition_events(transition_resolution)
-        pre_action_echo_set_log_fields = self._apply_mornye_syntony_field_uptime_heal_proxy(action)
+        zero_time_transition = bool((action.mechanic_effects or {}).get("zero_time_transition_action", False))
+        pre_action_echo_set_log_fields = (
+            {} if zero_time_transition else self._apply_mornye_syntony_field_uptime_heal_proxy(action)
+        )
         pre_action_echo_set_log_fields = merge_echo_set_logs(
             pre_action_echo_set_log_fields,
             self._apply_mornye_same_action_high_syntony_field(action),
@@ -1028,7 +1047,7 @@ class Simulation:
         )
         actor_character_id = actor_character_id or self.state.active_character_id
         actor_mechanic = self._mechanic_for_character(actor_character_id)
-        scheduled_effect_runner = lambda **kwargs: self.advance_scheduled_effects(
+        scheduled_effect_runner = None if zero_time_transition else lambda **kwargs: self.advance_scheduled_effects(
             host_action=action,
             **kwargs,
         )
@@ -1050,9 +1069,13 @@ class Simulation:
         result.resolved_action_id = action.id
         result.resolved_action_name = action.name
         if transition_resolution is not None:
+            transition_resolution.outgoing_swap_reentry_after_action = float(
+                self.state.cooldowns.get(transition_resolution.outgoing_swap_reentry_key or "", 0.0) or 0.0
+            )
             self._apply_transition_resolution(result, transition_resolution)
             self._apply_lynae_transition_buffs(result, transition_resolution)
             self._apply_lynae_incoming_intro_mechanics(result, transition_resolution)
+        self._apply_aemeath_outro_upgrade(result, actor_character_id)
 
         weapon_action_log = {}
         if not result.truncated_by_combat_limit:
@@ -1101,7 +1124,12 @@ class Simulation:
             )
         skip_after_action = bool((action.mechanic_effects or {}).get("skip_character_after_action"))
         auxiliary_zero_time_action = bool((action.mechanic_effects or {}).get("auxiliary_zero_time_action"))
-        if not result.truncated_by_combat_limit and not skip_after_action and not auxiliary_zero_time_action:
+        if (
+            not result.truncated_by_combat_limit
+            and not skip_after_action
+            and not auxiliary_zero_time_action
+            and not zero_time_transition
+        ):
             actor_mechanic.after_action(self.state, action, result)
             self._schedule_lynae_spray_paint_status_field(action, result)
         if not result.truncated_by_combat_limit:
@@ -1139,7 +1167,7 @@ class Simulation:
     def is_action_available(self, action: ActionData) -> bool:
         if self.state.combat_time >= self.combat_duration:
             return False
-        if action.policy_selectable:
+        if action.policy_selectable and not is_swap_action(action):
             action = self.resolve_action(action)
         return self.is_resolved_action_available(action)
 
@@ -1898,15 +1926,22 @@ class Simulation:
                 name=f"Swap to {character_name}",
                 character_id=character_id,
                 action_type="swap",
-                duration=max(action_time, 0.001),
-                action_time=max(action_time, 0.001),
+                duration=action_time,
+                action_time=action_time,
                 combat_time_cost=max(combat_time_cost, 0.0),
-                cooldown=0.0,
+                cooldown=SWAP_REENTRY_COOLDOWN_SECONDS,
+                cooldown_group=swap_reentry_key(character_id),
                 damage_multiplier=0.0,
                 resonance_energy_cost=0.0,
                 tags=["swap", "party-foundation", "party-transition"],
+                mechanic_effects={
+                    "zero_time_transition_action": action_time == 0.0 and combat_time_cost == 0.0,
+                    "swap_contract_source_status": str(
+                        fallback.get("source_status") or GENERIC_SWAP_SOURCE_STATUS
+                    ),
+                },
                 data_status="transition_request",
-                notes="Generated generic party swap transition request with placeholder fallback timing.",
+                notes="Generated party swap transition request using the v114 zero-time/re-entry contract.",
             )
 
     def _apply_transition_resolution(self, result, transition_resolution) -> None:
@@ -1941,7 +1976,28 @@ class Simulation:
         result.fallback_swap_used = transition_resolution.fallback_swap_used
         result.swap_timing_is_placeholder = transition_resolution.swap_timing_is_placeholder
         result.swap_timing_source = transition_resolution.swap_timing_source
+        result.generic_swap_zero_time = transition_resolution.generic_swap_zero_time
+        result.swap_reentry_cooldown_seconds = transition_resolution.swap_reentry_cooldown_seconds
+        result.outgoing_swap_reentry_key = transition_resolution.outgoing_swap_reentry_key
+        result.outgoing_swap_reentry_before = transition_resolution.outgoing_swap_reentry_before
+        result.outgoing_swap_reentry_after_set = transition_resolution.outgoing_swap_reentry_after_set
+        result.outgoing_swap_reentry_after_action = transition_resolution.outgoing_swap_reentry_after_action
+        result.incoming_swap_reentry_key = transition_resolution.incoming_swap_reentry_key
+        result.incoming_swap_reentry_before = transition_resolution.incoming_swap_reentry_before
+        result.incoming_swap_reentry_blocked = transition_resolution.incoming_swap_reentry_blocked
+        result.swap_contract_source_status = transition_resolution.swap_contract_source_status
         result.transition_warnings = transition_resolution.warnings
+
+        for event in transition_resolution.transition_events:
+            if event.get("action_id") != "aemeath_outro_unseen_guard":
+                continue
+            result.aemeath_outro_applied = bool(event.get("aemeath_outro_applied", False))
+            result.aemeath_outro_mode_snapshot = event.get("mode_snapshot")
+            result.aemeath_outro_base_amp = float(event.get("base_amp", 0.0) or 0.0)
+            result.aemeath_outro_duration = float(event.get("duration", 0.0) or 0.0)
+            result.aemeath_outro_recipient_values_before = dict(event.get("recipient_values_before") or {})
+            result.aemeath_outro_recipient_values_after = dict(event.get("recipient_values_after") or {})
+            result.aemeath_outro_unresolved_reason = event.get("unresolved_reason")
 
         applied_buffs = list(result.applied_buffs)
         for event in transition_resolution.transition_events:
@@ -2092,6 +2148,23 @@ class Simulation:
             self.state.target_tune_shift_remaining = 25.0
             result.target_tune_shift_state = shift_state
             result.target_tune_shift_remaining = 25.0
+            if shift_state == "tune_rupture_shifting":
+                if shift_state not in result.emitted_mechanic_event_tags:
+                    result.emitted_mechanic_event_tags.append(shift_state)
+                self.state.mechanic_event_emitted_counts[shift_state] = (
+                    self.state.mechanic_event_emitted_counts.get(shift_state, 0) + 1
+                )
+                self.state.mechanic_event_log.append(
+                    {
+                        "event_tag": shift_state,
+                        "trigger_id": "lynae_intro_photocromic_flux",
+                        "action_id": "lynae_intro_time_to_show_some_colors",
+                        "character_id": "lynae",
+                        "combat_time": result.combat_time_end,
+                        "source_status": "user_tooltip_confirmed",
+                        "damage_added": 0.0,
+                    }
+                )
         result.lynae_overflow = float(lynae_state["overflow"])
         result.lynae_photocromic_flux_active = True
         result.lynae_photocromic_flux_applied = True
@@ -2110,6 +2183,7 @@ class Simulation:
         source_character_id: str,
         target_character_id: str,
         application_time: float,
+        dynamic_damage_amp_value: float | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> bool:
         buff = self.buffs.get(buff_id)
@@ -2124,7 +2198,11 @@ class Simulation:
             **(metadata or {}),
             "source_character_id": source_character_id,
             "target_character_id": target_character_id,
-            "dynamic_value": runtime_buff.value,
+            "dynamic_value": (
+                runtime_buff.value
+                if dynamic_damage_amp_value is None
+                else float(dynamic_damage_amp_value)
+            ),
             "application_time": application_time,
         }
         if runtime_buff.modifier_type == "attack":
@@ -2135,6 +2213,7 @@ class Simulation:
     def _apply_pre_transition_events(self, transition_resolution) -> None:
         if transition_resolution is None:
             return
+        self._apply_aemeath_outro_base(transition_resolution)
         for event in transition_resolution.transition_events:
             if not event.get("apply_before_action"):
                 continue
@@ -2145,6 +2224,122 @@ class Simulation:
                 add_team_buff(self.state, self.buffs[buff_id], event.get("character_id"))
                 applied_buffs.append(buff_id)
             event["applied_before_action"] = True
+
+    def _aemeath_outro_recipient_values(self) -> dict[str, float]:
+        values: dict[str, float] = {}
+        for active in self.state.active_buffs:
+            if active.buff_id != "aemeath_outro_unseen_guard_all_damage_amp":
+                continue
+            if active.remaining_duration <= 0.0 or not active.target_character_id:
+                continue
+            values[active.target_character_id] = float(active.metadata.get("dynamic_value", 0.10) or 0.0)
+        return values
+
+    def _apply_aemeath_outro_base(self, transition_resolution) -> None:
+        event = next(
+            (
+                item
+                for item in transition_resolution.transition_events
+                if item.get("action_id") == "aemeath_outro_unseen_guard" and item.get("applied")
+            ),
+            None,
+        )
+        if event is None:
+            return
+        before = self._aemeath_outro_recipient_values()
+        self.state.active_buffs = [
+            active
+            for active in self.state.active_buffs
+            if active.buff_id != "aemeath_outro_unseen_guard_all_damage_amp"
+        ]
+        self.state.team_buffs = list(self.state.active_buffs)
+        mode = aemeath_resonance_mode_from_config(self.state.mechanics_config)
+        unresolved_reason = (
+            "aemeath_outro_mode_snapshot_unresolved_no_mode_specific_upgrade"
+            if mode == "unresolved"
+            else None
+        )
+        recipients = [character_id for character_id in self.selected_character_ids if character_id != "aemeath"]
+        for recipient in recipients:
+            self._apply_specific_character_buff(
+                buff_id="aemeath_outro_unseen_guard_all_damage_amp",
+                source_character_id="aemeath",
+                target_character_id=recipient,
+                application_time=float(self.state.combat_time),
+                dynamic_damage_amp_value=0.10,
+                metadata={
+                    "event_source": "aemeath_outro_unseen_guard",
+                    "mode_snapshot": mode,
+                    "upgraded": False,
+                    "upgrade_event_tag": None,
+                    "unresolved_reason": unresolved_reason,
+                },
+            )
+        after = self._aemeath_outro_recipient_values()
+        event.update(
+            {
+                "apply_before_action": True,
+                "applied_before_action": True,
+                "aemeath_outro_applied": True,
+                "mode_snapshot": mode,
+                "base_amp": 0.10,
+                "duration": 20.0,
+                "recipient_values_before": before,
+                "recipient_values_after": after,
+                "unresolved_reason": unresolved_reason,
+            }
+        )
+
+    def _apply_aemeath_outro_upgrade(self, result, actor_character_id: str | None) -> None:
+        if not actor_character_id or actor_character_id == "aemeath":
+            return
+        active = next(
+            (
+                buff
+                for buff in self.state.active_buffs
+                if buff.buff_id == "aemeath_outro_unseen_guard_all_damage_amp"
+                and buff.target_character_id == actor_character_id
+                and buff.remaining_duration > 0.0
+            ),
+            None,
+        )
+        if active is None:
+            return
+        mode = str(active.metadata.get("mode_snapshot") or "unresolved")
+        expected_tag = {
+            "tune_rupture": "tune_rupture_shifting",
+            "fusion_burst": "fusion_burst",
+        }.get(mode)
+        if expected_tag is None or expected_tag not in result.emitted_mechanic_event_tags:
+            if mode == "unresolved":
+                result.aemeath_outro_unresolved_reason = (
+                    "aemeath_outro_mode_snapshot_unresolved_no_mode_specific_upgrade"
+                )
+            return
+        before = self._aemeath_outro_recipient_values()
+        already_upgraded = bool(active.metadata.get("upgraded", False))
+        remaining_before = float(active.remaining_duration)
+        active.metadata = {
+            **active.metadata,
+            "dynamic_value": 0.20,
+            "upgraded": True,
+            "upgrade_event_tag": expected_tag,
+            "upgrade_combat_time": float(result.combat_time_end),
+        }
+        after = self._aemeath_outro_recipient_values()
+        result.aemeath_outro_upgrade_applied = True
+        result.aemeath_outro_mode_snapshot = mode
+        result.aemeath_outro_base_amp = 0.10
+        result.aemeath_outro_duration = 20.0
+        result.aemeath_outro_recipient_values_before = before
+        result.aemeath_outro_recipient_values_after = after
+        result.aemeath_outro_upgrade_event_tag = expected_tag
+        result.aemeath_outro_upgrade_duration_refreshed = False
+        if not already_upgraded:
+            result.aemeath_outro_upgraded_character_ids = [actor_character_id]
+        # The triggering action used its action-start snapshot. Mutating the
+        # live instance here only affects later actions and preserves duration.
+        active.remaining_duration = remaining_before
 
     def _apply_post_mechanic_transition_debug(self, result) -> None:
         data = self.state.character_mechanics_state.get("mornye")

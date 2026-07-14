@@ -14,7 +14,11 @@ from search.beam_state import diversity_quantization_contract
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PLAN_PATH = ROOT / "data" / "beam_search_plan_v111.json"
 LOWMEM_32GB_PLAN_PATH = ROOT / "data" / "beam_search_plan_v113_32gb.json"
+V114_LOWMEM_32GB_PLAN_PATH = ROOT / "data" / "beam_search_plan_v114_32gb.json"
+V115_RESUME_V114_PLAN_PATH = ROOT / "data" / "beam_search_plan_v115_32gb_resume_v114.json"
 LOWMEM_32GB_SCHEMA = "beam_search_plan_v113_32gb"
+V114_LOWMEM_32GB_SCHEMA = "beam_search_plan_v114_32gb"
+V115_RESUME_V114_SCHEMA = "beam_search_plan_v115_32gb_resume_v114"
 LOWMEM_32GB_STAGE_ID = "full_120s_lowmem_32gb"
 LOWMEM_32GB_OUTPUT_ROOT = "results/beam_search_v113_lowmem_32gb"
 FORBIDDEN_64GB_OUTPUT_ROOT = "results/beam_search_v111_full_120s"
@@ -23,6 +27,12 @@ EXPECTED_OBJECTIVE = "deterministic_120s_total_damage_only"
 EXPECTED_PARTY = "aemeath_mornye_lynae_enabled_test_party"
 EXPECTED_INITIAL_ACTIVE = "aemeath"
 EXPECTED_CURRICULUM = "none"
+STREAMING_ACCUMULATOR_SPILL_FORMAT = "streaming_jsonl_gzip_v113"
+LEGACY_ACCUMULATOR_SPILL_FORMAT = "legacy_monolithic_json_gzip_v111"
+ACCUMULATOR_SPILL_FORMATS = {
+    STREAMING_ACCUMULATOR_SPILL_FORMAT,
+    LEGACY_ACCUMULATOR_SPILL_FORMAT,
+}
 EXPECTED_ACTION_DATA_HASH = "d6377d54a1abb985dc5f58866321c61c7b904a6b73ddc1538be7e38d36a99ff1"
 EXPECTED_PARTY_CONFIG_HASH = "bd106ba1c0f5581436c35fea736a00fd6ad92b131f8b43ba8cf1e3dc89cbcb11"
 EXPECTED_DIRECT_ACTION_MANIFEST_SHA256 = "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d"
@@ -53,7 +63,7 @@ def sha256_file(path: Path) -> str:
 def load_plan(path: Path = DEFAULT_PLAN_PATH) -> dict[str, Any]:
     raw = json.loads(path.read_text(encoding="utf-8"))
     inheritance = raw.get("inherits_contracts_from")
-    if raw.get("schema_version") == LOWMEM_32GB_SCHEMA and isinstance(inheritance, dict):
+    if raw.get("schema_version") in {LOWMEM_32GB_SCHEMA, V114_LOWMEM_32GB_SCHEMA, V115_RESUME_V114_SCHEMA} and isinstance(inheritance, dict):
         base_path = ROOT / str(inheritance["path"])
         if sha256_file(base_path) != inheritance.get("sha256"):
             raise ValueError("Low-memory Beam base-plan hash mismatch")
@@ -63,6 +73,10 @@ def load_plan(path: Path = DEFAULT_PLAN_PATH) -> dict[str, Any]:
 
 
 def validate_plan(plan: dict[str, Any], *, plan_path: Path = DEFAULT_PLAN_PATH) -> dict[str, Any]:
+    if plan.get("schema_version") == V115_RESUME_V114_SCHEMA:
+        return _validate_v115_resume_v114_plan(plan, plan_path=plan_path)
+    if plan.get("schema_version") == V114_LOWMEM_32GB_SCHEMA:
+        return _validate_v114_lowmem_32gb_plan(plan, plan_path=plan_path)
     if plan.get("schema_version") == LOWMEM_32GB_SCHEMA:
         return _validate_lowmem_32gb_plan(plan, plan_path=plan_path)
     errors: list[str] = []
@@ -305,6 +319,19 @@ def validate_plan(plan: dict[str, Any], *, plan_path: Path = DEFAULT_PLAN_PATH) 
     }
 
 
+def resolve_accumulator_spill_format(stage: dict[str, Any]) -> str:
+    """Resolve the spill encoding from an explicit contract with v113 compatibility."""
+    declared = stage.get("accumulator_spill_format")
+    if declared is not None:
+        value = str(declared)
+        if value not in ACCUMULATOR_SPILL_FORMATS:
+            raise ValueError(f"Unsupported accumulator spill format: {value!r}")
+        return value
+    if stage.get("stage_id") == LOWMEM_32GB_STAGE_ID:
+        return STREAMING_ACCUMULATOR_SPILL_FORMAT
+    return LEGACY_ACCUMULATOR_SPILL_FORMAT
+
+
 def stage_by_id(plan: dict[str, Any], stage_id: str) -> dict[str, Any]:
     for stage in plan["stages"]:
         if stage["stage_id"] == stage_id:
@@ -328,7 +355,7 @@ def resolve_actual_data_hashes(required_keys: set[str] | None = None) -> dict[st
 
 
 def resolve_plan_data_hashes(plan: dict[str, Any]) -> dict[str, str]:
-    if plan.get("schema_version") == LOWMEM_32GB_SCHEMA:
+    if plan.get("schema_version") in {LOWMEM_32GB_SCHEMA, V114_LOWMEM_32GB_SCHEMA, V115_RESUME_V114_SCHEMA}:
         return resolve_actual_data_hashes(
             {
                 "direct_action_manifest_sha256",
@@ -449,6 +476,248 @@ def _validate_lowmem_32gb_plan(plan: dict[str, Any], *, plan_path: Path) -> dict
         "stage_ids": [LOWMEM_32GB_STAGE_ID],
         "future_execution_only": True,
         "actual_data_hashes": actual,
+    }
+
+
+def _validate_v114_lowmem_32gb_plan(plan: dict[str, Any], *, plan_path: Path) -> dict[str, Any]:
+    errors: list[str] = []
+    for key, expected in {
+        "schema_version": V114_LOWMEM_32GB_SCHEMA,
+        "candidate": 114,
+        "algorithm": EXPECTED_ALGORITHM,
+        "objective": EXPECTED_OBJECTIVE,
+        "party": EXPECTED_PARTY,
+        "initial_active_character": EXPECTED_INITIAL_ACTIVE,
+        "curriculum_reset_mode": EXPECTED_CURRICULUM,
+        "combat_duration": 120.0,
+        "route_similarity_objective": False,
+        "bc_ppo_policy_guidance": False,
+        "manual_route_guidance": False,
+        "global_optimum_proven": False,
+    }.items():
+        if plan.get(key) != expected:
+            errors.append(f"{key} {plan.get(key)!r} != {expected!r}")
+    inheritance = plan.get("inherits_contracts_from", {})
+    if inheritance != {
+        "path": "data/beam_search_plan_v111.json",
+        "sha256": "b504def4e0c1da82ef2a6024d19ccac76fe175df51899e50d12f3bff99a17998",
+    }:
+        errors.append("inherits_contracts_from must pin the verified v111 plan")
+    observation = plan.get("observation_contract", {})
+    for key, expected in {
+        "version": "slot_generic_mechanics_v5",
+        "shape": 314,
+        "policy_action_count": 25,
+        "max_policy_action_slots": 32,
+    }.items():
+        if observation.get(key) != expected:
+            errors.append(f"observation_contract.{key} {observation.get(key)!r} != {expected!r}")
+    expected_stage = {
+        "stage_id": "full_120s_lowmem_32gb_v114",
+        "combat_duration": 120.0,
+        "time_bucket_width": 0.5,
+        "beam_width": 1792,
+        "global_damage_quota": 896,
+        "diversity_retention_quota": 896,
+        "max_states_per_diversity_key": 8,
+        "maximum_expansions": 5000000,
+        "checkpoint_interval_expansions": 100000,
+        "limit_check_interval_expansions": 256,
+        "wall_clock_budget_seconds": 36000,
+        "wall_clock_limit_seconds": 36000.0,
+        "memory_budget_bytes": 23622320128,
+        "max_unique_fingerprints_per_destination_bucket": 16384,
+        "destination_accumulator_unique_fingerprint_bound": 16384,
+        "in_memory_accumulator_candidate_limit": 4096,
+        "disk_spill_enabled": True,
+        "accumulator_spill_format": STREAMING_ACCUMULATOR_SPILL_FORMAT,
+    }
+    stages = plan.get("stages")
+    if not isinstance(stages, list) or len(stages) != 1:
+        errors.append("v114 low-memory plan must contain exactly one stage")
+    else:
+        for key, expected in expected_stage.items():
+            if stages[0].get(key) != expected:
+                errors.append(f"full_120s_lowmem_32gb_v114.{key} {stages[0].get(key)!r} != {expected!r}")
+        try:
+            resolved_spill_format = resolve_accumulator_spill_format(stages[0])
+        except ValueError as error:
+            errors.append(str(error))
+        else:
+            if resolved_spill_format != STREAMING_ACCUMULATOR_SPILL_FORMAT:
+                errors.append("candidate-114 low-memory stage must resolve to deterministic streaming spill")
+    policy = plan.get("initial_execution_policy", {})
+    if policy.get("first_run_max_expansions") != 3000000 or policy.get("plan_maximum_expansions") != 5000000:
+        errors.append("initial_execution_policy must preserve reviewed 3M/5M limits")
+    output = plan.get("output_contract", {})
+    if output.get("canonical_output_root") != "results/beam_search_v114_lowmem_32gb":
+        errors.append("candidate-114 canonical output root mismatch")
+    forbidden = set(output.get("forbidden_resume_or_output_roots", []))
+    required_forbidden = {"results/beam_search_v111_full_120s", "results/beam_search_v113_lowmem_32gb"}
+    if not required_forbidden.issubset(forbidden):
+        errors.append("candidate-114 plan must forbid both v111 and interrupted v113 roots")
+    transition = plan.get("transition_contract", {})
+    for key, expected in {
+        "version": "v114",
+        "generic_swap_action_time": 0.0,
+        "generic_swap_combat_time_cost": 0.0,
+        "generic_swap_source_status": "user_approved_benchmark_assumption_after_workbook_and_web_review",
+        "swap_reentry_cooldown_seconds": 1.0,
+        "swap_reentry_cooldown_clock": "combat_time",
+        "aemeath_outro_implementation_version": "implemented_v114",
+    }.items():
+        if transition.get(key) != expected:
+            errors.append(f"transition_contract.{key} {transition.get(key)!r} != {expected!r}")
+    hashes = plan.get("data_contract_hashes", {})
+    actual = resolve_plan_data_hashes(plan)
+    for key in ("action_data_hash", "party_config_hash", "direct_action_manifest_sha256", "bc_npz_sha256", "manual_route_raw_sha256"):
+        if hashes.get(key) != actual.get(key):
+            errors.append(f"actual {key} {actual.get(key)!r} != declared {hashes.get(key)!r}")
+    direct_paths = {
+        "transition_config_sha256": ROOT / "data/transition_config.json",
+        "buffs_sha256": ROOT / "data/buffs.json",
+        "manual_model_comparison_v114_sha256": ROOT / "results/manual_model_comparison_v114.json",
+        "current_best_v114_result_sha256": ROOT / "results/transition_contract_v114_model_reevaluation/evaluations/guarded_ppo_v109__bc_conservative_seed_11__step_000090000.zip.json",
+    }
+    for key, path in direct_paths.items():
+        if not path.exists() or hashes.get(key) != sha256_file(path):
+            errors.append(f"{key} does not match {project_relative(path)}")
+    comparison = plan.get("comparison_reference", {})
+    for path_key, hash_key in (("path", "sha256"), ("current_best_result_path", "current_best_result_sha256")):
+        path = ROOT / str(comparison.get(path_key, ""))
+        if not path.exists() or comparison.get(hash_key) != sha256_file(path):
+            errors.append(f"comparison_reference.{path_key}/{hash_key} mismatch")
+    if plan.get("diversity_key_schema", {}).get("declared_character_mechanic_fields") != diversity_quantization_contract()["declared_character_mechanic_fields"]:
+        errors.append("candidate-114 diversity mechanic fields do not match runtime")
+    serialized = json.dumps(plan, sort_keys=True).lower()
+    for forbidden_key in ("manual_action_sequence", "selected_policy_actions", "expected_resolved_actions"):
+        if forbidden_key in serialized:
+            errors.append(f"plan contains forbidden policy guidance: {forbidden_key}")
+    if errors:
+        raise ValueError("; ".join(errors))
+    return {
+        "status": "ok",
+        "plan_path": project_relative(plan_path),
+        "plan_sha256": sha256_file(plan_path),
+        "stage_ids": ["full_120s_lowmem_32gb_v114"],
+        "stage_accumulator_spill_formats": {
+            "full_120s_lowmem_32gb_v114": resolve_accumulator_spill_format(stages[0]),
+        },
+        "future_execution_only": True,
+        "actual_data_hashes": actual,
+    }
+
+
+def _validate_v115_resume_v114_plan(plan: dict[str, Any], *, plan_path: Path) -> dict[str, Any]:
+    errors: list[str] = []
+    legacy = copy.deepcopy(plan)
+    legacy["schema_version"] = V114_LOWMEM_32GB_SCHEMA
+    legacy["candidate"] = 114
+    legacy["initial_execution_policy"]["plan_maximum_expansions"] = 5000000
+    legacy["stages"][0]["maximum_expansions"] = 5000000
+    legacy["stages"][0].pop("result_scope", None)
+    for key in ("resume_extension_contract", "comparison_incumbent_contract", "result_scope_contract", "execution_contract", "source_checkpoint_contract"):
+        legacy.pop(key, None)
+    _validate_v114_lowmem_32gb_plan(legacy, plan_path=V114_LOWMEM_32GB_PLAN_PATH)
+    if plan.get("candidate") != 115:
+        errors.append("candidate must be 115")
+    execution = plan.get("execution_contract", {})
+    expected_execution = {
+        "low_memory_32gb": True,
+        "hard_memory_budget_required": True,
+        "canonical_output_root_required_for_resume": True,
+        "reviewed_memory_budget_bytes": 23622320128,
+        "memory_budget_cli_policy": "may_lower_never_raise",
+        "safety_gates_plan_capability_driven": True,
+    }
+    for key, expected in expected_execution.items():
+        if execution.get(key) != expected:
+            errors.append(f"execution_contract.{key} mismatch")
+    stage = plan.get("stages", [{}])[0]
+    if stage.get("maximum_expansions") != 6500000:
+        errors.append("maximum_expansions must be 6500000")
+    if stage.get("result_scope") != "completed_120s_project_comparison":
+        errors.append("stage result_scope must be completed_120s_project_comparison")
+    scope = plan.get("result_scope_contract", {})
+    if scope.get("accepted_values") != ["completed_120s_project_comparison", "calibration_horizon_only", "smoke_only"]:
+        errors.append("result_scope_contract accepted values mismatch")
+    policy = plan.get("initial_execution_policy", {})
+    if policy.get("plan_maximum_expansions") != 6500000 or policy.get("recommended_resume_target") != 6500000:
+        errors.append("candidate-115 reviewed/recommended maximum must be 6500000")
+    resume = plan.get("resume_extension_contract", {})
+    expected_resume = {
+        "enabled": True,
+        "source_plan_path": "data/beam_search_plan_v114_32gb.json",
+        "source_plan_sha256": "e70826d0040444f834398d55c922aacb4ee5b484bc6ef2e75ca5a0ad603bc18c",
+        "source_stage_id": "full_120s_lowmem_32gb_v114",
+        "source_checkpoint_expansions": 3000000,
+        "source_search_state_sha256": "f1ac52b960465a7ea71ea8495b1c1f2d89a79766d5cdf2f6ad3e4872d2e25630",
+        "receipt_path": "results/beam_search_v114_3m_resume_extension_v115_receipt.json",
+        "allowed_stage_differences": ["maximum_expansions", "result_scope"],
+        "minimum_new_maximum_expansions": 5000001,
+        "maximum_new_maximum_expansions": 6500000,
+    }
+    for key, expected in expected_resume.items():
+        if resume.get(key) != expected:
+            errors.append(f"resume_extension_contract.{key} mismatch")
+    if sha256_file(ROOT / expected_resume["source_plan_path"]) != expected_resume["source_plan_sha256"]:
+        errors.append("source v114 plan hash mismatch")
+    checkpoint = plan.get("source_checkpoint_contract", {})
+    expected_checkpoint = {
+        "reviewed_inventory_path": "results/beam_search_v114_3m_reviewed_file_inventory_v115.json",
+        "reviewed_inventory_file_sha256": "9e4fc52836ba4986ba1d78c544120657ae1fb4593520fceabc71d2b527bf6a5a",
+        "reviewed_inventory_entry_digest_sha256": "0bb00535354717d05ae1761fe6522bcc5129cc598cc8aaf072843626a7d43f15",
+        "external_review_inventory_manifest_sha256": "35a52b044856327790dcd993fe524b4144214db31f4338fda154d824f2574bee",
+        "file_count": 649,
+        "total_bytes": 1752618157,
+        "best_route_sha256": "0c478c21701f323166362c99cd99d5cdc63870f3c42745d4209afcbc9e254f24",
+        "execution_result_sha256": "21a9c4014e5b040b07c2034913b24908229ffa578e6f55d4dc956bd622eb48cc",
+        "final_summary_sha256": "3b0db39bd2ebb64559c29bfe1484ac7e053badf41846744fc90af951eb92f5f6",
+        "leaderboard_sha256": "e9f2e044dc0a837a52881a4aa263c9041aea9f77e8c9a8236cbce7c3fc193397",
+        "search_state_sha256": "f1ac52b960465a7ea71ea8495b1c1f2d89a79766d5cdf2f6ad3e4872d2e25630",
+        "log_sha256": "64838ae7cf45743ba9d55251761e9c03ab9dbda3128995c2d20dfec4b865ce9a",
+        "best_partial_source_path": "execution_result.json",
+        "best_partial_combat_time": 67.48333333333329,
+        "best_partial_current_time": 107.75000000000001,
+        "best_partial_total_damage": 2850679.8061139295,
+        "best_partial_action_count": 92,
+    }
+    for key, expected in expected_checkpoint.items():
+        if checkpoint.get(key) != expected:
+            errors.append(f"source_checkpoint_contract.{key} mismatch")
+    inventory_path = ROOT / str(checkpoint.get("reviewed_inventory_path", ""))
+    if not inventory_path.is_file() or sha256_file(inventory_path) != checkpoint.get("reviewed_inventory_file_sha256"):
+        errors.append("reviewed checkpoint inventory file mismatch")
+    incumbent = plan.get("comparison_incumbent_contract", {})
+    required_incumbent = {
+        "model_path": "models/guarded_ppo_v109/bc_conservative_seed_11/step_000090000.zip",
+        "model_sha256": "dc437ff4e03b50001e9829550b1e52ff0f503d963ec3433a7adf88848b5e3073",
+        "result_path": "results/transition_contract_v114_model_reevaluation/evaluations/guarded_ppo_v109__bc_conservative_seed_11__step_000090000.zip.json",
+        "result_sha256": "8c0c47c3d266ba13d3e4658446a8b86b6c084678610baff61f94753190359f59",
+        "total_damage": 5276844.358692044,
+        "dps": 43973.70298910037,
+        "selected_sequence_sha256": "27920c26c93bc51aacb964211062b301a2af16b899e2bbafc442edca17e72c54",
+        "resolved_sequence_sha256": "350df3b0df184b5d9e8c5cecffef7893ddb53f6d31eeaf864bf7c61fb71590f0",
+    }
+    for key, expected in required_incumbent.items():
+        if incumbent.get(key) != expected:
+            errors.append(f"comparison_incumbent_contract.{key} mismatch")
+    from search.beam_reporting import load_project_comparison_incumbent
+    try:
+        load_project_comparison_incumbent(plan)
+    except ValueError as error:
+        errors.append(str(error))
+    if errors:
+        raise ValueError("; ".join(errors))
+    return {
+        "status": "ok",
+        "plan_path": project_relative(plan_path),
+        "plan_sha256": sha256_file(plan_path),
+        "stage_ids": ["full_120s_lowmem_32gb_v114"],
+        "result_scope": stage["result_scope"],
+        "recommended_resume_target": 6500000,
+        "future_execution_only": True,
+        "actual_data_hashes": resolve_plan_data_hashes(plan),
     }
 
 

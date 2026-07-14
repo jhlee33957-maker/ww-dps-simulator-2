@@ -13,6 +13,10 @@ BASE_DIR = Path(__file__).resolve().parent
 
 SOURCE_FILES = {
     "PROJECT_PROGRESS_STATE.json": BASE_DIR / "PROJECT_PROGRESS_STATE.json",
+    "results/beam_search_v114_completed_v116/result_manifest.json": BASE_DIR
+    / "results"
+    / "beam_search_v114_completed_v116"
+    / "result_manifest.json",
     "data/beam_search_plan_v111.json": BASE_DIR / "data" / "beam_search_plan_v111.json",
     "data/guarded_ppo_experiment_plan_v109.json": BASE_DIR
     / "data"
@@ -428,6 +432,66 @@ def merge_progress_data(
             merged["beam_stage_notice"] = (
                 "선택 Beam Search 계획 파일의 stages 형식을 해석하지 못해 내장 단계 계획을 표시합니다."
             )
+
+    # Candidate 116 promotes the completed 120-second Beam route to the overall
+    # project winner while retaining Guarded PPO 90k as the trained-model winner.
+    if isinstance(progress, dict):
+        current = progress.get("current_in_progress_task") or {}
+        completed = current.get("candidate_116_completed_beam") or {}
+        overall = current.get("overall_project_winner") or {}
+        trained = current.get("best_trained_model") or {}
+        if completed.get("termination_status") == "completed_search":
+            beam_damage = float(completed["winning_damage"])
+            beam_dps = float(completed["winning_dps"])
+            model_damage = float(trained["total_damage"])
+            model_dps = float(trained["dps"])
+            merged["best_total_damage"] = beam_damage
+            merged["best_dps"] = beam_dps
+            merged["best_method"] = "Completed Beam route"
+            merged["best_model"] = trained["model_path"]
+            merged["overall_project_winner"] = overall
+            merged["best_trained_model"] = trained
+            merged["beam_search"].update(
+                {
+                    "full_120s_status": "Completed",
+                    "has_confirmed_damage_result": True,
+                    "has_bc_beating_route": True,
+                    "winner_route_id": completed["winning_route_id"],
+                    "winner_total_damage": beam_damage,
+                    "winner_dps": beam_dps,
+                    "completed_route_count": completed["completed_120s_route_count"],
+                    "expansions": completed["expansions"],
+                    "safety_cap": 6_500_000,
+                    "damage_gain_over_best_trained_model": beam_damage - model_damage,
+                    "dps_gain_over_best_trained_model": beam_dps - model_dps,
+                    "relative_gain_over_best_trained_model_percent": (
+                        beam_damage / model_damage - 1.0
+                    )
+                    * 100.0,
+                    "global_optimum_proven": False,
+                    "summary": (
+                        f"Beam completed with {completed['completed_120s_route_count']} retained "
+                        f"120-second routes at {completed['expansions']:,} expansions, before the "
+                        "6.5M safety cap. The winning route is now the overall project winner; "
+                        "global optimality is not proven."
+                    ),
+                }
+            )
+            merged["mcts"].update(
+                {
+                    "status": "Not executed",
+                    "summary": "MCTS remains the next independent search option.",
+                    "has_confirmed_damage_result": False,
+                }
+            )
+            for stage in merged.get("beam_stages", []):
+                if stage.get("duration_seconds") == 120:
+                    stage["status"] = "Completed"
+            for stage in merged.get("stage_status", []):
+                if stage.get("stage") == "Beam Search 120초 탐색":
+                    stage["status"] = "내부 검증"
+                elif stage.get("stage") == "MCTS":
+                    stage["status"] = "미착수"
 
     return merged, source_mode
 

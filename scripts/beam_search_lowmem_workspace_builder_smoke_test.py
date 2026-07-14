@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import sys
 import tempfile
 from pathlib import Path
@@ -25,6 +26,22 @@ def fixture(root: Path) -> None:
         path = root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(f"fixture:{relative}\n", encoding="utf-8")
+    (root / "data/beam_search_plan_v114_32gb.json").write_text(
+        json.dumps(
+            {
+                "candidate": 114,
+                "stages": [
+                    {
+                        "stage_id": "full_120s_lowmem_32gb_v114",
+                        "accumulator_spill_format": "streaming_jsonl_gzip_v113",
+                    }
+                ],
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
     (root / "models/guarded_ppo_v109/checkpoint_1.zip").parent.mkdir(parents=True)
     (root / "models/guarded_ppo_v109/checkpoint_1.zip").write_bytes(b"heavy")
     (root / "results/guarded_ppo_v109/final_summary.json").parent.mkdir(parents=True)
@@ -45,7 +62,8 @@ def main() -> int:
         assert tree_hash(source) == before
         assert first["manifest"] == second["manifest"]
         assert (base / "out1/search/beam_search.py").exists()
-        assert (base / "out1/results/guarded_ppo_v109/final_summary.json").exists()
+        assert not (base / "out1/results/guarded_ppo_v109/final_summary.json").exists()
+        assert (base / "out1/results/manual_model_comparison_v114.json").exists()
         assert not (base / "out1/models/guarded_ppo_v109/checkpoint_1.zip").exists()
         assert not list((base / "out1").rglob("*.pyc"))
         archived = build_result_archive(base / "out1", base / "result.zip")

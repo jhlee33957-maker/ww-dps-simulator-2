@@ -45,11 +45,15 @@ def main() -> None:
     assert party.timeline[-1].transition_type == "normal_swap"
     assert party.timeline[-1].transition_reason == "concerto_not_ready"
     swapped_mask = mask_for(party)
-    assert swapped_mask["swap_to_aemeath"] is True
+    assert swapped_mask["swap_to_aemeath"] is False
     assert swapped_mask["swap_to_dummy_support"] is False
     assert swapped_mask["aemeath_basic_attack"] is False
     assert swapped_mask["dummy_support_attack"] is True
     assert swapped_mask["dummy_support_buff"] is True
+    assert party.execute_action("short_wait")
+    assert mask_for(party)["swap_to_aemeath"] is False
+    assert party.execute_action("short_wait")
+    assert mask_for(party)["swap_to_aemeath"] is True
 
     mornye_party = Simulation.from_json(DATA_DIR, party="aemeath_mornye_test_party")
     mornye_policy_ids = mornye_party.get_policy_action_ids()

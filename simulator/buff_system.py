@@ -65,7 +65,17 @@ def tick_buffs(state: CombatState, combat_elapsed: float) -> None:
 
 
 def apply_buff(state: CombatState, buff: BuffData, source_character_id: str | None) -> None:
-    state.active_buffs = [active for active in state.active_buffs if active.buff_id != buff.id]
+    if (buff.target_scope or buff.target) == "specific_character":
+        state.active_buffs = [
+            active
+            for active in state.active_buffs
+            if not (
+                active.buff_id == buff.id
+                and active.target_character_id == buff.target_character_id
+            )
+        ]
+    else:
+        state.active_buffs = [active for active in state.active_buffs if active.buff_id != buff.id]
     state.active_buffs.append(
         ActiveBuff(
             buff_id=buff.id,

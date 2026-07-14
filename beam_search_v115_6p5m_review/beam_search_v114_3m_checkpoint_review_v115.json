@@ -1,0 +1,68 @@
+{
+  "schema_version": "beam_search_v114_3m_checkpoint_review_v115",
+  "status": "healthy_resumable_expansion_budget_exhausted",
+  "candidate": 115,
+  "source_stage_id": "full_120s_lowmem_32gb_v114",
+  "source_plan_sha256": "e70826d0040444f834398d55c922aacb4ee5b484bc6ef2e75ca5a0ad603bc18c",
+  "source_search_state_sha256": "f1ac52b960465a7ea71ea8495b1c1f2d89a79766d5cdf2f6ad3e4872d2e25630",
+  "termination_status": "expansion_budget_exhausted",
+  "expansions": 3000000,
+  "completed_route_count": 0,
+  "completed_bucket_count": 135,
+  "highest_completed_bucket_index": 134,
+  "pending_bucket_indices": [134, 135, 136, 137],
+  "best_partial": {
+    "combat_time": 67.48333333333329,
+    "current_time": 107.75000000000001,
+    "total_damage": 2850679.8061139295,
+    "action_count": 92,
+    "interpretation": "diagnostic_only_not_a_winner_or_final_dps_result"
+  },
+  "deduplicated_states": 516112,
+  "pruned_states": 1840989,
+  "zero_time_expansions": 402052,
+  "live_nodes": 1223,
+  "peak_live_nodes": 1223,
+  "checkpoint_count": 31,
+  "next_checkpoint_expansion": 3100000,
+  "elapsed_seconds": 8955.554317099974,
+  "expansions_per_second": 334.9876393772433,
+  "peak_process_rss_bytes": 1914478592,
+  "memory_budget_bytes": 23622320128,
+  "spill_format": "streaming_jsonl_gzip_v113",
+  "streaming_chunk_schema": "beam_search_accumulator_chunk_jsonl_gzip_v113",
+  "reporting_correction": {
+    "legacy_fields": ["final_summary.json", "leaderboard.json", "best_route.json", "execution_result.json"],
+    "legacy_status": "legacy_v114_full_stage_misclassification",
+    "authoritative_for_project_winner_reporting": false,
+    "search_state_remains_valid": true,
+    "correct_result_scope": "completed_120s_project_comparison"
+  },
+  "current_project_winner": {
+    "model_path": "models/guarded_ppo_v109/bc_conservative_seed_11/step_000090000.zip",
+    "model_sha256": "dc437ff4e03b50001e9829550b1e52ff0f503d963ec3433a7adf88848b5e3073",
+    "total_damage": 5276844.358692044,
+    "dps": 43973.70298910037
+  },
+  "budget_projection": {
+    "five_million_likely_insufficient": true,
+    "expected_first_120s_completion_region": "approximately 5.5M-5.8M expansions",
+    "reviewed_resume_target": 6500000,
+    "projection_is_not_optimum_claim": true
+  },
+  "candidate_115_resume_correction": {
+    "plan_sha256": "2a0c60b73eb1760174bb867d886a45fd36dac42b019dac9d93dd360b1a44cd90",
+    "shared_preflight_module": "search/beam_resume_extension.py",
+    "actual_runner_preflight_before_output_mutation": true,
+    "low_memory_capability_gate_enforced": true,
+    "reviewed_inventory_path": "results/beam_search_v114_3m_reviewed_file_inventory_v115.json",
+    "reviewed_inventory_file_sha256": "9e4fc52836ba4986ba1d78c544120657ae1fb4593520fceabc71d2b527bf6a5a",
+    "reviewed_inventory_entry_digest_sha256": "0bb00535354717d05ae1761fe6522bcc5129cc598cc8aaf072843626a7d43f15",
+    "receipt_path": "results/beam_search_v114_3m_resume_extension_v115_receipt.json",
+    "receipt_sha256": "88a0ae8169026cd53167fc8b5909db0d5ab4ec125ee21a7e2e29e43a7d7b5918"
+  },
+  "global_optimum_proven": false,
+  "heavy_checkpoint_local_only": true,
+  "heavy_checkpoint_excluded_from_candidate_archive": true,
+  "long_resume_executed": false
+}

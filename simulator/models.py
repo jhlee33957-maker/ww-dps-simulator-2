@@ -236,13 +236,16 @@ class ActionData(BaseModel):
         if self.applies_anomaly_stacks <= 0 and self.anomaly_stacks > 0:
             self.applies_anomaly_stacks = self.anomaly_stacks
         auxiliary_zero_time = bool((self.mechanic_effects or {}).get("auxiliary_zero_time_action", False))
-        if auxiliary_zero_time:
+        zero_time_transition = bool((self.mechanic_effects or {}).get("zero_time_transition_action", False))
+        if zero_time_transition and self.action_type != "swap":
+            raise ValueError("zero_time_transition_action is restricted to swap/transition actions")
+        if auxiliary_zero_time or zero_time_transition:
             if self.duration != 0.0:
-                raise ValueError("Auxiliary zero-time action duration must be exactly 0.0")
+                raise ValueError("Zero-time action duration must be exactly 0.0")
             if self.effective_action_time != 0.0:
-                raise ValueError("Auxiliary zero-time action action_time must be exactly 0.0")
+                raise ValueError("Zero-time action action_time must be exactly 0.0")
             if self.effective_combat_time_cost != 0.0:
-                raise ValueError("Auxiliary zero-time action combat_time_cost must be exactly 0.0")
+                raise ValueError("Zero-time action combat_time_cost must be exactly 0.0")
         elif self.duration <= 0.0:
             raise ValueError("Action duration must be > 0 unless auxiliary_zero_time_action is true")
         elif self.effective_action_time <= 0.0:
@@ -858,6 +861,27 @@ class ActionResult(BaseModel):
     fallback_swap_used: bool = False
     swap_timing_is_placeholder: bool = False
     swap_timing_source: str | None = None
+    generic_swap_zero_time: bool = False
+    swap_reentry_cooldown_seconds: float = 0.0
+    outgoing_swap_reentry_key: str | None = None
+    outgoing_swap_reentry_before: float = 0.0
+    outgoing_swap_reentry_after_set: float = 0.0
+    outgoing_swap_reentry_after_action: float = 0.0
+    incoming_swap_reentry_key: str | None = None
+    incoming_swap_reentry_before: float = 0.0
+    incoming_swap_reentry_blocked: bool = False
+    swap_contract_source_status: str | None = None
+    aemeath_outro_applied: bool = False
+    aemeath_outro_upgrade_applied: bool = False
+    aemeath_outro_mode_snapshot: str | None = None
+    aemeath_outro_base_amp: float = 0.0
+    aemeath_outro_duration: float = 0.0
+    aemeath_outro_recipient_values_before: dict[str, float] = Field(default_factory=dict)
+    aemeath_outro_recipient_values_after: dict[str, float] = Field(default_factory=dict)
+    aemeath_outro_upgraded_character_ids: list[str] = Field(default_factory=list)
+    aemeath_outro_upgrade_event_tag: str | None = None
+    aemeath_outro_upgrade_duration_refreshed: bool = False
+    aemeath_outro_unresolved_reason: str | None = None
     transition_warnings: list[str] = Field(default_factory=list)
     valid: bool
     base_resonance_energy_gain: float = 0.0
@@ -1308,6 +1332,27 @@ class TimelineEntry(BaseModel):
     fallback_swap_used: bool = False
     swap_timing_is_placeholder: bool = False
     swap_timing_source: str | None = None
+    generic_swap_zero_time: bool = False
+    swap_reentry_cooldown_seconds: float = 0.0
+    outgoing_swap_reentry_key: str | None = None
+    outgoing_swap_reentry_before: float = 0.0
+    outgoing_swap_reentry_after_set: float = 0.0
+    outgoing_swap_reentry_after_action: float = 0.0
+    incoming_swap_reentry_key: str | None = None
+    incoming_swap_reentry_before: float = 0.0
+    incoming_swap_reentry_blocked: bool = False
+    swap_contract_source_status: str | None = None
+    aemeath_outro_applied: bool = False
+    aemeath_outro_upgrade_applied: bool = False
+    aemeath_outro_mode_snapshot: str | None = None
+    aemeath_outro_base_amp: float = 0.0
+    aemeath_outro_duration: float = 0.0
+    aemeath_outro_recipient_values_before: dict[str, float] = Field(default_factory=dict)
+    aemeath_outro_recipient_values_after: dict[str, float] = Field(default_factory=dict)
+    aemeath_outro_upgraded_character_ids: list[str] = Field(default_factory=list)
+    aemeath_outro_upgrade_event_tag: str | None = None
+    aemeath_outro_upgrade_duration_refreshed: bool = False
+    aemeath_outro_unresolved_reason: str | None = None
     transition_warnings: list[str] = Field(default_factory=list)
     active_character: str
     base_resonance_energy_gain: float = 0.0

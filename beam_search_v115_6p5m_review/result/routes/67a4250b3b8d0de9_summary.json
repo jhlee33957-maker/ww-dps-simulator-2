@@ -1,0 +1,1858 @@
+{
+  "schema_version": "beam_search_route_replay_summary_v111",
+  "route_id": "67a4250b3b8d0de9",
+  "combat_duration": 120.0,
+  "reference_horizon_seconds": 120.0,
+  "reference_damage_comparison_status": "comparable_120s_completed_route",
+  "party": "aemeath_mornye_lynae_enabled_test_party",
+  "initial_active_character": "aemeath",
+  "active_build_profiles": {
+    "aemeath": {
+      "build_profile_id": "aemeath_user_real_01",
+      "weapon": {
+        "weapon_id": "everbright_polestar",
+        "weapon_type": "broadblade",
+        "rank": 1,
+        "static_stats_already_in_profile": true,
+        "base_atk_and_crit_already_in_profile": true,
+        "source_status": "user_supplied_weapon_tooltip",
+        "notes": "Weapon base ATK and crit stat are assumed already reflected in user-entered real stat profile. Runtime weapon passive effects are applied separately."
+      },
+      "echo_sets": {
+        "trailblazing_star": {
+          "pieces": 5,
+          "static_2set_already_in_profile": true,
+          "conditional_5set_enabled": true,
+          "conditional_5set_status": "implemented",
+          "source_status": "user_supplied_set_tooltip",
+          "trigger_event_tags": [
+            "fusion_burst",
+            "tune_rupture_shifting"
+          ],
+          "buff_id": "aemeath_trailblazing_star_5set",
+          "notes": "2-set Fusion DMG is already manually reflected in this build profile. 5-set is implemented as a runtime buff triggered by emitted fusion_burst or tune_rupture_shifting mechanic events."
+        }
+      },
+      "profile_completeness_status": "user_supplied_complete",
+      "default_scaling_stat": "atk"
+    },
+    "lynae": {
+      "build_profile_id": "lynae_user_real_01",
+      "weapon": {
+        "weapon_id": "static_mist",
+        "weapon_type": "pistol",
+        "rank": 1,
+        "static_stats_already_in_profile": true,
+        "base_atk_and_crit_already_in_profile": true,
+        "energy_regen_already_in_profile": true,
+        "source_status": "user_supplied_weapon_tooltip",
+        "notes": "Static Mist base ATK, crit rate, and ER are already reflected in profile; only Outro incoming ATK buff is runtime."
+      },
+      "echo_sets": {
+        "pact_of_neonlight_leap": {
+          "pieces": 5,
+          "static_2set_spectro_already_in_profile": true,
+          "echo_static_damage_bonuses_already_in_profile": true,
+          "conditional_5set_enabled": true,
+          "conditional_5set_status": "implemented",
+          "source_status": "user_supplied_echo_set_tooltip",
+          "buff_id": "pact_neonlight_incoming_atk",
+          "notes": "2pc Spectro +10% and user-entered damage bonuses are profile-reflected. 5pc incoming ATK buff is runtime."
+        }
+      },
+      "profile_completeness_status": "user_supplied_complete",
+      "default_scaling_stat": "atk"
+    },
+    "mornye": {
+      "build_profile_id": "mornye_user_real_01",
+      "weapon": {
+        "weapon_id": "discord",
+        "weapon_type": "broadblade",
+        "rank": 5,
+        "static_stats_already_in_profile": true,
+        "energy_regen_substat_already_in_profile": true,
+        "source_status": "user_supplied_weapon_tooltip",
+        "notes": "Discord R5 is equipped. Discord's 412.5 base ATK is included in stat_components.atk.weapon_base for ATK-scaling actions such as Reactor Husk. Discord's 51.8% Energy Regen substat remains included in combat_stats.energy_regen, and its cooldown-gated Concerto restore is applied at runtime. No Starfield Calibrator DEF passive or party Crit DMG buff is included in this profile."
+      },
+      "echo_sets": {
+        "halo_of_starry_radiance": {
+          "pieces": 5,
+          "static_2set_healing_bonus_metadata_only": true,
+          "conditional_5set_enabled": true,
+          "conditional_5set_status": "implemented",
+          "source_status": "user_supplied_set_tooltip",
+          "trigger_event_tags": [
+            "team_heal"
+          ],
+          "buff_id": "mornye_halo_of_starry_radiance_5set",
+          "notes": "2-set Healing Bonus is metadata only for DPS. 5-set party ATK buff uses current Off-Tune Buildup Rate. Base value is 1.0; Syntony Field can raise it by +0.5, and C2 can add +0.2 if enabled."
+        }
+      },
+      "profile_completeness_status": "user_supplied_complete",
+      "default_scaling_stat": "def"
+    }
+  },
+  "selected_action_count": 162,
+  "resolved_action_count": 162,
+  "executed_action_count": 162,
+  "selected_sequence_sha256": "67a4250b3b8d0de9cec625448756226106ef0ed5134b8c4e4a0378518fa2f434",
+  "resolved_sequence_sha256": "2b594e575203f29293b1f0e57ae51a07ff85d535ac957bde38a5911f6858c43a",
+  "total_damage": 5651892.274552992,
+  "dps": 47099.1022879416,
+  "final_combat_time": 120.0,
+  "final_current_time": 195.73333333333346,
+  "damage_by_character": {
+    "aemeath": 4485947.999741952,
+    "lynae": 1062937.394884818,
+    "mornye": 103006.87992621961
+  },
+  "damage_by_character_sum": 5651892.27455299,
+  "damage_by_character_and_source": {
+    "Aemeath Tune Break response damage": 109275.4721024295,
+    "Aemeath direct action residual": 3655772.848243698,
+    "Aemeath generated mechanic event damage": 557511.8865435356,
+    "Aemeath scheduled damage": 163387.7928522898,
+    "Lynae Tune Break response damage": 339428.2321899736,
+    "Lynae direct action residual": 723509.1626948447,
+    "Mornye Tune Break response damage": 53821.234828496046,
+    "Mornye direct action residual": 41936.563593465,
+    "Mornye scheduled damage": 7249.081504258573
+  },
+  "effective_damage_role_breakdown": {
+    "schema_version": "effective_damage_role_breakdown_v2",
+    "direct_normal_action_damage": 4053771.6088328003,
+    "normal_damage": 4053771.6088328003,
+    "direct_tune_break_damage": 367446.9656992085,
+    "tune_break_damage": 367446.9656992085,
+    "direct_tune_response_damage": 502524.93912089913,
+    "tune_response_damage": 502524.93912089913,
+    "generated_mechanic_damage": 557511.8865435356,
+    "scheduled_damage": 170636.87435654833,
+    "unclassified_damage": 0.0,
+    "raw_timeline_row_total": 5651892.274552992,
+    "classified_damage_before_unclassified": 5651892.274552992,
+    "total_damage_check": 5651892.274552992,
+    "reported_total_damage": 5651892.274552992,
+    "total_damage_delta": 0.0,
+    "aemeath_forte_generated_damage": 557511.8865435356,
+    "other_generated_mechanic_damage": 0.0
+  },
+  "damage_by_action_id": {
+    "aemeath_basic_form_stage_1": 5997.514598298879,
+    "aemeath_basic_form_stage_2": 28110.832768374035,
+    "aemeath_basic_form_stage_3": 45204.996227921416,
+    "aemeath_basic_form_stage_4": 77692.37946787367,
+    "aemeath_echo_sigillum": 0.0,
+    "aemeath_form_switch_to_mech_normal": 166738.68371386916,
+    "aemeath_heavenfall_finale": 1021912.599190252,
+    "aemeath_heavy_mech_charged_1": 174875.6283035781,
+    "aemeath_heavy_mech_charged_2": 400404.3238683038,
+    "aemeath_liberation_overdrive": 488717.73989765043,
+    "aemeath_mech_basic_stage_1": 13252.224176426584,
+    "aemeath_mech_basic_stage_2": 172832.0137915393,
+    "aemeath_mech_basic_stage_3": 110332.52525721939,
+    "aemeath_mech_basic_stage_4": 144260.7013220595,
+    "aemeath_seraphic_duet_encore": 767597.3606787306,
+    "aemeath_seraphic_duet_overturn": 421507.0894630994,
+    "aemeath_sync_strike_call_of_dawn": 255860.22687577497,
+    "lynae_echo_hyvatia": 11725.66615611317,
+    "lynae_polychrome_leap_stage_1": 10382.43246744774,
+    "lynae_polychrome_leap_stage_2": 11359.995864722261,
+    "lynae_polychrome_leap_stage_3": 7017.605064048362,
+    "lynae_resonance_liberation_prismatic_overblast": 75517.73542947596,
+    "lynae_resonance_skill_palette": 27991.424003834494,
+    "lynae_spark_collision_lv3": 56884.262146107154,
+    "lynae_tune_break": 869971.9048201076,
+    "lynae_visual_impact": 136310.98785527487,
+    "mornye_liberation_critical_protocol": 29959.78579474985,
+    "mornye_skill_distributed_array": 22748.133553098705,
+    "mornye_wfo_basic_stage_1": 3698.3138373912916,
+    "swap_to_aemeath": 0.0,
+    "swap_to_lynae": 0.0,
+    "swap_to_mornye": 0.0,
+    "transition:aemeath_qte_intro_human": 10895.834648290122,
+    "transition:aemeath_qte_intro_mech": 32470.395383438386,
+    "transition:lynae_intro_time_to_show_some_colors": 19596.99615903813,
+    "transition:mornye_intro_convergence": 30063.961768883153
+  },
+  "damage_by_category": {
+    "basic_attack": 823336.7848447047,
+    "echo_ability": 11725.66615611317,
+    "intro": 60556.7925762114,
+    "other": 0.0,
+    "resonance_liberation": 3380492.26262584,
+    "resonance_skill": 505808.86353001575,
+    "tune_break": 869971.9048201076
+  },
+  "action_use_counts": {
+    "aemeath_basic_attack": 47,
+    "aemeath_echo_sigillum": 6,
+    "aemeath_heavy_attack": 14,
+    "aemeath_resonance_liberation": 6,
+    "aemeath_resonance_skill": 48,
+    "lynae_echo_hyvatia": 2,
+    "lynae_polychrome_leap": 6,
+    "lynae_resonance_liberation": 2,
+    "lynae_resonance_skill": 2,
+    "lynae_spark_collision": 2,
+    "lynae_tune_break": 4,
+    "lynae_visual_impact": 2,
+    "mornye_basic_attack": 2,
+    "mornye_resonance_liberation": 1,
+    "mornye_resonance_skill": 1,
+    "swap_to_aemeath": 7,
+    "swap_to_lynae": 6,
+    "swap_to_mornye": 4
+  },
+  "resolved_action_use_counts": {
+    "aemeath_basic_form_stage_1": 1,
+    "aemeath_basic_form_stage_2": 4,
+    "aemeath_basic_form_stage_3": 4,
+    "aemeath_basic_form_stage_4": 4,
+    "aemeath_echo_sigillum": 6,
+    "aemeath_form_switch_to_mech_normal": 20,
+    "aemeath_heavenfall_finale": 4,
+    "aemeath_heavy_mech_charged_1": 10,
+    "aemeath_heavy_mech_charged_2": 4,
+    "aemeath_liberation_overdrive": 4,
+    "aemeath_mech_basic_stage_1": 2,
+    "aemeath_mech_basic_stage_2": 16,
+    "aemeath_mech_basic_stage_3": 8,
+    "aemeath_mech_basic_stage_4": 8,
+    "aemeath_seraphic_duet_encore": 8,
+    "aemeath_seraphic_duet_overturn": 4,
+    "aemeath_sync_strike_call_of_dawn": 14,
+    "lynae_echo_hyvatia": 2,
+    "lynae_polychrome_leap_stage_1": 2,
+    "lynae_polychrome_leap_stage_2": 2,
+    "lynae_polychrome_leap_stage_3": 2,
+    "lynae_resonance_liberation_prismatic_overblast": 2,
+    "lynae_resonance_skill_palette": 2,
+    "lynae_spark_collision_lv3": 2,
+    "lynae_tune_break": 4,
+    "lynae_visual_impact": 2,
+    "mornye_liberation_critical_protocol": 1,
+    "mornye_skill_distributed_array": 1,
+    "mornye_wfo_basic_stage_1": 2,
+    "swap_to_aemeath": 4,
+    "swap_to_lynae": 4,
+    "swap_to_mornye": 2,
+    "transition:aemeath_qte_intro_human": 1,
+    "transition:aemeath_qte_intro_mech": 2,
+    "transition:lynae_intro_time_to_show_some_colors": 2,
+    "transition:mornye_intro_convergence": 2
+  },
+  "scheduled_damage": 170636.87435654833,
+  "route_comparison": {
+    "manual_bc_selected_common_prefix": 0,
+    "manual_bc_resolved_common_prefix": 0,
+    "first_selected_divergence": {
+      "position": 1,
+      "route_action": "aemeath_resonance_liberation",
+      "manual_bc_action": "aemeath_basic_attack"
+    },
+    "first_resolved_divergence": {
+      "position": 1,
+      "route_action": "aemeath_liberation_overdrive",
+      "manual_bc_action": "aemeath_basic_form_stage_1"
+    },
+    "selected_positional_agreement_count": 10,
+    "resolved_positional_agreement_count": 1,
+    "route_horizon_seconds": 120.0,
+    "reference_horizon_seconds": 120.0,
+    "reference_damage_comparison_status": "comparable_120s_completed_route",
+    "manual_bc_damage_delta": 486757.59218963515,
+    "manual_bc_damage_ratio": 1.0942390899992784
+  },
+  "comparison_against_references": {
+    "reference_damage_comparison_status": "comparable_120s_completed_route",
+    "route_horizon_seconds": 120.0,
+    "reference_horizon_seconds": 120.0,
+    "manual_baseline": {
+      "total_damage": 5165134.682363356,
+      "delta": 486757.59218963515
+    },
+    "verified_bc": {
+      "schema_version": "beam_search_verified_bc_incumbent_v111",
+      "winner_kind": "verified_bc_model",
+      "model_path": "models/maskable_ppo_bc_v105.zip",
+      "model_sha256": "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e",
+      "total_damage": 5165134.682363356,
+      "dps": 43042.78901969464,
+      "selected_sequence_sha256": "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1",
+      "resolved_sequence_sha256": "3edca6f6f258999a9c915a9ec32ee88c0db570d2303846e0fb8b6da367970229",
+      "externally_verified_immutable": true,
+      "declared_order": 0,
+      "manual_bc_ratio": 1.0,
+      "manual_bc_delta": 0.0,
+      "selection_reason": "historical verified BC reference; not the current v114 project incumbent",
+      "objective": "deterministic_120s_total_damage_only",
+      "global_optimum_proven": false,
+      "delta": 486757.59218963515
+    },
+    "prior_ppo_100k": {
+      "total_damage": 3600637.129626801,
+      "delta": 2051255.1449261908
+    },
+    "guarded_ppo_v109": {
+      "checkpoint_count": 32,
+      "best_total_damage": 5165134.682363356,
+      "delta": 486757.59218963515
+    }
+  },
+  "metadata_model_space_mismatch_status": "none_party_preset_replay_uses_project_model_space",
+  "data_contract_hashes": {
+    "action_data_hash": "d6377d54a1abb985dc5f58866321c61c7b904a6b73ddc1538be7e38d36a99ff1",
+    "party_config_hash": "baff722d9ce79cf7f57891c439b7b3fd746ad76e779e4d582eaa51802eba2684",
+    "manual_route_raw_sha256": "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a",
+    "bc_npz_sha256": "b020a1b9309b46bd87eb3fff4837aead53035c4c84620962f47feb9fc11846ff",
+    "bc_model_sha256": "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e",
+    "prior_ppo_model_sha256": "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513"
+  },
+  "attempted_actions": [
+    {
+      "step": 1,
+      "selected_action_id": "aemeath_resonance_liberation",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_liberation_overdrive",
+      "combat_time_after": 0.0,
+      "total_damage_after": 74821.05892041659
+    },
+    {
+      "step": 2,
+      "selected_action_id": "swap_to_lynae",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_lynae",
+      "combat_time_after": 0.0,
+      "total_damage_after": 74821.05892041659
+    },
+    {
+      "step": 3,
+      "selected_action_id": "lynae_resonance_liberation",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_resonance_liberation_prismatic_overblast",
+      "combat_time_after": 0.0,
+      "total_damage_after": 103322.46331801584
+    },
+    {
+      "step": 4,
+      "selected_action_id": "lynae_echo_hyvatia",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_echo_hyvatia",
+      "combat_time_after": 1.2,
+      "total_damage_after": 113669.79430306547
+    },
+    {
+      "step": 5,
+      "selected_action_id": "swap_to_mornye",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_mornye",
+      "combat_time_after": 1.2,
+      "total_damage_after": 113669.79430306547
+    },
+    {
+      "step": 6,
+      "selected_action_id": "mornye_resonance_liberation",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "mornye_liberation_critical_protocol",
+      "combat_time_after": 1.2,
+      "total_damage_after": 143629.5800978153
+    },
+    {
+      "step": 7,
+      "selected_action_id": "swap_to_aemeath",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_aemeath",
+      "combat_time_after": 1.2,
+      "total_damage_after": 143629.5800978153
+    },
+    {
+      "step": 8,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2",
+      "combat_time_after": 1.9666666666666668,
+      "total_damage_after": 149534.79953863996
+    },
+    {
+      "step": 9,
+      "selected_action_id": "aemeath_echo_sigillum",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_echo_sigillum",
+      "combat_time_after": 1.9666666666666668,
+      "total_damage_after": 149534.79953863996
+    },
+    {
+      "step": 10,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3",
+      "combat_time_after": 2.9333333333333336,
+      "total_damage_after": 180490.5312801597
+    },
+    {
+      "step": 11,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4",
+      "combat_time_after": 3.95,
+      "total_damage_after": 194676.72853207443
+    },
+    {
+      "step": 12,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_sync_strike_call_of_dawn",
+      "combat_time_after": 5.133333333333334,
+      "total_damage_after": 212896.42311920095
+    },
+    {
+      "step": 13,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_seraphic_duet_overturn",
+      "combat_time_after": 6.533333333333333,
+      "total_damage_after": 315054.3914595768
+    },
+    {
+      "step": 14,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2",
+      "combat_time_after": 7.3,
+      "total_damage_after": 324838.9571100355
+    },
+    {
+      "step": 15,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_sync_strike_call_of_dawn",
+      "combat_time_after": 8.483333333333333,
+      "total_damage_after": 343058.6516971621
+    },
+    {
+      "step": 16,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 8.983333333333333,
+      "total_damage_after": 350825.48420321953
+    },
+    {
+      "step": 17,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2",
+      "combat_time_after": 9.75,
+      "total_damage_after": 360610.04985367827
+    },
+    {
+      "step": 18,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_sync_strike_call_of_dawn",
+      "combat_time_after": 10.933333333333334,
+      "total_damage_after": 378829.7444408048
+    },
+    {
+      "step": 19,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_2",
+      "combat_time_after": 11.616666666666667,
+      "total_damage_after": 386151.0406821154
+    },
+    {
+      "step": 20,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_3",
+      "combat_time_after": 12.35,
+      "total_damage_after": 395969.3353103631
+    },
+    {
+      "step": 21,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_4",
+      "combat_time_after": 13.333333333333332,
+      "total_damage_after": 410155.53256227786
+    },
+    {
+      "step": 22,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_seraphic_duet_overturn",
+      "combat_time_after": 14.733333333333333,
+      "total_damage_after": 512313.50090265373
+    },
+    {
+      "step": 23,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2",
+      "combat_time_after": 15.5,
+      "total_damage_after": 522098.06655311247
+    },
+    {
+      "step": 24,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3",
+      "combat_time_after": 16.466666666666665,
+      "total_damage_after": 533560.6488485708
+    },
+    {
+      "step": 25,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4",
+      "combat_time_after": 17.48333333333333,
+      "total_damage_after": 547746.8461004855
+    },
+    {
+      "step": 26,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_sync_strike_call_of_dawn",
+      "combat_time_after": 18.666666666666664,
+      "total_damage_after": 565966.540687612
+    },
+    {
+      "step": 27,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 19.166666666666664,
+      "total_damage_after": 573733.3731936695
+    },
+    {
+      "step": 28,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_seraphic_duet_encore",
+      "combat_time_after": 20.499999999999996,
+      "total_damage_after": 651215.2957739799
+    },
+    {
+      "step": 29,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 20.999999999999996,
+      "total_damage_after": 658982.1282800373
+    },
+    {
+      "step": 30,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_2",
+      "combat_time_after": 21.93333333333333,
+      "total_damage_after": 761686.8656473433
+    },
+    {
+      "step": 31,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavenfall_finale",
+      "combat_time_after": 21.93333333333333,
+      "total_damage_after": 1025722.152319681
+    },
+    {
+      "step": 32,
+      "selected_action_id": "swap_to_lynae",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "transition:lynae_intro_time_to_show_some_colors",
+      "combat_time_after": 23.266666666666662,
+      "total_damage_after": 1034909.532080836
+    },
+    {
+      "step": 33,
+      "selected_action_id": "lynae_tune_break",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_tune_break",
+      "combat_time_after": 23.266666666666662,
+      "total_damage_after": 1264494.3288663381
+    },
+    {
+      "step": 34,
+      "selected_action_id": "swap_to_aemeath",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_aemeath",
+      "combat_time_after": 23.266666666666662,
+      "total_damage_after": 1264494.3288663381
+    },
+    {
+      "step": 35,
+      "selected_action_id": "aemeath_echo_sigillum",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_echo_sigillum",
+      "combat_time_after": 23.266666666666662,
+      "total_damage_after": 1264494.3288663381
+    },
+    {
+      "step": 36,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 23.766666666666662,
+      "total_damage_after": 1279470.7303747805
+    },
+    {
+      "step": 37,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2",
+      "combat_time_after": 24.533333333333328,
+      "total_damage_after": 1310884.0030323935
+    },
+    {
+      "step": 38,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3",
+      "combat_time_after": 25.499999999999993,
+      "total_damage_after": 1322346.5853278518
+    },
+    {
+      "step": 39,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4",
+      "combat_time_after": 26.51666666666666,
+      "total_damage_after": 1336532.7825797666
+    },
+    {
+      "step": 40,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_1",
+      "combat_time_after": 27.01666666666666,
+      "total_damage_after": 1343868.8352488598
+    },
+    {
+      "step": 41,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2",
+      "combat_time_after": 27.783333333333324,
+      "total_damage_after": 1353653.4008993185
+    },
+    {
+      "step": 42,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_sync_strike_call_of_dawn",
+      "combat_time_after": 28.966666666666658,
+      "total_damage_after": 1371873.0954864451
+    },
+    {
+      "step": 43,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 29.466666666666658,
+      "total_damage_after": 1379639.9279925027
+    },
+    {
+      "step": 44,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_seraphic_duet_encore",
+      "combat_time_after": 30.79999999999999,
+      "total_damage_after": 1486724.251628222
+    },
+    {
+      "step": 45,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 31.29999999999999,
+      "total_damage_after": 1492987.8262298813
+    },
+    {
+      "step": 46,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2",
+      "combat_time_after": 32.066666666666656,
+      "total_damage_after": 1500878.6049802513
+    },
+    {
+      "step": 47,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_sync_strike_call_of_dawn",
+      "combat_time_after": 33.249999999999986,
+      "total_damage_after": 1515571.9070666437
+    },
+    {
+      "step": 48,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 33.749999999999986,
+      "total_damage_after": 1521835.481668303
+    },
+    {
+      "step": 49,
+      "selected_action_id": "aemeath_resonance_liberation",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_liberation_overdrive",
+      "combat_time_after": 33.749999999999986,
+      "total_damage_after": 1641317.3253968933
+    },
+    {
+      "step": 50,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2",
+      "combat_time_after": 34.51666666666665,
+      "total_damage_after": 1649208.1041472633
+    },
+    {
+      "step": 51,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3",
+      "combat_time_after": 35.48333333333332,
+      "total_damage_after": 1658452.1221274717
+    },
+    {
+      "step": 52,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4",
+      "combat_time_after": 36.499999999999986,
+      "total_damage_after": 1669892.6037822417
+    },
+    {
+      "step": 53,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_seraphic_duet_encore",
+      "combat_time_after": 37.83333333333332,
+      "total_damage_after": 1761821.2735795386
+    },
+    {
+      "step": 54,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 38.33333333333332,
+      "total_damage_after": 1768084.848181198
+    },
+    {
+      "step": 55,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_1",
+      "combat_time_after": 39.26666666666665,
+      "total_damage_after": 1779131.9384317158
+    },
+    {
+      "step": 56,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_sync_strike_call_of_dawn",
+      "combat_time_after": 40.44999999999998,
+      "total_damage_after": 1793825.2405181082
+    },
+    {
+      "step": 57,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_2",
+      "combat_time_after": 41.13333333333331,
+      "total_damage_after": 1799729.5116804554
+    },
+    {
+      "step": 58,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_3",
+      "combat_time_after": 41.866666666666646,
+      "total_damage_after": 1807647.4912193648
+    },
+    {
+      "step": 59,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_4",
+      "combat_time_after": 42.84999999999998,
+      "total_damage_after": 1819087.9728741348
+    },
+    {
+      "step": 60,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_seraphic_duet_overturn",
+      "combat_time_after": 44.24999999999998,
+      "total_damage_after": 1911022.5928439246
+    },
+    {
+      "step": 61,
+      "selected_action_id": "aemeath_echo_sigillum",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_echo_sigillum",
+      "combat_time_after": 44.24999999999998,
+      "total_damage_after": 1911022.5928439246
+    },
+    {
+      "step": 62,
+      "selected_action_id": "swap_to_mornye",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "transition:mornye_intro_convergence",
+      "combat_time_after": 46.083333333333314,
+      "total_damage_after": 1937682.910828987
+    },
+    {
+      "step": 63,
+      "selected_action_id": "mornye_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "mornye_wfo_basic_stage_1",
+      "combat_time_after": 46.433333333333316,
+      "total_damage_after": 1939532.0677476826
+    },
+    {
+      "step": 64,
+      "selected_action_id": "swap_to_aemeath",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_aemeath",
+      "combat_time_after": 46.433333333333316,
+      "total_damage_after": 1939532.0677476826
+    },
+    {
+      "step": 65,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_2",
+      "combat_time_after": 47.366666666666646,
+      "total_damage_after": 2031689.562171394
+    },
+    {
+      "step": 66,
+      "selected_action_id": "aemeath_resonance_liberation",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavenfall_finale",
+      "combat_time_after": 47.366666666666646,
+      "total_damage_after": 2264882.5814076755
+    },
+    {
+      "step": 67,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 47.866666666666646,
+      "total_damage_after": 2272467.069369635
+    },
+    {
+      "step": 68,
+      "selected_action_id": "swap_to_lynae",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_lynae",
+      "combat_time_after": 47.866666666666646,
+      "total_damage_after": 2272467.069369635
+    },
+    {
+      "step": 69,
+      "selected_action_id": "lynae_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_resonance_skill_palette",
+      "combat_time_after": 49.14999999999998,
+      "total_damage_after": 2284910.84122775
+    },
+    {
+      "step": 70,
+      "selected_action_id": "lynae_spark_collision",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_spark_collision_lv3",
+      "combat_time_after": 50.699999999999974,
+      "total_damage_after": 2309436.132078851
+    },
+    {
+      "step": 71,
+      "selected_action_id": "lynae_polychrome_leap",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_polychrome_leap_stage_1",
+      "combat_time_after": 51.449999999999974,
+      "total_damage_after": 2313912.452354432
+    },
+    {
+      "step": 72,
+      "selected_action_id": "lynae_tune_break",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_tune_break",
+      "combat_time_after": 51.449999999999974,
+      "total_damage_after": 2518952.6581109106
+    },
+    {
+      "step": 73,
+      "selected_action_id": "lynae_polychrome_leap",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_polychrome_leap_stage_2",
+      "combat_time_after": 52.049999999999976,
+      "total_damage_after": 2523428.9783864915
+    },
+    {
+      "step": 74,
+      "selected_action_id": "lynae_polychrome_leap",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_polychrome_leap_stage_3",
+      "combat_time_after": 52.66666666666664,
+      "total_damage_after": 2526000.0277198814
+    },
+    {
+      "step": 75,
+      "selected_action_id": "lynae_visual_impact",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_visual_impact",
+      "combat_time_after": 53.83333333333331,
+      "total_damage_after": 2579712.339413222
+    },
+    {
+      "step": 76,
+      "selected_action_id": "swap_to_aemeath",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "transition:aemeath_qte_intro_mech",
+      "combat_time_after": 55.09999999999997,
+      "total_damage_after": 2592070.9100079956
+    },
+    {
+      "step": 77,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_1",
+      "combat_time_after": 56.0333333333333,
+      "total_damage_after": 2610480.1309681986
+    },
+    {
+      "step": 78,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_1",
+      "combat_time_after": 56.96666666666663,
+      "total_damage_after": 2628889.3519284017
+    },
+    {
+      "step": 79,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_sync_strike_call_of_dawn",
+      "combat_time_after": 58.14999999999996,
+      "total_damage_after": 2649002.345770529
+    },
+    {
+      "step": 80,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 58.64999999999996,
+      "total_damage_after": 2657576.268545148
+    },
+    {
+      "step": 81,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_1",
+      "combat_time_after": 59.58333333333329,
+      "total_damage_after": 2675985.489505351
+    },
+    {
+      "step": 82,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_1",
+      "combat_time_after": 60.51666666666662,
+      "total_damage_after": 2694394.710465554
+    },
+    {
+      "step": 83,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_1",
+      "combat_time_after": 61.44999999999995,
+      "total_damage_after": 2712803.9314257572
+    },
+    {
+      "step": 84,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_1",
+      "combat_time_after": 62.38333333333328,
+      "total_damage_after": 2731213.1523859603
+    },
+    {
+      "step": 85,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_sync_strike_call_of_dawn",
+      "combat_time_after": 63.56666666666661,
+      "total_damage_after": 2751326.1462280876
+    },
+    {
+      "step": 86,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_2",
+      "combat_time_after": 64.24999999999994,
+      "total_damage_after": 2759408.2348445407
+    },
+    {
+      "step": 87,
+      "selected_action_id": "aemeath_echo_sigillum",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_echo_sigillum",
+      "combat_time_after": 64.24999999999994,
+      "total_damage_after": 2759408.2348445407
+    },
+    {
+      "step": 88,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_3",
+      "combat_time_after": 64.98333333333328,
+      "total_damage_after": 2778205.548636479
+    },
+    {
+      "step": 89,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_4",
+      "combat_time_after": 65.96666666666661,
+      "total_damage_after": 2817742.158066145
+    },
+    {
+      "step": 90,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_seraphic_duet_overturn",
+      "combat_time_after": 67.36666666666662,
+      "total_damage_after": 2942998.690878703
+    },
+    {
+      "step": 91,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_1",
+      "combat_time_after": 68.29999999999995,
+      "total_damage_after": 2961407.911838906
+    },
+    {
+      "step": 92,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_sync_strike_call_of_dawn",
+      "combat_time_after": 69.48333333333329,
+      "total_damage_after": 2981520.905681033
+    },
+    {
+      "step": 93,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_2",
+      "combat_time_after": 70.16666666666663,
+      "total_damage_after": 2988324.0824292963
+    },
+    {
+      "step": 94,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_3",
+      "combat_time_after": 70.89999999999996,
+      "total_damage_after": 2996995.490698123
+    },
+    {
+      "step": 95,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_4",
+      "combat_time_after": 71.8833333333333,
+      "total_damage_after": 3009524.5818296457
+    },
+    {
+      "step": 96,
+      "selected_action_id": "aemeath_resonance_liberation",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_liberation_overdrive",
+      "combat_time_after": 71.8833333333333,
+      "total_damage_after": 3140375.6206068206
+    },
+    {
+      "step": 97,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_seraphic_duet_encore",
+      "combat_time_after": 73.21666666666663,
+      "total_damage_after": 3236357.033285622
+    },
+    {
+      "step": 98,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 73.71666666666663,
+      "total_damage_after": 3243216.6130971555
+    },
+    {
+      "step": 99,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2",
+      "combat_time_after": 74.48333333333329,
+      "total_damage_after": 3251107.3918475253
+    },
+    {
+      "step": 100,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3",
+      "combat_time_after": 75.44999999999996,
+      "total_damage_after": 3260351.4098277334
+    },
+    {
+      "step": 101,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4",
+      "combat_time_after": 76.46666666666663,
+      "total_damage_after": 3271791.891482503
+    },
+    {
+      "step": 102,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_1",
+      "combat_time_after": 76.96666666666663,
+      "total_damage_after": 3277708.0629898366
+    },
+    {
+      "step": 103,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2",
+      "combat_time_after": 77.73333333333329,
+      "total_damage_after": 3285598.8417402063
+    },
+    {
+      "step": 104,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_sync_strike_call_of_dawn",
+      "combat_time_after": 78.91666666666663,
+      "total_damage_after": 3300292.143826599
+    },
+    {
+      "step": 105,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 79.41666666666663,
+      "total_damage_after": 3306555.718428258
+    },
+    {
+      "step": 106,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_seraphic_duet_encore",
+      "combat_time_after": 80.74999999999996,
+      "total_damage_after": 3398484.3882255545
+    },
+    {
+      "step": 107,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 81.24999999999996,
+      "total_damage_after": 3404747.9628272136
+    },
+    {
+      "step": 108,
+      "selected_action_id": "swap_to_mornye",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "transition:mornye_intro_convergence",
+      "combat_time_after": 83.08333333333329,
+      "total_damage_after": 3408151.6066110344
+    },
+    {
+      "step": 109,
+      "selected_action_id": "mornye_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "mornye_wfo_basic_stage_1",
+      "combat_time_after": 83.43333333333328,
+      "total_damage_after": 3410000.76352973
+    },
+    {
+      "step": 110,
+      "selected_action_id": "swap_to_aemeath",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_aemeath",
+      "combat_time_after": 83.43333333333328,
+      "total_damage_after": 3410000.76352973
+    },
+    {
+      "step": 111,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_2",
+      "combat_time_after": 84.36666666666662,
+      "total_damage_after": 3502158.2579534417
+    },
+    {
+      "step": 112,
+      "selected_action_id": "aemeath_echo_sigillum",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_echo_sigillum",
+      "combat_time_after": 84.36666666666662,
+      "total_damage_after": 3502158.2579534417
+    },
+    {
+      "step": 113,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavenfall_finale",
+      "combat_time_after": 84.36666666666662,
+      "total_damage_after": 3735351.277189723
+    },
+    {
+      "step": 114,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 84.86666666666662,
+      "total_damage_after": 3749303.1760543957
+    },
+    {
+      "step": 115,
+      "selected_action_id": "swap_to_lynae",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_lynae",
+      "combat_time_after": 84.86666666666662,
+      "total_damage_after": 3749303.1760543957
+    },
+    {
+      "step": 116,
+      "selected_action_id": "lynae_tune_break",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_tune_break",
+      "combat_time_after": 84.86666666666662,
+      "total_damage_after": 3954343.381810874
+    },
+    {
+      "step": 117,
+      "selected_action_id": "swap_to_mornye",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_mornye",
+      "combat_time_after": 84.86666666666662,
+      "total_damage_after": 3954343.381810874
+    },
+    {
+      "step": 118,
+      "selected_action_id": "mornye_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "mornye_skill_distributed_array",
+      "combat_time_after": 85.86666666666662,
+      "total_damage_after": 3977091.515363973
+    },
+    {
+      "step": 119,
+      "selected_action_id": "swap_to_aemeath",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "transition:aemeath_qte_intro_mech",
+      "combat_time_after": 87.13333333333328,
+      "total_damage_after": 3997203.340152638
+    },
+    {
+      "step": 120,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2",
+      "combat_time_after": 87.89999999999995,
+      "total_damage_after": 4008005.3641676023
+    },
+    {
+      "step": 121,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_sync_strike_call_of_dawn",
+      "combat_time_after": 89.08333333333329,
+      "total_damage_after": 4028119.652885797
+    },
+    {
+      "step": 122,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 89.58333333333329,
+      "total_damage_after": 4036694.127650214
+    },
+    {
+      "step": 123,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_1",
+      "combat_time_after": 90.51666666666662,
+      "total_damage_after": 4051816.961271164
+    },
+    {
+      "step": 124,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_sync_strike_call_of_dawn",
+      "combat_time_after": 91.69999999999996,
+      "total_damage_after": 4071931.2499893587
+    },
+    {
+      "step": 125,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 92.19999999999996,
+      "total_damage_after": 4080505.7247537756
+    },
+    {
+      "step": 126,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2",
+      "combat_time_after": 92.96666666666663,
+      "total_damage_after": 4091307.74876874
+    },
+    {
+      "step": 127,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3",
+      "combat_time_after": 93.9333333333333,
+      "total_damage_after": 4103962.279756862
+    },
+    {
+      "step": 128,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4",
+      "combat_time_after": 94.94999999999996,
+      "total_damage_after": 4119623.6436712653
+    },
+    {
+      "step": 129,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_seraphic_duet_encore",
+      "combat_time_after": 96.28333333333329,
+      "total_damage_after": 4232199.809255915
+    },
+    {
+      "step": 130,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 96.78333333333329,
+      "total_damage_after": 4240774.284020332
+    },
+    {
+      "step": 131,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2",
+      "combat_time_after": 97.54999999999995,
+      "total_damage_after": 4251576.308035296
+    },
+    {
+      "step": 132,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_sync_strike_call_of_dawn",
+      "combat_time_after": 98.73333333333329,
+      "total_damage_after": 4271690.596753491
+    },
+    {
+      "step": 133,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 99.23333333333329,
+      "total_damage_after": 4280265.071517908
+    },
+    {
+      "step": 134,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2",
+      "combat_time_after": 99.99999999999996,
+      "total_damage_after": 4291067.095532873
+    },
+    {
+      "step": 135,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3",
+      "combat_time_after": 100.96666666666663,
+      "total_damage_after": 4303721.626520995
+    },
+    {
+      "step": 136,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4",
+      "combat_time_after": 101.98333333333329,
+      "total_damage_after": 4319382.990435398
+    },
+    {
+      "step": 137,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_seraphic_duet_encore",
+      "combat_time_after": 103.31666666666662,
+      "total_damage_after": 4402356.754964639
+    },
+    {
+      "step": 138,
+      "selected_action_id": "aemeath_resonance_liberation",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_liberation_overdrive",
+      "combat_time_after": 103.31666666666662,
+      "total_damage_after": 4565920.553436108
+    },
+    {
+      "step": 139,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2",
+      "combat_time_after": 104.08333333333329,
+      "total_damage_after": 4576722.577451073
+    },
+    {
+      "step": 140,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3",
+      "combat_time_after": 105.04999999999995,
+      "total_damage_after": 4589377.108439195
+    },
+    {
+      "step": 141,
+      "selected_action_id": "aemeath_echo_sigillum",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_echo_sigillum",
+      "combat_time_after": 105.04999999999995,
+      "total_damage_after": 4589377.108439195
+    },
+    {
+      "step": 142,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4",
+      "combat_time_after": 106.06666666666662,
+      "total_damage_after": 4636875.526867163
+    },
+    {
+      "step": 143,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_seraphic_duet_encore",
+      "combat_time_after": 107.39999999999995,
+      "total_damage_after": 4744517.958942578
+    },
+    {
+      "step": 144,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 107.89999999999995,
+      "total_damage_after": 4753092.433706995
+    },
+    {
+      "step": 145,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2",
+      "combat_time_after": 108.66666666666661,
+      "total_damage_after": 4763894.45772196
+    },
+    {
+      "step": 146,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_2",
+      "combat_time_after": 109.59999999999995,
+      "total_damage_after": 4877279.055375534
+    },
+    {
+      "step": 147,
+      "selected_action_id": "aemeath_resonance_liberation",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavenfall_finale",
+      "combat_time_after": 109.59999999999995,
+      "total_damage_after": 5168770.329420886
+    },
+    {
+      "step": 148,
+      "selected_action_id": "swap_to_lynae",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "transition:lynae_intro_time_to_show_some_colors",
+      "combat_time_after": 110.93333333333328,
+      "total_damage_after": 5179179.945818769
+    },
+    {
+      "step": 149,
+      "selected_action_id": "lynae_tune_break",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_tune_break",
+      "combat_time_after": 110.93333333333328,
+      "total_damage_after": 5409486.642340418
+    },
+    {
+      "step": 150,
+      "selected_action_id": "lynae_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_resonance_skill_palette",
+      "combat_time_after": 112.21666666666661,
+      "total_damage_after": 5425034.294486138
+    },
+    {
+      "step": 151,
+      "selected_action_id": "lynae_spark_collision",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_spark_collision_lv3",
+      "combat_time_after": 113.76666666666661,
+      "total_damage_after": 5457393.265781144
+    },
+    {
+      "step": 152,
+      "selected_action_id": "lynae_polychrome_leap",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_polychrome_leap_stage_1",
+      "combat_time_after": 114.51666666666661,
+      "total_damage_after": 5463299.377973011
+    },
+    {
+      "step": 153,
+      "selected_action_id": "lynae_resonance_liberation",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_resonance_liberation_prismatic_overblast",
+      "combat_time_after": 114.51666666666661,
+      "total_damage_after": 5510315.709004887
+    },
+    {
+      "step": 154,
+      "selected_action_id": "lynae_polychrome_leap",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_polychrome_leap_stage_2",
+      "combat_time_after": 115.1166666666666,
+      "total_damage_after": 5517199.384594029
+    },
+    {
+      "step": 155,
+      "selected_action_id": "lynae_polychrome_leap",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_polychrome_leap_stage_3",
+      "combat_time_after": 115.73333333333326,
+      "total_damage_after": 5521645.940324687
+    },
+    {
+      "step": 156,
+      "selected_action_id": "lynae_visual_impact",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_visual_impact",
+      "combat_time_after": 116.89999999999993,
+      "total_damage_after": 5604244.616486622
+    },
+    {
+      "step": 157,
+      "selected_action_id": "swap_to_aemeath",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "transition:aemeath_qte_intro_human",
+      "combat_time_after": 118.08333333333327,
+      "total_damage_after": 5615140.451134912
+    },
+    {
+      "step": 158,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_1",
+      "combat_time_after": 118.46666666666661,
+      "total_damage_after": 5621137.965733211
+    },
+    {
+      "step": 159,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_form_switch_to_mech_normal",
+      "combat_time_after": 118.96666666666661,
+      "total_damage_after": 5630672.781671242
+    },
+    {
+      "step": 160,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_1",
+      "combat_time_after": 119.89999999999995,
+      "total_damage_after": 5650513.939381928
+    },
+    {
+      "step": 161,
+      "selected_action_id": "swap_to_lynae",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_lynae",
+      "combat_time_after": 119.89999999999995,
+      "total_damage_after": 5650513.939381928
+    },
+    {
+      "step": 162,
+      "selected_action_id": "lynae_echo_hyvatia",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_echo_hyvatia",
+      "combat_time_after": 120.0,
+      "total_damage_after": 5651892.274552992
+    }
+  ],
+  "summary_path": "routes/67a4250b3b8d0de9_summary.json",
+  "timeline_csv_path": "routes/67a4250b3b8d0de9_timeline.csv",
+  "report_generation_version": "generated_damage_reporting_v3_event_source_attribution",
+  "timeline_schema_has_generated_damage_fields": true,
+  "summary_schema_has_generated_damage_fields": true,
+  "generated_damage_reporting_status": "ok",
+  "generated_mechanic_damage_total": 557511.8865435356,
+  "generated_mechanic_damage_action_count": 12,
+  "generated_mechanic_damage_share_of_total": 0.09864163353814617,
+  "direct_damage_share_of_total": 0.901358366461854,
+  "aemeath_forte_generated_damage_total": 557511.8865435356,
+  "aemeath_forte_generated_damage_share_of_total": 0.09864163353814617,
+  "aemeath_seraphic_duet_followup_count": 12,
+  "aemeath_seraphic_duet_followup_damage_total": 557511.8865435356,
+  "aemeath_seraphic_duet_followup_damage_share_of_total": 0.09864163353814617,
+  "aemeath_seraphic_duet_followup_normal_count": 5,
+  "aemeath_seraphic_duet_followup_enhanced_count": 7,
+  "aemeath_seraphic_duet_followup_normal_damage_total": 212150.5408970976,
+  "aemeath_seraphic_duet_followup_enhanced_damage_total": 345361.345646438,
+  "aemeath_seraphic_duet_followup_total_repeat_count": 95,
+  "aemeath_seraphic_duet_followup_average_damage": 46459.32387862797,
+  "aemeath_seraphic_duet_followup_source_multipliers": [
+    1.0935,
+    2.4057
+  ],
+  "aemeath_seraphic_duet_followup_source_multiplier_note": "Source multiplier remains 1.0935 when present; 1.531 / 1.5309 is not hardcoded as the coefficient.",
+  "aemeath_forte_interfered_amp_damage_events": 0,
+  "aemeath_forte_interfered_amp_damage_total": 0,
+  "aemeath_forte_interfered_amp_applied_count": 0,
+  "aemeath_forte_interfered_amp_missing_count": 12,
+  "aemeath_forte_interfered_amp_note": "Interfered Marker is reported as damage-taken amp and is not part of the 1.0935 source multiplier.",
+  "damage_by_action_damage_category": {
+    "resonance_liberation": 3380492.26262584,
+    "other": 0.0,
+    "echo_ability": 11725.66615611317,
+    "basic_attack": 823336.7848447047,
+    "resonance_skill": 505808.86353001575,
+    "intro": 60556.7925762114,
+    "tune_break": 869971.9048201076
+  },
+  "damage_by_hit_formula_type": {
+    "normal": 4053771.6088328003,
+    "tune_break": 367446.9656992085,
+    "tune_response": 1060036.8256644362,
+    "generated_mechanic_damage": 0.0
+  },
+  "damage_by_generated_mechanic_source": {
+    "aemeath_forte": 557511.8865435356,
+    "other": 0.0
+  },
+  "damage_by_character_and_source_schema_version": "event_source_attribution_v2",
+  "legacy_damage_by_source_action_category": {
+    "resonance_liberation": 3380492.26262584,
+    "other": 0.0,
+    "echo_ability": 11725.66615611317,
+    "basic_attack": 823336.7848447047,
+    "resonance_skill": 505808.86353001575,
+    "intro": 60556.7925762114,
+    "tune_break": 869971.9048201076
+  },
+  "legacy_damage_by_source_action_category_note": "Backward-compatible source action category totals include generated mechanic damage attached to the source action.",
+  "direct_damage_by_category": {
+    "resonance_liberation": 2822980.3760823044,
+    "other": 0.0,
+    "echo_ability": 11725.66615611317,
+    "basic_attack": 823336.7848447047,
+    "resonance_skill": 505808.86353001575,
+    "intro": 60556.7925762114,
+    "tune_break": 869971.9048201076
+  },
+  "direct_damage_by_damage_bonus_category": {
+    "resonance_liberation": 2822980.3760823044,
+    "other": 0.0,
+    "echo_ability": 11725.66615611317,
+    "basic_attack": 823336.7848447047,
+    "resonance_skill": 505808.86353001575,
+    "intro": 60556.7925762114,
+    "tune_break": 869971.9048201076
+  },
+  "generated_damage_by_source_action_category": {
+    "resonance_liberation": 557511.8865435356
+  },
+  "basic_attack_direct_damage_share_of_total": 0.14567453604020122,
+  "resonance_liberation_direct_damage_share_of_total": 0.49947526225728955,
+  "generated_mechanic_damage_hit_count": 95,
+  "aemeath_seraphic_duet_followup_average_damage_per_hit": 5868.546174142481
+}

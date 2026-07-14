@@ -466,5 +466,26 @@
       "source_status": "user_supplied_skill_tooltip",
       "implementation_status": "implemented_v2"
     }
+  },
+  {
+    "id": "aemeath_outro_unseen_guard_all_damage_amp",
+    "name": "Aemeath Unseen Guard All DMG Amplification",
+    "duration": 20.0,
+    "modifier_type": "damage_amp",
+    "value": 0.1,
+    "target": "specific_character",
+    "target_scope": "specific_character",
+    "source_character_id": "aemeath",
+    "stacking_rule": "refresh_duration",
+    "max_stacks": 1,
+    "metadata": {
+      "source_type": "outro",
+      "source_action_id": "aemeath_outro_unseen_guard",
+      "source_status": "official_kurobbs_wiki_c0_contract",
+      "implementation_status": "implemented_v114",
+      "base_all_damage_amp": 0.1,
+      "upgraded_total_all_damage_amp": 0.2,
+      "mode_snapshot_required_for_upgrade": true
+    }
   }
 ]

@@ -1,0 +1,43 @@
+{
+  "schema_version": "beam_search_v114_3m_resume_extension_v115_receipt_v2",
+  "status": "validated_not_executed",
+  "source_output_root": "results/beam_search_v114_lowmem_32gb",
+  "source_plan_path": "data/beam_search_plan_v114_32gb.json",
+  "source_plan_sha256": "e70826d0040444f834398d55c922aacb4ee5b484bc6ef2e75ca5a0ad603bc18c",
+  "source_search_state_path": "results/beam_search_v114_lowmem_32gb/search_state.json",
+  "source_search_state_sha256": "f1ac52b960465a7ea71ea8495b1c1f2d89a79766d5cdf2f6ad3e4872d2e25630",
+  "source_search_state_sha256_after_validation": "f1ac52b960465a7ea71ea8495b1c1f2d89a79766d5cdf2f6ad3e4872d2e25630",
+  "source_checkpoint_expansions": 3000000,
+  "source_completed_route_count": 0,
+  "source_best_partial_combat_time": 67.48333333333329,
+  "source_best_partial_current_time": 107.75000000000001,
+  "source_best_partial_total_damage": 2850679.8061139295,
+  "source_best_partial_action_count": 92,
+  "new_plan_path": "data/beam_search_plan_v115_32gb_resume_v114.json",
+  "new_plan_sha256": "2a0c60b73eb1760174bb867d886a45fd36dac42b019dac9d93dd360b1a44cd90",
+  "new_maximum_expansions": 6500000,
+  "allowed_differences": [
+    "maximum_expansions",
+    "result_scope"
+  ],
+  "data_contract_hashes": {
+    "action_data_hash": "d6377d54a1abb985dc5f58866321c61c7b904a6b73ddc1538be7e38d36a99ff1",
+    "party_config_hash": "baff722d9ce79cf7f57891c439b7b3fd746ad76e779e4d582eaa51802eba2684",
+    "direct_action_manifest_sha256": "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d",
+    "direct_action_manifest_copy_sha256": "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d",
+    "bc_npz_sha256": "b020a1b9309b46bd87eb3fff4837aead53035c4c84620962f47feb9fc11846ff",
+    "manual_route_raw_sha256": "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a"
+  },
+  "referenced_frontier_file_count": 11,
+  "referenced_frontier_bytes": 59459202,
+  "reviewed_inventory_path": "results/beam_search_v114_3m_reviewed_file_inventory_v115.json",
+  "reviewed_inventory_file_sha256": "9e4fc52836ba4986ba1d78c544120657ae1fb4593520fceabc71d2b527bf6a5a",
+  "reviewed_inventory_entry_digest_sha256": "0bb00535354717d05ae1761fe6522bcc5129cc598cc8aaf072843626a7d43f15",
+  "frontier_inventory_file_count": 649,
+  "frontier_inventory_total_bytes": 1752618157,
+  "preflight_module_path": "search/beam_resume_extension.py",
+  "preflight_module_sha256": "112f892040ebcce45efec9d893825be6915380ede09eeefccb1a8976629e9718",
+  "validator_cli_sha256": "bd266d68bfefb8a2e8235e973f4bd3cbbdd7c3657b0d840e03d5a419d52ce070",
+  "validation_timestamp": "2026-07-14T17:08:01.024201+00:00",
+  "long_resume_executed": false
+}
