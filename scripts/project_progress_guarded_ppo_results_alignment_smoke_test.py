@@ -57,8 +57,8 @@ def main() -> None:
     assert (ROOT / "results/guarded_ppo_v109/final_experiment_summary.json").exists()
     assert (ROOT / "reports/guarded_ppo_experiment_v109_results.md").exists()
 
-    assert [item["task"] for item in progress["next_planned_tasks"]][0] == "external review of candidate 112"
-    assert "120-second Beam Search" in progress["next_planned_task"]
+    assert [item["task"] for item in progress["next_planned_tasks"]][0] == "external review of candidate 113"
+    assert "32GB low-memory Beam plan" in progress["next_planned_task"]
     print("project_progress_guarded_ppo_results_alignment_smoke_test ok")
 
 

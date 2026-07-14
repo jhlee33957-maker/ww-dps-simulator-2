@@ -237,12 +237,16 @@ def ingest(*, write: bool) -> dict[str, Any]:
         result["output_root"] = "results/beam_search_v111"
     summary = _calibration_summary(result)
     progress = _read_json(PROGRESS_PATH)
-    _update_progress(progress, summary)
+    current_candidate = int(progress.get("current_in_progress_task", {}).get("candidate", 0))
+    preserve_newer_progress = current_candidate > 112
+    if not preserve_newer_progress:
+        _update_progress(progress, summary)
     if write:
         _write_json(EXECUTION_RESULT, result)
         _write_json(SUMMARY_PATH, summary)
         _write_markdown(REPORT_PATH, _report(summary))
-        _write_json(PROGRESS_PATH, progress)
+        if not preserve_newer_progress:
+            _write_json(PROGRESS_PATH, progress)
     return summary
 
 

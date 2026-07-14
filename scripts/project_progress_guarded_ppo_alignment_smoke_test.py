@@ -25,7 +25,8 @@ def main() -> None:
     assert current["route_similarity_objective"] is False
     assert current["manual_route_guidance"] is False
     assert current["bc_ppo_policy_guidance"] is False
-    assert current["plan_path"] == "data/beam_search_plan_v111.json"
+    assert current["plan_path"] == "data/beam_search_plan_v113_32gb.json"
+    assert current["inherited_verified_plan_path"] == "data/beam_search_plan_v111.json"
 
     history_109 = next(item for item in state["candidate_history"] if item["candidate"] == "109")
     assert history_109["status"] == "externally_verified_complete"
@@ -57,11 +58,11 @@ def main() -> None:
     assert history_111["archive_path"] == "../ww-dps-simulator-2-111.zip"
 
     assert [item["task"] for item in state["next_planned_tasks"]] == [
-        "external review of candidate 112",
-        "run the reviewed 120-second Beam Search stage",
-        "resume rather than restart if interrupted",
-        "compare only completed 120-second routes with the verified BC result",
-        "consider MCTS only after reviewing the full Beam result",
+        "external review of candidate 113",
+        "build the slim runtime workspace",
+        "run the reviewed 32GB low-memory Beam plan to 3M expansions",
+        "review memory, runtime, and best completed 120-second result",
+        "resume to 5M only if useful, then run MCTS as an independent complementary search",
     ]
     serialized = json.dumps(state, ensure_ascii=False).lower()
     for forbidden in (

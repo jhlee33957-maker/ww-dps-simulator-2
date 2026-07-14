@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import copy
 from pathlib import Path
 from typing import Any
 
@@ -12,6 +13,11 @@ from search.beam_state import diversity_quantization_contract
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_PLAN_PATH = ROOT / "data" / "beam_search_plan_v111.json"
+LOWMEM_32GB_PLAN_PATH = ROOT / "data" / "beam_search_plan_v113_32gb.json"
+LOWMEM_32GB_SCHEMA = "beam_search_plan_v113_32gb"
+LOWMEM_32GB_STAGE_ID = "full_120s_lowmem_32gb"
+LOWMEM_32GB_OUTPUT_ROOT = "results/beam_search_v113_lowmem_32gb"
+FORBIDDEN_64GB_OUTPUT_ROOT = "results/beam_search_v111_full_120s"
 EXPECTED_ALGORITHM = "deterministic_diverse_time_bucket_beam_search"
 EXPECTED_OBJECTIVE = "deterministic_120s_total_damage_only"
 EXPECTED_PARTY = "aemeath_mornye_lynae_enabled_test_party"
@@ -45,10 +51,20 @@ def sha256_file(path: Path) -> str:
 
 
 def load_plan(path: Path = DEFAULT_PLAN_PATH) -> dict[str, Any]:
-    return json.loads(path.read_text(encoding="utf-8"))
+    raw = json.loads(path.read_text(encoding="utf-8"))
+    inheritance = raw.get("inherits_contracts_from")
+    if raw.get("schema_version") == LOWMEM_32GB_SCHEMA and isinstance(inheritance, dict):
+        base_path = ROOT / str(inheritance["path"])
+        if sha256_file(base_path) != inheritance.get("sha256"):
+            raise ValueError("Low-memory Beam base-plan hash mismatch")
+        base = json.loads(base_path.read_text(encoding="utf-8"))
+        return _deep_merge(base, raw)
+    return raw
 
 
 def validate_plan(plan: dict[str, Any], *, plan_path: Path = DEFAULT_PLAN_PATH) -> dict[str, Any]:
+    if plan.get("schema_version") == LOWMEM_32GB_SCHEMA:
+        return _validate_lowmem_32gb_plan(plan, plan_path=plan_path)
     errors: list[str] = []
     checks = {
         "schema_version": "beam_search_plan_v111",
@@ -300,14 +316,150 @@ def project_relative(path: Path) -> str:
     return path.resolve().relative_to(ROOT.resolve()).as_posix()
 
 
-def resolve_actual_data_hashes() -> dict[str, str]:
+def resolve_actual_data_hashes(required_keys: set[str] | None = None) -> dict[str, str]:
     actual = {
         "action_data_hash": action_data_hash(root=ROOT),
         "party_config_hash": party_config_hash(root=ROOT),
     }
     for key, path in HASH_FILE_PATHS.items():
-        actual[key] = sha256_file(path)
+        if required_keys is None or key in required_keys:
+            actual[key] = sha256_file(path)
     return actual
+
+
+def resolve_plan_data_hashes(plan: dict[str, Any]) -> dict[str, str]:
+    if plan.get("schema_version") == LOWMEM_32GB_SCHEMA:
+        return resolve_actual_data_hashes(
+            {
+                "direct_action_manifest_sha256",
+                "direct_action_manifest_copy_sha256",
+                "bc_npz_sha256",
+                "manual_route_raw_sha256",
+            }
+        )
+    return resolve_actual_data_hashes()
+
+
+def _validate_lowmem_32gb_plan(plan: dict[str, Any], *, plan_path: Path) -> dict[str, Any]:
+    errors: list[str] = []
+    for key, expected in {
+        "schema_version": LOWMEM_32GB_SCHEMA,
+        "candidate": "113",
+        "algorithm": EXPECTED_ALGORITHM,
+        "objective": EXPECTED_OBJECTIVE,
+        "party": EXPECTED_PARTY,
+        "initial_active_character": EXPECTED_INITIAL_ACTIVE,
+        "curriculum_reset_mode": EXPECTED_CURRICULUM,
+        "route_similarity_objective": False,
+        "bc_ppo_policy_guidance": False,
+        "manual_route_guidance": False,
+        "global_optimum_proven": False,
+    }.items():
+        if plan.get(key) != expected:
+            errors.append(f"{key} {plan.get(key)!r} != {expected!r}")
+    inheritance = plan.get("inherits_contracts_from", {})
+    if inheritance.get("path") != "data/beam_search_plan_v111.json" or inheritance.get("sha256") != "b504def4e0c1da82ef2a6024d19ccac76fe175df51899e50d12f3bff99a17998":
+        errors.append("inherits_contracts_from must pin the verified v111 plan")
+    observation = plan.get("observation_contract", {})
+    for key, expected in {"version": "slot_generic_mechanics_v5", "shape": 314, "policy_action_count": 25, "max_policy_action_slots": 32}.items():
+        if observation.get(key) != expected:
+            errors.append(f"observation_contract.{key} {observation.get(key)!r} != {expected!r}")
+    stages = plan.get("stages")
+    expected_stage = {
+        "stage_id": LOWMEM_32GB_STAGE_ID,
+        "combat_duration": 120.0,
+        "time_bucket_width": 0.5,
+        "beam_width": 1792,
+        "global_damage_quota": 896,
+        "diversity_retention_quota": 896,
+        "max_states_per_diversity_key": 8,
+        "maximum_expansions": 5000000,
+        "checkpoint_interval_expansions": 100000,
+        "limit_check_interval_expansions": 256,
+        "wall_clock_budget_seconds": 36000,
+        "wall_clock_limit_seconds": 36000.0,
+        "memory_budget_bytes": 23622320128,
+        "max_unique_fingerprints_per_destination_bucket": 16384,
+        "destination_accumulator_unique_fingerprint_bound": 16384,
+        "in_memory_accumulator_candidate_limit": 4096,
+        "disk_spill_enabled": True,
+    }
+    if not isinstance(stages, list) or len(stages) != 1:
+        errors.append("low-memory plan must contain exactly one stage")
+    else:
+        for key, expected in expected_stage.items():
+            if stages[0].get(key) != expected:
+                errors.append(f"{LOWMEM_32GB_STAGE_ID}.{key} {stages[0].get(key)!r} != {expected!r}")
+    policy = plan.get("initial_execution_policy", {})
+    if policy.get("first_run_max_expansions") != 3000000 or policy.get("plan_maximum_expansions") != 5000000 or policy.get("extension_requires_external_review") is not True:
+        errors.append("initial_execution_policy must require reviewed 3M then optional 5M resume")
+    output = plan.get("output_contract", {})
+    if output.get("canonical_output_root") != LOWMEM_32GB_OUTPUT_ROOT:
+        errors.append("low-memory canonical output root mismatch")
+    if FORBIDDEN_64GB_OUTPUT_ROOT not in output.get("forbidden_resume_or_output_roots", []):
+        errors.append("old 64GB output root must be forbidden")
+    memory = plan.get("memory_estimate_contract", {})
+    for key, expected in {
+        "destination_bucket_insertion_order_independent": True,
+        "destination_bucket_partition_merge_independent": True,
+        "destination_accumulator_spill_policy": "atomic_compressed_json_gz_chunks_hash_validated_resume_exact",
+        "destination_accumulator_checkpoint_manifest": "compact_manifest_with_paths_sha256_counts_and_metrics_no_node_payloads",
+        "compact_cli_output_contract": "stdout_summary_only_no_frontier_nodes_route_store_accumulator_payloads_or_timelines",
+        "limit_check_interval_expansions": 256,
+        "hard_memory_budget_required": True,
+        "windows_page_file_assumed": False,
+    }.items():
+        if memory.get(key) != expected:
+            errors.append(f"memory_estimate_contract.{key} {memory.get(key)!r} != {expected!r}")
+    resume = plan.get("resume_contract", {})
+    for key in ("atomic_frontier_writes", "partial_node_action_cursor", "dirty_bucket_checkpoint_writes", "plan_hash_validated", "stage_hash_validated", "actual_data_hashes_validated"):
+        if resume.get(key) is not True:
+            errors.append(f"resume_contract.{key} must be true")
+    hashes = plan.get("data_contract_hashes", {})
+    declared_hashes = {
+        "action_data_hash": EXPECTED_ACTION_DATA_HASH,
+        "party_config_hash": EXPECTED_PARTY_CONFIG_HASH,
+        "direct_action_manifest_sha256": EXPECTED_DIRECT_ACTION_MANIFEST_SHA256,
+        "bc_npz_sha256": EXPECTED_BC_NPZ_SHA256,
+        "bc_model_sha256": EXPECTED_BC_MODEL_SHA256,
+        "prior_ppo_model_sha256": EXPECTED_PPO_MODEL_SHA256,
+        "manual_route_raw_sha256": EXPECTED_ROUTE_SHA256,
+    }
+    for key, expected in declared_hashes.items():
+        if hashes.get(key) != expected:
+            errors.append(f"{key} {hashes.get(key)!r} != {expected!r}")
+    actual = resolve_plan_data_hashes(plan)
+    for key in ("action_data_hash", "party_config_hash", "direct_action_manifest_sha256", "bc_npz_sha256", "manual_route_raw_sha256"):
+        if actual.get(key) != declared_hashes[key]:
+            errors.append(f"actual {key} {actual.get(key)!r} != {declared_hashes[key]!r}")
+    if actual.get("direct_action_manifest_copy_sha256") != EXPECTED_DIRECT_ACTION_MANIFEST_SHA256:
+        errors.append("actual direct-action manifest copy hash mismatch")
+    if plan.get("diversity_key_schema", {}).get("declared_character_mechanic_fields") != diversity_quantization_contract()["declared_character_mechanic_fields"]:
+        errors.append("low-memory diversity mechanic fields do not match runtime")
+    serialized = json.dumps(plan, sort_keys=True).lower()
+    for forbidden in ("manual_action_sequence", "selected_policy_actions", "expected_resolved_actions"):
+        if forbidden in serialized:
+            errors.append(f"plan contains forbidden policy guidance: {forbidden}")
+    if errors:
+        raise ValueError("; ".join(errors))
+    return {
+        "status": "ok",
+        "plan_path": project_relative(plan_path),
+        "plan_sha256": sha256_file(plan_path),
+        "stage_ids": [LOWMEM_32GB_STAGE_ID],
+        "future_execution_only": True,
+        "actual_data_hashes": actual,
+    }
+
+
+def _deep_merge(base: dict[str, Any], overrides: dict[str, Any]) -> dict[str, Any]:
+    merged = copy.deepcopy(base)
+    for key, value in overrides.items():
+        if isinstance(value, dict) and isinstance(merged.get(key), dict):
+            merged[key] = _deep_merge(merged[key], value)
+        else:
+            merged[key] = copy.deepcopy(value)
+    return merged
 
 
 def _derived_concurrent_bucket_count(time_bucket_width: float) -> dict[str, Any]:

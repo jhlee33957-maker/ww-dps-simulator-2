@@ -1,0 +1,76 @@
+{
+  "schema_version": "beam_search_plan_v113_32gb",
+  "candidate": "113",
+  "inherits_contracts_from": {
+    "path": "data/beam_search_plan_v111.json",
+    "sha256": "b504def4e0c1da82ef2a6024d19ccac76fe175df51899e50d12f3bff99a17998"
+  },
+  "algorithm": "deterministic_diverse_time_bucket_beam_search",
+  "objective": "deterministic_120s_total_damage_only",
+  "party": "aemeath_mornye_lynae_enabled_test_party",
+  "initial_active_character": "aemeath",
+  "curriculum_reset_mode": "none",
+  "combat_duration": 120.0,
+  "route_similarity_objective": false,
+  "bc_ppo_policy_guidance": false,
+  "manual_route_guidance": false,
+  "global_optimum_proven": false,
+  "initial_execution_policy": {
+    "first_run_max_expansions": 3000000,
+    "plan_maximum_expansions": 5000000,
+    "extension_requires_external_review": true,
+    "extension_mode": "resume_same_stage_and_output_root"
+  },
+  "output_contract": {
+    "canonical_output_root": "results/beam_search_v113_lowmem_32gb",
+    "forbidden_resume_or_output_roots": [
+      "results/beam_search_v111_full_120s"
+    ],
+    "clean_workspace_required_for_first_run": true
+  },
+  "workspace_contract": {
+    "manifest_path": "LOWMEM_WORKSPACE_MANIFEST.json",
+    "full_audit_archive": "ww-dps-simulator-2-112.zip",
+    "full_audit_archive_sha256": "b602af3cd1b87cac1529baa23042e023ce2c90e9d1560426567943da95515fc5"
+  },
+  "memory_estimate_contract": {
+    "limit_check_interval_expansions": 256,
+    "hard_memory_budget_required": true,
+    "windows_page_file_assumed": false,
+    "destination_accumulator_unique_fingerprint_bound": "stage.destination_accumulator_unique_fingerprint_bound",
+    "destination_accumulator_in_memory_limit": "stage.in_memory_accumulator_candidate_limit",
+    "destination_accumulator_spill_policy": "atomic_compressed_json_gz_chunks_hash_validated_resume_exact",
+    "destination_accumulator_checkpoint_manifest": "compact_manifest_with_paths_sha256_counts_and_metrics_no_node_payloads",
+    "destination_bucket_insertion_order_independent": true,
+    "destination_bucket_partition_merge_independent": true,
+    "compact_cli_output_contract": "stdout_summary_only_no_frontier_nodes_route_store_accumulator_payloads_or_timelines"
+  },
+  "execution_boundary": {
+    "candidate_113_runs_3m_search": false,
+    "candidate_113_runs_5m_search": false,
+    "candidate_113_runs_mcts": false,
+    "bounded_probe_max_expansions": 10000
+  },
+  "stages": [
+    {
+      "stage_id": "full_120s_lowmem_32gb",
+      "purpose": "reviewed 32GB low-memory deterministic 120-second Beam Search",
+      "combat_duration": 120.0,
+      "time_bucket_width": 0.5,
+      "beam_width": 1792,
+      "global_damage_quota": 896,
+      "diversity_retention_quota": 896,
+      "max_states_per_diversity_key": 8,
+      "maximum_expansions": 5000000,
+      "checkpoint_interval_expansions": 100000,
+      "limit_check_interval_expansions": 256,
+      "wall_clock_budget_seconds": 36000,
+      "wall_clock_limit_seconds": 36000.0,
+      "memory_budget_bytes": 23622320128,
+      "max_unique_fingerprints_per_destination_bucket": 16384,
+      "destination_accumulator_unique_fingerprint_bound": 16384,
+      "in_memory_accumulator_candidate_limit": 4096,
+      "disk_spill_enabled": true
+    }
+  ]
+}

@@ -14,13 +14,16 @@
   },
   "status": {
     "last_updated": "2026-07-14T00:00:00+09:00",
-    "latest_verified_archive": "ww-dps-simulator-2-111.zip",
-    "latest_verified_baseline_label": "111",
+    "latest_verified_archive": "ww-dps-simulator-2-112.zip",
+    "latest_verified_archive_sha256": "b602af3cd1b87cac1529baa23042e023ce2c90e9d1560426567943da95515fc5",
+    "latest_verified_baseline_label": "112",
+    "latest_externally_verified_baseline": "112",
     "current_task_status": "candidate_pending_external_review",
-    "current_task": "30-second Beam Search calibration result ingestion and full-search readiness review",
-    "current_task_expected_next_archive": "112",
+    "current_task": "32GB low-memory 120-second Beam Search plan and slim runtime workspace",
+    "current_task_expected_next_archive": "113",
     "do_not_treat_current_task_as_complete_until_reviewed": true,
-    "candidate_expected_next_archive": "ww-dps-simulator-2-112.zip"
+    "candidate_expected_next_archive": "ww-dps-simulator-2-113.zip",
+    "current_candidate": "113"
   },
   "source_of_truth": {
     "raw_action_workbook": "鸣潮动作数据汇总(5).xlsx",
@@ -577,19 +580,24 @@
     }
   ],
   "current_in_progress_task": {
-    "task": "30-second Beam Search calibration result ingestion and full-search readiness review",
+    "task": "32GB low-memory 120-second Beam Search plan and slim runtime workspace",
     "status": "candidate_pending_external_review",
-    "candidate": "112",
+    "candidate": "113",
+    "current_candidate": "113",
     "external_review_required": true,
     "external_review_status": "pending",
     "external_verification_claimed": false,
-    "latest_externally_verified_baseline": "111",
-    "baseline_archive": "ww-dps-simulator-2-111.zip",
-    "candidate_expected_next_archive": "ww-dps-simulator-2-112.zip",
+    "latest_externally_verified_baseline": "112",
+    "baseline_archive": "ww-dps-simulator-2-112.zip",
+    "baseline_archive_sha256": "b602af3cd1b87cac1529baa23042e023ce2c90e9d1560426567943da95515fc5",
+    "candidate_expected_next_archive": "ww-dps-simulator-2-113.zip",
     "beam_search_long_execution": false,
     "mcts_execution": false,
     "calibration_stage_executed": true,
     "full_search_stage_executed": false,
+    "full_64gb_search_completed": false,
+    "low_memory_full_search_executed": false,
+    "mcts_executed": false,
     "current_best_model": "models/maskable_ppo_bc_v105.zip",
     "current_best_result": 5165134.682363356,
     "current_best_dps": 43042.78901969464,
@@ -598,40 +606,86 @@
     "bc_ppo_policy_guidance": false,
     "route_similarity_objective": false,
     "global_optimum_claimed": false,
-    "plan_path": "data/beam_search_plan_v111.json",
-    "plan_sha256": "b504def4e0c1da82ef2a6024d19ccac76fe175df51899e50d12f3bff99a17998",
-    "report": "reports/beam_search_v111_calibration_results.md",
+    "plan_path": "data/beam_search_plan_v113_32gb.json",
+    "plan_sha256": "ffd9ce47ec9b92b2c4b59f295d50d0ce5204fcba577af0f78b9fa917b19b291d",
+    "inherited_verified_plan_path": "data/beam_search_plan_v111.json",
+    "inherited_verified_plan_sha256": "b504def4e0c1da82ef2a6024d19ccac76fe175df51899e50d12f3bff99a17998",
+    "report": "reports/beam_search_v113_32gb_lowmem.md",
+    "low_memory_output_root": "results/beam_search_v113_lowmem_32gb",
+    "forbidden_resume_output_root": "results/beam_search_v111_full_120s",
+    "slim_workspace_manifest_path": "LOWMEM_WORKSPACE_MANIFEST.json",
+    "full_audit_history_preserved_in": "externally verified candidate-112 archive",
+    "hard_memory_budget_bytes": 23622320128,
+    "first_run_max_expansions": 3000000,
+    "plan_maximum_expansions": 5000000,
+    "extension_to_5m_requires_external_review": true,
+    "low_memory_spill_schema": "beam_search_accumulator_chunk_jsonl_gzip_v113",
+    "low_memory_spill_format": "deterministic_gzip_json_lines_streamed_node_records",
+    "low_memory_10000_probe_status": "corrected_windows_pass_posix_packaged_validation_pending",
+    "candidate_113_ready_for_3m": false,
+    "low_memory_10000_probe_windows": {
+      "search_runtime_seconds": 23.40229489991907,
+      "total_process_runtime_seconds": 26.834499899996445,
+      "expansions_per_second": 427.30852007315667,
+      "peak_live_nodes": 5126,
+      "peak_tracked_memory_bytes": 262070492,
+      "peak_process_rss_bytes": 612466688,
+      "spill_chunk_count": 6,
+      "spill_bytes": 1688340,
+      "maximum_spill_chunk_uncompressed_bytes": 48592746,
+      "maximum_spill_serialization_buffer_bytes": 24273,
+      "maximum_spill_restore_buffer_bytes": 24273,
+      "maximum_finalization_unique_set_bytes": 46223513,
+      "maximum_final_sort_list_bytes": 19344,
+      "compact_manifest_bytes": 1419069,
+      "checkpoint_count": 2,
+      "deterministic_result_sha256": "88f09ecbc2b507a8fd7813afbf91d7a549cab8975b0b447b4422f660198db7b1"
+    },
+    "low_memory_10000_probe_repeatability": {
+      "run_count": 2,
+      "normal_exit_count": 2,
+      "wall_runtime_seconds": [
+        28.42759770003613,
+        31.924149199970998
+      ],
+      "deterministic_result_match": true,
+      "surviving_child_processes": 0,
+      "canonical_result_mutated": false,
+      "cache_created": false
+    },
     "stages": [
       {
-        "stage_id": "calibration_30s",
-        "combat_duration": 30.0,
-        "time_bucket_width": 0.5,
-        "beam_width": 1024,
-        "global_damage_quota": 512,
-        "diversity_retention_quota": 512,
-        "max_states_per_diversity_key": 8,
-        "maximum_expansions": 500000
-      },
-      {
-        "stage_id": "full_120s",
+        "stage_id": "full_120s_lowmem_32gb",
         "combat_duration": 120.0,
         "time_bucket_width": 0.5,
-        "beam_width": 4096,
-        "global_damage_quota": 2048,
-        "diversity_retention_quota": 2048,
+        "beam_width": 1792,
+        "global_damage_quota": 896,
+        "diversity_retention_quota": 896,
         "max_states_per_diversity_key": 8,
-        "maximum_expansions": 5000000
+        "maximum_expansions": 5000000,
+        "initial_execution_cap": 3000000,
+        "checkpoint_interval_expansions": 100000,
+        "limit_check_interval_expansions": 256,
+        "wall_clock_budget_seconds": 36000,
+        "memory_budget_bytes": 23622320128,
+        "max_unique_fingerprints_per_destination_bucket": 16384,
+        "in_memory_accumulator_candidate_limit": 4096,
+        "disk_spill_enabled": true
       }
     ],
     "notes": [
-      "Candidate 112 ingests the externally reviewed candidate-111 calibration; candidate 112 itself remains pending external review.",
+      "Candidate 112 is the latest externally verified baseline; candidate 113 remains pending external review.",
       "The completed 30-second calibration has valid completed routes but declares no project winner or global optimum.",
       "The verified 120-second BC model remains the current best project result.",
-      "Full 120-second Beam Search, MCTS, BC training, and PPO training were not run for candidate 112."
+      "The 32GB plan is infrastructure only: the 3M/5M Beam Search, MCTS, BC training, and PPO training were not run for candidate 113.",
+      "The first future execution is capped at 3M expansions; resume to 5M only after external review.",
+      "The original monolithic-spill probe metrics were withdrawn; the corrected streaming-spill Windows probe and two-run process-exit repeatability guard pass.",
+      "Corrected POSIX packaged validation and final ZIP validation remain pending, so candidate 113 is not yet ready for the 3M run.",
+      "Full audit artifacts remain preserved in the externally verified candidate-112 archive."
     ],
     "validation_summary": {
       "status": "pending_final_archive_validation",
-      "archive_path": "../ww-dps-simulator-2-112.zip",
+      "archive_path": "../ww-dps-simulator-2-113.zip",
       "archive_exact_validation_passed": false,
       "archive_sha256_reported_outside_progress_state": true,
       "canonical_beam_search_results_written": true,
@@ -797,19 +851,19 @@
   ],
   "next_planned_tasks": [
     {
-      "task": "external review of candidate 112"
+      "task": "external review of candidate 113"
     },
     {
-      "task": "run the reviewed 120-second Beam Search stage"
+      "task": "build the slim runtime workspace"
     },
     {
-      "task": "resume rather than restart if interrupted"
+      "task": "run the reviewed 32GB low-memory Beam plan to 3M expansions"
     },
     {
-      "task": "compare only completed 120-second routes with the verified BC result"
+      "task": "review memory, runtime, and best completed 120-second result"
     },
     {
-      "task": "consider MCTS only after reviewing the full Beam result"
+      "task": "resume to 5M only if useful, then run MCTS as an independent complementary search"
     }
   ],
   "validation_invariants": [
@@ -1379,7 +1433,7 @@
       ]
     }
   ],
-  "next_planned_task": "run the reviewed 120-second Beam Search stage after candidate 112 external verification",
+  "next_planned_task": "after candidate 113 external verification, build the slim workspace and run the reviewed 32GB low-memory Beam plan to the 3M first-run cap",
   "candidate_history": [
     {
       "candidate": "106",
@@ -1594,15 +1648,41 @@
     {
       "candidate": "112",
       "task": "30-second Beam Search calibration result ingestion and full-search readiness review",
-      "status": "candidate_pending_external_review",
-      "latest_externally_verified_baseline": "111",
-      "external_review_status": "pending",
-      "external_verification_claimed": false,
+      "status": "externally_verified_complete",
+      "latest_externally_verified_baseline": "112",
+      "external_review_status": "passed",
+      "external_verification_claimed": true,
+      "external_verification_label": "112",
+      "baseline_archive": "ww-dps-simulator-2-112.zip",
+      "archive_sha256": "b602af3cd1b87cac1529baa23042e023ce2c90e9d1560426567943da95515fc5",
       "calibration_stage_executed": true,
       "full_search_stage_executed": false,
       "mcts_execution": false,
       "calibration_result_summary": "results/beam_search_v111/calibration_result_summary.json",
       "report": "reports/beam_search_v111_calibration_results.md",
+      "global_optimum_claimed": false
+    },
+    {
+      "candidate": "113",
+      "task": "32GB low-memory 120-second Beam Search plan and slim runtime workspace",
+      "status": "candidate_pending_external_review",
+      "latest_externally_verified_baseline": "112",
+      "external_review_status": "pending",
+      "external_verification_claimed": false,
+      "calibration_stage_executed": true,
+      "full_64gb_search_completed": false,
+      "low_memory_full_search_executed": false,
+      "mcts_executed": false,
+      "plan_path": "data/beam_search_plan_v113_32gb.json",
+      "plan_sha256": "ffd9ce47ec9b92b2c4b59f295d50d0ce5204fcba577af0f78b9fa917b19b291d",
+      "output_root": "results/beam_search_v113_lowmem_32gb",
+      "memory_budget_bytes": 23622320128,
+      "first_run_max_expansions": 3000000,
+      "plan_maximum_expansions": 5000000,
+      "extension_requires_external_review": true,
+      "slim_workspace_manifest_path": "LOWMEM_WORKSPACE_MANIFEST.json",
+      "current_best_model": "models/maskable_ppo_bc_v105.zip",
+      "current_best_result": 5165134.682363356,
       "global_optimum_claimed": false
     }
   ]

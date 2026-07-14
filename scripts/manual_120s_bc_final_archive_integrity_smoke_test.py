@@ -21,7 +21,7 @@ DIRECT_ACTION_MANIFEST_SHA256 = "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28
 SOURCE_ROUTE_FILE_SHA256 = "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a"
 
 
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-112.zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-113.zip"
 EXPECTED_BC_MODEL_SHA256 = "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e"
 EXPECTED_PPO_MODEL_SHA256 = "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513"
 EXPECTED_EVAL_SELECTED_SEQUENCE_SHA256 = "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1"
@@ -40,6 +40,7 @@ EXPECTED_PPO_TOTAL_DAMAGE = 3600637.129626801
 EXPECTED_PPO_DPS = 30005.309413556675
 EXPECTED_PPO_SCHEDULED_DAMAGE = 140026.5111366104
 EXPECTED_BEAM_PLAN_SHA256 = "b504def4e0c1da82ef2a6024d19ccac76fe175df51899e50d12f3bff99a17998"
+EXPECTED_LOWMEM_BEAM_PLAN_SHA256 = "ffd9ce47ec9b92b2c4b59f295d50d0ce5204fcba577af0f78b9fa917b19b291d"
 EXPECTED_PPO_DAMAGE_BY_CHARACTER = {
     "aemeath": 2674131.053725695,
     "mornye": 201528.93426401448,
@@ -67,6 +68,9 @@ REQUIRED_FILES = (
     "reports/beam_search_v111.md",
     "reports/beam_search_v111_calibration_results.md",
     "data/beam_search_plan_v111.json",
+    "data/beam_search_plan_v113_32gb.json",
+    "reports/beam_search_v113_32gb_lowmem.md",
+    "results/runtime_cleanup_v113_receipt.json",
     "results/beam_search_v111/execution_result.json",
     "results/beam_search_v111/search_state.json",
     "results/beam_search_v111/leaderboard.json",
@@ -88,6 +92,7 @@ REQUIRED_FILES = (
     "search/__init__.py",
     "search/beam_plan.py",
     "search/beam_reporting.py",
+    "search/beam_spill.py",
     "search/beam_search.py",
     "search/beam_state.py",
     "search/run_beam_search.py",
@@ -198,6 +203,22 @@ REQUIRED_FILES = (
     "scripts/final_archive_checker_repeatability_smoke_test.py",
     "scripts/guarded_ppo_state_integrity_repeatability_smoke_test.py",
     "scripts/ingest_beam_search_v111_calibration_results.py",
+    "scripts/build_lowmem_beam_workspace.py",
+    "scripts/build_lowmem_beam_result_archive.py",
+    "scripts/cleanup_unnecessary_runtime_artifacts.py",
+    "scripts/beam_search_lowmem_32gb_plan_contract_smoke_test.py",
+    "scripts/beam_search_lowmem_workspace_builder_smoke_test.py",
+    "scripts/beam_search_lowmem_workspace_manifest_smoke_test.py",
+    "scripts/beam_search_lowmem_output_isolation_smoke_test.py",
+    "scripts/beam_search_lowmem_memory_guard_smoke_test.py",
+    "scripts/beam_search_lowmem_spill_streaming_smoke_test.py",
+    "scripts/beam_search_lowmem_spill_finalization_count_smoke_test.py",
+    "scripts/beam_search_lowmem_spill_no_repeated_rescan_smoke_test.py",
+    "scripts/beam_search_lowmem_probe_phase_timing_smoke_test.py",
+    "scripts/beam_search_lowmem_10000_probe_smoke_test.py",
+    "scripts/beam_search_lowmem_10000_probe_repeatability_smoke_test.py",
+    "scripts/cleanup_unnecessary_runtime_artifacts_smoke_test.py",
+    "scripts/project_progress_beam_search_lowmem_alignment_smoke_test.py",
 )
 EXPECTED_GUARDED_PLAN_SHA256 = "0306c734347e49460fd7273bce546eed80a2db657e460eb707f5cab961a9e0e6"
 TEXT_SUFFIXES = (".py", ".json", ".md", ".txt")
@@ -295,6 +316,33 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         assert beam_plan["stages"][1]["destination_accumulator_unique_fingerprint_bound"] == 32768
         assert beam_plan["final_reporting_contract"]["short_horizon_reference_damage_status"] == "horizon_mismatch_not_comparable"
         assert beam_plan["final_reporting_contract"]["short_horizon_numeric_reference_ranking"] is False
+
+        lowmem_plan_bytes = zf.read("data/beam_search_plan_v113_32gb.json")
+        assert bytes_sha256(lowmem_plan_bytes) == EXPECTED_LOWMEM_BEAM_PLAN_SHA256
+        lowmem_plan = json.loads(lowmem_plan_bytes.decode("utf-8"))
+        assert lowmem_plan["schema_version"] == "beam_search_plan_v113_32gb"
+        assert lowmem_plan["candidate"] == "113"
+        assert lowmem_plan["inherits_contracts_from"] == {
+            "path": "data/beam_search_plan_v111.json",
+            "sha256": EXPECTED_BEAM_PLAN_SHA256,
+        }
+        assert lowmem_plan["output_contract"]["canonical_output_root"] == "results/beam_search_v113_lowmem_32gb"
+        assert "results/beam_search_v111_full_120s" in lowmem_plan["output_contract"]["forbidden_resume_or_output_roots"]
+        assert lowmem_plan["initial_execution_policy"]["first_run_max_expansions"] == 3000000
+        assert lowmem_plan["initial_execution_policy"]["plan_maximum_expansions"] == 5000000
+        lowmem_stage = lowmem_plan["stages"][0]
+        assert len(lowmem_plan["stages"]) == 1
+        assert lowmem_stage["stage_id"] == "full_120s_lowmem_32gb"
+        assert lowmem_stage["combat_duration"] == 120.0
+        assert lowmem_stage["beam_width"] == 1792
+        assert lowmem_stage["global_damage_quota"] == 896
+        assert lowmem_stage["diversity_retention_quota"] == 896
+        assert lowmem_stage["maximum_expansions"] == 5000000
+        assert lowmem_stage["memory_budget_bytes"] == 23622320128
+        assert lowmem_stage["wall_clock_budget_seconds"] == 36000
+        assert lowmem_stage["destination_accumulator_unique_fingerprint_bound"] == 16384
+        assert lowmem_stage["in_memory_accumulator_candidate_limit"] == 4096
+        assert lowmem_stage["disk_spill_enabled"] is True
         model_bytes = zf.read("models/maskable_ppo_bc_v105.zip")
         assert bytes_sha256(model_bytes) == EXPECTED_BC_MODEL_SHA256
         ppo_model_bytes = zf.read("models/maskable_ppo_candidate_after_bc_v105.zip")
@@ -462,6 +510,17 @@ def run_fresh_extraction_checks(archive: Path, *, orchestration_smoke: bool) -> 
         [sys.executable, "scripts/final_archive_beam_calibration_suite.py"],
         [sys.executable, "scripts/final_archive_beam_helper_suite.py"],
         [sys.executable, "scripts/final_archive_dataset_metadata_suite.py"],
+        [sys.executable, "scripts/beam_search_lowmem_32gb_plan_contract_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_lowmem_workspace_builder_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_lowmem_workspace_manifest_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_lowmem_output_isolation_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_lowmem_memory_guard_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_lowmem_spill_streaming_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_lowmem_spill_finalization_count_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_lowmem_spill_no_repeated_rescan_smoke_test.py"],
+        [sys.executable, "scripts/beam_search_lowmem_10000_probe_smoke_test.py"],
+        [sys.executable, "scripts/cleanup_unnecessary_runtime_artifacts_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_beam_search_lowmem_alignment_smoke_test.py"],
     ]
     if not orchestration_smoke:
         # One evaluator lifecycle validates the packaged BC model without training.

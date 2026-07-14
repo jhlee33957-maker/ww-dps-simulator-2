@@ -11,12 +11,12 @@ def main() -> None:
     progress = json.loads((ROOT / "PROJECT_PROGRESS_STATE.json").read_text(encoding="utf-8-sig"))
     status = progress["status"]
     current = progress["current_in_progress_task"]
-    assert status["latest_verified_baseline_label"] == "111"
-    assert status["latest_verified_archive"] == "ww-dps-simulator-2-111.zip"
-    assert status["current_task_expected_next_archive"] == "112"
+    assert status["latest_verified_baseline_label"] == "112"
+    assert status["latest_verified_archive"] == "ww-dps-simulator-2-112.zip"
+    assert status["current_task_expected_next_archive"] == "113"
     assert status["current_task_status"] == "candidate_pending_external_review"
-    assert current["candidate"] == "112"
-    assert current["task"] == "30-second Beam Search calibration result ingestion and full-search readiness review"
+    assert current["candidate"] == "113"
+    assert current["task"] == "32GB low-memory 120-second Beam Search plan and slim runtime workspace"
     assert current["calibration_stage_executed"] is True
     assert current["full_search_stage_executed"] is False
     assert current["mcts_execution"] is False
@@ -35,14 +35,14 @@ def main() -> None:
     assert history_111["validation_summary"]["status"] == "externally_verified_complete"
     assert history_111["validation_summary"]["archive_exact_validation_passed"] is True
     assert history_111["validation_summary"]["canonical_beam_search_results_written"] is False
-    assert history_112["status"] == "candidate_pending_external_review"
+    assert history_112["status"] == "externally_verified_complete"
     assert history_112["calibration_stage_executed"] is True
     assert [item["task"] for item in progress["next_planned_tasks"]] == [
-        "external review of candidate 112",
-        "run the reviewed 120-second Beam Search stage",
-        "resume rather than restart if interrupted",
-        "compare only completed 120-second routes with the verified BC result",
-        "consider MCTS only after reviewing the full Beam result",
+        "external review of candidate 113",
+        "build the slim runtime workspace",
+        "run the reviewed 32GB low-memory Beam plan to 3M expansions",
+        "review memory, runtime, and best completed 120-second result",
+        "resume to 5M only if useful, then run MCTS as an independent complementary search",
     ]
     print("project_progress_beam_search_calibration_alignment_smoke_test ok")
 

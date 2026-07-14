@@ -6,13 +6,26 @@ import hashlib
 import json
 import os
 import time
+import ctypes
+from collections.abc import Iterable, Iterator
 from pathlib import Path
 from typing import Any
 
 from simulator.simulation import Simulation
 
-from search.beam_plan import DEFAULT_PLAN_PATH, ROOT, load_plan, resolve_actual_data_hashes, sha256_file, stage_by_id, validate_plan
+from search.beam_plan import (
+    DEFAULT_PLAN_PATH,
+    FORBIDDEN_64GB_OUTPUT_ROOT,
+    LOWMEM_32GB_SCHEMA,
+    ROOT,
+    load_plan,
+    resolve_plan_data_hashes,
+    sha256_file,
+    stage_by_id,
+    validate_plan,
+)
 from search.beam_reporting import replay_selected_route_to_files, select_damage_only_winner, verified_bc_incumbent_manifest
+from search.beam_spill import STREAMING_CHUNK_SCHEMA, iter_accumulator_chunk_nodes, write_accumulator_chunk_streaming
 from search.beam_state import (
     BeamNode,
     clone_simulation_for_search,
@@ -25,7 +38,6 @@ from search.beam_state import (
 
 
 CANONICAL_RESULTS_ROOT = ROOT / "results" / "beam_search_v111"
-VALID_STAGE_IDS = {"calibration_30s", "full_120s"}
 SMOKE_STAGE_ID = "smoke_3s"
 TERMINATION_STATUSES = {
     "completed_search",
@@ -36,6 +48,19 @@ TERMINATION_STATUSES = {
     "interrupted_resumable",
     "contract_failure",
 }
+ACCUMULATOR_LIFECYCLE_METRIC_KEYS = (
+    "spill_write_count",
+    "spill_write_seconds",
+    "spill_sha_validation_count",
+    "spill_sha_validation_seconds",
+    "spill_restore_pass_count",
+    "spill_restore_nodes_streamed",
+    "spill_restore_seconds",
+    "full_accumulator_finalization_count",
+    "accumulator_finalization_seconds",
+    "duplicate_merge_seconds",
+    "retained_selection_seconds",
+)
 
 
 class DestinationBucketAccumulator:
@@ -50,12 +75,17 @@ class DestinationBucketAccumulator:
         max_unique_fingerprints: int | None = None,
         spill_root: Path | None = None,
         output_root: Path | None = None,
+        plan_sha256: str = "unbound_test_plan",
+        stage_contract_sha256: str | None = None,
     ) -> None:
         self.bucket_index = int(bucket_index)
         self.stage = dict(stage)
         self.max_unique_fingerprints = int(max_unique_fingerprints or _accumulator_unique_bound(stage))
         self.spill_root = spill_root
         self.output_root = output_root
+        self.plan_sha256 = str(plan_sha256)
+        self.stage_contract_sha256 = stage_contract_sha256 or _spill_stage_contract_sha256(stage)
+        self.streaming_spill = stage.get("stage_id") == "full_120s_lowmem_32gb"
         self.best_by_fingerprint: dict[str, BeamNode] = {}
         self.spill_chunks: list[dict[str, Any]] = []
         self.candidates_seen = 0
@@ -66,8 +96,30 @@ class DestinationBucketAccumulator:
         self.spilled_bytes = 0
         self.retained_set_finalization_count = 0
         self.full_retained_set_scan_count = 0
+        self.peak_spill_serialization_buffer_bytes = 0
+        self.peak_spill_restore_buffer_bytes = 0
+        self.peak_spill_chunk_uncompressed_bytes = 0
+        self.peak_finalization_unique_node_count = 0
+        self.peak_finalization_unique_set_bytes = 0
+        self.peak_final_sort_node_count = 0
+        self.peak_final_sort_list_bytes = 0
+        self.spill_write_count = 0
+        self.spill_write_seconds = 0.0
+        self.spill_sha_validation_count = 0
+        self.spill_sha_validation_seconds = 0.0
+        self.spill_restore_pass_count = 0
+        self.spill_restore_nodes_streamed = 0
+        self.spill_restore_seconds = 0.0
+        self.full_accumulator_finalization_count = 0
+        self.accumulator_finalization_seconds = 0.0
+        self.duplicate_merge_seconds = 0.0
+        self.retained_selection_seconds = 0.0
+        self.finalization_needed = True
+        self._finalized_cache: dict[str, Any] | None = None
 
     def add(self, node: BeamNode) -> dict[str, int]:
+        self._finalized_cache = None
+        self.finalization_needed = True
         self.candidates_seen += 1
         existing = self.best_by_fingerprint.get(node.future_fingerprint)
         result = {"duplicate": 0, "replacement": 0}
@@ -99,10 +151,15 @@ class DestinationBucketAccumulator:
         return self.finalize_retention()["metrics"]
 
     def finalize_retention(self) -> dict[str, Any]:
+        if self._finalized_cache is not None:
+            return self._finalized_cache
+        finalization_started = time.perf_counter()
         self.retained_set_finalization_count += 1
         self.full_retained_set_scan_count += 1
+        self.full_accumulator_finalization_count += 1
         best_by_fingerprint: dict[str, BeamNode] = {}
         better_duplicate_replacements = int(self.hot_path_better_duplicate_replacements)
+        merge_started = time.perf_counter()
         for node in self.iter_unique_nodes():
             existing = best_by_fingerprint.get(node.future_fingerprint)
             if existing is None:
@@ -110,9 +167,19 @@ class DestinationBucketAccumulator:
             elif _node_order_key(node) < _node_order_key(existing):
                 best_by_fingerprint[node.future_fingerprint] = node
                 better_duplicate_replacements += 1
-        unique_nodes = list(best_by_fingerprint.values())
-        selected = _select_retained_unique(unique_nodes, self.stage)
-        unique_count = len(unique_nodes)
+        self.duplicate_merge_seconds += time.perf_counter() - merge_started
+        unique_count = len(best_by_fingerprint)
+        unique_payload_bytes = sum(max(int(node.payload_size_bytes), 1) for node in best_by_fingerprint.values())
+        self.peak_finalization_unique_node_count = max(self.peak_finalization_unique_node_count, unique_count)
+        self.peak_finalization_unique_set_bytes = max(
+            self.peak_finalization_unique_set_bytes,
+            unique_payload_bytes + unique_count * 128,
+        )
+        self.peak_final_sort_node_count = max(self.peak_final_sort_node_count, unique_count)
+        self.peak_final_sort_list_bytes = max(self.peak_final_sort_list_bytes, unique_count * 8)
+        selection_started = time.perf_counter()
+        selected = _select_retained_unique(best_by_fingerprint.values(), self.stage)
+        self.retained_selection_seconds += time.perf_counter() - selection_started
         exact_duplicates = max(0, int(self.candidates_seen) - unique_count)
         final_rejected = int(selected["metrics"]["final_rejected_count"])
         if int(self.candidates_seen) != exact_duplicates + unique_count:
@@ -135,6 +202,14 @@ class DestinationBucketAccumulator:
             "spill_bytes": self.spilled_bytes,
             "retained_set_finalization_count": self.retained_set_finalization_count,
             "full_retained_set_scan_count": self.full_retained_set_scan_count,
+            "peak_spill_serialization_buffer_bytes": self.peak_spill_serialization_buffer_bytes,
+            "peak_spill_restore_buffer_bytes": self.peak_spill_restore_buffer_bytes,
+            "peak_spill_chunk_uncompressed_bytes": self.peak_spill_chunk_uncompressed_bytes,
+            "peak_finalization_unique_node_count": self.peak_finalization_unique_node_count,
+            "peak_finalization_unique_set_bytes": self.peak_finalization_unique_set_bytes,
+            "peak_final_sort_node_count": self.peak_final_sort_node_count,
+            "peak_final_sort_list_bytes": self.peak_final_sort_list_bytes,
+            **self._lifecycle_count_metrics(),
             **{f"selection_{key}": value for key, value in selected["metrics"].items()},
         }
         metrics.update(
@@ -147,52 +222,105 @@ class DestinationBucketAccumulator:
                 "rejected_by_final_beam_width": selected["metrics"]["candidates_rejected_by_final_beam_width"],
             }
         )
-        return {"retained": selected["retained"], "metrics": metrics}
+        self.accumulator_finalization_seconds += time.perf_counter() - finalization_started
+        metrics.update(self._lifecycle_count_metrics())
+        self.finalization_needed = False
+        self._finalized_cache = {"retained": selected["retained"], "metrics": metrics}
+        return self._finalized_cache
 
     def spill_current_chunk(self) -> dict[str, Any] | None:
         if not self.best_by_fingerprint:
             return None
         if self.spill_root is None:
             return None
+        spill_started = time.perf_counter()
         nodes = sorted(self.best_by_fingerprint.values(), key=_node_order_key)
         chunk_index = len(self.spill_chunks)
-        path = self.spill_root / f"accumulator_bucket_{self.bucket_index:06d}_chunk_{chunk_index:06d}.json.gz"
-        payload = {
-            "schema_version": self.chunk_schema_version,
-            "bucket_index": self.bucket_index,
-            "chunk_index": chunk_index,
-            "nodes": [node.to_json() for node in nodes],
-        }
-        sha = write_json_gz(path, payload)
-        size = path.stat().st_size
-        entry = {
-            "schema_version": self.chunk_schema_version,
-            "bucket_index": self.bucket_index,
-            "chunk_index": chunk_index,
-            "path": _path_text(path),
-            "sha256": sha,
-            "candidate_count": len(nodes),
-            "unique_fingerprint_count": len(nodes),
-            "node_ids": [node.node_id for node in nodes],
-            "compressed_bytes": size,
-        }
+        suffix = ".jsonl.gz" if self.streaming_spill else ".json.gz"
+        path = self.spill_root / f"accumulator_bucket_{self.bucket_index:06d}_chunk_{chunk_index:06d}{suffix}"
+        if self.streaming_spill:
+            entry = write_accumulator_chunk_streaming(
+                path,
+                nodes,
+                bucket_index=self.bucket_index,
+                chunk_index=chunk_index,
+                plan_sha256=self.plan_sha256,
+                stage_id=str(self.stage["stage_id"]),
+                stage_contract_sha256=self.stage_contract_sha256,
+            )
+            entry["path"] = _portable_spill_path(path, self.output_root)
+            self.peak_spill_serialization_buffer_bytes = max(
+                self.peak_spill_serialization_buffer_bytes,
+                int(entry["max_serialization_buffer_bytes"]),
+            )
+            self.peak_spill_chunk_uncompressed_bytes = max(
+                self.peak_spill_chunk_uncompressed_bytes,
+                int(entry["uncompressed_bytes"]),
+            )
+        else:
+            payload = {
+                "schema_version": self.chunk_schema_version,
+                "bucket_index": self.bucket_index,
+                "chunk_index": chunk_index,
+                "nodes": [node.to_json() for node in nodes],
+            }
+            sha = write_json_gz(path, payload)
+            entry = {
+                "schema_version": self.chunk_schema_version,
+                "bucket_index": self.bucket_index,
+                "chunk_index": chunk_index,
+                "path": _path_text(path),
+                "sha256": sha,
+                "candidate_count": len(nodes),
+                "unique_fingerprint_count": len(nodes),
+                "node_ids": [node.node_id for node in nodes],
+                "compressed_bytes": path.stat().st_size,
+            }
+        self._finalized_cache = None
+        self.finalization_needed = True
         self.spill_chunks.append(entry)
         self.spilled_candidate_count += len(nodes)
         self.spilled_unique_fingerprint_count += len(nodes)
-        self.spilled_bytes += size
+        self.spilled_bytes += int(entry["compressed_bytes"])
         self.best_by_fingerprint.clear()
+        self.spill_write_count += 1
+        self.spill_write_seconds += time.perf_counter() - spill_started
         return entry
 
-    def iter_unique_nodes(self) -> list[BeamNode]:
-        nodes: list[BeamNode] = []
+    def iter_unique_nodes(self) -> Iterator[BeamNode]:
         for chunk in self.spill_chunks:
             path = _resolve_stored_path(str(chunk["path"]), self.output_root)
+            if chunk.get("schema_version") == STREAMING_CHUNK_SCHEMA:
+                restore_metrics: dict[str, Any] = {}
+                yield from iter_accumulator_chunk_nodes(
+                    path,
+                    chunk,
+                    expected_plan_sha256=self.plan_sha256,
+                    expected_stage_id=str(self.stage["stage_id"]),
+                    expected_stage_contract_sha256=self.stage_contract_sha256,
+                    metrics=restore_metrics,
+                )
+                self.peak_spill_restore_buffer_bytes = max(
+                    self.peak_spill_restore_buffer_bytes,
+                    int(restore_metrics.get("max_restore_buffer_bytes", 0)),
+                )
+                self.spill_sha_validation_count += int(restore_metrics.get("sha_validation_count", 0))
+                self.spill_sha_validation_seconds += float(restore_metrics.get("sha_validation_seconds", 0.0))
+                self.spill_restore_pass_count += int(restore_metrics.get("restore_pass_count", 0))
+                self.spill_restore_nodes_streamed += int(restore_metrics.get("restore_node_count", 0))
+                self.spill_restore_seconds += float(restore_metrics.get("restore_seconds", 0.0))
+                continue
+            restore_started = time.perf_counter()
             payload = read_json_gz(path, str(chunk["sha256"]))
+            self.spill_sha_validation_count += 1
+            self.spill_restore_pass_count += 1
             if payload.get("schema_version") != self.chunk_schema_version:
                 raise ValueError(f"Unsupported destination accumulator chunk schema: {payload.get('schema_version')!r}")
-            nodes.extend(BeamNode.from_json(item) for item in payload.get("nodes", []))
-        nodes.extend(self.best_by_fingerprint.values())
-        return nodes
+            for item in payload.get("nodes", []):
+                self.spill_restore_nodes_streamed += 1
+                yield BeamNode.from_json(item)
+            self.spill_restore_seconds += time.perf_counter() - restore_started
+        yield from self.best_by_fingerprint.values()
 
     def node_ids(self) -> list[int]:
         ids = [node.node_id for node in self.best_by_fingerprint.values()]
@@ -219,6 +347,63 @@ class DestinationBucketAccumulator:
             "hot_path_better_duplicate_replacements": self.hot_path_better_duplicate_replacements,
             "retained_set_finalization_count": self.retained_set_finalization_count,
             "full_retained_set_scan_count": self.full_retained_set_scan_count,
+            "peak_spill_serialization_buffer_bytes": self.peak_spill_serialization_buffer_bytes,
+            "peak_spill_restore_buffer_bytes": self.peak_spill_restore_buffer_bytes,
+            "peak_spill_chunk_uncompressed_bytes": self.peak_spill_chunk_uncompressed_bytes,
+            "peak_finalization_unique_node_count": self.peak_finalization_unique_node_count,
+            "peak_finalization_unique_set_bytes": self.peak_finalization_unique_set_bytes,
+            "peak_final_sort_node_count": self.peak_final_sort_node_count,
+            "peak_final_sort_list_bytes": self.peak_final_sort_list_bytes,
+            "finalization_needed": self.finalization_needed,
+            **self._timing_metrics(),
+        }
+
+    def cheap_metrics(self) -> dict[str, Any]:
+        """Return checkpoint-safe counters without restoring or finalizing spill chunks."""
+        return {
+            "schema_version": "beam_search_destination_bucket_accumulator_metrics_snapshot_v113",
+            "bucket_index": self.bucket_index,
+            "candidates_seen": self.candidates_seen,
+            "current_unique_fingerprint_count": len(self.best_by_fingerprint),
+            "spilled_candidates": self.spilled_candidate_count,
+            "spilled_unique_fingerprints": self.spilled_unique_fingerprint_count,
+            "spill_chunk_count": len(self.spill_chunks),
+            "spill_bytes": self.spilled_bytes,
+            "hot_path_exact_fingerprint_duplicates": self.hot_path_exact_fingerprint_duplicates,
+            "hot_path_better_duplicate_replacements": self.hot_path_better_duplicate_replacements,
+            "retained_set_finalization_count": self.retained_set_finalization_count,
+            "full_retained_set_scan_count": self.full_retained_set_scan_count,
+            "peak_spill_serialization_buffer_bytes": self.peak_spill_serialization_buffer_bytes,
+            "peak_spill_restore_buffer_bytes": self.peak_spill_restore_buffer_bytes,
+            "peak_spill_chunk_uncompressed_bytes": self.peak_spill_chunk_uncompressed_bytes,
+            "peak_finalization_unique_node_count": self.peak_finalization_unique_node_count,
+            "peak_finalization_unique_set_bytes": self.peak_finalization_unique_set_bytes,
+            "peak_final_sort_node_count": self.peak_final_sort_node_count,
+            "peak_final_sort_list_bytes": self.peak_final_sort_list_bytes,
+            "finalization_needed": self.finalization_needed,
+            **self._timing_metrics(),
+        }
+
+    def _timing_metrics(self) -> dict[str, Any]:
+        return {
+            "spill_write_count": self.spill_write_count,
+            "spill_write_seconds": self.spill_write_seconds,
+            "spill_sha_validation_count": self.spill_sha_validation_count,
+            "spill_sha_validation_seconds": self.spill_sha_validation_seconds,
+            "spill_restore_pass_count": self.spill_restore_pass_count,
+            "spill_restore_nodes_streamed": self.spill_restore_nodes_streamed,
+            "spill_restore_seconds": self.spill_restore_seconds,
+            "full_accumulator_finalization_count": self.full_accumulator_finalization_count,
+            "accumulator_finalization_seconds": self.accumulator_finalization_seconds,
+            "duplicate_merge_seconds": self.duplicate_merge_seconds,
+            "retained_selection_seconds": self.retained_selection_seconds,
+        }
+
+    def _lifecycle_count_metrics(self) -> dict[str, int]:
+        return {
+            key: int(value)
+            for key, value in self._timing_metrics().items()
+            if not key.endswith("_seconds")
         }
 
     def to_json(self) -> dict[str, Any]:
@@ -233,6 +418,18 @@ class DestinationBucketAccumulator:
             "spilled_candidates": self.spilled_candidate_count,
             "spilled_unique_fingerprints": self.spilled_unique_fingerprint_count,
             "spill_bytes": self.spilled_bytes,
+            "plan_sha256": self.plan_sha256,
+            "stage_contract_sha256": self.stage_contract_sha256,
+            "streaming_spill": self.streaming_spill,
+            "peak_spill_serialization_buffer_bytes": self.peak_spill_serialization_buffer_bytes,
+            "peak_spill_restore_buffer_bytes": self.peak_spill_restore_buffer_bytes,
+            "peak_spill_chunk_uncompressed_bytes": self.peak_spill_chunk_uncompressed_bytes,
+            "peak_finalization_unique_node_count": self.peak_finalization_unique_node_count,
+            "peak_finalization_unique_set_bytes": self.peak_finalization_unique_set_bytes,
+            "peak_final_sort_node_count": self.peak_final_sort_node_count,
+            "peak_final_sort_list_bytes": self.peak_final_sort_list_bytes,
+            "finalization_needed": self.finalization_needed,
+            **self._timing_metrics(),
             "nodes": [node.to_json() for node in sorted(self.best_by_fingerprint.values(), key=_node_order_key)],
         }
 
@@ -244,6 +441,8 @@ class DestinationBucketAccumulator:
         stage: dict[str, Any],
         spill_root: Path | None = None,
         output_root: Path | None = None,
+        plan_sha256: str = "unbound_test_plan",
+        stage_contract_sha256: str | None = None,
     ) -> "DestinationBucketAccumulator":
         if payload.get("schema_version") != cls.schema_version:
             raise ValueError(f"Unsupported destination accumulator schema: {payload.get('schema_version')!r}")
@@ -253,6 +452,8 @@ class DestinationBucketAccumulator:
             max_unique_fingerprints=int(payload.get("max_unique_fingerprints", _accumulator_unique_bound(stage))),
             spill_root=spill_root,
             output_root=output_root,
+            plan_sha256=plan_sha256,
+            stage_contract_sha256=stage_contract_sha256,
         )
         accumulator.candidates_seen = int(payload.get("candidates_seen", 0))
         accumulator.hot_path_exact_fingerprint_duplicates = int(payload.get("hot_path_exact_fingerprint_duplicates", payload.get("exact_fingerprint_duplicates", 0)))
@@ -263,6 +464,25 @@ class DestinationBucketAccumulator:
         accumulator.spilled_bytes = int(payload.get("spill_bytes", 0))
         accumulator.retained_set_finalization_count = int(payload.get("retained_set_finalization_count", 0))
         accumulator.full_retained_set_scan_count = int(payload.get("full_retained_set_scan_count", 0))
+        accumulator.peak_spill_serialization_buffer_bytes = int(payload.get("peak_spill_serialization_buffer_bytes", 0))
+        accumulator.peak_spill_restore_buffer_bytes = int(payload.get("peak_spill_restore_buffer_bytes", 0))
+        accumulator.peak_spill_chunk_uncompressed_bytes = int(payload.get("peak_spill_chunk_uncompressed_bytes", 0))
+        accumulator.peak_finalization_unique_node_count = int(payload.get("peak_finalization_unique_node_count", 0))
+        accumulator.peak_finalization_unique_set_bytes = int(payload.get("peak_finalization_unique_set_bytes", 0))
+        accumulator.peak_final_sort_node_count = int(payload.get("peak_final_sort_node_count", 0))
+        accumulator.peak_final_sort_list_bytes = int(payload.get("peak_final_sort_list_bytes", 0))
+        accumulator.spill_write_count = int(payload.get("spill_write_count", 0))
+        accumulator.spill_write_seconds = float(payload.get("spill_write_seconds", 0.0))
+        accumulator.spill_sha_validation_count = int(payload.get("spill_sha_validation_count", 0))
+        accumulator.spill_sha_validation_seconds = float(payload.get("spill_sha_validation_seconds", 0.0))
+        accumulator.spill_restore_pass_count = int(payload.get("spill_restore_pass_count", 0))
+        accumulator.spill_restore_nodes_streamed = int(payload.get("spill_restore_nodes_streamed", 0))
+        accumulator.spill_restore_seconds = float(payload.get("spill_restore_seconds", 0.0))
+        accumulator.full_accumulator_finalization_count = int(payload.get("full_accumulator_finalization_count", payload.get("full_retained_set_scan_count", 0)))
+        accumulator.accumulator_finalization_seconds = float(payload.get("accumulator_finalization_seconds", 0.0))
+        accumulator.duplicate_merge_seconds = float(payload.get("duplicate_merge_seconds", 0.0))
+        accumulator.retained_selection_seconds = float(payload.get("retained_selection_seconds", 0.0))
+        accumulator.finalization_needed = bool(payload.get("finalization_needed", True))
         for item in payload.get("nodes", []):
             node = BeamNode.from_json(item)
             accumulator.best_by_fingerprint[node.future_fingerprint] = node
@@ -300,8 +520,6 @@ def parse_and_validate_args(argv: list[str] | None = None) -> argparse.Namespace
         parser.error("--wall-clock-limit-seconds must be positive.")
     if args.memory_budget_bytes is not None and args.memory_budget_bytes <= 0:
         parser.error("--memory-budget-bytes must be positive.")
-    if args.only_stage is not None and args.only_stage not in VALID_STAGE_IDS and args.only_stage != SMOKE_STAGE_ID:
-        parser.error(f"Unknown Beam Search stage: {args.only_stage}")
     if args.smoke_run and args.output_root is not None:
         output = args.output_root.resolve()
         if output == CANONICAL_RESULTS_ROOT.resolve() or CANONICAL_RESULTS_ROOT.resolve() in output.parents:
@@ -330,7 +548,7 @@ def dry_run_plan(plan_path: Path) -> dict[str, Any]:
             "memory_estimates": memory_estimates,
         },
         "actual_data_hashes": validation["actual_data_hashes"],
-        "canonical_output_created": CANONICAL_RESULTS_ROOT.exists(),
+        "canonical_output_created": _canonical_output_root(plan).exists(),
     }
 
 
@@ -342,16 +560,28 @@ def run_search_from_args(args: argparse.Namespace) -> dict[str, Any]:
     if args.smoke_run:
         stage = _smoke_stage(args.max_expansions)
     else:
-        stage_id = args.only_stage or "calibration_30s"
+        stage_id = args.only_stage or str(plan["stages"][0]["stage_id"])
         stage = dict(stage_by_id(plan, stage_id))
         if args.max_expansions is not None:
             stage["maximum_expansions"] = min(stage["maximum_expansions"], args.max_expansions)
     if args.wall_clock_limit_seconds is not None:
         stage["wall_clock_limit_seconds"] = float(args.wall_clock_limit_seconds)
     if args.memory_budget_bytes is not None:
+        configured_budget = stage.get("memory_budget_bytes")
+        if configured_budget is not None and int(args.memory_budget_bytes) > int(configured_budget):
+            raise ValueError("--memory-budget-bytes may lower, but may not raise, the reviewed stage budget")
         stage["memory_budget_bytes"] = int(args.memory_budget_bytes)
-    output_root = args.output_root or CANONICAL_RESULTS_ROOT
-    if args.smoke_run and output_root == CANONICAL_RESULTS_ROOT:
+    if plan.get("schema_version") == LOWMEM_32GB_SCHEMA and stage.get("memory_budget_bytes") is None:
+        raise ValueError("The 32 GB Beam stage requires a hard memory budget")
+    canonical_output_root = _canonical_output_root(plan)
+    output_root = args.output_root or canonical_output_root
+    forbidden_output = (ROOT / FORBIDDEN_64GB_OUTPUT_ROOT).resolve()
+    resolved_output = output_root.resolve()
+    if plan.get("schema_version") == LOWMEM_32GB_SCHEMA and (
+        resolved_output == forbidden_output or forbidden_output in resolved_output.parents
+    ):
+        raise ValueError("Candidate 113 refuses output or resume under the abandoned 64 GB Beam root")
+    if args.smoke_run and output_root.resolve() == canonical_output_root.resolve():
         raise ValueError("--smoke-run requires a temporary/noncanonical output root")
     runner = BeamSearchRunner(plan=plan, stage=stage, plan_path=args.plan, output_root=output_root)
     return runner.run(resume=args.resume)
@@ -380,6 +610,7 @@ def compact_cli_summary(result: dict[str, Any]) -> dict[str, Any]:
         "best_partial_total_damage": best_partial.get("total_damage"),
         "checkpoint_count": result.get("checkpoint_count"),
         "accumulator_finalization_count": result.get("accumulator_finalization_count"),
+        "peak_process_rss_bytes": result.get("peak_process_rss_bytes"),
         "compact_output": True,
     }
 
@@ -389,6 +620,8 @@ class BeamSearchRunner:
         self.plan = plan
         self.stage = dict(stage)
         self.plan_path = plan_path
+        self.plan_sha256 = sha256_file(plan_path)
+        self.stage_contract_sha256 = _spill_stage_contract_sha256(stage)
         self.output_root = output_root
         self.frontier_root = output_root / "frontier"
         self.accumulator_root = self.frontier_root / "accumulators"
@@ -396,7 +629,7 @@ class BeamSearchRunner:
         self.stage_id = stage["stage_id"]
         self.maximum_expansions = int(stage["maximum_expansions"])
         self.time_bucket_width = float(stage["time_bucket_width"])
-        self.checkpoint_interval_expansions = int(plan.get("checkpoint_interval_expansions", 100000))
+        self.checkpoint_interval_expansions = int(stage.get("checkpoint_interval_expansions", plan.get("checkpoint_interval_expansions", 100000)))
         self.limit_check_interval_expansions = int(stage.get("limit_check_interval_expansions", plan.get("memory_estimate_contract", {}).get("limit_check_interval_expansions", 64)))
         self.next_checkpoint_expansion = self.checkpoint_interval_expansions
         self.next_node_id = 1
@@ -420,12 +653,25 @@ class BeamSearchRunner:
         self.peak_live_nodes = 0
         self.peak_frontier_size = 0
         self.peak_serialized_payload_bytes = 0
+        self.peak_process_rss_bytes = _process_peak_rss_bytes()
         self.checkpoint_count = 0
         self.frontier_file_write_count = 0
         self.metric_update_count = 0
         self.payload_size_calculation_count = 0
         self.bucket_metrics: list[dict[str, Any]] = []
         self.accumulator_finalization_count = 0
+        self.retired_accumulator_lifecycle_metrics = {key: 0 for key in ACCUMULATOR_LIFECYCLE_METRIC_KEYS}
+        self.phase_timing_metrics: dict[str, float | int] = {
+            "checkpoint_manifest_generation_count": 0,
+            "forced_checkpoint_manifest_generation_count": 0,
+            "checkpoint_manifest_generation_seconds": 0.0,
+            "pending_frontier_serialization_count": 0,
+            "pending_frontier_serialization_seconds": 0.0,
+            "route_store_compaction_count": 0,
+            "route_store_compaction_seconds": 0.0,
+            "result_creation_count": 0,
+            "result_creation_seconds": 0.0,
+        }
 
     def run(self, *, resume: bool = False) -> dict[str, Any]:
         started = time.perf_counter()
@@ -467,6 +713,7 @@ class BeamSearchRunner:
             self.live_node_count -= len(nodes)
             resume_queue = self.bucket_resume_queues.pop(bucket_index, [])
             accumulator = self.pending_accumulators.get(bucket_index)
+            retire_accumulator = accumulator is not None and not resume_queue
             if not resume_queue:
                 accumulator = self.pending_accumulators.pop(bucket_index, None)
             before_count = len(nodes) if accumulator is None else accumulator.candidates_seen
@@ -481,9 +728,11 @@ class BeamSearchRunner:
                 if accumulator is None:
                     retained = self._retain(nodes)
                 else:
-                    finalized = accumulator.finalize_retention()
+                    finalized = self._finalize_accumulator(bucket_index, accumulator)
                     retained = finalized["retained"]
                     self._count_finalized_accumulator_metrics(finalized["metrics"])
+                    if retire_accumulator:
+                        self._retire_accumulator_metrics(accumulator)
             self._compact_route_store(extra_node_ids=[node.node_id for node in retained])
             metric = {
                 "bucket_index": bucket_index,
@@ -585,7 +834,11 @@ class BeamSearchRunner:
         else:
             termination_status = "completed_search" if self.completed else "frontier_exhausted_without_complete_route"
         elapsed = time.perf_counter() - started
+        result_started = time.perf_counter()
         result = self._result_payload(status=termination_status, elapsed=elapsed)
+        self.phase_timing_metrics["result_creation_count"] = int(self.phase_timing_metrics["result_creation_count"]) + 1
+        self.phase_timing_metrics["result_creation_seconds"] = float(self.phase_timing_metrics["result_creation_seconds"]) + (time.perf_counter() - result_started)
+        result["phase_timing_metrics"] = dict(self.phase_timing_metrics)
         self._atomic_json(self.output_root / "execution_result.json", result)
         self._atomic_json(self.output_root / "leaderboard.json", _leaderboard_payload(result, self.stage_id))
         self._atomic_json(self.output_root / "best_route.json", _best_route_payload(result, self.stage_id))
@@ -611,9 +864,14 @@ class BeamSearchRunner:
         return result["retained"]
 
     def _finalize_accumulator_view(self, bucket_index: int, accumulator: DestinationBucketAccumulator) -> list[BeamNode]:
+        return self._finalize_accumulator(bucket_index, accumulator)["retained"]
+
+    def _finalize_accumulator(self, bucket_index: int, accumulator: DestinationBucketAccumulator) -> dict[str, Any]:
+        _ = bucket_index
+        before = accumulator.full_accumulator_finalization_count
         finalized = accumulator.finalize_retention()
-        self.accumulator_finalization_count += 1
-        return finalized["retained"]
+        self.accumulator_finalization_count += accumulator.full_accumulator_finalization_count - before
+        return finalized
 
     def _count_finalized_accumulator_metrics(self, metrics: dict[str, Any]) -> None:
         self.deduplicated_states += int(metrics["exact_fingerprint_duplicates"])
@@ -677,26 +935,17 @@ class BeamSearchRunner:
         return int(float(combat_time) / self.time_bucket_width)
 
     def _save_manifest(self, *, status: str, force: bool = False) -> None:
+        checkpoint_started = time.perf_counter()
+        self.phase_timing_metrics["checkpoint_manifest_generation_count"] = int(self.phase_timing_metrics["checkpoint_manifest_generation_count"]) + 1
+        if force:
+            self.phase_timing_metrics["forced_checkpoint_manifest_generation_count"] = int(self.phase_timing_metrics["forced_checkpoint_manifest_generation_count"]) + 1
         accumulator_entries: dict[str, dict[str, Any]] = {}
         accumulator_metrics: dict[str, dict[str, Any]] = {}
         for bucket_index, accumulator in sorted(self.pending_accumulators.items()):
-            if force or bucket_index in self.dirty_buckets or bucket_index not in self.pending:
-                retained = self._finalize_accumulator_view(bucket_index, accumulator)
-                existing_count = len(self.pending.get(bucket_index, []))
-                resume_ids = self.bucket_resume_queues.get(bucket_index, [])
-                if resume_ids:
-                    existing_by_id = {node.node_id: node for node in self.pending.get(bucket_index, [])}
-                    queue_nodes = [existing_by_id[node_id] for node_id in resume_ids if node_id in existing_by_id]
-                    queue_ids = {node.node_id for node in queue_nodes}
-                    materialized = queue_nodes + [node for node in retained if node.node_id not in queue_ids]
-                else:
-                    materialized = retained
-                self.pending[bucket_index] = materialized
-                self.live_node_count += len(materialized) - existing_count
-            retained_view_count = len(self.pending.get(bucket_index, []))
             accumulator.spill_current_chunk()
+            retained_view_count = len(self.pending.get(bucket_index, []))
             accumulator_entries[str(bucket_index)] = accumulator.manifest(retained_view_count=retained_view_count)
-            accumulator_metrics[str(bucket_index)] = accumulator.metrics()
+            accumulator_metrics[str(bucket_index)] = accumulator.cheap_metrics()
         pending_entries: list[dict[str, Any]] = []
         wrote_frontier = False
         for bucket_index, nodes in sorted(self.pending.items()):
@@ -704,7 +953,10 @@ class BeamSearchRunner:
             path = self.output_root / rel if not rel.is_absolute() else rel
             existing = self.pending_bucket_hashes.get(bucket_index)
             if force or bucket_index in self.dirty_buckets or existing is None:
+                frontier_started = time.perf_counter()
                 sha = write_json_gz(path, {"schema_version": "beam_search_frontier_v111", "bucket_index": bucket_index, "nodes": [node.to_json() for node in nodes]})
+                self.phase_timing_metrics["pending_frontier_serialization_count"] = int(self.phase_timing_metrics["pending_frontier_serialization_count"]) + 1
+                self.phase_timing_metrics["pending_frontier_serialization_seconds"] = float(self.phase_timing_metrics["pending_frontier_serialization_seconds"]) + (time.perf_counter() - frontier_started)
                 wrote_frontier = True
                 self.frontier_file_write_count += 1
                 self.pending_bucket_hashes[bucket_index] = {"path": _path_text(path), "sha256": sha}
@@ -733,7 +985,7 @@ class BeamSearchRunner:
             "plan_sha256": sha256_file(self.plan_path),
             "stage": self.stage,
             "stage_sha256": _json_sha256(self.stage),
-            "actual_data_hashes": resolve_actual_data_hashes(),
+            "actual_data_hashes": resolve_plan_data_hashes(self.plan),
             "expansions": self.expansions,
             "next_node_id": self.next_node_id,
             "next_completion_order": self.next_completion_order,
@@ -745,12 +997,15 @@ class BeamSearchRunner:
             "peak_live_nodes": self.peak_live_nodes,
             "peak_frontier_size": self.peak_frontier_size,
             "peak_serialized_payload_bytes": self.peak_serialized_payload_bytes,
+            "peak_process_rss_bytes": self.peak_process_rss_bytes,
             "live_node_count": self.live_node_count,
             "metric_update_count": self.metric_update_count,
             "payload_size_calculation_count": self.payload_size_calculation_count,
             "checkpoint_count": self.checkpoint_count,
             "frontier_file_write_count": self.frontier_file_write_count,
             "accumulator_finalization_count": self.accumulator_finalization_count,
+            "retired_accumulator_lifecycle_metrics": dict(self.retired_accumulator_lifecycle_metrics),
+            "phase_timing_metrics": dict(self.phase_timing_metrics),
             "checkpoint_interval_expansions": self.checkpoint_interval_expansions,
             "limit_check_interval_expansions": self.limit_check_interval_expansions,
             "next_checkpoint_expansion": self.next_checkpoint_expansion,
@@ -768,6 +1023,7 @@ class BeamSearchRunner:
             "log_paths": [_path_text(path) for path in sorted(self.logs_root.glob("*.log"))],
         }
         self._atomic_json(self.output_root / "search_state.json", manifest)
+        self.phase_timing_metrics["checkpoint_manifest_generation_seconds"] = float(self.phase_timing_metrics["checkpoint_manifest_generation_seconds"]) + (time.perf_counter() - checkpoint_started)
 
     def _load_resume_state(self) -> None:
         state_path = self.output_root / "search_state.json"
@@ -780,7 +1036,7 @@ class BeamSearchRunner:
             raise ValueError("Beam Search resume plan hash mismatch")
         if not _resume_stage_compatible(state["stage"], self.stage):
             raise ValueError("Beam Search resume stage hash mismatch")
-        if state["actual_data_hashes"] != resolve_actual_data_hashes():
+        if state["actual_data_hashes"] != resolve_plan_data_hashes(self.plan):
             raise ValueError("Beam Search resume data-contract hash mismatch")
         self.expansions = int(state["expansions"])
         self.next_node_id = int(state["next_node_id"])
@@ -791,6 +1047,7 @@ class BeamSearchRunner:
         self.peak_live_nodes = int(state.get("peak_live_nodes", 0))
         self.peak_frontier_size = int(state.get("peak_frontier_size", 0))
         self.peak_serialized_payload_bytes = int(state.get("peak_serialized_payload_bytes", 0))
+        self.peak_process_rss_bytes = max(int(state.get("peak_process_rss_bytes", 0)), _process_peak_rss_bytes())
         self.completed_buckets = {int(item) for item in state.get("completed_buckets", [])}
         self.completed = list(state.get("completed_routes", []))
         self.best_completed_search_route = state.get("best_completed_search_route")
@@ -805,6 +1062,12 @@ class BeamSearchRunner:
         self.next_checkpoint_expansion = int(state.get("next_checkpoint_expansion", self.checkpoint_interval_expansions))
         self.bucket_metrics = list(state.get("bucket_metrics", []))
         self.accumulator_finalization_count = int(state.get("accumulator_finalization_count", 0))
+        for key, value in state.get("retired_accumulator_lifecycle_metrics", {}).items():
+            if key in self.retired_accumulator_lifecycle_metrics:
+                self.retired_accumulator_lifecycle_metrics[key] = value
+        for key, value in state.get("phase_timing_metrics", {}).items():
+            if key in self.phase_timing_metrics:
+                self.phase_timing_metrics[key] = value
         self.pending = {}
         for entry in state.get("pending_buckets", []):
             path = _resolve_stored_path(str(entry["path"]), self.output_root)
@@ -818,20 +1081,17 @@ class BeamSearchRunner:
                 stage=self.stage,
                 spill_root=self.accumulator_root,
                 output_root=self.output_root,
+                plan_sha256=self.plan_sha256,
+                stage_contract_sha256=self.stage_contract_sha256,
             )
             bucket_index = int(key)
             self.pending_accumulators[bucket_index] = accumulator
-            retained = accumulator.retained_nodes()
             file_ids = [node.node_id for node in self.pending.get(bucket_index, [])]
-            retained_ids = [node.node_id for node in retained]
             resume_ids = self.bucket_resume_queues.get(bucket_index, [])
-            if resume_ids:
-                if file_ids and file_ids != resume_ids + retained_ids:
-                    raise ValueError(f"Destination accumulator retained view mismatch for bucket {bucket_index}")
-            else:
-                if file_ids and file_ids != retained_ids:
-                    raise ValueError(f"Destination accumulator retained view mismatch for bucket {bucket_index}")
-                self.pending[bucket_index] = retained
+            exact_ids = set(accumulator.node_ids()) | set(resume_ids)
+            if file_ids and not set(file_ids).issubset(exact_ids):
+                raise ValueError(f"Destination accumulator checkpoint view mismatch for bucket {bucket_index}")
+            self.pending.setdefault(bucket_index, [])
         actual_live_node_count = sum(len(nodes) for nodes in self.pending.values())
         if actual_live_node_count != self.live_node_count:
             raise ValueError(
@@ -867,7 +1127,7 @@ class BeamSearchRunner:
             "plan_sha256": sha256_file(self.plan_path),
             "stage": self.stage,
             "stage_sha256": _json_sha256(self.stage),
-            "actual_data_hashes": resolve_actual_data_hashes(),
+            "actual_data_hashes": resolve_plan_data_hashes(self.plan),
             "expansions": self.expansions,
             "next_node_id": self.next_node_id,
             "next_completion_order": self.next_completion_order,
@@ -883,6 +1143,7 @@ class BeamSearchRunner:
             "peak_frontier_size": self.peak_frontier_size,
             "peak_live_nodes": self.peak_live_nodes,
             "peak_serialized_payload_bytes": self.peak_serialized_payload_bytes,
+            "peak_process_rss_bytes": self.peak_process_rss_bytes,
             "estimated_peak_memory_bytes": self._tracked_memory_estimate()["conservative_total_bytes"],
             "tracked_memory_estimate": self._tracked_memory_estimate(),
             "elapsed_seconds": elapsed,
@@ -890,13 +1151,15 @@ class BeamSearchRunner:
             "checkpoint_count": self.checkpoint_count,
             "frontier_file_write_count": self.frontier_file_write_count,
             "accumulator_finalization_count": self.accumulator_finalization_count,
+            "accumulator_lifecycle_metrics": self._accumulator_lifecycle_metrics(),
+            "phase_timing_metrics": dict(self.phase_timing_metrics),
             "metric_update_count": self.metric_update_count,
             "payload_size_calculation_count": self.payload_size_calculation_count,
             "checkpoint_interval_expansions": self.checkpoint_interval_expansions,
             "limit_check_interval_expansions": self.limit_check_interval_expansions,
             "frontier_bounds": self._frontier_bounds_payload(),
             "destination_bucket_accumulator_metrics": {
-                str(bucket_index): accumulator.metrics()
+                str(bucket_index): accumulator.cheap_metrics()
                 for bucket_index, accumulator in sorted(self.pending_accumulators.items())
             },
             "destination_bucket_accumulators": {
@@ -930,6 +1193,19 @@ class BeamSearchRunner:
         if not live:
             return None
         return sorted(live, key=_node_order_key)[0]
+
+    def _retire_accumulator_metrics(self, accumulator: DestinationBucketAccumulator) -> None:
+        snapshot = accumulator.cheap_metrics()
+        for key in ACCUMULATOR_LIFECYCLE_METRIC_KEYS:
+            self.retired_accumulator_lifecycle_metrics[key] += snapshot.get(key, 0)
+
+    def _accumulator_lifecycle_metrics(self) -> dict[str, float | int]:
+        totals = dict(self.retired_accumulator_lifecycle_metrics)
+        for accumulator in self.pending_accumulators.values():
+            snapshot = accumulator.cheap_metrics()
+            for key in ACCUMULATOR_LIFECYCLE_METRIC_KEYS:
+                totals[key] += snapshot.get(key, 0)
+        return totals
 
     def _replay_completed_route(self, route: dict[str, Any]) -> dict[str, Any]:
         summary = replay_selected_route_to_files(
@@ -1002,9 +1278,11 @@ class BeamSearchRunner:
         return DestinationBucketAccumulator(
             bucket_index=bucket_index,
             stage=self.stage,
-            max_unique_fingerprints=_accumulator_unique_bound(self.stage),
+            max_unique_fingerprints=_accumulator_in_memory_limit(self.stage),
             spill_root=self.accumulator_root,
             output_root=self.output_root,
+            plan_sha256=self.plan_sha256,
+            stage_contract_sha256=self.stage_contract_sha256,
         )
 
     def _checkpoint_due(self) -> bool:
@@ -1017,6 +1295,8 @@ class BeamSearchRunner:
         return True
 
     def _compact_route_store(self, *, extra_node_ids: list[int] | None = None) -> None:
+        compaction_started = time.perf_counter()
+        self.phase_timing_metrics["route_store_compaction_count"] = int(self.phase_timing_metrics["route_store_compaction_count"]) + 1
         retained: set[int] = set(extra_node_ids or [])
         for nodes in self.pending.values():
             retained.update(node.node_id for node in nodes)
@@ -1039,6 +1319,7 @@ class BeamSearchRunner:
             if parent_id is not None:
                 stack.append(int(parent_id))
         self.route_store = {node_id: self.route_store[node_id] for node_id in sorted(closure)}
+        self.phase_timing_metrics["route_store_compaction_seconds"] = float(self.phase_timing_metrics["route_store_compaction_seconds"]) + (time.perf_counter() - compaction_started)
 
     def _frontier_rel_path(self, bucket_index: int) -> Path:
         return self.frontier_root / f"bucket_{bucket_index:06d}.json.gz"
@@ -1047,6 +1328,7 @@ class BeamSearchRunner:
         self.metric_update_count += 1
         self.peak_live_nodes = max(self.peak_live_nodes, self.live_node_count)
         self.peak_frontier_size = max(self.peak_frontier_size, self.live_node_count)
+        self.peak_process_rss_bytes = max(self.peak_process_rss_bytes, _process_peak_rss_bytes())
         if node is not None:
             self.peak_serialized_payload_bytes = max(self.peak_serialized_payload_bytes, int(node.payload_size_bytes))
 
@@ -1059,7 +1341,10 @@ class BeamSearchRunner:
 
     def _memory_budget_exceeded(self) -> bool:
         budget = self.stage.get("memory_budget_bytes")
-        return budget is not None and self._tracked_memory_estimate()["conservative_total_bytes"] >= int(budget)
+        if budget is None:
+            return False
+        estimate = self._tracked_memory_estimate()
+        return max(int(estimate["conservative_total_bytes"]), int(self.peak_process_rss_bytes)) >= int(budget)
 
     def _budget_limit_status(self, started: float, *, force: bool = False) -> str | None:
         if not force and self.limit_check_interval_expansions > 0 and self.expansions % self.limit_check_interval_expansions != 0:
@@ -1077,10 +1362,8 @@ class BeamSearchRunner:
         completed_record_bytes = int(contract.get("completed_record_bytes", 4096))
         overhead_factor = float(contract.get("runtime_overhead_safety_factor", contract.get("safety_factor", 2.0)))
         live_payload_bytes = int(self.peak_live_nodes) * max(int(self.peak_serialized_payload_bytes), 1)
-        accumulator_unique_nodes = sum(
-            len(accumulator.best_by_fingerprint) + int(accumulator.spilled_unique_fingerprint_count)
-            for accumulator in self.pending_accumulators.values()
-        )
+        accumulator_unique_nodes = sum(len(accumulator.best_by_fingerprint) for accumulator in self.pending_accumulators.values())
+        accumulator_spilled_nodes = sum(int(accumulator.spilled_unique_fingerprint_count) for accumulator in self.pending_accumulators.values())
         accumulator_payload_bytes = accumulator_unique_nodes * max(int(self.peak_serialized_payload_bytes), 1)
         accumulator_index_bytes = accumulator_unique_nodes * int(contract.get("accumulator_index_bytes_per_node", 128))
         route_store_bytes = max(len(self.route_store), self.peak_live_nodes) * route_store_bytes_per_edge
@@ -1091,6 +1374,7 @@ class BeamSearchRunner:
             "schema_version": "beam_search_runtime_memory_estimate_v111",
             "payload_only_bytes": live_payload_bytes,
             "destination_accumulator_unique_nodes": accumulator_unique_nodes,
+            "destination_accumulator_spilled_nodes_on_disk": accumulator_spilled_nodes,
             "destination_accumulator_payload_bytes": accumulator_payload_bytes,
             "destination_accumulator_index_bytes": accumulator_index_bytes,
             "route_store_bytes": route_store_bytes,
@@ -1115,11 +1399,12 @@ class BeamSearchRunner:
         max_accumulator_unique = max(accumulator_unique_counts.values(), default=0)
         max_accumulator_memory_unique = max(accumulator_memory_unique_counts.values(), default=0)
         accumulator_bound = _accumulator_unique_bound(self.stage)
+        accumulator_in_memory_bound = _accumulator_in_memory_limit(self.stage)
         return {
             "schema_version": "beam_search_frontier_bounds_v111",
             "pending_bucket_node_bound": int(self.stage["beam_width"]),
             "live_node_budget": live_budget,
-            "destination_accumulator_in_memory_unique_fingerprint_bound": accumulator_bound,
+            "destination_accumulator_in_memory_unique_fingerprint_bound": accumulator_in_memory_bound,
             "destination_accumulator_unique_fingerprint_bound": accumulator_bound,
             "destination_accumulator_bucket_count": len(self.pending_accumulators),
             "destination_accumulator_total_unique_fingerprints": sum(accumulator_unique_counts.values()),
@@ -1133,7 +1418,7 @@ class BeamSearchRunner:
             "peak_live_nodes": self.peak_live_nodes,
             "peak_live_nodes_ge_live_node_count": self.peak_live_nodes >= self.live_node_count,
             "all_pending_buckets_within_bound": all(len(nodes) <= int(self.stage["beam_width"]) for nodes in self.pending.values()),
-            "all_destination_accumulators_within_bound": max_accumulator_memory_unique <= accumulator_bound,
+            "all_destination_accumulators_within_bound": max_accumulator_memory_unique <= accumulator_in_memory_bound,
             "live_nodes_within_bound": self.live_node_count <= live_budget,
         }
 
@@ -1145,7 +1430,7 @@ class BeamSearchRunner:
         live_budget = _live_node_budget(self.plan, self.stage)
         if self.live_node_count > live_budget:
             raise RuntimeError(f"Beam live-node budget exceeded: live={self.live_node_count} budget={live_budget}")
-        accumulator_bound = _accumulator_unique_bound(self.stage)
+        accumulator_bound = _accumulator_in_memory_limit(self.stage)
         oversized_accumulators = {
             bucket: len(accumulator.best_by_fingerprint)
             for bucket, accumulator in self.pending_accumulators.items()
@@ -1202,7 +1487,7 @@ def _select_retained_batch(nodes: list[BeamNode], stage: dict[str, Any]) -> dict
     return result
 
 
-def _select_retained_unique(nodes: list[BeamNode], stage: dict[str, Any]) -> dict[str, Any]:
+def _select_retained_unique(nodes: Iterable[BeamNode], stage: dict[str, Any]) -> dict[str, Any]:
     candidates = sorted(nodes, key=_node_order_key)
     global_quota = int(stage["global_damage_quota"])
     diversity_quota = int(stage["diversity_retention_quota"])
@@ -1252,6 +1537,61 @@ def _select_retained_unique(nodes: list[BeamNode], stage: dict[str, Any]) -> dic
 
 def _accumulator_unique_bound(stage: dict[str, Any]) -> int:
     return int(stage.get("destination_accumulator_unique_fingerprint_bound", int(stage["beam_width"]) * 8))
+
+
+def _accumulator_in_memory_limit(stage: dict[str, Any]) -> int:
+    return int(stage.get("in_memory_accumulator_candidate_limit", _accumulator_unique_bound(stage)))
+
+
+def _spill_stage_contract_sha256(stage: dict[str, Any]) -> str:
+    stable = dict(stage)
+    for key in ("maximum_expansions", "wall_clock_limit_seconds", "wall_clock_budget_seconds", "memory_budget_bytes"):
+        stable.pop(key, None)
+    return _json_sha256(stable)
+
+
+def _canonical_output_root(plan: dict[str, Any]) -> Path:
+    relative = plan.get("output_contract", {}).get("canonical_output_root")
+    return ROOT / str(relative) if relative else CANONICAL_RESULTS_ROOT
+
+
+def _process_peak_rss_bytes() -> int:
+    """Best-effort peak resident-set measurement without a required dependency."""
+    if os.name == "nt":
+        class ProcessMemoryCounters(ctypes.Structure):
+            _fields_ = [
+                ("cb", ctypes.c_ulong),
+                ("PageFaultCount", ctypes.c_ulong),
+                ("PeakWorkingSetSize", ctypes.c_size_t),
+                ("WorkingSetSize", ctypes.c_size_t),
+                ("QuotaPeakPagedPoolUsage", ctypes.c_size_t),
+                ("QuotaPagedPoolUsage", ctypes.c_size_t),
+                ("QuotaPeakNonPagedPoolUsage", ctypes.c_size_t),
+                ("QuotaNonPagedPoolUsage", ctypes.c_size_t),
+                ("PagefileUsage", ctypes.c_size_t),
+                ("PeakPagefileUsage", ctypes.c_size_t),
+            ]
+        counters = ProcessMemoryCounters()
+        counters.cb = ctypes.sizeof(counters)
+        try:
+            get_current_process = ctypes.windll.kernel32.GetCurrentProcess
+            get_current_process.restype = ctypes.c_void_p
+            get_process_memory_info = ctypes.windll.psapi.GetProcessMemoryInfo
+            get_process_memory_info.argtypes = [ctypes.c_void_p, ctypes.POINTER(ProcessMemoryCounters), ctypes.c_ulong]
+            get_process_memory_info.restype = ctypes.c_int
+            handle = get_current_process()
+            if get_process_memory_info(handle, ctypes.byref(counters), counters.cb):
+                return int(counters.PeakWorkingSetSize)
+        except (AttributeError, OSError):
+            return 0
+        return 0
+    try:
+        import resource
+
+        peak = int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+        return peak if os.uname().sysname == "Darwin" else peak * 1024
+    except (AttributeError, ImportError, OSError):
+        return 0
 
 
 def _memory_estimate_for_stage(plan: dict[str, Any], stage: dict[str, Any]) -> dict[str, Any]:
@@ -1374,7 +1714,7 @@ def _leaderboard_payload(result: dict[str, Any], stage_id: str) -> dict[str, Any
         "completed_search_routes": result.get("completed_routes", []),
         "partial_frontier_diagnostics": result.get("best_partial_frontier_node"),
     }
-    if stage_id == "full_120s":
+    if _is_full_stage(stage_id):
         candidates = [
             {
                 "winner_kind": "beam_search_route",
@@ -1395,7 +1735,7 @@ def _leaderboard_payload(result: dict[str, Any], stage_id: str) -> dict[str, Any
 
 def _best_route_payload(result: dict[str, Any], stage_id: str) -> dict[str, Any]:
     leaderboard = _leaderboard_payload(result, stage_id)
-    if stage_id == "full_120s":
+    if _is_full_stage(stage_id):
         return {
             "schema_version": "beam_search_best_route_v111",
             "winner": leaderboard["winner"],
@@ -1416,7 +1756,7 @@ def _summary_payload(result: dict[str, Any], stage_id: str) -> dict[str, Any]:
         "status": result["status"],
         "global_optimum_proven": False,
         "route_similarity_usage": "diagnostic_only_not_used_for_winner_selection",
-        "calibration_only_no_project_winner": stage_id != "full_120s",
+        "calibration_only_no_project_winner": not _is_full_stage(stage_id),
         "winner": _leaderboard_payload(result, stage_id)["winner"],
         "expansions": result["expansions"],
         "metrics": {
@@ -1424,9 +1764,14 @@ def _summary_payload(result: dict[str, Any], stage_id: str) -> dict[str, Any]:
             "peak_live_nodes": result["peak_live_nodes"],
             "peak_serialized_payload_bytes": result["peak_serialized_payload_bytes"],
             "estimated_peak_memory_bytes": result["estimated_peak_memory_bytes"],
+            "peak_process_rss_bytes": result.get("peak_process_rss_bytes"),
             "expansions_per_second": result["expansions_per_second"],
         },
     }
+
+
+def _is_full_stage(stage_id: str) -> bool:
+    return stage_id in {"full_120s", "full_120s_lowmem_32gb"}
 
 
 def _json_sha256(payload: dict[str, Any]) -> str:
@@ -1460,6 +1805,19 @@ def _path_text(path: Path) -> str:
         return path.resolve().relative_to(ROOT.resolve()).as_posix()
     except ValueError:
         return path.resolve().as_posix()
+
+
+def _portable_spill_path(path: Path, output_root: Path | None) -> str:
+    resolved = path.resolve()
+    try:
+        return resolved.relative_to(ROOT.resolve()).as_posix()
+    except ValueError:
+        if output_root is None:
+            raise ValueError(f"Streaming spill path is outside the project without an output root: {resolved}")
+        try:
+            return resolved.relative_to(output_root.resolve()).as_posix()
+        except ValueError as error:
+            raise ValueError(f"Streaming spill path is outside its output root: {resolved}") from error
 
 
 def _resolve_stored_path(path_text: str, output_root: Path | None = None) -> Path:
