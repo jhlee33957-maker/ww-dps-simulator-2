@@ -28,7 +28,8 @@ def main() -> None:
     production_plan = load_mcts_plan(PLAN_PATH)
     production_stage = production_plan["stages"][0]
     canonical = ROOT / production_stage["canonical_output_root"]
-    assert not canonical.exists(), "canonical 20k output must not exist during bounded tests"
+    canonical_existed = canonical.is_dir()
+    canonical_before = directory_digest(canonical) if canonical_existed else None
     assert "--force" not in parser().format_help()
 
     with tempfile.TemporaryDirectory(prefix="mcts-output-isolation-") as tmp:
@@ -104,7 +105,8 @@ def main() -> None:
         )
         assert directory_digest(empty_resume) == before_resume
 
-    assert not canonical.exists()
+    if canonical_existed: assert directory_digest(canonical) == canonical_before
+    else: assert not canonical.exists()
     print(
         "mcts_output_root_isolation_smoke_test ok arbitrary_rejected=true "
         "nonempty_fresh_rejected=true resume_requires_checkpoint=true stale_snapshot_unchanged=true"

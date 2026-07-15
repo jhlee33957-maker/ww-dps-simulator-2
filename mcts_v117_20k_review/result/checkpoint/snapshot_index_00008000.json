@@ -1,0 +1,18 @@
+{
+  "schema_version": "mcts_snapshot_index_v117",
+  "records": [
+    {
+      "snapshot_ref": 0,
+      "offset": 0,
+      "compressed_bytes": 2608,
+      "uncompressed_bytes": 17126,
+      "compressed_sha256": "33aba8fca33ca1dab89e0320820999e1b41ea134c6f2c8c2612ad2a720bcc572",
+      "payload_sha256": "fc29e9f6536e3ed8ea1dd48e41cb662817dfa0c6688b520cc2619fa3ec6cfd47"
+    }
+  ],
+  "snapshot_dedup_hits": 0,
+  "unique_snapshot_count": 1,
+  "uncompressed_bytes": 17126,
+  "compressed_bytes": 2608,
+  "compression_ratio": 0.1522830783603877
+}

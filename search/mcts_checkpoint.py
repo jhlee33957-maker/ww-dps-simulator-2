@@ -165,8 +165,11 @@ class SnapshotStore:
 
 
 class CheckpointManager:
-    def __init__(self, output_root: Path) -> None:
+    def __init__(self, output_root: Path, *, retain_generations: int | None = None,
+                 allow_corrupt_latest_fallback: bool = False) -> None:
         self.root = output_root / "checkpoint"
+        self.retain_generations = retain_generations
+        self.allow_corrupt_latest_fallback = bool(allow_corrupt_latest_fallback)
 
     def save(self, *, plan_path: str, plan_sha256: str, stage_hash: str, simulations: int,
              tree: MCTSTree, snapshots: SnapshotStore, rng_state: dict[str, Any], mast_counts: np.ndarray,
@@ -193,7 +196,46 @@ class CheckpointManager:
         latest = self.root / "latest_manifest.json"; previous = self.root / "previous_manifest.json"
         if latest.is_file(): os.replace(latest, previous)
         atomic_json(latest, manifest)
+        if self.retain_generations is not None:
+            if int(self.retain_generations) != 2:
+                raise ValueError("MCTS rolling retention supports exactly latest+previous generations")
+            self._commit_progression_and_prune(latest, previous, manifest)
         return manifest
+
+    def _commit_progression_and_prune(self, latest: Path, previous: Path, manifest: dict[str, Any]) -> None:
+        retained: list[dict[str, Any]] = []
+        for path in (latest, previous):
+            if not path.is_file():
+                continue
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            for entry in payload["files"].values():
+                source = self.root / entry["path"]
+                if not source.is_file() or source.stat().st_size != int(entry["bytes"]) or sha256_file(source) != entry["sha256"]:
+                    raise ValueError("MCTS retained checkpoint validation failed before pruning")
+            retained.append(payload)
+        if not retained or retained[0]["simulation_count"] != manifest["simulation_count"]:
+            raise ValueError("MCTS latest checkpoint was not committed before pruning")
+        progression_path = self.root / "progression.json"
+        progression = {"schema_version": "mcts_checkpoint_progression_v118", "checkpoints": []}
+        if progression_path.is_file():
+            progression = json.loads(progression_path.read_text(encoding="utf-8"))
+        counters = manifest.get("counters", {})
+        memory = counters.get("memory", {})
+        row = {"simulation_count": int(manifest["simulation_count"]), "node_count": int(manifest["node_count"]),
+               "best_damage": None if manifest.get("best_completed_route") is None else float(manifest["best_completed_route"]["total_damage"]),
+               "simulations_per_second": counters.get("checkpoint_simulations_per_second"),
+               "process_peak_rss_bytes": memory.get("process_peak_rss_bytes"),
+               "tracked_bytes": memory.get("tracked_bytes"),
+               "conservative_total_estimate_bytes": memory.get("conservative_total_estimate_bytes")}
+        rows = [item for item in progression.get("checkpoints", []) if int(item["simulation_count"]) != row["simulation_count"]]
+        rows.append(row); rows.sort(key=lambda item: int(item["simulation_count"]))
+        progression["checkpoints"] = rows
+        atomic_json(progression_path, progression)
+        keep = {entry["path"] for payload in retained for entry in payload["files"].values()}
+        prefixes = ("tree_", "mast_", "rng_", "completed_", "snapshot_index_")
+        for path in self.root.iterdir():
+            if path.is_file() and path.name.startswith(prefixes) and path.name not in keep:
+                path.unlink()
 
     def load_preflight(self, *, plan_sha256: str, stage_hash: str, max_nodes: int,
                        cache_entries: int, cache_max_bytes: int) -> dict[str, Any]:
@@ -203,7 +245,9 @@ class CheckpointManager:
             return self._load_manifest_preflight(latest, source="latest", plan_sha256=plan_sha256,
                 stage_hash=stage_hash, max_nodes=max_nodes, cache_entries=cache_entries,
                 cache_max_bytes=cache_max_bytes)
-        except IncompleteCheckpointError as latest_error:
+        except (IncompleteCheckpointError, CorruptCheckpointError) as latest_error:
+            if isinstance(latest_error, CorruptCheckpointError) and not self.allow_corrupt_latest_fallback:
+                raise
             try:
                 loaded = self._load_manifest_preflight(previous, source="previous", plan_sha256=plan_sha256,
                     stage_hash=stage_hash, max_nodes=max_nodes, cache_entries=cache_entries,

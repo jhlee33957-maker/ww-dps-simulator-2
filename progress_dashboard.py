@@ -18,6 +18,10 @@ SOURCE_FILES = {
     / "beam_search_v114_completed_v116"
     / "result_manifest.json",
     "data/mcts_plan_v117_32gb.json": BASE_DIR / "data" / "mcts_plan_v117_32gb.json",
+    "data/mcts_plan_v118_32gb_3x50k.json": BASE_DIR / "data" / "mcts_plan_v118_32gb_3x50k.json",
+    "results/mcts_v117_calibration_20k_v118/result_manifest.json": BASE_DIR
+    / "results" / "mcts_v117_calibration_20k_v118" / "result_manifest.json",
+    "reports/mcts_v117_20k_calibration_v118.md": BASE_DIR / "reports" / "mcts_v117_20k_calibration_v118.md",
     "reports/mcts_v117_32gb_design.md": BASE_DIR / "reports" / "mcts_v117_32gb_design.md",
     "data/beam_search_plan_v111.json": BASE_DIR / "data" / "beam_search_plan_v111.json",
     "data/guarded_ppo_experiment_plan_v109.json": BASE_DIR
@@ -480,19 +484,26 @@ def merge_progress_data(
                 }
             )
             mcts = current.get("candidate_117_mcts") or {}
+            production = current.get("candidate_118_mcts") or {}
             merged["mcts"].update(
                 {
-                    "status": "Infrastructure ready; 20k calibration pending",
+                    "status": "20k calibration completed; independent 3x50k plan pending",
                     "summary": (
-                        "Candidate 117 provides independent deterministic state UCT + per-seed MAST "
-                        "infrastructure. The 20k calibration and production search have not run; "
-                        "the completed Beam route remains the current winner."
+                        "The reviewed 20k MCTS calibration completed at 4,128,137.81 damage, "
+                        "26.96% below the completed Beam winner. Candidate 118 prepares three "
+                        "independent 50k seeds; production has not run and Beam remains the winner."
                     ),
                     "infrastructure_ready": bool(mcts.get("infrastructure_implemented")),
                     "calibration_20k_executed": bool(mcts.get("calibration_20k_executed")),
                     "production_search_executed": bool(mcts.get("production_search_executed")),
+                    "calibration_best_damage": mcts.get("best_damage"),
+                    "calibration_best_dps": mcts.get("best_dps"),
+                    "calibration_vs_beam_percent": -26.960076164770296,
+                    "production_3x50k_plan_ready": bool(production.get("production_plan_ready")),
+                    "production_seeds": production.get("seeds", []),
+                    "global_optimum_proven": False,
                     "independent_complementary_validation": True,
-                    "has_confirmed_damage_result": False,
+                    "has_confirmed_damage_result": bool(mcts.get("completed_result_available")),
                 }
             )
             for stage in merged.get("beam_stages", []):

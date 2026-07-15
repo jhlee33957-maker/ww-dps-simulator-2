@@ -25,10 +25,18 @@ def parser() -> argparse.ArgumentParser:
 def main() -> None:
     args = parser().parse_args(); plan_path = args.plan.resolve(); plan = load_mcts_plan(plan_path)
     plan["_plan_path"] = plan_path.relative_to(ROOT).as_posix() if plan_path.is_relative_to(ROOT) else plan_path.as_posix()
-    stage = plan["stages"][0]
-    if args.only_stage and args.only_stage != stage["stage_id"]: raise SystemExit(f"Unknown/non-executable stage: {args.only_stage}")
+    stages = list(plan["stages"])
+    if args.execute and len(stages) > 1 and not args.only_stage:
+        raise SystemExit("Multi-stage MCTS production execution requires explicit --only-stage")
+    if args.only_stage:
+        matches = [item for item in stages if item["stage_id"] == args.only_stage]
+        if len(matches) != 1: raise SystemExit(f"Unknown/non-executable stage: {args.only_stage}")
+        stage = matches[0]
+    else:
+        stage = stages[0]
     dry = {"schema_version": plan["schema_version"], "candidate": plan["candidate"], "algorithm": plan["algorithm"],
            "plan_sha256": plan["_plan_sha256"], "stage_contract_sha256": stage_contract_hash(plan, stage), "stage": stage,
+           "stages": stages,
            "execution_requested": bool(args.execute), "calibration_executed": False, "global_optimum_proven": False}
     if args.dry_run_plan or not args.execute:
         print(json.dumps(dry, indent=2)); return

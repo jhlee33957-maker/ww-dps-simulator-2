@@ -85,7 +85,12 @@ class MCTSSearch:
         characters = tuple(self.template.selected_character_ids)
         self.mast = MASTTable(characters, self.action_ids)
         self.snapshots: SnapshotStore | None = None
-        self.checkpoints = CheckpointManager(output_root)
+        retention = stage.get("checkpoint_retention_generations")
+        self.checkpoints = CheckpointManager(
+            output_root,
+            retain_generations=None if retention is None else int(retention),
+            allow_corrupt_latest_fallback=bool(stage.get("allow_corrupt_latest_fallback", False)),
+        )
         self.simulations = 0; self.completed_rollout_count = 0; self.completed_routes: list[dict[str, Any]] = []
         self.first_completed_rollout_simulation_index: int | None = None
         self.invalid_rollout_counts: dict[str, int] = {}
@@ -95,6 +100,7 @@ class MCTSSearch:
         self.progressive_widening_expansions = 0; self.max_reconstruction_replay_length = 0
         self.peak_checkpoint_serialization_buffer = 0
         self.phase_seconds = {name: 0.0 for name in ("selection", "expansion", "rollout", "backpropagation", "checkpoint")}
+        self.invocation_phase_seconds = {name: 0.0 for name in self.phase_seconds}
         self.full_seen: set[str] = set(); self.future_damage_seen: dict[str, float] = {}
         self.started_at = 0.0; self.peak_rss = process_peak_rss_bytes()
         self.last_checkpoint_simulations = -1
@@ -233,14 +239,15 @@ class MCTSSearch:
                 simulation, replay_length = self.snapshots.restore_node(tree=self.tree, node_id=node, template=self.template, action_ids=self.action_ids,
                     action_executor=self._execute_slot)
                 self.max_reconstruction_replay_length = max(self.max_reconstruction_replay_length, replay_length)
+                self._record_phase("selection", time.perf_counter() - select_started)
                 expansion_started = time.perf_counter(); before = float(simulation.state.combat_time)
                 if not self._execute_slot(simulation, slot):
-                    self.phase_seconds["expansion"] += time.perf_counter() - expansion_started
-                    self._abort_selection(path, "expansion_action_failed", select_started); return
+                    self._record_phase("expansion", time.perf_counter() - expansion_started)
+                    self._abort_selection(path, "expansion_action_failed", None); return
                 expanded_zero_count = zero_count + 1 if float(simulation.state.combat_time) <= before + 1e-12 else 0
                 if expanded_zero_count > maximum_zero:
-                    self.phase_seconds["expansion"] += time.perf_counter() - expansion_started
-                    self._abort_selection(path, "consecutive_zero_combat_time_actions_exceeded_after_expansion", select_started); return
+                    self._record_phase("expansion", time.perf_counter() - expansion_started)
+                    self._abort_selection(path, "consecutive_zero_combat_time_actions_exceeded_after_expansion", None); return
                 metrics = node_metrics(simulation); child_depth = int(self.tree.depth[node]) + 1
                 snapshot_ref = self.snapshots.add(simulation) if child_depth % int(self.stage["snapshot_stride"]) == 0 else -1
                 child = self.tree.add_node(parent_id=node, action_slot=slot, legal_slots=legal_policy_slots(simulation, self.action_ids),
@@ -249,17 +256,17 @@ class MCTSSearch:
                     full_fingerprint=str(metrics["full_fingerprint"]), future_fingerprint=str(metrics["future_fingerprint"]))
                 self._record_fingerprint(str(metrics["full_fingerprint"]), str(metrics["future_fingerprint"]), float(metrics["total_damage"]))
                 path.append(child); node = child; expanded = True; self.progressive_widening_expansions += 1
-                self.phase_seconds["expansion"] += time.perf_counter() - expansion_started
+                self._record_phase("expansion", time.perf_counter() - expansion_started)
                 zero_count = expanded_zero_count
                 break
             node = self.tree.choose_child(node, legal, seed=int(self.stage["seed"]), action_ids=self.action_ids); path.append(node)
-        self.phase_seconds["selection"] += time.perf_counter() - select_started
         self.selection_depths.append(len(path) - 1)
         if not expanded:
             simulation, replay_length = self.snapshots.restore_node(tree=self.tree, node_id=node, template=self.template, action_ids=self.action_ids,
                 action_executor=self._execute_slot)
             self.max_reconstruction_replay_length = max(self.max_reconstruction_replay_length, replay_length)
             zero_count = self._selection_zero_tail(path)
+            self._record_phase("selection", time.perf_counter() - select_started)
         action_count = len(path) - 1; rollout_slots: list[int] = []; contexts: list[tuple[str, int]] = []
         invalid_reason: str | None = None; rollout_started = time.perf_counter()
         while not _is_terminal(simulation, float(self.stage["combat_duration"])):
@@ -275,7 +282,7 @@ class MCTSSearch:
             action_count += 1; rollout_slots.append(slot); contexts.append((active, slot))
             zero_count = zero_count + 1 if float(simulation.state.combat_time) <= before + 1e-12 else 0
             if zero_count > maximum_zero: invalid_reason = "consecutive_zero_combat_time_actions_exceeded"; break
-        self.phase_seconds["rollout"] += time.perf_counter() - rollout_started
+        self._record_phase("rollout", time.perf_counter() - rollout_started)
         self.rollout_action_counts.append(len(rollout_slots))
         completed = invalid_reason is None and _is_terminal(simulation, float(self.stage["combat_duration"]))
         reward = float(simulation.state.total_damage) / float(self.plan["reward"]["terminal_scale"]) if completed else 0.0
@@ -283,14 +290,22 @@ class MCTSSearch:
         if completed:
             self.mast.update(contexts, reward); self._record_completed(node, rollout_slots, simulation)
         else: self._invalid(invalid_reason or "safety_stopped")
-        self.phase_seconds["backpropagation"] += time.perf_counter() - back_started
+        self._record_phase("backpropagation", time.perf_counter() - back_started)
 
-    def _abort_selection(self, path: list[int], reason: str, select_started: float) -> None:
-        self.phase_seconds["selection"] += time.perf_counter() - select_started
+    def _abort_selection(self, path: list[int], reason: str, select_started: float | None) -> None:
+        if select_started is not None:
+            self._record_phase("selection", time.perf_counter() - select_started)
         self.selection_depths.append(len(path) - 1)
         self.rollout_action_counts.append(0)
+        back_started = time.perf_counter()
         self.tree.backpropagate(path, 0.0, completed=False)
         self._invalid(reason)
+        self._record_phase("backpropagation", time.perf_counter() - back_started)
+
+    def _record_phase(self, name: str, seconds: float) -> None:
+        elapsed = float(seconds)
+        self.phase_seconds[name] += elapsed
+        self.invocation_phase_seconds[name] += elapsed
 
     def _execute_slot(self, simulation: Any, slot: int) -> bool:
         action_id = self.action_ids[int(slot)]
@@ -361,12 +376,15 @@ class MCTSSearch:
     def _save_checkpoint(self) -> None:
         assert self.snapshots is not None
         started = time.perf_counter(); self.checkpoint_count += 1
+        counters = self._checkpoint_counters()
+        invocation_elapsed = max(time.perf_counter() - self.started_at, 1e-9)
+        counters["checkpoint_simulations_per_second"] = self.simulations / invocation_elapsed
         self.checkpoints.save(plan_path=self.plan_path, plan_sha256=self.plan_sha256, stage_hash=self.stage_hash,
             simulations=self.simulations, tree=self.tree, snapshots=self.snapshots, rng_state=self.rng.bit_generator.state,
             mast_counts=self.mast.counts, mast_value_sums=self.mast.value_sums, completed_routes=self.completed_routes,
-            counters=self._checkpoint_counters())
+            counters=counters)
         self.last_checkpoint_simulations = self.simulations
-        self.phase_seconds["checkpoint"] += time.perf_counter() - started
+        self._record_phase("checkpoint", time.perf_counter() - started)
 
     def _checkpoint_counters(self) -> dict[str, Any]:
         return {"completed_rollout_count": self.completed_rollout_count, "first_completed_rollout_simulation_index": self.first_completed_rollout_simulation_index,
@@ -413,6 +431,7 @@ class MCTSSearch:
         self.peak_rss = max(self.peak_rss, process_peak_rss_bytes()); best = self.completed_routes[0] if self.completed_routes else None
         selection = _distribution(self.selection_depths); rollout = _distribution(self.rollout_action_counts)
         simulation_runtime = _runtime_distribution(self.simulation_runtime_seconds)
+        invocation_phase_sum = sum(self.invocation_phase_seconds.values())
         return {"schema_version": "mcts_execution_result_v117", "algorithm": self.plan["algorithm"], "stage_id": self.stage["stage_id"],
             "seed": int(self.stage["seed"]), "termination_status": status, "simulations_requested": self.target_simulations,
             "simulations_completed": self.simulations, "first_completed_rollout_simulation_index": self.first_completed_rollout_simulation_index,
@@ -421,7 +440,11 @@ class MCTSSearch:
             "tree_maximum_depth": int(self.tree.depth[:self.tree.node_count].max(initial=0)), "tree_mean_depth": float(self.tree.depth[:self.tree.node_count].mean()),
             "selection_depth": selection, "rollout_action_count": rollout, "total_action_executions": self.total_action_executions,
             "elapsed_seconds": elapsed, "simulations_per_second": self.simulations / max(elapsed, 1e-9),
-            "action_executions_per_second": self.total_action_executions / max(elapsed, 1e-9), "phase_seconds": self.phase_seconds,
+            "action_executions_per_second": self.total_action_executions / max(elapsed, 1e-9),
+            "phase_seconds": self.phase_seconds, "cumulative_phase_seconds": self.phase_seconds,
+            "invocation_phase_seconds": self.invocation_phase_seconds,
+            "invocation_other_overhead_seconds": max(0.0, elapsed - invocation_phase_sum),
+            "phase_time_accounting": "mutually_exclusive_v118",
             "simulation_runtime_seconds": simulation_runtime,
             "slowest_simulation_index": self.slowest_simulation_index,
             "slowest_simulation_selection_depth": self.slowest_simulation_selection_depth,
