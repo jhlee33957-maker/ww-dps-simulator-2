@@ -909,6 +909,7 @@ def execute_action(
     pre_action_echo_set_log_fields: dict[str, Any] | None = None,
     weapon_definitions: dict[str, Any] | None = None,
     scheduled_effect_runner: Any | None = None,
+    record_diagnostics: bool = True,
 ) -> ActionResult:
     valid, reason = is_action_valid(action, state)
     start_time = state.current_time
@@ -1661,8 +1662,9 @@ def execute_action(
         concerto_energy_wasted=resource_change.concerto_wasted if resource_change is not None else 0.0,
         **mechanic_log_fields,
     )
-    state.action_log.append(result.model_dump(mode="json"))
-    if total_action_damage > 0.0 or damage_after_cutoff_excluded > 0.0:
+    if record_diagnostics:
+        state.action_log.append(result.model_dump(mode="json"))
+    if record_diagnostics and (total_action_damage > 0.0 or damage_after_cutoff_excluded > 0.0):
         state.damage_log.append(
             {
                 "action_id": action.id,

@@ -19,9 +19,9 @@ def main() -> None:
     progress = json.loads((ROOT / "PROJECT_PROGRESS_STATE.json").read_text(encoding="utf-8"))
     status = progress["status"]
     current = progress["current_in_progress_task"]
-    assert status["latest_externally_verified_baseline"] == "115"
-    assert status["current_candidate"] == "116"
-    assert current["candidate"] == "116"
+    assert status["latest_externally_verified_baseline"] == "116"
+    assert status["current_candidate"] == "117"
+    assert current["candidate"] == "117"
     assert current["status"] == "candidate_pending_external_review"
     assert current["external_verification_claimed"] is False
     assert current["transition_contract_version"] == "v114"

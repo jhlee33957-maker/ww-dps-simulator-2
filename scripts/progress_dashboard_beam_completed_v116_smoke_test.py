@@ -50,8 +50,11 @@ def main() -> None:
     assert beam["damage_gain_over_best_trained_model"] == 375047.9158609472
     assert beam["dps_gain_over_best_trained_model"] == 3125.3992988412283
     assert beam["global_optimum_proven"] is False
-    assert merged["mcts"]["status"] == "Not executed"
-    assert "next independent search" in merged["mcts"]["summary"]
+    assert merged["mcts"]["status"] == "Infrastructure ready; 20k calibration pending"
+    assert merged["mcts"]["infrastructure_ready"] is True
+    assert merged["mcts"]["calibration_20k_executed"] is False
+    assert merged["mcts"]["production_search_executed"] is False
+    assert "completed Beam route remains the current winner" in merged["mcts"]["summary"]
     print("progress_dashboard_beam_completed_v116_smoke_test ok")
 
 

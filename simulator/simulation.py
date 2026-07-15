@@ -167,6 +167,9 @@ class Simulation:
         self.combat_duration = combat_duration
         self.enemy = enemy or EnemyData()
         self.state: CombatState = create_initial_state(self.characters, self.enemy, self.initial_active_character)
+        # The live result is intentionally not serialized. Search-mode callers
+        # use it for exact selected/resolved parity and performance diagnostics.
+        self.last_action_result = None
         self.state.combat_duration = self.combat_duration
         self.state.mechanics_config = dict(self.transition_config.get("mechanics") or {})
         tune_break_config = self._tune_break_system_config()
@@ -976,7 +979,7 @@ class Simulation:
         if self.state.scheduled_effect_event_log:
             self.state.scheduled_effect_event_log[-1].update(event)
 
-    def execute_action(self, action_id: str) -> bool:
+    def execute_action(self, action_id: str, *, record_diagnostics: bool = True) -> bool:
         if self.state.combat_time >= self.combat_duration:
             return False
 
@@ -1061,7 +1064,9 @@ class Simulation:
             pre_action_echo_set_log_fields=pre_action_echo_set_log_fields,
             weapon_definitions=self.weapon_definitions,
             scheduled_effect_runner=scheduled_effect_runner,
+            record_diagnostics=record_diagnostics,
         )
+        self.last_action_result = result
         if not result.valid:
             return False
         result.selected_action_id = selected_action.id
@@ -1137,17 +1142,19 @@ class Simulation:
             self._schedule_aemeath_sigillum_hits(action, result)
         self._sync_weapon_result_fields(result)
         self._sync_lynae_spray_paint_window_mirror(result)
-        result.mechanic_debug_after = {
-            character_id: mechanic.get_debug_state(self.state)
-            for character_id, mechanic in self.character_mechanics.items()
-            if mechanic.get_debug_state(self.state)
-        }
-        self._apply_post_mechanic_transition_debug(result)
-        if self.state.action_log:
+        if record_diagnostics:
+            result.mechanic_debug_after = {
+                character_id: mechanic.get_debug_state(self.state)
+                for character_id, mechanic in self.character_mechanics.items()
+                if mechanic.get_debug_state(self.state)
+            }
+            self._apply_post_mechanic_transition_debug(result)
+        if record_diagnostics and self.state.action_log:
             self.state.action_log[-1] = result.model_dump(mode="json")
 
-        active_name = self.characters[self.state.active_character_id].name
-        self.timeline.append(timeline_entry(result, active_name))
+        if record_diagnostics:
+            active_name = self.characters[self.state.active_character_id].name
+            self.timeline.append(timeline_entry(result, active_name))
         return True
 
     def run_sequence(self, action_ids: list[str]) -> "Simulation":

@@ -17,6 +17,8 @@ SOURCE_FILES = {
     / "results"
     / "beam_search_v114_completed_v116"
     / "result_manifest.json",
+    "data/mcts_plan_v117_32gb.json": BASE_DIR / "data" / "mcts_plan_v117_32gb.json",
+    "reports/mcts_v117_32gb_design.md": BASE_DIR / "reports" / "mcts_v117_32gb_design.md",
     "data/beam_search_plan_v111.json": BASE_DIR / "data" / "beam_search_plan_v111.json",
     "data/guarded_ppo_experiment_plan_v109.json": BASE_DIR
     / "data"
@@ -477,10 +479,19 @@ def merge_progress_data(
                     ),
                 }
             )
+            mcts = current.get("candidate_117_mcts") or {}
             merged["mcts"].update(
                 {
-                    "status": "Not executed",
-                    "summary": "MCTS remains the next independent search option.",
+                    "status": "Infrastructure ready; 20k calibration pending",
+                    "summary": (
+                        "Candidate 117 provides independent deterministic state UCT + per-seed MAST "
+                        "infrastructure. The 20k calibration and production search have not run; "
+                        "the completed Beam route remains the current winner."
+                    ),
+                    "infrastructure_ready": bool(mcts.get("infrastructure_implemented")),
+                    "calibration_20k_executed": bool(mcts.get("calibration_20k_executed")),
+                    "production_search_executed": bool(mcts.get("production_search_executed")),
+                    "independent_complementary_validation": True,
                     "has_confirmed_damage_result": False,
                 }
             )

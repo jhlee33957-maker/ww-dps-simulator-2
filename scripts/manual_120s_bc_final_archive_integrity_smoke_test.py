@@ -21,7 +21,7 @@ DIRECT_ACTION_MANIFEST_SHA256 = "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28
 SOURCE_ROUTE_FILE_SHA256 = "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a"
 
 
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-116.zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-117.zip"
 EXPECTED_BC_MODEL_SHA256 = "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e"
 EXPECTED_PPO_MODEL_SHA256 = "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513"
 EXPECTED_EVAL_SELECTED_SEQUENCE_SHA256 = "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1"
@@ -51,6 +51,41 @@ EXPECTED_PPO_DAMAGE_BY_CHARACTER = {
 }
 REQUIRED_FILES = (
     "PROJECT_PROGRESS_STATE.json",
+    "data/mcts_plan_v117_32gb.json",
+    "reports/mcts_v117_32gb_design.md",
+    "search/search_state_codec.py",
+    "search/mcts_plan.py",
+    "search/mcts_state.py",
+    "search/mcts_tree.py",
+    "search/mcts_checkpoint.py",
+    "search/mcts_search.py",
+    "search/mcts_reporting.py",
+    "search/run_mcts.py",
+    "scripts/mcts_plan_v117_32gb_contract_smoke_test.py",
+    "scripts/mcts_search_independence_smoke_test.py",
+    "scripts/mcts_state_clone_behavioral_parity_smoke_test.py",
+    "scripts/mcts_lightweight_action_execution_parity_smoke_test.py",
+    "scripts/mcts_lightweight_rollout_state_parity_smoke_test.py",
+    "scripts/mcts_snapshot_reconstruction_smoke_test.py",
+    "scripts/mcts_uct_progressive_widening_smoke_test.py",
+    "scripts/mcts_mast_rollout_determinism_smoke_test.py",
+    "scripts/mcts_action_mask_zero_time_loop_guard_smoke_test.py",
+    "scripts/mcts_selection_guard_test_support.py",
+    "scripts/mcts_selection_action_limit_smoke_test.py",
+    "scripts/mcts_selection_zero_time_limit_smoke_test.py",
+    "scripts/mcts_no_legal_tree_node_smoke_test.py",
+    "scripts/mcts_checkpoint_resume_equivalence_smoke_test.py",
+    "scripts/mcts_checkpoint_corruption_no_mutation_smoke_test.py",
+    "scripts/mcts_previous_checkpoint_fallback_smoke_test.py",
+    "scripts/mcts_memory_budget_guard_smoke_test.py",
+    "scripts/mcts_output_root_isolation_smoke_test.py",
+    "scripts/mcts_completed_route_replay_parity_smoke_test.py",
+    "scripts/mcts_v117_test_utils.py",
+    "scripts/mcts_probe_worker_v117.py",
+    "scripts/mcts_200_probe_smoke_test.py",
+    "scripts/mcts_200_probe_repeatability_smoke_test.py",
+    "scripts/mcts_reporting_current_winner_smoke_test.py",
+    "scripts/project_progress_mcts_v117_alignment_smoke_test.py",
     "data/manual_120s_baseline_routes_v104.json",
     "data/generated/manual_120s_bc_demonstration_v105.npz",
     "results/manual_120s_bc_demonstration_v105_summary.json",
@@ -347,6 +382,7 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         assert not cache_entries, cache_entries[:20]
         assert not obsolete_bundle_entries, obsolete_bundle_entries
         assert not any(name.startswith("results/beam_search_v114_lowmem_32gb/") for name in names)
+        assert not any(name.startswith("results/mcts_v117_32gb/calibration_20k_seed_117001/") for name in names)
         assert zf.testzip() is None
 
         route_bytes = zf.read("data/manual_120s_baseline_routes_v104.json")
@@ -362,8 +398,8 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         completed_manifest_bytes = zf.read(completed_manifest_path)
         completed_manifest = json.loads(completed_manifest_bytes.decode("utf-8"))
         completed_progress = progress["current_in_progress_task"]["candidate_116_completed_beam"]
-        assert progress["status"]["latest_externally_verified_baseline"] == "115"
-        assert progress["status"]["current_candidate"] == "116"
+        assert progress["status"]["latest_externally_verified_baseline"] == "116"
+        assert progress["status"]["current_candidate"] == "117"
         assert bytes_sha256(completed_manifest_bytes) == completed_progress["result_manifest_sha256"]
         assert completed_manifest["termination_status"] == "completed_search"
         assert completed_manifest["completed_search"]["expansions"] == 4908270
@@ -739,6 +775,29 @@ def run_fresh_extraction_checks(archive: Path, *, orchestration_smoke: bool) -> 
         [sys.executable, "scripts/beam_search_v114_current_incumbent_selection_smoke_test.py"],
         [sys.executable, "scripts/beam_search_v114_3m_checkpoint_review_smoke_test.py"],
         [sys.executable, "scripts/project_progress_beam_v115_alignment_smoke_test.py"],
+        [sys.executable, "scripts/mcts_plan_v117_32gb_contract_smoke_test.py"],
+        [sys.executable, "scripts/mcts_search_independence_smoke_test.py"],
+        [sys.executable, "scripts/mcts_state_clone_behavioral_parity_smoke_test.py"],
+        [sys.executable, "scripts/mcts_lightweight_action_execution_parity_smoke_test.py"],
+        [sys.executable, "scripts/mcts_lightweight_rollout_state_parity_smoke_test.py"],
+        [sys.executable, "scripts/mcts_snapshot_reconstruction_smoke_test.py"],
+        [sys.executable, "scripts/mcts_uct_progressive_widening_smoke_test.py"],
+        [sys.executable, "scripts/mcts_mast_rollout_determinism_smoke_test.py"],
+        [sys.executable, "scripts/mcts_action_mask_zero_time_loop_guard_smoke_test.py"],
+        [sys.executable, "scripts/mcts_selection_action_limit_smoke_test.py"],
+        [sys.executable, "scripts/mcts_selection_zero_time_limit_smoke_test.py"],
+        [sys.executable, "scripts/mcts_no_legal_tree_node_smoke_test.py"],
+        [sys.executable, "scripts/mcts_checkpoint_resume_equivalence_smoke_test.py"],
+        [sys.executable, "scripts/mcts_checkpoint_corruption_no_mutation_smoke_test.py"],
+        [sys.executable, "scripts/mcts_previous_checkpoint_fallback_smoke_test.py"],
+        [sys.executable, "scripts/mcts_memory_budget_guard_smoke_test.py"],
+        [sys.executable, "scripts/mcts_output_root_isolation_smoke_test.py"],
+        [sys.executable, "scripts/mcts_completed_route_replay_parity_smoke_test.py"],
+        [sys.executable, "scripts/mcts_reporting_current_winner_smoke_test.py"],
+        [sys.executable, "search/run_mcts.py", "--plan", "data/mcts_plan_v117_32gb.json", "--dry-run-plan"],
+        [sys.executable, "scripts/mcts_200_probe_smoke_test.py"],
+        [sys.executable, "scripts/mcts_200_probe_repeatability_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_mcts_v117_alignment_smoke_test.py"],
         [sys.executable, "scripts/final_archive_guarded_ppo_lightweight_suite.py"],
         [sys.executable, "scripts/guarded_ppo_stage_timeout_smoke_test.py"],
         [sys.executable, "scripts/beam_search_calibration_result_integrity_smoke_test.py"],

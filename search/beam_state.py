@@ -370,6 +370,28 @@ def _declared_mechanic_field_encoders() -> dict[str, dict[str, dict[str, Any]]]:
     }
 
 
+# Candidate 117 neutralizes the generic simulator codec while preserving every
+# Beam schema/fingerprint through these backward-compatible re-exports.
+from search.search_state_codec import (  # noqa: E402
+    COMBAT_STATE_FIELD_CLASSIFICATION,
+    COMPACT_STATE_FIELDS,
+    DIAGNOSTIC_ONLY_FIELDS,
+    FUTURE_AFFECTING_FIELDS,
+    OBJECTIVE_ONLY_FIELDS,
+    assert_combat_state_classification_complete,
+    assert_search_state_invariants,
+    clone_simulation_for_search,
+    compact_combat_state_payload,
+    future_state_fingerprint,
+    future_state_payload,
+    restore_combat_state_from_search_payload,
+    restore_simulation_from_state,
+    serialize_simulation_state,
+    state_payload_sha256,
+    state_payload_size_bytes,
+)
+
+
 @dataclass(slots=True)
 class BeamNode:
     node_id: int

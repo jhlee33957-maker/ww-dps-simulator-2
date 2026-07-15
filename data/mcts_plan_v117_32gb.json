@@ -1,0 +1,76 @@
+{
+  "schema_version": "mcts_plan_v117_32gb",
+  "candidate": 117,
+  "algorithm": "state_uct_mast_v117",
+  "objective": "deterministic_completed_120s_total_damage",
+  "global_optimum_proven": false,
+  "manual_route_guidance": false,
+  "bc_ppo_policy_guidance": false,
+  "beam_policy_guidance": false,
+  "beam_route_guidance": false,
+  "party": "aemeath_mornye_lynae_enabled_test_party",
+  "initial_active_character": "aemeath",
+  "observation_version": "slot_generic_mechanics_v5",
+  "observation_shape": 314,
+  "policy_action_count": 25,
+  "max_policy_action_slots": 32,
+  "uct": {
+    "exploration_constant": 1.4142135623730951,
+    "backup": "mean_terminal_reward",
+    "unvisited_priority": true
+  },
+  "reward": {
+    "terminal_scale": 6000000.0,
+    "clip": false,
+    "partial_reward": false
+  },
+  "progressive_widening": {
+    "coefficient": 2.0,
+    "exponent": 0.5,
+    "minimum_children": 1,
+    "maximum_new_children_per_simulation": 1
+  },
+  "mast": {
+    "policy": "mast_epsilon_greedy_v117",
+    "uniform_warmup_simulations": 1000,
+    "epsilon": 0.2,
+    "minimum_visits": 4,
+    "context": "active_character_id+policy_action_id"
+  },
+  "execution_contract": {
+    "low_memory_32gb": true,
+    "hard_memory_budget_required": true,
+    "memory_budget_cli_policy": "may_lower_never_raise",
+    "single_process_deterministic": true,
+    "multiworker": false,
+    "page_file_assumed": false
+  },
+  "data_contract_hashes": {
+    "action_data_hash": "d6377d54a1abb985dc5f58866321c61c7b904a6b73ddc1538be7e38d36a99ff1",
+    "party_config_hash": "baff722d9ce79cf7f57891c439b7b3fd746ad76e779e4d582eaa51802eba2684",
+    "transition_config_sha256": "210538d4bf99789d0af08ecff5fb76dc3f472f5b170a144d9f1b3b1f46116b9c",
+    "buffs_sha256": "fe8b8fc63e8b9a3405a61ebe08a2cafa13f94dd4af91d1670b968df727cb554d",
+    "direct_action_manifest_sha256": "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28a8c5ca53a6be8eb6d"
+  },
+  "stages": [
+    {
+      "stage_id": "calibration_20k_seed_117001",
+      "seed": 117001,
+      "combat_duration": 120.0,
+      "maximum_simulations": 20000,
+      "maximum_nodes": 25001,
+      "maximum_actions_per_simulation": 512,
+      "maximum_consecutive_zero_time_actions": 32,
+      "snapshot_stride": 8,
+      "checkpoint_interval_simulations": 1000,
+      "limit_check_interval_simulations": 64,
+      "completed_route_leaderboard_size": 128,
+      "memory_budget_bytes": 23622320128,
+      "soft_memory_target_bytes": 21474836480,
+      "wall_clock_budget_seconds": 14400,
+      "decoded_snapshot_cache_entries": 128,
+      "decoded_snapshot_cache_maximum_bytes": 536870912,
+      "canonical_output_root": "results/mcts_v117_32gb/calibration_20k_seed_117001"
+    }
+  ]
+}

@@ -10,8 +10,8 @@ def main() -> None:
     status = progress["status"]
     current = progress["current_in_progress_task"]
     completed = current["candidate_116_completed_beam"]
-    assert status["latest_externally_verified_baseline"] == "115"
-    assert status["current_candidate"] == "116"
+    assert status["latest_externally_verified_baseline"] == "116"
+    assert status["current_candidate"] == "117"
     assert status["current_task_status"] == "candidate_pending_external_review"
     assert completed["termination_status"] == "completed_search"
     assert completed["expansions"] == 4908270
@@ -23,6 +23,7 @@ def main() -> None:
     assert current["overall_project_winner"]["winner_kind"] == "beam_search_route"
     assert current["best_trained_model"]["model_path"].endswith("step_000090000.zip")
     assert current["mcts_executed"] is False
+    assert current["candidate_117_mcts"]["calibration_20k_executed"] is False
     assert current["global_optimum_claimed"] is False
     print("project_progress_beam_completed_v116_alignment_smoke_test ok")
 
