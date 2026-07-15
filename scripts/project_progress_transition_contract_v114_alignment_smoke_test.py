@@ -19,9 +19,10 @@ def main() -> None:
     progress = json.loads((ROOT / "PROJECT_PROGRESS_STATE.json").read_text(encoding="utf-8"))
     status = progress["status"]
     current = progress["current_in_progress_task"]
-    assert status["latest_externally_verified_baseline"] == "117"
-    assert status["current_candidate"] == "118"
-    assert current["candidate"] == "118"
+    assert status["latest_externally_verified_baseline"] == "118"
+    assert status["latest_verified_archive"] == "ww-dps-simulator-2-118(1).zip"
+    assert status["current_candidate"] == "119"
+    assert current["candidate"] == "119"
     assert current["status"] == "candidate_pending_external_review"
     assert current["external_verification_claimed"] is False
     assert current["transition_contract_version"] == "v114"
@@ -62,7 +63,7 @@ def main() -> None:
     assert current["v114_completed_route_count"] == 128
     assert current["v114_checkpoint_resumable"] is True
     assert current["v114_5m_search_executed"] is False
-    assert current["mcts_executed"] is False
+    assert current["candidate_119_mcts"]["production_search_executed"] is True
     assert current["bc_training_executed"] is False
     assert current["ppo_training_executed"] is False
     assert current["global_optimum_claimed"] is False

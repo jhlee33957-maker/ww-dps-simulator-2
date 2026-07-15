@@ -1,0 +1,455 @@
+{
+  "schema_version": "mcts_checkpoint_progression_v118",
+  "checkpoints": [
+    {
+      "simulation_count": 1000,
+      "node_count": 1001,
+      "best_damage": 3034876.7057288233,
+      "simulations_per_second": 4.954339023047215,
+      "process_peak_rss_bytes": 91668480,
+      "tracked_bytes": 20495762,
+      "conservative_total_estimate_bytes": 108100388
+    },
+    {
+      "simulation_count": 2000,
+      "node_count": 2001,
+      "best_damage": 3486021.8530471204,
+      "simulations_per_second": 5.211006128942566,
+      "process_peak_rss_bytes": 92803072,
+      "tracked_bytes": 20474899,
+      "conservative_total_estimate_bytes": 108058662
+    },
+    {
+      "simulation_count": 3000,
+      "node_count": 3001,
+      "best_damage": 3486021.8530471204,
+      "simulations_per_second": 5.3149983050984115,
+      "process_peak_rss_bytes": 93728768,
+      "tracked_bytes": 20474404,
+      "conservative_total_estimate_bytes": 108057672
+    },
+    {
+      "simulation_count": 4000,
+      "node_count": 4001,
+      "best_damage": 3602747.640411502,
+      "simulations_per_second": 5.412093702983574,
+      "process_peak_rss_bytes": 94068736,
+      "tracked_bytes": 20475738,
+      "conservative_total_estimate_bytes": 108060340
+    },
+    {
+      "simulation_count": 5000,
+      "node_count": 5001,
+      "best_damage": 3602747.640411502,
+      "simulations_per_second": 5.453366537835138,
+      "process_peak_rss_bytes": 94867456,
+      "tracked_bytes": 20479002,
+      "conservative_total_estimate_bytes": 108066868
+    },
+    {
+      "simulation_count": 6000,
+      "node_count": 6001,
+      "best_damage": 3963883.8033316457,
+      "simulations_per_second": 5.46887203688257,
+      "process_peak_rss_bytes": 95526912,
+      "tracked_bytes": 20480163,
+      "conservative_total_estimate_bytes": 108069190
+    },
+    {
+      "simulation_count": 7000,
+      "node_count": 7001,
+      "best_damage": 3963883.8033316457,
+      "simulations_per_second": 5.487917364292549,
+      "process_peak_rss_bytes": 96440320,
+      "tracked_bytes": 20479660,
+      "conservative_total_estimate_bytes": 108068184
+    },
+    {
+      "simulation_count": 8000,
+      "node_count": 8001,
+      "best_damage": 3965968.6708329087,
+      "simulations_per_second": 5.499595235049686,
+      "process_peak_rss_bytes": 96878592,
+      "tracked_bytes": 20479801,
+      "conservative_total_estimate_bytes": 108068466
+    },
+    {
+      "simulation_count": 9000,
+      "node_count": 9001,
+      "best_damage": 3980662.1138386647,
+      "simulations_per_second": 5.5085708091618475,
+      "process_peak_rss_bytes": 97198080,
+      "tracked_bytes": 20480039,
+      "conservative_total_estimate_bytes": 108068942
+    },
+    {
+      "simulation_count": 10000,
+      "node_count": 10001,
+      "best_damage": 3980662.1138386647,
+      "simulations_per_second": 5.516982498445081,
+      "process_peak_rss_bytes": 97812480,
+      "tracked_bytes": 20481130,
+      "conservative_total_estimate_bytes": 108071124
+    },
+    {
+      "simulation_count": 11000,
+      "node_count": 11001,
+      "best_damage": 4040526.97042039,
+      "simulations_per_second": 5.52354921627556,
+      "process_peak_rss_bytes": 98353152,
+      "tracked_bytes": 20480515,
+      "conservative_total_estimate_bytes": 108069894
+    },
+    {
+      "simulation_count": 12000,
+      "node_count": 12001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 5.532275296221914,
+      "process_peak_rss_bytes": 99721216,
+      "tracked_bytes": 20481326,
+      "conservative_total_estimate_bytes": 108071516
+    },
+    {
+      "simulation_count": 13000,
+      "node_count": 13001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 5.542377898858361,
+      "process_peak_rss_bytes": 100270080,
+      "tracked_bytes": 20480834,
+      "conservative_total_estimate_bytes": 108070532
+    },
+    {
+      "simulation_count": 14000,
+      "node_count": 14001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 5.551489365627619,
+      "process_peak_rss_bytes": 100270080,
+      "tracked_bytes": 20481122,
+      "conservative_total_estimate_bytes": 108071108
+    },
+    {
+      "simulation_count": 15000,
+      "node_count": 15001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 5.559029619025799,
+      "process_peak_rss_bytes": 100270080,
+      "tracked_bytes": 20481198,
+      "conservative_total_estimate_bytes": 108071260
+    },
+    {
+      "simulation_count": 16000,
+      "node_count": 16001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 5.565627122125792,
+      "process_peak_rss_bytes": 100270080,
+      "tracked_bytes": 20480679,
+      "conservative_total_estimate_bytes": 108070222
+    },
+    {
+      "simulation_count": 17000,
+      "node_count": 17001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 5.564960436170418,
+      "process_peak_rss_bytes": 100270080,
+      "tracked_bytes": 20480961,
+      "conservative_total_estimate_bytes": 108070786
+    },
+    {
+      "simulation_count": 18000,
+      "node_count": 18001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 5.5672172514100815,
+      "process_peak_rss_bytes": 100270080,
+      "tracked_bytes": 20481093,
+      "conservative_total_estimate_bytes": 108071050
+    },
+    {
+      "simulation_count": 19000,
+      "node_count": 19001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 5.581023176045614,
+      "process_peak_rss_bytes": 100478976,
+      "tracked_bytes": 20481251,
+      "conservative_total_estimate_bytes": 108071366
+    },
+    {
+      "simulation_count": 20000,
+      "node_count": 20001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 5.65725316679414,
+      "process_peak_rss_bytes": 101019648,
+      "tracked_bytes": 20480367,
+      "conservative_total_estimate_bytes": 108069598
+    },
+    {
+      "simulation_count": 21000,
+      "node_count": 21001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 5.733733430339732,
+      "process_peak_rss_bytes": 101187584,
+      "tracked_bytes": 20479885,
+      "conservative_total_estimate_bytes": 108068634
+    },
+    {
+      "simulation_count": 22000,
+      "node_count": 22001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 5.805975382063143,
+      "process_peak_rss_bytes": 102182912,
+      "tracked_bytes": 20480203,
+      "conservative_total_estimate_bytes": 108069270
+    },
+    {
+      "simulation_count": 23000,
+      "node_count": 23001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 5.874958796168058,
+      "process_peak_rss_bytes": 102649856,
+      "tracked_bytes": 20480276,
+      "conservative_total_estimate_bytes": 108069416
+    },
+    {
+      "simulation_count": 24000,
+      "node_count": 24001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 5.939713467038862,
+      "process_peak_rss_bytes": 104775680,
+      "tracked_bytes": 20480111,
+      "conservative_total_estimate_bytes": 108069086
+    },
+    {
+      "simulation_count": 25000,
+      "node_count": 25001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 6.000407143801803,
+      "process_peak_rss_bytes": 105525248,
+      "tracked_bytes": 20480245,
+      "conservative_total_estimate_bytes": 108069354
+    },
+    {
+      "simulation_count": 26000,
+      "node_count": 26001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 6.057198862384279,
+      "process_peak_rss_bytes": 105795584,
+      "tracked_bytes": 20479871,
+      "conservative_total_estimate_bytes": 108068606
+    },
+    {
+      "simulation_count": 27000,
+      "node_count": 27001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 6.112013424609556,
+      "process_peak_rss_bytes": 107089920,
+      "tracked_bytes": 20479865,
+      "conservative_total_estimate_bytes": 108068594
+    },
+    {
+      "simulation_count": 28000,
+      "node_count": 28001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 6.1619249193999,
+      "process_peak_rss_bytes": 107823104,
+      "tracked_bytes": 20479725,
+      "conservative_total_estimate_bytes": 108068314
+    },
+    {
+      "simulation_count": 29000,
+      "node_count": 29001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 6.210954660583282,
+      "process_peak_rss_bytes": 108199936,
+      "tracked_bytes": 20479240,
+      "conservative_total_estimate_bytes": 108067344
+    },
+    {
+      "simulation_count": 30000,
+      "node_count": 30001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 6.255468615242594,
+      "process_peak_rss_bytes": 108670976,
+      "tracked_bytes": 20479525,
+      "conservative_total_estimate_bytes": 108067914
+    },
+    {
+      "simulation_count": 31000,
+      "node_count": 31001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 6.296851192924042,
+      "process_peak_rss_bytes": 109178880,
+      "tracked_bytes": 20479359,
+      "conservative_total_estimate_bytes": 108067582
+    },
+    {
+      "simulation_count": 32000,
+      "node_count": 32001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 6.335054742422382,
+      "process_peak_rss_bytes": 109731840,
+      "tracked_bytes": 20479359,
+      "conservative_total_estimate_bytes": 108067582
+    },
+    {
+      "simulation_count": 33000,
+      "node_count": 33001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 6.373145735406464,
+      "process_peak_rss_bytes": 110182400,
+      "tracked_bytes": 20479949,
+      "conservative_total_estimate_bytes": 108068762
+    },
+    {
+      "simulation_count": 34000,
+      "node_count": 34001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 6.405728693874159,
+      "process_peak_rss_bytes": 110628864,
+      "tracked_bytes": 20479961,
+      "conservative_total_estimate_bytes": 108068786
+    },
+    {
+      "simulation_count": 35000,
+      "node_count": 35001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 6.440770247736109,
+      "process_peak_rss_bytes": 110628864,
+      "tracked_bytes": 20479961,
+      "conservative_total_estimate_bytes": 108068786
+    },
+    {
+      "simulation_count": 36000,
+      "node_count": 36001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 6.474644074673066,
+      "process_peak_rss_bytes": 110628864,
+      "tracked_bytes": 20479602,
+      "conservative_total_estimate_bytes": 108068068
+    },
+    {
+      "simulation_count": 37000,
+      "node_count": 37001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 6.508108480199631,
+      "process_peak_rss_bytes": 110628864,
+      "tracked_bytes": 20478485,
+      "conservative_total_estimate_bytes": 108065834
+    },
+    {
+      "simulation_count": 38000,
+      "node_count": 38001,
+      "best_damage": 4289513.299372134,
+      "simulations_per_second": 6.539897312309879,
+      "process_peak_rss_bytes": 110628864,
+      "tracked_bytes": 20477367,
+      "conservative_total_estimate_bytes": 108063598
+    },
+    {
+      "simulation_count": 39000,
+      "node_count": 39001,
+      "best_damage": 4456165.094682989,
+      "simulations_per_second": 6.563696599331531,
+      "process_peak_rss_bytes": 110628864,
+      "tracked_bytes": 20476894,
+      "conservative_total_estimate_bytes": 108062652
+    },
+    {
+      "simulation_count": 40000,
+      "node_count": 40001,
+      "best_damage": 4456165.094682989,
+      "simulations_per_second": 6.591481616463415,
+      "process_peak_rss_bytes": 110682112,
+      "tracked_bytes": 20476954,
+      "conservative_total_estimate_bytes": 108062772
+    },
+    {
+      "simulation_count": 41000,
+      "node_count": 41001,
+      "best_damage": 4456165.094682989,
+      "simulations_per_second": 6.618909106070016,
+      "process_peak_rss_bytes": 110919680,
+      "tracked_bytes": 20476827,
+      "conservative_total_estimate_bytes": 108062518
+    },
+    {
+      "simulation_count": 42000,
+      "node_count": 42001,
+      "best_damage": 4456165.094682989,
+      "simulations_per_second": 6.6462564970858775,
+      "process_peak_rss_bytes": 111661056,
+      "tracked_bytes": 20476423,
+      "conservative_total_estimate_bytes": 108061710
+    },
+    {
+      "simulation_count": 43000,
+      "node_count": 43001,
+      "best_damage": 4456165.094682989,
+      "simulations_per_second": 6.671633642575206,
+      "process_peak_rss_bytes": 112521216,
+      "tracked_bytes": 20475443,
+      "conservative_total_estimate_bytes": 108059750
+    },
+    {
+      "simulation_count": 44000,
+      "node_count": 44001,
+      "best_damage": 4456165.094682989,
+      "simulations_per_second": 6.697135245923448,
+      "process_peak_rss_bytes": 113561600,
+      "tracked_bytes": 20475714,
+      "conservative_total_estimate_bytes": 108060292
+    },
+    {
+      "simulation_count": 45000,
+      "node_count": 45001,
+      "best_damage": 4456165.094682989,
+      "simulations_per_second": 6.721097066901858,
+      "process_peak_rss_bytes": 114905088,
+      "tracked_bytes": 20475749,
+      "conservative_total_estimate_bytes": 108060362
+    },
+    {
+      "simulation_count": 46000,
+      "node_count": 46001,
+      "best_damage": 4456165.094682989,
+      "simulations_per_second": 6.743620339059169,
+      "process_peak_rss_bytes": 115396608,
+      "tracked_bytes": 20475391,
+      "conservative_total_estimate_bytes": 108059646
+    },
+    {
+      "simulation_count": 47000,
+      "node_count": 47001,
+      "best_damage": 4456165.094682989,
+      "simulations_per_second": 6.7647833045062375,
+      "process_peak_rss_bytes": 116203520,
+      "tracked_bytes": 20475554,
+      "conservative_total_estimate_bytes": 108059972
+    },
+    {
+      "simulation_count": 48000,
+      "node_count": 48001,
+      "best_damage": 4456165.094682989,
+      "simulations_per_second": 6.784644210478443,
+      "process_peak_rss_bytes": 117219328,
+      "tracked_bytes": 20475401,
+      "conservative_total_estimate_bytes": 108059666
+    },
+    {
+      "simulation_count": 49000,
+      "node_count": 49001,
+      "best_damage": 4456165.094682989,
+      "simulations_per_second": 6.801434496490499,
+      "process_peak_rss_bytes": 117821440,
+      "tracked_bytes": 20474436,
+      "conservative_total_estimate_bytes": 108057736
+    },
+    {
+      "simulation_count": 50000,
+      "node_count": 50001,
+      "best_damage": 4456165.094682989,
+      "simulations_per_second": 6.809300936311712,
+      "process_peak_rss_bytes": 118026240,
+      "tracked_bytes": 20474494,
+      "conservative_total_estimate_bytes": 108057852
+    }
+  ]
+}

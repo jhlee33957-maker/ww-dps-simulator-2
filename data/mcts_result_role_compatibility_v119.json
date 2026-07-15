@@ -1,0 +1,23 @@
+{
+  "schema_version": "mcts_result_role_compatibility_v119",
+  "valid_result_roles": [
+    "calibration",
+    "production"
+  ],
+  "plans": {
+    "4d69880283f7a2fe837631fece76cd5eb06e62af544b31e9ea6c96f1a82f11bb": {
+      "plan_path": "data/mcts_plan_v117_32gb.json",
+      "stages": {
+        "calibration_20k_seed_117001": "calibration"
+      }
+    },
+    "2f5cb64f0a5b71a3957dadfbeff8f2c9ac7923b76e52ab410bcb805dc2f38562": {
+      "plan_path": "data/mcts_plan_v118_32gb_3x50k.json",
+      "stages": {
+        "production_50k_seed_118001": "production",
+        "production_50k_seed_118002": "production",
+        "production_50k_seed_118003": "production"
+      }
+    }
+  }
+}

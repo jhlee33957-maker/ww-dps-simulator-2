@@ -1,0 +1,1235 @@
+{
+  "schema_version": "mcts_route_replay_summary_v117",
+  "route_id": "d3dcc3f4b372ac5d",
+  "selected_action_count": 174,
+  "resolved_action_count": 174,
+  "executed_action_count": 174,
+  "selected_sequence_sha256": "d3dcc3f4b372ac5d897c0b8ebf81260b3b1dae97363e21814d914c0bc70878e4",
+  "resolved_sequence_sha256": "f44a05ea9c7d4e9345b04ff79e258a704ce3d7ea15fe9a3cbe26598953845f0b",
+  "total_damage": 4647724.703247974,
+  "dps": 38731.039193733115,
+  "final_combat_time": 120.0,
+  "final_current_time": 169.54999999999993,
+  "timeline_damage_sum": 4647724.703247971,
+  "attempted_actions": [
+    {
+      "step": 1,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_1"
+    },
+    {
+      "step": 2,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_aemeath_charged_1"
+    },
+    {
+      "step": 3,
+      "selected_action_id": "swap_to_lynae",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_lynae"
+    },
+    {
+      "step": 4,
+      "selected_action_id": "swap_to_mornye",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_mornye"
+    },
+    {
+      "step": 5,
+      "selected_action_id": "short_wait",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "short_wait"
+    },
+    {
+      "step": 6,
+      "selected_action_id": "mornye_resonance_liberation",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "mornye_liberation_critical_protocol"
+    },
+    {
+      "step": 7,
+      "selected_action_id": "mornye_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "mornye_basic_stage_1"
+    },
+    {
+      "step": 8,
+      "selected_action_id": "mornye_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "mornye_basic_stage_2"
+    },
+    {
+      "step": 9,
+      "selected_action_id": "swap_to_lynae",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_lynae"
+    },
+    {
+      "step": 10,
+      "selected_action_id": "lynae_resonance_liberation",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_resonance_liberation_prismatic_overblast"
+    },
+    {
+      "step": 11,
+      "selected_action_id": "lynae_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_resonance_skill_palette"
+    },
+    {
+      "step": 12,
+      "selected_action_id": "swap_to_aemeath",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_aemeath"
+    },
+    {
+      "step": 13,
+      "selected_action_id": "aemeath_resonance_liberation",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_liberation_overdrive"
+    },
+    {
+      "step": 14,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2"
+    },
+    {
+      "step": 15,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3"
+    },
+    {
+      "step": 16,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4"
+    },
+    {
+      "step": 17,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_1"
+    },
+    {
+      "step": 18,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2"
+    },
+    {
+      "step": 19,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3"
+    },
+    {
+      "step": 20,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4"
+    },
+    {
+      "step": 21,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_1"
+    },
+    {
+      "step": 22,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2"
+    },
+    {
+      "step": 23,
+      "selected_action_id": "swap_to_mornye",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_mornye"
+    },
+    {
+      "step": 24,
+      "selected_action_id": "swap_to_lynae",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_lynae"
+    },
+    {
+      "step": 25,
+      "selected_action_id": "lynae_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_resonance_skill_palette"
+    },
+    {
+      "step": 26,
+      "selected_action_id": "swap_to_aemeath",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_aemeath"
+    },
+    {
+      "step": 27,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3"
+    },
+    {
+      "step": 28,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4"
+    },
+    {
+      "step": 29,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_1"
+    },
+    {
+      "step": 30,
+      "selected_action_id": "aemeath_echo_sigillum",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_echo_sigillum"
+    },
+    {
+      "step": 31,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2"
+    },
+    {
+      "step": 32,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3"
+    },
+    {
+      "step": 33,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4"
+    },
+    {
+      "step": 34,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_1"
+    },
+    {
+      "step": 35,
+      "selected_action_id": "swap_to_mornye",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_mornye"
+    },
+    {
+      "step": 36,
+      "selected_action_id": "swap_to_lynae",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_lynae"
+    },
+    {
+      "step": 37,
+      "selected_action_id": "lynae_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_basic_stage_1"
+    },
+    {
+      "step": 38,
+      "selected_action_id": "lynae_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_resonance_skill_palette"
+    },
+    {
+      "step": 39,
+      "selected_action_id": "swap_to_aemeath",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_aemeath"
+    },
+    {
+      "step": 40,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2"
+    },
+    {
+      "step": 41,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3"
+    },
+    {
+      "step": 42,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4"
+    },
+    {
+      "step": 43,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_1"
+    },
+    {
+      "step": 44,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2"
+    },
+    {
+      "step": 45,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_seraphic_duet_encore"
+    },
+    {
+      "step": 46,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_2"
+    },
+    {
+      "step": 47,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_3"
+    },
+    {
+      "step": 48,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_4"
+    },
+    {
+      "step": 49,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_1"
+    },
+    {
+      "step": 50,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_2"
+    },
+    {
+      "step": 51,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_3"
+    },
+    {
+      "step": 52,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_4"
+    },
+    {
+      "step": 53,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_1"
+    },
+    {
+      "step": 54,
+      "selected_action_id": "short_wait",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "short_wait"
+    },
+    {
+      "step": 55,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_seraphic_duet_overturn"
+    },
+    {
+      "step": 56,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2"
+    },
+    {
+      "step": 57,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_1"
+    },
+    {
+      "step": 58,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2"
+    },
+    {
+      "step": 59,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3"
+    },
+    {
+      "step": 60,
+      "selected_action_id": "swap_to_mornye",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "transition:mornye_intro_convergence"
+    },
+    {
+      "step": 61,
+      "selected_action_id": "swap_to_lynae",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_lynae"
+    },
+    {
+      "step": 62,
+      "selected_action_id": "lynae_tune_break",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_tune_break"
+    },
+    {
+      "step": 63,
+      "selected_action_id": "lynae_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_resonance_skill_palette"
+    },
+    {
+      "step": 64,
+      "selected_action_id": "swap_to_aemeath",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_aemeath"
+    },
+    {
+      "step": 65,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4"
+    },
+    {
+      "step": 66,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_1"
+    },
+    {
+      "step": 67,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2"
+    },
+    {
+      "step": 68,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3"
+    },
+    {
+      "step": 69,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4"
+    },
+    {
+      "step": 70,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_1"
+    },
+    {
+      "step": 71,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_1"
+    },
+    {
+      "step": 72,
+      "selected_action_id": "aemeath_echo_sigillum",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_echo_sigillum"
+    },
+    {
+      "step": 73,
+      "selected_action_id": "short_wait",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "short_wait"
+    },
+    {
+      "step": 74,
+      "selected_action_id": "short_wait",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "short_wait"
+    },
+    {
+      "step": 75,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2"
+    },
+    {
+      "step": 76,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3"
+    },
+    {
+      "step": 77,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4"
+    },
+    {
+      "step": 78,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_1"
+    },
+    {
+      "step": 79,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2"
+    },
+    {
+      "step": 80,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3"
+    },
+    {
+      "step": 81,
+      "selected_action_id": "swap_to_mornye",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_mornye"
+    },
+    {
+      "step": 82,
+      "selected_action_id": "swap_to_lynae",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_lynae"
+    },
+    {
+      "step": 83,
+      "selected_action_id": "lynae_echo_hyvatia",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_echo_hyvatia"
+    },
+    {
+      "step": 84,
+      "selected_action_id": "lynae_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_resonance_skill_palette"
+    },
+    {
+      "step": 85,
+      "selected_action_id": "lynae_spark_collision",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_spark_collision_lv3"
+    },
+    {
+      "step": 86,
+      "selected_action_id": "lynae_polychrome_leap",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_polychrome_leap_stage_1"
+    },
+    {
+      "step": 87,
+      "selected_action_id": "lynae_polychrome_leap",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_polychrome_leap_stage_2"
+    },
+    {
+      "step": 88,
+      "selected_action_id": "lynae_polychrome_leap",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_polychrome_leap_stage_3"
+    },
+    {
+      "step": 89,
+      "selected_action_id": "lynae_visual_impact",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_visual_impact"
+    },
+    {
+      "step": 90,
+      "selected_action_id": "swap_to_aemeath",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "transition:aemeath_qte_intro_mech"
+    },
+    {
+      "step": 91,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4"
+    },
+    {
+      "step": 92,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_1"
+    },
+    {
+      "step": 93,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2"
+    },
+    {
+      "step": 94,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3"
+    },
+    {
+      "step": 95,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4"
+    },
+    {
+      "step": 96,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_1"
+    },
+    {
+      "step": 97,
+      "selected_action_id": "aemeath_resonance_liberation",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_liberation_overdrive"
+    },
+    {
+      "step": 98,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_2"
+    },
+    {
+      "step": 99,
+      "selected_action_id": "aemeath_resonance_liberation",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavenfall_finale"
+    },
+    {
+      "step": 100,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_1"
+    },
+    {
+      "step": 101,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_2"
+    },
+    {
+      "step": 102,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_3"
+    },
+    {
+      "step": 103,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_4"
+    },
+    {
+      "step": 104,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_1"
+    },
+    {
+      "step": 105,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_2"
+    },
+    {
+      "step": 106,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_3"
+    },
+    {
+      "step": 107,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_4"
+    },
+    {
+      "step": 108,
+      "selected_action_id": "aemeath_echo_sigillum",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_echo_sigillum"
+    },
+    {
+      "step": 109,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_1"
+    },
+    {
+      "step": 110,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_2"
+    },
+    {
+      "step": 111,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_3"
+    },
+    {
+      "step": 112,
+      "selected_action_id": "swap_to_mornye",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "transition:mornye_intro_convergence"
+    },
+    {
+      "step": 113,
+      "selected_action_id": "swap_to_lynae",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_lynae"
+    },
+    {
+      "step": 114,
+      "selected_action_id": "lynae_tune_break",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_tune_break"
+    },
+    {
+      "step": 115,
+      "selected_action_id": "lynae_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_resonance_skill_palette"
+    },
+    {
+      "step": 116,
+      "selected_action_id": "swap_to_aemeath",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_aemeath"
+    },
+    {
+      "step": 117,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_4"
+    },
+    {
+      "step": 118,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_seraphic_duet_overturn"
+    },
+    {
+      "step": 119,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2"
+    },
+    {
+      "step": 120,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3"
+    },
+    {
+      "step": 121,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4"
+    },
+    {
+      "step": 122,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_1"
+    },
+    {
+      "step": 123,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2"
+    },
+    {
+      "step": 124,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3"
+    },
+    {
+      "step": 125,
+      "selected_action_id": "swap_to_mornye",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_mornye"
+    },
+    {
+      "step": 126,
+      "selected_action_id": "swap_to_lynae",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_lynae"
+    },
+    {
+      "step": 127,
+      "selected_action_id": "lynae_echo_hyvatia",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_echo_hyvatia"
+    },
+    {
+      "step": 128,
+      "selected_action_id": "lynae_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_resonance_skill_palette"
+    },
+    {
+      "step": 129,
+      "selected_action_id": "lynae_resonance_liberation",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_resonance_liberation_prismatic_overblast"
+    },
+    {
+      "step": 130,
+      "selected_action_id": "swap_to_aemeath",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_aemeath"
+    },
+    {
+      "step": 131,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_4"
+    },
+    {
+      "step": 132,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_1"
+    },
+    {
+      "step": 133,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2"
+    },
+    {
+      "step": 134,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3"
+    },
+    {
+      "step": 135,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_1"
+    },
+    {
+      "step": 136,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_2"
+    },
+    {
+      "step": 137,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_mech_basic_stage_3"
+    },
+    {
+      "step": 138,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_seraphic_duet_encore"
+    },
+    {
+      "step": 139,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_2"
+    },
+    {
+      "step": 140,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_3"
+    },
+    {
+      "step": 141,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_4"
+    },
+    {
+      "step": 142,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_1"
+    },
+    {
+      "step": 143,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_2"
+    },
+    {
+      "step": 144,
+      "selected_action_id": "swap_to_mornye",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_mornye"
+    },
+    {
+      "step": 145,
+      "selected_action_id": "swap_to_lynae",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_lynae"
+    },
+    {
+      "step": 146,
+      "selected_action_id": "lynae_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_resonance_skill_palette"
+    },
+    {
+      "step": 147,
+      "selected_action_id": "swap_to_aemeath",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "swap_to_aemeath"
+    },
+    {
+      "step": 148,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_3"
+    },
+    {
+      "step": 149,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_4"
+    },
+    {
+      "step": 150,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_1"
+    },
+    {
+      "step": 151,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_aemeath_charged_1"
+    },
+    {
+      "step": 152,
+      "selected_action_id": "aemeath_echo_sigillum",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_echo_sigillum"
+    },
+    {
+      "step": 153,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_2"
+    },
+    {
+      "step": 154,
+      "selected_action_id": "aemeath_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_seraphic_duet_overturn"
+    },
+    {
+      "step": 155,
+      "selected_action_id": "swap_to_mornye",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "transition:mornye_intro_convergence"
+    },
+    {
+      "step": 156,
+      "selected_action_id": "swap_to_lynae",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "transition:lynae_intro_time_to_show_some_colors"
+    },
+    {
+      "step": 157,
+      "selected_action_id": "lynae_spark_collision",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_spark_collision_lv3"
+    },
+    {
+      "step": 158,
+      "selected_action_id": "lynae_polychrome_leap",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_polychrome_leap_stage_1"
+    },
+    {
+      "step": 159,
+      "selected_action_id": "lynae_polychrome_leap",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_polychrome_leap_stage_2"
+    },
+    {
+      "step": 160,
+      "selected_action_id": "lynae_polychrome_leap",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_polychrome_leap_stage_3"
+    },
+    {
+      "step": 161,
+      "selected_action_id": "lynae_visual_impact",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_visual_impact"
+    },
+    {
+      "step": 162,
+      "selected_action_id": "lynae_tune_break",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_tune_break"
+    },
+    {
+      "step": 163,
+      "selected_action_id": "lynae_resonance_skill",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "lynae_resonance_skill_additive_color"
+    },
+    {
+      "step": 164,
+      "selected_action_id": "swap_to_aemeath",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "transition:aemeath_qte_intro_mech"
+    },
+    {
+      "step": 165,
+      "selected_action_id": "aemeath_resonance_liberation",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_liberation_overdrive"
+    },
+    {
+      "step": 166,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_mech_charged_2"
+    },
+    {
+      "step": 167,
+      "selected_action_id": "aemeath_resonance_liberation",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavenfall_finale"
+    },
+    {
+      "step": 168,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_1"
+    },
+    {
+      "step": 169,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_2"
+    },
+    {
+      "step": 170,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_3"
+    },
+    {
+      "step": 171,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_4"
+    },
+    {
+      "step": 172,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_1"
+    },
+    {
+      "step": 173,
+      "selected_action_id": "aemeath_heavy_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_heavy_aemeath_charged_1"
+    },
+    {
+      "step": 174,
+      "selected_action_id": "aemeath_basic_attack",
+      "available_before_execution": true,
+      "executed": true,
+      "resolved_action_id": "aemeath_basic_form_stage_2"
+    }
+  ],
+  "global_optimum_proven": false
+}

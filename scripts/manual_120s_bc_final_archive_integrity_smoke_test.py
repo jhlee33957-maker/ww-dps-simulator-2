@@ -21,7 +21,7 @@ DIRECT_ACTION_MANIFEST_SHA256 = "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28
 SOURCE_ROUTE_FILE_SHA256 = "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a"
 
 
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-118.zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-119.zip"
 EXPECTED_BC_MODEL_SHA256 = "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e"
 EXPECTED_PPO_MODEL_SHA256 = "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513"
 EXPECTED_EVAL_SELECTED_SEQUENCE_SHA256 = "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1"
@@ -352,6 +352,30 @@ REQUIRED_FILES = (
     "scripts/mcts_v118_probe_utils.py",
     "scripts/mcts_v118_3x200_probe_smoke_test.py",
     "scripts/mcts_v118_3x200_probe_repeatability_smoke_test.py",
+    "data/mcts_result_role_compatibility_v119.json",
+    "search/mcts_result_role.py",
+    "search/mcts_production_result.py",
+    "reports/mcts_v118_3x50k_production_v119.md",
+    "results/mcts_v118_production_3x50k_v119/result_manifest.json",
+    "results/mcts_v118_production_3x50k_v119/aggregate_summary.json",
+    "results/mcts_v118_production_3x50k_v119/full_result_inventories.json",
+    "scripts/ingest_mcts_v118_3x50k_results_v119.py",
+    "scripts/cleanup_mcts_v118_production_payloads_v119.py",
+    "scripts/mcts_v118_3x50k_integrity_smoke_test.py",
+    "scripts/mcts_v118_3x50k_winner_replay_parity_smoke_test.py",
+    "scripts/mcts_v118_3x50k_ranking_smoke_test.py",
+    "scripts/mcts_v118_3x50k_progression_plateau_smoke_test.py",
+    "scripts/mcts_result_role_reporting_smoke_test.py",
+    "scripts/mcts_v118_production_metadata_correction_smoke_test.py",
+    "scripts/mcts_v119_current_project_comparison_smoke_test.py",
+    "scripts/mcts_v118_production_cleanup_smoke_test.py",
+    "scripts/project_progress_mcts_v119_alignment_smoke_test.py",
+    "scripts/final_archive_fresh_check_coverage_v119_smoke_test.py",
+    "scripts/full_real_cycle_integration_smoke_test.py",
+    "scripts/rl_observation_shape_guard_smoke_test.py",
+    "scripts/rl_party_action_mask_smoke_test.py",
+    "scripts/direct_action_manifest_hash_guard_smoke_test.py",
+    "scripts/apply_direct_action_data_v61.py",
 )
 EXPECTED_GUARDED_PLAN_SHA256 = "0306c734347e49460fd7273bce546eed80a2db657e460eb707f5cab961a9e0e6"
 TEXT_SUFFIXES = (".py", ".json", ".md", ".txt")
@@ -404,6 +428,7 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         assert not obsolete_bundle_entries, obsolete_bundle_entries
         assert not any(name.startswith("results/beam_search_v114_lowmem_32gb/") for name in names)
         assert not any(name.startswith("results/mcts_v117_32gb/calibration_20k_seed_117001/") for name in names)
+        assert not any(name.startswith("results/mcts_v118_32gb/production_50k_seed_") for name in names)
         assert zf.testzip() is None
 
         route_bytes = zf.read("data/manual_120s_baseline_routes_v104.json")
@@ -419,8 +444,17 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         completed_manifest_bytes = zf.read(completed_manifest_path)
         completed_manifest = json.loads(completed_manifest_bytes.decode("utf-8"))
         completed_progress = progress["current_in_progress_task"]["candidate_116_completed_beam"]
-        assert progress["status"]["latest_externally_verified_baseline"] == "117"
-        assert progress["status"]["current_candidate"] == "118"
+        assert progress["status"]["latest_externally_verified_baseline"] == "118"
+        assert progress["status"]["current_candidate"] == "119"
+        production_path = "results/mcts_v118_production_3x50k_v119/result_manifest.json"
+        production = json.loads(zf.read(production_path).decode("utf-8"))
+        production_progress = progress["current_in_progress_task"]["candidate_119_mcts"]
+        assert bytes_sha256(zf.read(production_path)) == production_progress["compact_manifest_sha256"]
+        assert production["aggregate"]["simulations"] == 150000
+        assert production["aggregate"]["winner"]["seed"] == 118003
+        assert production["aggregate"]["extension_recommended"] is False
+        assert production["external_review_status"] == "pending"
+        assert production["global_optimum_proven"] is False
         compact_path = "results/mcts_v117_calibration_20k_v118/result_manifest.json"
         compact = json.loads(zf.read(compact_path).decode("utf-8"))
         compact_progress = progress["current_in_progress_task"]["candidate_117_mcts"]
@@ -760,10 +794,24 @@ def scan_archive_text(zf: zipfile.ZipFile, names: list[str]) -> dict[str, int]:
     return stats
 
 
-def run_fresh_extraction_checks(archive: Path, *, orchestration_smoke: bool) -> list[dict[str, Any]]:
-    # Lightweight contracts share four bounded interpreter lifecycles. This avoids
-    # repeatedly importing numerical/ML modules in the checker process tree.
-    checks = [
+def candidate_119_fresh_extraction_check_commands() -> list[list[str]]:
+    candidate_119_checks = [
+        [sys.executable, "scripts/mcts_v118_3x50k_integrity_smoke_test.py"],
+        [sys.executable, "scripts/mcts_v118_3x50k_winner_replay_parity_smoke_test.py"],
+        [sys.executable, "scripts/mcts_v118_3x50k_ranking_smoke_test.py"],
+        [sys.executable, "scripts/mcts_v118_3x50k_progression_plateau_smoke_test.py"],
+        [sys.executable, "scripts/mcts_result_role_reporting_smoke_test.py"],
+        [sys.executable, "scripts/mcts_v118_production_metadata_correction_smoke_test.py"],
+        [sys.executable, "scripts/mcts_v119_current_project_comparison_smoke_test.py"],
+        [sys.executable, "scripts/mcts_v118_production_cleanup_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_mcts_v119_alignment_smoke_test.py"],
+        [sys.executable, "scripts/final_archive_fresh_check_coverage_v119_smoke_test.py"],
+    ]
+    return candidate_119_checks
+
+
+def legacy_fresh_extraction_check_commands() -> list[list[str]]:
+    legacy_checks = [
         [sys.executable, "scripts/qte_intro_outro_foundation_smoke_test.py"],
         [sys.executable, "scripts/generic_swap_no_legacy_placeholder_warning_smoke_test.py"],
         [sys.executable, "scripts/generic_swap_zero_time_reentry_cooldown_smoke_test.py"],
@@ -855,6 +903,11 @@ def run_fresh_extraction_checks(archive: Path, *, orchestration_smoke: bool) -> 
         [sys.executable, "scripts/beam_search_destination_bucket_partition_merge_smoke_test.py"],
         [sys.executable, "scripts/beam_search_realistic_2000_resume_equivalence_smoke_test.py"],
         [sys.executable, "scripts/beam_search_terminal_replay_parity_smoke_test.py"],
+        [sys.executable, "scripts/full_real_cycle_integration_smoke_test.py"],
+        [sys.executable, "scripts/rl_observation_shape_guard_smoke_test.py"],
+        [sys.executable, "scripts/rl_party_action_mask_smoke_test.py"],
+        [sys.executable, "scripts/direct_action_manifest_hash_guard_smoke_test.py"],
+        [sys.executable, "scripts/apply_direct_action_data_v61.py", "--check", "--fail-on-diff"],
         [
             sys.executable,
             "search/run_beam_search.py",
@@ -876,6 +929,19 @@ def run_fresh_extraction_checks(archive: Path, *, orchestration_smoke: bool) -> 
         ],
         [sys.executable, "scripts/cleanup_unnecessary_runtime_artifacts_smoke_test.py"],
     ]
+    return legacy_checks
+
+
+def fresh_extraction_check_commands() -> list[list[str]]:
+    checks = candidate_119_fresh_extraction_check_commands() + legacy_fresh_extraction_check_commands()
+    normalized = [tuple(command[1:]) for command in checks]
+    if len(normalized) != len(set(normalized)):
+        raise AssertionError("fresh-extraction command provider contains duplicate commands")
+    return checks
+
+
+def run_fresh_extraction_checks(archive: Path, *, orchestration_smoke: bool) -> list[dict[str, Any]]:
+    checks = fresh_extraction_check_commands()
     passed: list[dict[str, Any]] = []
     temp_dir = Path(tempfile.mkdtemp(prefix="archive-integrity-"))
     try:

@@ -21,6 +21,9 @@ SOURCE_FILES = {
     "data/mcts_plan_v118_32gb_3x50k.json": BASE_DIR / "data" / "mcts_plan_v118_32gb_3x50k.json",
     "results/mcts_v117_calibration_20k_v118/result_manifest.json": BASE_DIR
     / "results" / "mcts_v117_calibration_20k_v118" / "result_manifest.json",
+    "results/mcts_v118_production_3x50k_v119/result_manifest.json": BASE_DIR
+    / "results" / "mcts_v118_production_3x50k_v119" / "result_manifest.json",
+    "reports/mcts_v118_3x50k_production_v119.md": BASE_DIR / "reports" / "mcts_v118_3x50k_production_v119.md",
     "reports/mcts_v117_20k_calibration_v118.md": BASE_DIR / "reports" / "mcts_v117_20k_calibration_v118.md",
     "reports/mcts_v117_32gb_design.md": BASE_DIR / "reports" / "mcts_v117_32gb_design.md",
     "data/beam_search_plan_v111.json": BASE_DIR / "data" / "beam_search_plan_v111.json",
@@ -484,26 +487,38 @@ def merge_progress_data(
                 }
             )
             mcts = current.get("candidate_117_mcts") or {}
-            production = current.get("candidate_118_mcts") or {}
+            production_plan = current.get("candidate_118_mcts") or {}
+            production = current.get("candidate_119_mcts") or {}
             merged["mcts"].update(
                 {
-                    "status": "20k calibration completed; independent 3x50k plan pending",
+                    "status": "20k calibration complete; 3×50k production complete",
                     "summary": (
-                        "The reviewed 20k MCTS calibration completed at 4,128,137.81 damage, "
-                        "26.96% below the completed Beam winner. Candidate 118 prepares three "
-                        "independent 50k seeds; production has not run and Beam remains the winner."
+                        "All three independent 50k MCTS production seeds completed with zero invalid "
+                        "rollouts. Seed 118003 is the best MCTS result at 4,647,724.70 damage, "
+                        "1,004,167.57 below Beam (-17.7669%). Beam remains the overall winner; "
+                        "an MCTS extension is not recommended and global optimality is not proven."
                     ),
                     "infrastructure_ready": bool(mcts.get("infrastructure_implemented")),
                     "calibration_20k_executed": bool(mcts.get("calibration_20k_executed")),
-                    "production_search_executed": bool(mcts.get("production_search_executed")),
+                    "production_search_executed": bool(production.get("production_search_executed")),
                     "calibration_best_damage": mcts.get("best_damage"),
                     "calibration_best_dps": mcts.get("best_dps"),
                     "calibration_vs_beam_percent": -26.960076164770296,
-                    "production_3x50k_plan_ready": bool(production.get("production_plan_ready")),
-                    "production_seeds": production.get("seeds", []),
+                    "production_3x50k_plan_ready": bool(production_plan.get("production_plan_ready")),
+                    "production_seeds": production_plan.get("seeds", []),
+                    "production_seeds_completed": production.get("production_seeds_completed", 0),
+                    "production_simulations_completed": production.get("production_simulations_completed", 0),
+                    "production_invalid_rollouts": production.get("production_invalid_rollouts", 0),
+                    "best_production_seed": production.get("best_seed"),
+                    "best_production_route_id": production.get("best_route_id"),
+                    "best_production_damage": production.get("best_damage"),
+                    "best_production_dps": production.get("best_dps"),
+                    "mcts_vs_beam_damage_delta": -1004167.5713050179,
+                    "mcts_vs_beam_relative_delta_percent": -17.76692694278993,
+                    "extension_recommended": False,
                     "global_optimum_proven": False,
                     "independent_complementary_validation": True,
-                    "has_confirmed_damage_result": bool(mcts.get("completed_result_available")),
+                    "has_confirmed_damage_result": bool(production.get("production_finalized")),
                 }
             )
             for stage in merged.get("beam_stages", []):
@@ -513,7 +528,7 @@ def merge_progress_data(
                 if stage.get("stage") == "Beam Search 120초 탐색":
                     stage["status"] = "내부 검증"
                 elif stage.get("stage") == "MCTS":
-                    stage["status"] = "미착수"
+                    stage["status"] = "내부 검증"
 
     return merged, source_mode
 
@@ -842,8 +857,9 @@ def render_current_status(data: dict[str, Any]) -> None:
                     f"- 30초 보정 {calibration_status} 완료 ({candidate} 외부 검토 대기)",
                     f"- 120초 전체 탐색 {full_search_status}",
                     f"- MCTS {mcts_status}",
-                    "- 현재 프로젝트 최고 검증 결과는 120초 BC 모델",
-                    "- 30초 보정 피해는 120초 BC와 직접 수치 비교하지 않음",
+                    "- MCTS 20k 보정 및 독립 3×50k production 완료",
+                    "- seed 118003이 최고 MCTS 결과, Beam 경로가 전체 최고",
+                    "- MCTS 연장 비권장, 전역 최적성 미증명",
                 ]
             )
         )

@@ -44,7 +44,13 @@ def main() -> None:
     runner = MCTSSearch(plan=plan, stage=stage, output_root=output_root, max_simulations=args.max_simulations,
                         memory_budget_bytes=args.memory_budget_bytes)
     result = runner.run(resume=args.resume); result["_completed_routes"] = runner.completed_routes
-    written = write_mcts_results(output_root, result)
+    written = write_mcts_results(
+        output_root,
+        result,
+        plan_path=plan_path,
+        plan_sha256=plan["_plan_sha256"],
+        stage=stage,
+    )
     print(json.dumps({"termination_status": result["termination_status"], "simulations_completed": result["simulations_completed"],
                       "completed_rollout_count": result["completed_rollout_count"], "best_completed_route": result["best_completed_route"],
                       "logical_result_sha256": result["logical_result_sha256"], "output_root": output_root.as_posix()}, indent=2))

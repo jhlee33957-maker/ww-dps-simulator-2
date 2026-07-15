@@ -50,14 +50,18 @@ def main() -> None:
     assert beam["damage_gain_over_best_trained_model"] == 375047.9158609472
     assert beam["dps_gain_over_best_trained_model"] == 3125.3992988412283
     assert beam["global_optimum_proven"] is False
-    assert merged["mcts"]["status"] == "20k calibration completed; independent 3x50k plan pending"
+    assert merged["mcts"]["status"] == "20k calibration complete; 3×50k production complete"
     assert merged["mcts"]["infrastructure_ready"] is True
     assert merged["mcts"]["calibration_20k_executed"] is True
-    assert merged["mcts"]["production_search_executed"] is False
+    assert merged["mcts"]["production_search_executed"] is True
     assert merged["mcts"]["calibration_best_damage"] == 4128137.812582737
     assert merged["mcts"]["production_3x50k_plan_ready"] is True
     assert merged["mcts"]["production_seeds"] == [118001, 118002, 118003]
-    assert "Beam remains the winner" in merged["mcts"]["summary"]
+    assert merged["mcts"]["production_seeds_completed"] == 3
+    assert merged["mcts"]["best_production_seed"] == 118003
+    assert merged["mcts"]["mcts_vs_beam_damage_delta"] == -1004167.5713050179
+    assert merged["mcts"]["extension_recommended"] is False
+    assert "Beam remains the overall winner" in merged["mcts"]["summary"]
     print("progress_dashboard_beam_completed_v116_smoke_test ok")
 
 

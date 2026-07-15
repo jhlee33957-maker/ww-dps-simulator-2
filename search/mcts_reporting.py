@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from search.mcts_checkpoint import atomic_json
+from search.mcts_result_role import resolve_mcts_result_role, result_role_fields
 from search.mcts_state import create_initial_simulation
 from search.search_state_codec import sequence_sha256
 from search.search_state_codec import sha256_file
@@ -70,7 +71,19 @@ def comparison_for_completed_route(route: dict[str, Any], *, root: Path = ROOT) 
             "global_optimum_proven": False}
 
 
-def write_mcts_results(output_root: Path, result: dict[str, Any], *, root: Path = ROOT) -> dict[str, Any]:
+def write_mcts_results(
+    output_root: Path,
+    result: dict[str, Any],
+    *,
+    plan_path: Path,
+    plan_sha256: str,
+    stage: dict[str, Any],
+    root: Path = ROOT,
+) -> dict[str, Any]:
+    role = resolve_mcts_result_role(
+        plan_path, plan_sha256, str(result["stage_id"]), stage, root=root
+    )
+    role_fields = result_role_fields(role)
     routes = list(result.pop("_completed_routes")) if "_completed_routes" in result else []
     validated: list[dict[str, Any]] = []
     for route in routes:
@@ -81,6 +94,7 @@ def write_mcts_results(output_root: Path, result: dict[str, Any], *, root: Path 
     best = validated[0] if validated else None
     comparison = comparison_for_completed_route(best, root=root) if best else {"status": "unavailable", "reason": "no completed MCTS route", "search_result_valid": True}
     result["best_completed_route"] = best; result["comparison"] = comparison
+    result.update(role_fields)
     atomic_json(output_root / "execution_result.json", result)
     leaderboard = {"schema_version": "mcts_leaderboard_v117", "objective": "deterministic_completed_120s_total_damage",
                    "completed_route_count": int(result["completed_rollout_count"]), "retained_route_count": len(validated),
@@ -89,9 +103,9 @@ def write_mcts_results(output_root: Path, result: dict[str, Any], *, root: Path 
     atomic_json(output_root / "leaderboard.json", leaderboard)
     atomic_json(output_root / "completed_routes_compact.json", leaderboard)
     atomic_json(output_root / "best_route.json", {"winner": best, "comparison": comparison, "global_optimum_proven": False})
-    final = {"schema_version": "mcts_final_summary_v117", "termination_status": result["termination_status"],
+    final = {"schema_version": "mcts_final_summary_v119", "termination_status": result["termination_status"],
              "simulations_completed": result["simulations_completed"], "winner": best, "comparison": comparison,
-             "calibration_only": True, "global_optimum_proven": False}
+             **role_fields}
     atomic_json(output_root / "final_summary.json", final)
     return {"result": result, "leaderboard": leaderboard, "final_summary": final}
 

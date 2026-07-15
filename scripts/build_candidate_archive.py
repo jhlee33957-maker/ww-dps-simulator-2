@@ -20,7 +20,7 @@ from rl.guarded_ppo import (  # noqa: E402
 )
 
 
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-118.zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-119.zip"
 STATE_PATH = ROOT / "results" / "guarded_ppo_v109" / "experiment_state.json"
 EXCLUDED_DIRS = {".git", ".venv", "__pycache__", ".pytest_cache", ".mypy_cache", "bc_eval_bundle"}
 IMMUTABLE_MODEL_ZIP_FILES = {
@@ -33,8 +33,16 @@ LOCAL_ONLY_REVIEW_PACKAGES = {
     Path("beam_search_v114_3m_review"),
     Path("beam_search_v115_6p5m_review"),
     Path("mcts_v117_20k_review"),
+    Path("mcts_v118_seed_118001_50k_review"),
+    Path("mcts_v118_seed_118002_50k_review"),
+    Path("mcts_v118_seed_118003_50k_review"),
 }
 RAW_MCTS_CALIBRATION = Path("results/mcts_v117_32gb/calibration_20k_seed_117001")
+RAW_MCTS_PRODUCTION = tuple(
+    Path(f"results/mcts_v118_32gb/production_50k_seed_{seed}")
+    for seed in (118001, 118002, 118003)
+)
+LOCAL_ONLY_REVIEW_FILES = {Path("make_mcts_v118_seed_118003_review.ps1")}
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -86,10 +94,18 @@ def build_archive(output: Path) -> dict[str, Any]:
                 excluded_heavy_checkpoint_count += 1
                 excluded_heavy_checkpoint_bytes += path.stat().st_size
                 continue
+            if any(rel == raw or raw in rel.parents for raw in RAW_MCTS_PRODUCTION):
+                excluded_heavy_checkpoint_count += 1
+                excluded_heavy_checkpoint_bytes += path.stat().st_size
+                continue
             if rel == LOCAL_ONLY_BEAM_INVENTORY:
                 excluded_local_inventory_bytes = path.stat().st_size
                 continue
             if any(rel == package or package in rel.parents for package in LOCAL_ONLY_REVIEW_PACKAGES):
+                excluded_local_review_package_count += 1
+                excluded_local_review_package_bytes += path.stat().st_size
+                continue
+            if rel in LOCAL_ONLY_REVIEW_FILES:
                 excluded_local_review_package_count += 1
                 excluded_local_review_package_bytes += path.stat().st_size
                 continue
