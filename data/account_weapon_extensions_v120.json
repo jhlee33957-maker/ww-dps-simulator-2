@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "source_contract": "data/source/user_account_actual_v120.json",
+  "weapon_extensions": {
+    "static_mist": {
+      "rank_values": {
+        "5": {
+          "energy_regen_static_bonus": 0.256,
+          "incoming_atk_percent_after_outro": 0.2
+        }
+      }
+    }
+  }
+}

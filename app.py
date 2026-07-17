@@ -104,6 +104,16 @@ def build_profile_controls(
     characters = load_available_characters()
     build_profiles = load_build_profiles(DATA_DIR)
     ui_overrides: dict[str, str] = {}
+
+    def profile_option_label(profile_id: str, available: dict[str, Any]) -> str:
+        if profile_id == "Use Party Preset / Default":
+            return profile_id
+        profile = available[profile_id]
+        label = f"{profile_id} - {profile.get('display_name', profile_id)}"
+        if profile.get("account_profile") and not profile.get("simulation_ready", True):
+            label += " (Stored - simulation locked)"
+        return label
+
     with st.sidebar.expander("Build Profiles"):
         for character_id in selected_character_ids:
             available = get_available_build_profiles(character_id, build_profiles)
@@ -115,11 +125,7 @@ def build_profile_controls(
                 options=options,
                 index=0,
                 key=f"build-profile-{character_id}",
-                format_func=lambda profile_id: (
-                    profile_id
-                    if profile_id == "Use Party Preset / Default"
-                    else f"{profile_id} - {available[profile_id].get('display_name', profile_id)}"
-                ),
+                format_func=lambda profile_id, available=available: profile_option_label(profile_id, available),
             )
             if choice != "Use Party Preset / Default":
                 ui_overrides[character_id] = choice
@@ -159,6 +165,11 @@ def build_profile_controls(
                         "Build Profile ID": summary.get("build_profile_id"),
                         "implementation_status": summary.get("implementation_status"),
                         "profile_completeness_status": summary.get("profile_completeness_status"),
+                        "account_profile": summary.get("account_profile"),
+                        "simulation_ready": summary.get("simulation_ready"),
+                        "simulation_block_reason": summary.get("simulation_block_reason"),
+                        "sequence": summary.get("sequence"),
+                        "constellation": summary.get("constellation"),
                         "missing_required_fields": summary.get("missing_required_fields"),
                         "scaling_stat_distribution": summary.get("scaling_stat_distribution"),
                         "unresolved_scaling_actions": summary.get("unresolved_scaling_actions"),
@@ -170,6 +181,11 @@ def build_profile_controls(
                         "damage_bonuses": summary.get("damage_bonuses"),
                     }
                 )
+                if summary.get("account_profile") and not summary.get("simulation_ready", True):
+                    st.warning(
+                        "Constellation mechanics not implemented; baseline, training, evaluation, and search are disabled."
+                    )
+                    st.write({"Account display stats": summary.get("account_display_stats")})
                 for stat in ("atk", "def", "hp"):
                     st.write(
                         {

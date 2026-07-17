@@ -13,17 +13,17 @@
     "language_preference": "설명은 한국어, Codex 프롬프트와 코드 식별자는 영어 가능"
   },
   "status": {
-    "last_updated": "2026-07-15T00:00:00+09:00",
-    "latest_verified_archive": "ww-dps-simulator-2-118(1).zip",
-    "latest_verified_archive_sha256": "0f3c92c4cd28bf869a6e397c63254a1af87a7ef1277ee9936f148e956c2f7621",
-    "latest_verified_baseline_label": "118",
-    "latest_externally_verified_baseline": "118",
+    "last_updated": "2026-07-17T00:00:00+09:00",
+    "latest_verified_archive": "ww-dps-simulator-2-119(1).zip",
+    "latest_verified_archive_sha256": "7248290f4b3f3f8107cfd10ff1b5e539167721b19a182fdb69b875221ce394ae",
+    "latest_verified_baseline_label": "119",
+    "latest_externally_verified_baseline": "119",
     "current_task_status": "candidate_pending_external_review",
-    "current_task": "candidate-119 ingestion and finalization of the three completed candidate-118 50k MCTS production seeds",
-    "current_task_expected_next_archive": "119",
+    "current_task": "candidate-120 account build profile storage, weapon-rank metadata, and hard simulation gate",
+    "current_task_expected_next_archive": "120",
     "do_not_treat_current_task_as_complete_until_reviewed": true,
-    "candidate_expected_next_archive": "ww-dps-simulator-2-119.zip",
-    "current_candidate": "119"
+    "candidate_expected_next_archive": "ww-dps-simulator-2-120.zip",
+    "current_candidate": "120"
   },
   "source_of_truth": {
     "raw_action_workbook": "鸣潮动作数据汇总(5).xlsx",
@@ -756,17 +756,17 @@
     "reference_damage_comparison_status": "horizon_mismatch_not_comparable"
   },
   "current_in_progress_task": {
-    "task": "ingest and finalize all three completed candidate-118 50k MCTS production seeds as candidate 119",
+    "task": "store user account S6/S2/S3 profiles, exact account weapon loadouts, and block simulation pending constellation mechanics",
     "status": "candidate_pending_external_review",
-    "candidate": "119",
-    "current_candidate": "119",
+    "candidate": "120",
+    "current_candidate": "120",
     "external_review_required": true,
     "external_review_status": "pending",
     "external_verification_claimed": false,
-    "latest_externally_verified_baseline": "118",
-    "baseline_archive": "ww-dps-simulator-2-118(1).zip",
-    "baseline_archive_sha256": "0f3c92c4cd28bf869a6e397c63254a1af87a7ef1277ee9936f148e956c2f7621",
-    "candidate_expected_next_archive": "ww-dps-simulator-2-119.zip",
+    "latest_externally_verified_baseline": "119",
+    "baseline_archive": "ww-dps-simulator-2-119(1).zip",
+    "baseline_archive_sha256": "7248290f4b3f3f8107cfd10ff1b5e539167721b19a182fdb69b875221ce394ae",
+    "candidate_expected_next_archive": "ww-dps-simulator-2-120.zip",
     "transition_contract_version": "v114",
     "diagnostic_regression_correction": "legacy placeholder warning leakage removed; unversioned transition foundation smoke test aligned with v114",
     "generic_swap": {
@@ -881,16 +881,34 @@
       "cleanup_completed": true,
       "canonical_output_mutated": false,
       "two_isolated_process_repeatability_passed": true,
-      "repeat_search_runtime_seconds": [30.5355, 30.282178199966438],
-      "repeat_total_process_runtime_seconds": [33.7867, 33.520874699926935],
-      "repeat_peak_process_rss_bytes": [395542528, 395329536],
+      "repeat_search_runtime_seconds": [
+        30.5355,
+        30.282178199966438
+      ],
+      "repeat_total_process_runtime_seconds": [
+        33.7867,
+        33.520874699926935
+      ],
+      "repeat_peak_process_rss_bytes": [
+        395542528,
+        395329536
+      ],
       "repeat_spill_sha256s_identical": true
     },
     "fresh_slim_workspace_probe": {
       "platform": "Windows fresh extraction using project-relative POSIX-style paths; no native POSIX runtime is installed on this host",
-      "repeat_search_runtime_seconds": [31.32864090008661, 31.34603750007227],
-      "repeat_total_process_runtime_seconds": [34.78666790004354, 34.76563769998029],
-      "repeat_peak_process_rss_bytes": [395472896, 395894784],
+      "repeat_search_runtime_seconds": [
+        31.32864090008661,
+        31.34603750007227
+      ],
+      "repeat_total_process_runtime_seconds": [
+        34.78666790004354,
+        34.76563769998029
+      ],
+      "repeat_peak_process_rss_bytes": [
+        395472896,
+        395894784
+      ],
       "deterministic_result_sha256": "aa758e746344fbe685467540f16bdcc3c6899fdd6cb03e81ac881ce0440d92ef",
       "spill_sha256s_identical": true,
       "normal_process_exit": true,
@@ -1052,7 +1070,11 @@
       "production_plan_ready": true,
       "production_search_executed": true,
       "stage_count": 3,
-      "seeds": [118001, 118002, 118003],
+      "seeds": [
+        118001,
+        118002,
+        118003
+      ],
       "independent_empty_tree_and_mast": true,
       "prior_route_guidance": false,
       "external_review_status": "passed",
@@ -1062,8 +1084,8 @@
     },
     "candidate_119_mcts": {
       "status": "candidate_pending_external_review",
-      "external_review_status": "pending",
-      "external_verification_claimed": false,
+      "external_review_status": "passed",
+      "external_verification_claimed": true,
       "pending_review_note": "candidate-119 first package incorrectly executed only the new fresh-extraction checks; full legacy regression coverage and history-aware alignment tests restored before external verification.",
       "calibration_20k_executed": true,
       "production_search_executed": true,
@@ -1090,7 +1112,102 @@
       "best_trained_model_stage": 90000,
       "raw_production_outputs_preserved": true,
       "cleanup_applied": false,
-      "global_optimum_claimed": false
+      "global_optimum_claimed": false,
+      "verified_archive": "ww-dps-simulator-2-119(1).zip",
+      "verified_archive_sha256": "7248290f4b3f3f8107cfd10ff1b5e539167721b19a182fdb69b875221ce394ae"
+    },
+    "account_profiles_stored": true,
+    "account_weapon_loadouts_stored": true,
+    "account_constellation_mechanics_implemented": false,
+    "account_simulation_ready": false,
+    "account_manual_baseline_executed": false,
+    "account_bc_demonstration_regenerated": false,
+    "account_bc_ppo_training_executed": false,
+    "account_ppo_evaluation_executed": false,
+    "account_beam_search_executed": false,
+    "account_mcts_search_executed": false,
+    "account_source_contract_path": "data/source/user_account_actual_v120.json",
+    "account_source_contract_sha256": "a484aca00ed07573083dd2f83b0270847662d3f80af31819c62169c1a78dd457",
+    "account_build_profile_overlay_path": "data/account_build_profiles_v120.json",
+    "account_build_profile_overlay_sha256": "a195de7f2ee505613685e15bcc673692dbc5704bd94df05171a52536ba96a789",
+    "account_weapon_extension_overlay_path": "data/account_weapon_extensions_v120.json",
+    "account_weapon_extension_overlay_sha256": "f3858c8c2a038662d270ae48c51e1cc793a5d757e9f1b9d5cb18b7edb0443390",
+    "base_build_profiles_sha256": "fe0e46aaddb818ecd9b0180b3aa955671328a03c179e9dd5f8b9a7fc85506aa7",
+    "base_weapons_sha256": "1e5595c9c9cb1b300d5f0e21b1f493b527f2868503511b6c1c467209b3c8df33",
+    "historical_party_config_hash_preserved": "baff722d9ce79cf7f57891c439b7b3fd746ad76e779e4d582eaa51802eba2684",
+    "account_sequences": {
+      "aemeath": 6,
+      "lynae": 2,
+      "mornye": 3
+    },
+    "account_profile_ids": {
+      "aemeath": "aemeath_account_actual_01",
+      "lynae": "lynae_account_actual_01",
+      "mornye": "mornye_account_actual_01"
+    },
+    "account_weapons": {
+      "aemeath": "Everbright Polestar R1",
+      "lynae": "Static Mist R5",
+      "mornye": "Starfield Calibrator R5"
+    },
+    "existing_benchmark_mornye_weapon_remains": "Discord R5",
+    "existing_benchmark_profiles_preserved": true,
+    "current_overall_project_winner_remains": "benchmark Beam route 67a4250b3b8d0de9",
+    "next_task": "authoritative source audit and implementation of Aemeath S1-S6, Lynae S1-S2, Mornye S1-S3",
+    "candidate_120_account_profiles": {
+      "source_contract_path": "data/source/user_account_actual_v120.json",
+      "source_contract_sha256": "a484aca00ed07573083dd2f83b0270847662d3f80af31819c62169c1a78dd457",
+      "build_profile_overlay_path": "data/account_build_profiles_v120.json",
+      "build_profile_overlay_sha256": "a195de7f2ee505613685e15bcc673692dbc5704bd94df05171a52536ba96a789",
+      "weapon_extension_overlay_path": "data/account_weapon_extensions_v120.json",
+      "weapon_extension_overlay_sha256": "f3858c8c2a038662d270ae48c51e1cc793a5d757e9f1b9d5cb18b7edb0443390",
+      "base_build_profiles_sha256": "fe0e46aaddb818ecd9b0180b3aa955671328a03c179e9dd5f8b9a7fc85506aa7",
+      "base_weapons_sha256": "1e5595c9c9cb1b300d5f0e21b1f493b527f2868503511b6c1c467209b3c8df33",
+      "historical_party_config_hash_preserved": "baff722d9ce79cf7f57891c439b7b3fd746ad76e779e4d582eaa51802eba2684",
+      "simulation_status": "blocked_pending_constellation_mechanics",
+      "profile_storage_allowed": true,
+      "simulation_training_evaluation_search_rejected": true,
+      "account_party_created": false,
+      "account_result_created": false,
+      "account_route_replay_executed": false,
+      "beam_mcts_training_model_evaluation_executed": false,
+      "static_stat_double_count_rule": "stat-screen final values include static equipment contributions; runtime must not add those static components again",
+      "profiles": {
+        "aemeath_account_actual_01": {
+          "character_id": "aemeath",
+          "sequence": 6,
+          "weapon": "Everbright Polestar R1",
+          "calculated_atk": 2657.584,
+          "displayed_atk": 2657,
+          "energy_regen": 1.2
+        },
+        "lynae_account_actual_01": {
+          "character_id": "lynae",
+          "sequence": 2,
+          "weapon": "Static Mist R5",
+          "calculated_atk": 1929.758,
+          "displayed_atk": 1929,
+          "energy_regen": 1.548
+        },
+        "mornye_account_actual_01": {
+          "character_id": "mornye",
+          "sequence": 3,
+          "weapon": "Starfield Calibrator R5",
+          "calculated_atk": 1158.629,
+          "displayed_atk": 1158,
+          "calculated_def": 3357.1385,
+          "displayed_def": 3357,
+          "energy_regen": 2.7944
+        }
+      },
+      "blockers": [
+        "Aemeath S1-S6 mechanics not yet source-audited and implemented",
+        "Lynae S1-S2 mechanics not yet source-audited and implemented",
+        "Mornye S1-S3 mechanics not yet source-audited and implemented",
+        "account baseline not established",
+        "account BC/PPO not regenerated",
+        "account search not executed"
+      ]
     }
   },
   "manual_cycle_reference": {
@@ -1768,7 +1885,7 @@
       ]
     }
   ],
-  "next_planned_task": "externally review candidate 119; do not extend MCTS from the current evidence",
+  "next_planned_task": "authoritative source audit and implementation of Aemeath S1-S6, Lynae S1-S2, Mornye S1-S3 mechanics before any account baseline/training/search",
   "candidate_history": [
     {
       "candidate": "106",
@@ -2129,10 +2246,10 @@
     {
       "candidate": "119",
       "task": "validate and ingest all three completed 50k MCTS production seeds, correct result-role reporting, finalize comparison, and add guarded cleanup",
-      "status": "candidate_pending_external_review",
-      "latest_externally_verified_baseline": "118",
-      "external_review_status": "pending",
-      "external_verification_claimed": false,
+      "status": "externally_verified_complete",
+      "latest_externally_verified_baseline": "119",
+      "external_review_status": "passed",
+      "external_verification_claimed": true,
       "pending_review_note": "candidate-119 first package incorrectly executed only the new fresh-extraction checks; full legacy regression coverage and history-aware alignment tests restored before external verification.",
       "baseline_archive": "ww-dps-simulator-2-118(1).zip",
       "baseline_archive_sha256": "0f3c92c4cd28bf869a6e397c63254a1af87a7ef1277ee9936f148e956c2f7621",
@@ -2151,6 +2268,25 @@
       "best_trained_model_stage": 90000,
       "cleanup_applied": false,
       "new_beam_search_executed": false,
+      "bc_ppo_training_executed": false,
+      "global_optimum_claimed": false,
+      "verified_archive": "ww-dps-simulator-2-119(1).zip",
+      "verified_archive_sha256": "7248290f4b3f3f8107cfd10ff1b5e539167721b19a182fdb69b875221ce394ae"
+    },
+    {
+      "candidate": "120",
+      "task": "store user account S6/S2/S3 build profiles and exact weapon ranks with a hard simulation gate",
+      "status": "candidate_pending_external_review",
+      "latest_externally_verified_baseline": "119",
+      "external_review_status": "pending",
+      "external_verification_claimed": false,
+      "baseline_archive": "ww-dps-simulator-2-119(1).zip",
+      "baseline_archive_sha256": "7248290f4b3f3f8107cfd10ff1b5e539167721b19a182fdb69b875221ce394ae",
+      "account_profiles_stored": true,
+      "account_simulation_ready": false,
+      "account_route_replay_executed": false,
+      "account_beam_search_executed": false,
+      "account_mcts_search_executed": false,
       "bc_ppo_training_executed": false,
       "global_optimum_claimed": false
     }

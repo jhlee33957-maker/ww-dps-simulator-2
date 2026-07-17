@@ -1,0 +1,374 @@
+{
+  "schema_version": 1,
+  "source_contract": "data/source/user_account_actual_v120.json",
+  "profiles": {
+    "aemeath": {
+      "aemeath_account_actual_01": {
+        "display_name": "Aemeath Account Actual 01 - Stored - simulation locked",
+        "description": "User account Aemeath S6 stat-screen profile. Storage only; simulation locked pending authoritative S1-S6 mechanics.",
+        "implementation_status": "account_stored_simulation_locked",
+        "account_profile": true,
+        "simulation_ready": false,
+        "simulation_block_reason": "pending_constellation_mechanics",
+        "simulation_lock_message": "Constellation mechanics not implemented; baseline, training, evaluation, and search are disabled.",
+        "sequence": 6,
+        "constellation": {
+          "sequence": 6,
+          "mechanics_implemented": false,
+          "required_contract": "Aemeath Sequence 6 account profile requires validated S1-S6 mechanics."
+        },
+        "default_scaling_stat": "atk",
+        "required_scaling_stats": [
+          "atk"
+        ],
+        "account_display_stats": {
+          "hp": 15585,
+          "atk": 2657,
+          "def": 1148,
+          "energy_regen_percent": 120.0,
+          "crit_rate_percent": 83.2,
+          "crit_damage_percent": 294.2
+        },
+        "stat_components": {
+          "atk": {
+            "character_base": 424.5,
+            "weapon_base": 587.5,
+            "percent": 1.132,
+            "flat": 500.0,
+            "final_reference": 2657,
+            "calculated_static_value": 2657.584,
+            "displayed_value": 2657
+          },
+          "def": {
+            "character_base": null,
+            "weapon_base": 0,
+            "percent": null,
+            "flat": null,
+            "final_reference": 1148
+          },
+          "hp": {
+            "character_base": null,
+            "weapon_base": 0,
+            "percent": null,
+            "flat": null,
+            "final_reference": 15585
+          }
+        },
+        "runtime_bonuses": {
+          "atk": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "def": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "hp": {
+            "percent": 0.0,
+            "flat": 0.0
+          }
+        },
+        "combat_stats": {
+          "crit_rate": 0.832,
+          "crit_damage": 2.942,
+          "energy_regen": 1.2
+        },
+        "damage_bonuses": {
+          "all": 0.0,
+          "by_category": {
+            "basic_attack": 0.0,
+            "heavy_attack": 0.0,
+            "resonance_skill": 0.101,
+            "resonance_liberation": 0.688,
+            "intro": 0.0,
+            "outro": 0.0,
+            "coordinated_attack": 0.0,
+            "other": 0.0,
+            "echo_ability": 0.0
+          },
+          "by_element": {
+            "generic": 0.4,
+            "fusion": 0.4
+          }
+        },
+        "static_stat_double_count_rule": "Displayed final stats already include weapon secondary/static passive, Echo main stat, Echo special-option static stat, and other static equipment stats; do not add them again.",
+        "bonus_decomposition": {
+          "fusion": {
+            "echo_main_stat": 0.3,
+            "echo_special_option": 0.1,
+            "static_profile_total": 0.4,
+            "everbright_polestar_r1_runtime_all_attribute_bonus": 0.12,
+            "future_eligible_total": 0.52,
+            "do_not_store_future_total_in_static_profile": true
+          },
+          "resonance_liberation": {
+            "base_displayed_liberation_bonus": 0.438,
+            "echo_special_option": 0.25,
+            "profile_total": 0.688,
+            "echo_special_option_already_in_profile": true
+          }
+        },
+        "weapon": {
+          "weapon_id": "everbright_polestar",
+          "weapon_type": "broadblade",
+          "rank": 1,
+          "static_stats_already_in_profile": true,
+          "base_atk_and_crit_already_in_profile": true,
+          "source_status": "user_screenshot_and_user_confirmation",
+          "notes": "Everbright Polestar R1 runtime all-attribute bonus remains weapon runtime metadata; static profile stores only stat-screen values."
+        },
+        "main_echo_id": "sigillum",
+        "echo_sets": {
+          "trailblazing_star": {
+            "pieces": 5,
+            "static_2set_already_in_profile": true,
+            "conditional_5set_enabled": false,
+            "conditional_5set_status": "blocked_pending_constellation_mechanics",
+            "notes": "Account profile is storage-only in candidate 120."
+          }
+        }
+      }
+    },
+    "lynae": {
+      "lynae_account_actual_01": {
+        "display_name": "Lynae Account Actual 01 - Stored - simulation locked",
+        "description": "User account Lynae S2 stat-screen profile. Storage only; simulation locked pending authoritative S1-S2 mechanics.",
+        "implementation_status": "account_stored_simulation_locked",
+        "account_profile": true,
+        "simulation_ready": false,
+        "simulation_block_reason": "pending_constellation_mechanics",
+        "simulation_lock_message": "Constellation mechanics not implemented; baseline, training, evaluation, and search are disabled.",
+        "sequence": 2,
+        "constellation": {
+          "sequence": 2,
+          "mechanics_implemented": false,
+          "required_contract": "Lynae Sequence 2 account profile requires validated S1-S2 mechanics."
+        },
+        "default_scaling_stat": "atk",
+        "required_scaling_stats": [
+          "atk"
+        ],
+        "account_display_stats": {
+          "hp": 19451,
+          "atk": 1929,
+          "def": 1350,
+          "energy_regen_percent": 154.8,
+          "crit_rate_percent": 97.4,
+          "crit_damage_percent": 208.8
+        },
+        "stat_components": {
+          "atk": {
+            "character_base": 374.5,
+            "weapon_base": 587.5,
+            "percent": 0.559,
+            "flat": 430.0,
+            "final_reference": 1929,
+            "calculated_static_value": 1929.758,
+            "displayed_value": 1929
+          },
+          "def": {
+            "character_base": null,
+            "weapon_base": 0,
+            "percent": null,
+            "flat": null,
+            "final_reference": 1350
+          },
+          "hp": {
+            "character_base": null,
+            "weapon_base": 0,
+            "percent": null,
+            "flat": null,
+            "final_reference": 19451
+          }
+        },
+        "runtime_bonuses": {
+          "atk": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "def": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "hp": {
+            "percent": 0.0,
+            "flat": 0.0
+          }
+        },
+        "combat_stats": {
+          "crit_rate": 0.974,
+          "crit_damage": 2.088,
+          "energy_regen": 1.548
+        },
+        "support_stats": {
+          "tune_break_boost": 0.0
+        },
+        "damage_bonuses": {
+          "all": 0.0,
+          "by_category": {
+            "basic_attack": 0.289,
+            "heavy_attack": 0.101,
+            "resonance_skill": 0.195,
+            "resonance_liberation": 0.116,
+            "intro": 0.0,
+            "outro": 0.0,
+            "echo_ability": 0.0,
+            "coordinated_attack": 0.0,
+            "other": 0.0
+          },
+          "by_element": {
+            "generic": 0.0,
+            "spectro": 0.7
+          }
+        },
+        "static_stat_double_count_rule": "Displayed final stats already include Static Mist static Energy Regen and Echo static stats; do not add them again.",
+        "weapon": {
+          "weapon_id": "static_mist",
+          "weapon_type": "pistol",
+          "rank": 5,
+          "static_stats_already_in_profile": true,
+          "base_atk_and_crit_already_in_profile": true,
+          "energy_regen_already_in_profile": true,
+          "source_status": "user_screenshot_and_user_confirmation",
+          "notes": "Static Mist R5 static ER is reflected in account_display_stats/combat_stats. Only the Outro incoming ATK buff is runtime after the gate is lifted."
+        },
+        "main_echo": {
+          "main_echo_id": "hyvatia",
+          "source_status": "user_screenshot_and_user_confirmation"
+        },
+        "echo_sets": {
+          "pact_of_neonlight_leap": {
+            "pieces": 5,
+            "static_2set_spectro_already_in_profile": true,
+            "echo_static_damage_bonuses_already_in_profile": true,
+            "conditional_5set_enabled": false,
+            "conditional_5set_status": "blocked_pending_constellation_mechanics",
+            "notes": "Account profile is storage-only in candidate 120."
+          }
+        }
+      }
+    },
+    "mornye": {
+      "mornye_account_actual_01": {
+        "display_name": "Mornye Account Actual 01 - Stored - simulation locked",
+        "description": "User account Mornye S3 stat-screen profile. Storage only; simulation locked pending authoritative S1-S3 mechanics.",
+        "implementation_status": "account_stored_simulation_locked",
+        "account_profile": true,
+        "simulation_ready": false,
+        "simulation_block_reason": "pending_constellation_mechanics",
+        "simulation_lock_message": "Constellation mechanics not implemented; baseline, training, evaluation, and search are disabled.",
+        "sequence": 3,
+        "constellation": {
+          "sequence": 3,
+          "mechanics_implemented": false,
+          "required_contract": "Mornye Sequence 3 account profile requires validated S1-S3 mechanics."
+        },
+        "default_scaling_stat": "def",
+        "required_scaling_stats": [
+          "def",
+          "atk"
+        ],
+        "account_display_stats": {
+          "hp": 23301,
+          "atk": 1158,
+          "def": 3357,
+          "energy_regen_percent": 279.44,
+          "crit_rate_percent": 11.3,
+          "crit_damage_percent": 175.2
+        },
+        "stat_components": {
+          "atk": {
+            "character_base": 286.5,
+            "weapon_base": 412.5,
+            "percent": 0.071,
+            "flat": 410.0,
+            "final_reference": 1158,
+            "calculated_static_value": 1158.629,
+            "displayed_value": 1158
+          },
+          "def": {
+            "character_base": 1355.5,
+            "weapon_base": 0.0,
+            "percent": 1.307,
+            "flat": 230.0,
+            "final_reference": 3357,
+            "calculated_static_value": 3357.1385,
+            "displayed_value": 3357
+          },
+          "hp": {
+            "character_base": null,
+            "weapon_base": 0,
+            "percent": null,
+            "flat": null,
+            "final_reference": 23301
+          }
+        },
+        "runtime_bonuses": {
+          "atk": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "def": {
+            "percent": 0.0,
+            "flat": 0.0
+          },
+          "hp": {
+            "percent": 0.0,
+            "flat": 0.0
+          }
+        },
+        "combat_stats": {
+          "crit_rate": 0.113,
+          "crit_damage": 1.752,
+          "energy_regen": 2.7944
+        },
+        "support_stats": {
+          "off_tune_buildup_rate": 1.0,
+          "off_tune_buildup_rate_source_status": "game_default_user_confirmed"
+        },
+        "damage_bonuses": {
+          "all": 0.0,
+          "by_category": {
+            "basic_attack": 0.203,
+            "heavy_attack": 0.064,
+            "resonance_skill": 0.094,
+            "resonance_liberation": 0.086,
+            "intro": 0.0,
+            "outro": 0.0,
+            "coordinated_attack": 0.0,
+            "other": 0.0,
+            "echo_ability": 0.0
+          },
+          "by_element": {
+            "generic": 0.0,
+            "fusion": 0.0
+          }
+        },
+        "static_stat_double_count_rule": "Displayed DEF and Energy Regen already include Starfield Calibrator static DEF passive, weapon main stat, Reactor Husk Energy Regen, and Echo static/special-option stats; do not add them again.",
+        "weapon": {
+          "weapon_id": "starfield_calibrator",
+          "display_name": "Starfield Calibrator",
+          "weapon_type": "broadblade",
+          "rank": 5,
+          "static_stats_already_in_profile": true,
+          "def_percent_passive_already_in_profile": true,
+          "energy_regen_main_stat_already_in_profile": true,
+          "source_status": "user_screenshot_and_user_confirmation",
+          "notes": "Uses existing canonical Starfield Calibrator definition. R5 +32% DEF passive and Energy Regen are already reflected in profile stats; runtime effects remain gated."
+        },
+        "main_echo_id": "reactor_husk",
+        "static_energy_regen_bonus": 0.1,
+        "static_energy_regen_already_in_profile": true,
+        "echo_sets": {
+          "halo_of_starry_radiance": {
+            "pieces": 5,
+            "static_2set_healing_bonus_metadata_only": true,
+            "conditional_5set_enabled": false,
+            "conditional_5set_status": "blocked_pending_constellation_mechanics",
+            "notes": "Account profile is storage-only in candidate 120."
+          }
+        }
+      }
+    }
+  }
+}

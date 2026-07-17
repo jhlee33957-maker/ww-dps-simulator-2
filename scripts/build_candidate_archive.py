@@ -20,7 +20,7 @@ from rl.guarded_ppo import (  # noqa: E402
 )
 
 
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-119.zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-120.zip"
 STATE_PATH = ROOT / "results" / "guarded_ppo_v109" / "experiment_state.json"
 EXCLUDED_DIRS = {".git", ".venv", "__pycache__", ".pytest_cache", ".mypy_cache", "bc_eval_bundle"}
 IMMUTABLE_MODEL_ZIP_FILES = {

@@ -8,6 +8,11 @@ from typing import Any
 from characters.base import CharacterMechanic
 from characters.registry import get_mechanic, get_mechanics_for_characters
 from simulator.action_executor import execute_action, execute_scheduled_damage_event, is_action_valid, timeline_entry
+from simulator.account_profile_gate import (
+    AccountProfileSimulationBlocked,
+    blocked_account_profile_messages,
+    validate_simulation_readiness_for_characters,
+)
 from simulator.build_profiles import (
     build_action_scaling_summary,
     effective_build_stats_summary,
@@ -81,6 +86,7 @@ from simulator.weapon_effects import (
     apply_weapon_buff_effects,
     load_weapon_definition,
     process_weapon_effects_before_or_after_action,
+    resolve_weapon_rank_value,
     weapon_effect_uptime_seconds,
     weapon_effects_enabled,
 )
@@ -162,6 +168,7 @@ class Simulation:
         self.action_scaling_summary = build_action_scaling_summary(self.actions.values(), self.selected_character_ids)
         self.effective_build_stats_summary = effective_build_stats_summary(self.characters, self.action_scaling_summary)
         self.build_profile_validation = validate_effective_build_profiles(self.effective_build_stats_summary)
+        self.account_profile_gate_errors = blocked_account_profile_messages(self.characters)
         self.buffs = buffs
         self.weapon_effects_enabled = weapon_effects_enabled(self.characters, self.weapon_definitions)
         self.combat_duration = combat_duration
@@ -313,7 +320,11 @@ class Simulation:
         self.action_scaling_summary = build_action_scaling_summary(self.actions.values(), self.selected_character_ids)
         self.effective_build_stats_summary = effective_build_stats_summary(self.characters, self.action_scaling_summary)
         self.build_profile_validation = validate_effective_build_profiles(self.effective_build_stats_summary)
+        self.account_profile_gate_errors = blocked_account_profile_messages(self.characters)
         return dict(self.build_profile_validation)
+
+    def validate_simulation_readiness(self, *, entry_point: str = "simulator execution") -> None:
+        validate_simulation_readiness_for_characters(self.characters, entry_point=entry_point)
 
     def set_enemy_context(
         self,
@@ -980,6 +991,7 @@ class Simulation:
             self.state.scheduled_effect_event_log[-1].update(event)
 
     def execute_action(self, action_id: str, *, record_diagnostics: bool = True) -> bool:
+        self.validate_simulation_readiness(entry_point=f"combat action {action_id}")
         if self.state.combat_time >= self.combat_duration:
             return False
 
@@ -1158,6 +1170,7 @@ class Simulation:
         return True
 
     def run_sequence(self, action_ids: list[str]) -> "Simulation":
+        self.validate_simulation_readiness(entry_point="diagnostic route replay")
         for action_id in action_ids:
             if self.state.combat_time >= self.combat_duration:
                 break
@@ -1165,6 +1178,8 @@ class Simulation:
         return self
 
     def valid_action_ids(self) -> list[str]:
+        if self.account_profile_gate_errors:
+            return []
         return [
             action_id
             for action_id, action in self.policy_actions.items()
@@ -1172,6 +1187,8 @@ class Simulation:
         ]
 
     def is_action_available(self, action: ActionData) -> bool:
+        if self.account_profile_gate_errors:
+            return False
         if self.state.combat_time >= self.combat_duration:
             return False
         if action.policy_selectable and not is_swap_action(action):
@@ -2059,17 +2076,31 @@ class Simulation:
             0.25 if "lynae_outro_liberation_damage_amp" in applied else 0.0
         )
 
-        lynae_weapon = (self.characters["lynae"].weapon or {}).get("weapon_id")
-        if lynae_weapon == "static_mist" and self._apply_specific_character_buff(
-            buff_id="static_mist_incoming_atk",
-            source_character_id="lynae",
-            target_character_id=incoming_character_id,
-            application_time=application_time,
-            metadata={"event_source": "lynae_outro", "weapon_id": "static_mist"},
-        ):
-            applied.append("static_mist_incoming_atk")
-            result.lynae_static_mist_incoming_atk_buff = True
-            result.lynae_static_mist_incoming_atk_value = 0.10
+        lynae_weapon_profile = self.characters["lynae"].weapon or {}
+        lynae_weapon = lynae_weapon_profile.get("weapon_id")
+        if lynae_weapon == "static_mist":
+            static_mist = (self.weapon_definitions.get("weapons") or {}).get("static_mist") or {}
+            static_mist_rank = int(lynae_weapon_profile.get("rank", 1) or 1)
+            static_mist_value = resolve_weapon_rank_value(
+                static_mist,
+                static_mist_rank,
+                "incoming_atk_percent_after_outro",
+            )
+            if self._apply_specific_character_buff(
+                buff_id="static_mist_incoming_atk",
+                source_character_id="lynae",
+                target_character_id=incoming_character_id,
+                application_time=application_time,
+                dynamic_buff_value=static_mist_value,
+                metadata={
+                    "event_source": "lynae_outro",
+                    "weapon_id": "static_mist",
+                    "weapon_rank": static_mist_rank,
+                },
+            ):
+                applied.append("static_mist_incoming_atk")
+                result.lynae_static_mist_incoming_atk_buff = True
+                result.lynae_static_mist_incoming_atk_value = static_mist_value
 
         pact_log = apply_pact_neonlight_outro_incoming_buff(
             source_character_id="lynae",
@@ -2191,12 +2222,21 @@ class Simulation:
         target_character_id: str,
         application_time: float,
         dynamic_damage_amp_value: float | None = None,
+        dynamic_buff_value: float | None = None,
         metadata: dict[str, Any] | None = None,
     ) -> bool:
         buff = self.buffs.get(buff_id)
         if buff is None:
             return False
         runtime_buff = buff.model_copy(deep=True)
+        resolved_dynamic_value = (
+            float(dynamic_buff_value)
+            if dynamic_buff_value is not None
+            else float(dynamic_damage_amp_value)
+            if dynamic_damage_amp_value is not None
+            else float(runtime_buff.value)
+        )
+        runtime_buff.value = resolved_dynamic_value
         runtime_buff.target_scope = "specific_character"
         runtime_buff.target_character_id = target_character_id
         runtime_buff.source_character_id = source_character_id
@@ -2205,15 +2245,11 @@ class Simulation:
             **(metadata or {}),
             "source_character_id": source_character_id,
             "target_character_id": target_character_id,
-            "dynamic_value": (
-                runtime_buff.value
-                if dynamic_damage_amp_value is None
-                else float(dynamic_damage_amp_value)
-            ),
+            "dynamic_value": resolved_dynamic_value,
             "application_time": application_time,
         }
         if runtime_buff.modifier_type == "attack":
-            runtime_buff.stat_modifiers = {**runtime_buff.stat_modifiers, "atk_percent": runtime_buff.value}
+            runtime_buff.stat_modifiers = {**runtime_buff.stat_modifiers, "atk_percent": resolved_dynamic_value}
         apply_buff(self.state, runtime_buff, source_character_id)
         return True
 

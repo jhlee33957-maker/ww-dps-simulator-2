@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 from pathlib import Path
 from typing import Any
@@ -34,9 +35,16 @@ SUPPORTED_EFFECT_TYPES = {
     "cooldown_gated_effect",
     "stackable_effect",
 }
+ACCOUNT_WEAPON_EXTENSION_OVERLAY = "account_weapon_extensions_v120.json"
 
 
 def load_weapon_definition(data_dir: Path | str) -> dict[str, Any]:
+    base = load_base_weapon_definition(data_dir)
+    overlay = load_weapon_extension_overlay(data_dir)
+    return merge_weapon_extension_overlay(base, overlay)
+
+
+def load_base_weapon_definition(data_dir: Path | str) -> dict[str, Any]:
     path = Path(data_dir) / "weapons.json"
     if not path.exists():
         return {
@@ -47,6 +55,57 @@ def load_weapon_definition(data_dir: Path | str) -> dict[str, Any]:
         }
     with path.open("r", encoding="utf-8-sig") as handle:
         return json.load(handle)
+
+
+def load_weapon_extension_overlay(data_dir: Path | str) -> dict[str, Any]:
+    path = Path(data_dir) / ACCOUNT_WEAPON_EXTENSION_OVERLAY
+    if not path.exists():
+        return {"schema_version": 1, "weapon_extensions": {}}
+    with path.open("r", encoding="utf-8-sig") as handle:
+        overlay = json.load(handle)
+    if not isinstance(overlay, dict) or not isinstance(overlay.get("weapon_extensions"), dict):
+        raise ValueError(f"Malformed weapon extension overlay: {path}")
+    return overlay
+
+
+def merge_weapon_extension_overlay(base: dict[str, Any], overlay: dict[str, Any] | None) -> dict[str, Any]:
+    merged = copy.deepcopy(base)
+    base_weapons = base.get("weapons") or {}
+    merged_weapons = merged.setdefault("weapons", {})
+    extensions = (overlay or {}).get("weapon_extensions") or {}
+    if not isinstance(extensions, dict):
+        raise ValueError("Weapon extension overlay must contain a weapon_extensions mapping.")
+
+    for weapon_id in sorted(extensions):
+        if weapon_id not in base_weapons:
+            raise ValueError(f"Weapon extension overlay references unknown weapon {weapon_id!r}.")
+        extension = extensions[weapon_id]
+        if not isinstance(extension, dict):
+            raise ValueError(f"Weapon extension for {weapon_id!r} must be an object.")
+        allowed_keys = {"rank_values"}
+        unexpected_keys = set(extension) - allowed_keys
+        if unexpected_keys:
+            raise ValueError(
+                f"Weapon extension overlay may add rank values only; {weapon_id!r} has {sorted(unexpected_keys)}."
+            )
+        rank_values = extension.get("rank_values")
+        if not isinstance(rank_values, dict) or not rank_values:
+            raise ValueError(f"Weapon extension for {weapon_id!r} must include rank_values.")
+        merged_weapon = merged_weapons[weapon_id]
+        merged_rank_values = merged_weapon.setdefault("rank_values", {})
+        for rank in sorted(rank_values, key=str):
+            rank_key = str(rank)
+            if rank_key in (base_weapons[weapon_id].get("rank_values") or {}):
+                raise ValueError(f"Weapon extension may not replace {weapon_id!r} rank {rank_key}.")
+            rank_payload = rank_values[rank]
+            if not isinstance(rank_payload, dict):
+                raise ValueError(f"Weapon extension {weapon_id!r} rank {rank_key} must be an object.")
+            merged_rank_values[rank_key] = copy.deepcopy(rank_payload)
+        unresolved = [str(rank) for rank in merged_weapon.get("unresolved_rank_values") or []]
+        added = {str(rank) for rank in rank_values}
+        if unresolved:
+            merged_weapon["unresolved_rank_values"] = [rank for rank in unresolved if rank not in added]
+    return merged
 
 
 def get_character_weapon(character: CharacterData | None) -> dict[str, Any]:
@@ -562,11 +621,25 @@ def _weapon_rank(weapon: dict[str, Any]) -> int:
     return min(5, max(1, int(weapon.get("rank", 1) or 1)))
 
 
-def _rank_value(weapon_def: dict[str, Any], rank: int, key: str) -> float:
+def resolve_weapon_rank_value(weapon_def: dict[str, Any], rank: int, key: str) -> float:
     if not key:
         return 0.0
     rank_values = weapon_def.get("rank_values") or {}
-    return float((rank_values.get(str(rank)) or {}).get(key, 0.0) or 0.0)
+    rank_key = str(rank)
+    weapon_id = str(weapon_def.get("id") or "<unknown_weapon>")
+    if rank_key not in rank_values:
+        unresolved = {str(value) for value in weapon_def.get("unresolved_rank_values", [])}
+        if rank_key in unresolved:
+            raise ValueError(f"{weapon_id} rank {rank} is unresolved; no interpolation or silent zero is allowed.")
+        raise ValueError(f"{weapon_id} rank {rank} has no rank_values entry.")
+    values = rank_values.get(rank_key) or {}
+    if key not in values:
+        raise ValueError(f"{weapon_id} rank {rank} is missing required rank value {key!r}.")
+    return float(values[key])
+
+
+def _rank_value(weapon_def: dict[str, Any], rank: int, key: str) -> float:
+    return resolve_weapon_rank_value(weapon_def, rank, key)
 
 
 def _effect_log_base(

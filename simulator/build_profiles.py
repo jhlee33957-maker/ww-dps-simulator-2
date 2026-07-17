@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 from collections import Counter
 from pathlib import Path
@@ -88,6 +89,7 @@ STAT_OVERRIDE_FIELDS = set(LEGACY_ATTACK_ALIASES) | {
 COMBAT_STAT_FIELDS = {"crit_rate", "crit_damage", "energy_regen"}
 DEFAULT_ATTACK_REFERENCE_TOLERANCE = 0.01
 DEFAULT_REFERENCE_TOLERANCE = DEFAULT_ATTACK_REFERENCE_TOLERANCE
+ACCOUNT_BUILD_PROFILE_OVERLAY = "account_build_profiles_v120.json"
 
 
 def normalize_damage_bonus_category(value: str | None) -> str:
@@ -144,11 +146,63 @@ def normalize_scaling_stat(value: str | None, *, default: str = "unresolved") ->
 
 
 def load_build_profiles(data_dir: Path | str = "data") -> dict[str, Any]:
+    base = load_base_build_profiles(data_dir)
+    overlay = load_build_profile_overlay(data_dir)
+    return merge_build_profile_overlay(base, overlay)
+
+
+def load_base_build_profiles(data_dir: Path | str = "data") -> dict[str, Any]:
     path = Path(data_dir) / "build_profiles.json"
     if not path.exists():
         return {"schema_version": 1, "profiles": {}}
     with path.open("r", encoding="utf-8-sig") as file:
         return json.load(file)
+
+
+def load_build_profile_overlay(data_dir: Path | str = "data") -> dict[str, Any]:
+    path = Path(data_dir) / ACCOUNT_BUILD_PROFILE_OVERLAY
+    if not path.exists():
+        return {"schema_version": 1, "profiles": {}}
+    with path.open("r", encoding="utf-8-sig") as file:
+        overlay = json.load(file)
+    if not isinstance(overlay, dict) or not isinstance(overlay.get("profiles"), dict):
+        raise ValueError(f"Malformed build profile overlay: {path}")
+    return overlay
+
+
+def merge_build_profile_overlay(base: dict[str, Any], overlay: dict[str, Any] | None) -> dict[str, Any]:
+    merged = copy.deepcopy(base)
+    merged_profiles = merged.setdefault("profiles", {})
+    overlay_profiles = (overlay or {}).get("profiles") or {}
+    if not isinstance(overlay_profiles, dict):
+        raise ValueError("Build profile overlay profiles must be a mapping.")
+
+    seen_profile_ids: set[str] = set()
+    for character_id in sorted(overlay_profiles):
+        if character_id not in merged_profiles:
+            raise ValueError(f"Build profile overlay references unknown character {character_id!r}.")
+        character_profiles = overlay_profiles[character_id]
+        if not isinstance(character_profiles, dict):
+            raise ValueError(f"Build profile overlay for {character_id!r} must be a mapping.")
+        for profile_id in sorted(character_profiles):
+            if profile_id in seen_profile_ids:
+                raise ValueError(f"Duplicate account build profile ID in overlay: {profile_id}")
+            seen_profile_ids.add(profile_id)
+            if profile_id in (base.get("profiles") or {}).get(character_id, {}):
+                raise ValueError(f"Build profile overlay may not replace base profile {character_id}:{profile_id}.")
+            profile = character_profiles[profile_id]
+            if not isinstance(profile, dict):
+                raise ValueError(f"Build profile overlay entry {character_id}:{profile_id} must be an object.")
+            declared_character = profile.get("character_id", character_id)
+            if declared_character != character_id:
+                raise ValueError(
+                    f"Build profile overlay entry {profile_id!r} declares character "
+                    f"{declared_character!r}, expected {character_id!r}."
+                )
+            if not profile.get("account_profile", False):
+                raise ValueError(f"Build profile overlay entry {character_id}:{profile_id} must be an account profile.")
+            merged_profiles[character_id][profile_id] = copy.deepcopy(profile)
+    return merged
 
 
 def get_available_build_profiles(
@@ -532,6 +586,19 @@ def resolve_character_build_stats(
         effective.build_profile_display_name = profile.get("display_name", resolved_id)
         effective.build_profile_description = profile.get("description")
         effective.implementation_status = profile.get("implementation_status", effective.implementation_status)
+        effective.account_profile = bool(profile.get("account_profile", effective.account_profile))
+        if "simulation_ready" in profile:
+            effective.simulation_ready = bool(profile.get("simulation_ready"))
+        if profile.get("simulation_block_reason") is not None:
+            effective.simulation_block_reason = str(profile.get("simulation_block_reason"))
+        if profile.get("simulation_lock_message") is not None:
+            effective.simulation_lock_message = str(profile.get("simulation_lock_message"))
+        if profile.get("sequence") is not None:
+            effective.sequence = int(profile.get("sequence"))
+        if profile.get("constellation") is not None:
+            effective.constellation = dict(profile.get("constellation") or {})
+        if profile.get("account_display_stats") is not None:
+            effective.account_display_stats = dict(profile.get("account_display_stats") or {})
         if profile.get("default_scaling_stat"):
             effective.default_scaling_stat = normalize_scaling_stat(profile.get("default_scaling_stat"), default="atk")
 
@@ -741,6 +808,13 @@ def effective_build_stats_summary(
             "profile_completeness_status": character.profile_completeness_status,
             "missing_required_fields": character.missing_required_fields,
             "profile_warnings": character.profile_warnings,
+            "account_profile": character.account_profile,
+            "simulation_ready": character.simulation_ready,
+            "simulation_block_reason": character.simulation_block_reason,
+            "simulation_lock_message": character.simulation_lock_message,
+            "sequence": character.sequence,
+            "constellation": character.constellation,
+            "account_display_stats": character.account_display_stats,
             "stat_components": character.stat_components,
             "runtime_bonuses": character.runtime_bonuses,
             "energy_regen": character.energy_regen,

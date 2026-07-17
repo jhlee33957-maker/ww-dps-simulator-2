@@ -51,6 +51,13 @@ class CharacterData(BaseModel):
     profile_completeness_status: str = "fallback_character_stats"
     missing_required_fields: list[str] = Field(default_factory=list)
     profile_warnings: list[str] = Field(default_factory=list)
+    account_profile: bool = False
+    simulation_ready: bool = True
+    simulation_block_reason: str | None = None
+    simulation_lock_message: str | None = None
+    sequence: int | None = None
+    constellation: dict[str, Any] = Field(default_factory=dict)
+    account_display_stats: dict[str, Any] = Field(default_factory=dict)
     stat_components: dict[str, Any] = Field(default_factory=dict)
     runtime_bonuses: dict[str, Any] = Field(default_factory=dict)
     default_scaling_stat: str = "atk"

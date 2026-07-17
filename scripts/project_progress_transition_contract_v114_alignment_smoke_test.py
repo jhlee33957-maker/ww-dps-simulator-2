@@ -19,10 +19,10 @@ def main() -> None:
     progress = json.loads((ROOT / "PROJECT_PROGRESS_STATE.json").read_text(encoding="utf-8"))
     status = progress["status"]
     current = progress["current_in_progress_task"]
-    assert status["latest_externally_verified_baseline"] == "118"
-    assert status["latest_verified_archive"] == "ww-dps-simulator-2-118(1).zip"
-    assert status["current_candidate"] == "119"
-    assert current["candidate"] == "119"
+    assert status["latest_externally_verified_baseline"] == "119"
+    assert status["latest_verified_archive"] == "ww-dps-simulator-2-119(1).zip"
+    assert status["current_candidate"] == "120"
+    assert current["candidate"] == "120"
     assert current["status"] == "candidate_pending_external_review"
     assert current["external_verification_claimed"] is False
     assert current["transition_contract_version"] == "v114"

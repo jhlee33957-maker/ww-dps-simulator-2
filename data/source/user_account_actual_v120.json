@@ -1,0 +1,167 @@
+{
+  "schema_version": "1.0.0",
+  "source_status": "user_screenshot_and_user_confirmation",
+  "confirmed_at_candidate": 120,
+  "simulation_status": "blocked_pending_constellation_mechanics",
+  "constellation_metadata": {
+    "aemeath": {
+      "sequence": 6,
+      "mechanics_implemented": false
+    },
+    "lynae": {
+      "sequence": 2,
+      "mechanics_implemented": false
+    },
+    "mornye": {
+      "sequence": 3,
+      "mechanics_implemented": false
+    }
+  },
+  "blockers": [
+    "Aemeath S1-S6 mechanics not yet source-audited and implemented",
+    "Lynae S1-S2 mechanics not yet source-audited and implemented",
+    "Mornye S1-S3 mechanics not yet source-audited and implemented",
+    "account baseline not established",
+    "account BC/PPO not regenerated",
+    "account search not executed"
+  ],
+  "explicit_rule": "profile storage is allowed; simulation, training, evaluation, and search are rejected until all required constellation mechanics are implemented and validated",
+  "profiles": {
+    "aemeath_account_actual_01": {
+      "character_id": "aemeath",
+      "sequence": 6,
+      "simulation_ready": false,
+      "simulation_block_reason": "pending_constellation_mechanics",
+      "account_display_stats": {
+        "hp": 15585,
+        "atk": 2657,
+        "def": 1148,
+        "energy_regen": 1.2,
+        "crit_rate": 0.832,
+        "crit_damage": 2.942
+      },
+      "stat_components": {
+        "atk": {
+          "character_base": 424.5,
+          "weapon_base": 587.5,
+          "percent": 1.132,
+          "flat": 500.0,
+          "calculated_static_value": 2657.584,
+          "displayed_value": 2657
+        }
+      },
+      "damage_bonuses": {
+        "all": 0.0,
+        "basic_attack": 0.0,
+        "heavy_attack": 0.0,
+        "resonance_skill": 0.101,
+        "resonance_liberation": 0.688
+      },
+      "bonus_decomposition": {
+        "fusion": {
+          "echo_main_stat": 0.3,
+          "echo_special_option": 0.1,
+          "static_profile_total": 0.4,
+          "everbright_polestar_r1_runtime_all_attribute_bonus": 0.12,
+          "future_eligible_total": 0.52
+        },
+        "resonance_liberation": {
+          "base_displayed_liberation_bonus": 0.438,
+          "echo_special_option": 0.25,
+          "profile_total": 0.688
+        }
+      },
+      "equipment": {
+        "weapon_id": "everbright_polestar",
+        "weapon_rank": 1,
+        "main_echo": "sigillum",
+        "echo_set": "Trailblazing Star 5pc"
+      }
+    },
+    "lynae_account_actual_01": {
+      "character_id": "lynae",
+      "sequence": 2,
+      "simulation_ready": false,
+      "simulation_block_reason": "pending_constellation_mechanics",
+      "account_display_stats": {
+        "hp": 19451,
+        "atk": 1929,
+        "def": 1350,
+        "energy_regen": 1.548,
+        "crit_rate": 0.974,
+        "crit_damage": 2.088
+      },
+      "stat_components": {
+        "atk": {
+          "character_base": 374.5,
+          "weapon_base": 587.5,
+          "percent": 0.559,
+          "flat": 430.0,
+          "calculated_static_value": 1929.758,
+          "displayed_value": 1929
+        }
+      },
+      "damage_bonuses": {
+        "all": 0.0,
+        "spectro": 0.7,
+        "basic_attack": 0.289,
+        "heavy_attack": 0.101,
+        "resonance_skill": 0.195,
+        "resonance_liberation": 0.116
+      },
+      "equipment": {
+        "weapon_id": "static_mist",
+        "weapon_rank": 5,
+        "main_echo": "hyvatia",
+        "echo_set": "Pact of Neonlight Leap 5pc"
+      }
+    },
+    "mornye_account_actual_01": {
+      "character_id": "mornye",
+      "sequence": 3,
+      "simulation_ready": false,
+      "simulation_block_reason": "pending_constellation_mechanics",
+      "account_display_stats": {
+        "hp": 23301,
+        "atk": 1158,
+        "def": 3357,
+        "energy_regen": 2.7944,
+        "crit_rate": 0.113,
+        "crit_damage": 1.752
+      },
+      "stat_components": {
+        "atk": {
+          "character_base": 286.5,
+          "weapon_base": 412.5,
+          "percent": 0.071,
+          "flat": 410.0,
+          "calculated_static_value": 1158.629,
+          "displayed_value": 1158
+        },
+        "def": {
+          "character_base": 1355.5,
+          "weapon_base": 0.0,
+          "percent": 1.307,
+          "flat": 230.0,
+          "calculated_static_value": 3357.1385,
+          "displayed_value": 3357
+        }
+      },
+      "damage_bonuses": {
+        "all": 0.0,
+        "fusion": 0.0,
+        "basic_attack": 0.203,
+        "heavy_attack": 0.064,
+        "resonance_skill": 0.094,
+        "resonance_liberation": 0.086
+      },
+      "equipment": {
+        "weapon_id": "starfield_calibrator",
+        "display_name": "Starfield Calibrator",
+        "weapon_rank": 5,
+        "main_echo": "reactor_husk",
+        "echo_set": "Halo of Starry Radiance 5pc"
+      }
+    }
+  }
+}

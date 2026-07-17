@@ -21,7 +21,7 @@ DIRECT_ACTION_MANIFEST_SHA256 = "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28
 SOURCE_ROUTE_FILE_SHA256 = "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a"
 
 
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-119.zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-120.zip"
 EXPECTED_BC_MODEL_SHA256 = "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e"
 EXPECTED_PPO_MODEL_SHA256 = "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513"
 EXPECTED_EVAL_SELECTED_SEQUENCE_SHA256 = "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1"
@@ -371,6 +371,19 @@ REQUIRED_FILES = (
     "scripts/mcts_v118_production_cleanup_smoke_test.py",
     "scripts/project_progress_mcts_v119_alignment_smoke_test.py",
     "scripts/final_archive_fresh_check_coverage_v119_smoke_test.py",
+    "data/source/user_account_actual_v120.json",
+    "data/account_build_profiles_v120.json",
+    "data/account_weapon_extensions_v120.json",
+    "simulator/account_profile_gate.py",
+    "scripts/user_account_actual_v120_source_contract_smoke_test.py",
+    "scripts/user_account_actual_v120_build_profiles_smoke_test.py",
+    "scripts/user_account_actual_v120_weapon_loadout_smoke_test.py",
+    "scripts/static_mist_r5_rank_resolution_smoke_test.py",
+    "scripts/user_account_actual_v120_simulation_gate_smoke_test.py",
+    "scripts/user_account_actual_v120_benchmark_immutability_smoke_test.py",
+    "scripts/user_account_actual_v120_overlay_merge_smoke_test.py",
+    "scripts/user_account_actual_v120_historical_party_hash_compatibility_smoke_test.py",
+    "scripts/project_progress_user_account_v120_alignment_smoke_test.py",
     "scripts/full_real_cycle_integration_smoke_test.py",
     "scripts/rl_observation_shape_guard_smoke_test.py",
     "scripts/rl_party_action_mask_smoke_test.py",
@@ -444,8 +457,15 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         completed_manifest_bytes = zf.read(completed_manifest_path)
         completed_manifest = json.loads(completed_manifest_bytes.decode("utf-8"))
         completed_progress = progress["current_in_progress_task"]["candidate_116_completed_beam"]
-        assert progress["status"]["latest_externally_verified_baseline"] == "118"
-        assert progress["status"]["current_candidate"] == "119"
+        assert progress["status"]["latest_externally_verified_baseline"] == "119"
+        assert progress["status"]["current_candidate"] == "120"
+        account_progress = progress["current_in_progress_task"]["candidate_120_account_profiles"]
+        assert account_progress["simulation_status"] == "blocked_pending_constellation_mechanics"
+        assert account_progress["account_party_created"] is False
+        assert account_progress["account_result_created"] is False
+        assert account_progress["account_route_replay_executed"] is False
+        assert account_progress["beam_mcts_training_model_evaluation_executed"] is False
+        assert not any("account" in name and name.startswith(("results/", "models/")) for name in names)
         production_path = "results/mcts_v118_production_3x50k_v119/result_manifest.json"
         production = json.loads(zf.read(production_path).decode("utf-8"))
         production_progress = progress["current_in_progress_task"]["candidate_119_mcts"]
@@ -794,6 +814,20 @@ def scan_archive_text(zf: zipfile.ZipFile, names: list[str]) -> dict[str, int]:
     return stats
 
 
+def candidate_120_fresh_extraction_check_commands() -> list[list[str]]:
+    return [
+        [sys.executable, "scripts/user_account_actual_v120_source_contract_smoke_test.py"],
+        [sys.executable, "scripts/user_account_actual_v120_build_profiles_smoke_test.py"],
+        [sys.executable, "scripts/user_account_actual_v120_weapon_loadout_smoke_test.py"],
+        [sys.executable, "scripts/static_mist_r5_rank_resolution_smoke_test.py"],
+        [sys.executable, "scripts/user_account_actual_v120_simulation_gate_smoke_test.py"],
+        [sys.executable, "scripts/user_account_actual_v120_benchmark_immutability_smoke_test.py"],
+        [sys.executable, "scripts/user_account_actual_v120_overlay_merge_smoke_test.py"],
+        [sys.executable, "scripts/user_account_actual_v120_historical_party_hash_compatibility_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_user_account_v120_alignment_smoke_test.py"],
+    ]
+
+
 def candidate_119_fresh_extraction_check_commands() -> list[list[str]]:
     candidate_119_checks = [
         [sys.executable, "scripts/mcts_v118_3x50k_integrity_smoke_test.py"],
@@ -933,7 +967,11 @@ def legacy_fresh_extraction_check_commands() -> list[list[str]]:
 
 
 def fresh_extraction_check_commands() -> list[list[str]]:
-    checks = candidate_119_fresh_extraction_check_commands() + legacy_fresh_extraction_check_commands()
+    checks = (
+        candidate_120_fresh_extraction_check_commands()
+        + candidate_119_fresh_extraction_check_commands()
+        + legacy_fresh_extraction_check_commands()
+    )
     normalized = [tuple(command[1:]) for command in checks]
     if len(normalized) != len(set(normalized)):
         raise AssertionError("fresh-extraction command provider contains duplicate commands")
