@@ -378,6 +378,13 @@ def merge_progress_data(
             merged["best_dps"] = current["current_best_dps"]
         if current.get("current_best_model"):
             merged["best_model"] = current["current_best_model"]
+        readiness = current.get("candidate_123_aemeath_runtime_fix") or {}
+        if readiness:
+            merged["account_runtime_readiness"] = {
+                "radiance": bool(readiness.get("precombat_radiance_heavy_resolver_connected")),
+                "starlume": bool(readiness.get("intro_starlume_acceleration_connected")),
+                "segment": bool(readiness.get("user_aemeath_segment_feasibility_verified")),
+            }
 
         manual = progress.get("manual_cycle_reference") or {}
         if manual.get("total_damage") is not None:
@@ -888,6 +895,19 @@ def render_current_status(data: dict[str, Any]) -> None:
                 )
 
 
+def render_account_runtime_readiness(data: dict[str, Any]) -> None:
+    readiness = data.get("account_runtime_readiness")
+    if not readiness:
+        return
+    render_section_header("Account Configuration")
+    if readiness["radiance"]:
+        st.markdown("- Aemeath runtime readiness: Precombat Radiance Heavy connection verified")
+    if readiness["starlume"]:
+        st.markdown("- Aemeath runtime readiness: Intro Starlume Acceleration connection verified")
+    if readiness["segment"]:
+        st.markdown("- Aemeath runtime readiness: User Aemeath segment mechanically feasible")
+
+
 def render_character_status(data: dict[str, Any]) -> None:
     render_section_header("캐릭터 구현 상태")
     tabs = st.tabs([translate_character_name(name) for name in ("aemeath", "mornye", "lynae")])
@@ -1127,6 +1147,7 @@ def main() -> None:
     render_performance_chart(data)
     render_stage_chart(data)
     render_current_status(data)
+    render_account_runtime_readiness(data)
     render_character_status(data)
     render_learning_methods(data)
     render_algorithm_comparison()

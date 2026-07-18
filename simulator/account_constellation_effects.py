@@ -1048,12 +1048,10 @@ def _apply_aemeath_runtime(simulation: Any, action: Any, result: Any) -> list[di
     account_state = simulation.state.character_mechanics_state.setdefault("_account_constellation", {})
     aemeath_state = simulation.state.character_mechanics_state.setdefault("aemeath", {})
     action_id = str(action.id)
-    instant_response_active = bool(aemeath_state.get("instant_response", False)) or bool(
-        aemeath_state.get("account_radiance_quick_charge_ready", False)
-    )
+    radiance_quick_charge_ready = bool(aemeath_state.get("account_radiance_quick_charge_ready", False))
     finale_prereq_absent = not bool(aemeath_state.get("heavenfall_unbound", False))
     sync_gain = aemeath_s1_charged_sync_gain(
-        bool(aemeath_state.get("account_radiance_quick_charge_ready", False)),
+        radiance_quick_charge_ready,
         finale_prereq_absent,
         action_id,
     )
@@ -1062,6 +1060,14 @@ def _apply_aemeath_runtime(simulation: Any, action: Any, result: Any) -> list[di
         after = min(200.0, before + sync_gain)
         aemeath_state["synchronization_rate"] = after
         events.append({"event_type": "aemeath_s1_charged_ii_sync", "sync_before": before, "sync_after": after, "sync_gained": after - before, "finale_prereq_absent": finale_prereq_absent})
+    if radiance_quick_charge_ready and action_id in AEMEATH_S1_HEAVY_ELIGIBLE_ACTION_IDS:
+        aemeath_state["account_radiance_quick_charge_ready"] = False
+        events.append(
+            {
+                "event_type": "aemeath_s1_radiance_quick_charge_consumed",
+                "action_id": action_id,
+            }
+        )
     if sequence >= 4 and action_id in AEMEATH_S4_TRIGGER_IDS:
         events.append({"event_type": "aemeath_s4_party_buff_confirmed", "buff_id": ACCOUNT_AEMEATH_S4_BUFF_ID})
     for event in events:

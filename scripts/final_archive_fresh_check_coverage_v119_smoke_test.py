@@ -8,6 +8,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from scripts.manual_120s_bc_final_archive_integrity_smoke_test import (
+    candidate_123_fresh_extraction_check_commands,
     candidate_122_fresh_extraction_check_commands,
     candidate_121_fresh_extraction_check_commands,
     candidate_120_fresh_extraction_check_commands,
@@ -23,9 +24,18 @@ HISTORY_AWARE_PROGRESS_TESTS = {
     "scripts/project_progress_beam_completed_v116_alignment_smoke_test.py",
     "scripts/project_progress_mcts_v117_alignment_smoke_test.py",
     "scripts/project_progress_mcts_v118_alignment_smoke_test.py",
+    "scripts/project_progress_aemeath_runtime_fix_v123_alignment_smoke_test.py",
 }
 
 REQUIRED_COMMAND_PATHS = {
+    "scripts/aemeath_precombat_radiance_heavy_resolution_v123_smoke_test.py",
+    "scripts/aemeath_precombat_radiance_consumption_v123_smoke_test.py",
+    "scripts/aemeath_intro_starlume_acceleration_v123_smoke_test.py",
+    "scripts/aemeath_starlume_liberation_bonus_v123_smoke_test.py",
+    "scripts/aemeath_account_cycle_feasibility_v123_smoke_test.py",
+    "scripts/aemeath_v123_policy_action_compatibility_smoke_test.py",
+    "scripts/aemeath_v123_no_baseline_search_artifacts_smoke_test.py",
+    "scripts/project_progress_aemeath_runtime_fix_v123_alignment_smoke_test.py",
     "scripts/account_party_overlay_v122_smoke_test.py",
     "scripts/account_party_v122_contract_smoke_test.py",
     "scripts/account_content_start_v122_smoke_test.py",
@@ -153,13 +163,15 @@ def command_paths(commands: list[list[str]]) -> set[str]:
 
 
 def assert_full_coverage(commands: list[list[str]]) -> None:
+    candidate_123 = candidate_123_fresh_extraction_check_commands()
     candidate_122 = candidate_122_fresh_extraction_check_commands()
     candidate_121 = candidate_121_fresh_extraction_check_commands()
     candidate_120 = candidate_120_fresh_extraction_check_commands()
     candidate_119 = candidate_119_fresh_extraction_check_commands()
     legacy = legacy_fresh_extraction_check_commands()
     normalized = [tuple(command[1:]) for command in commands]
-    assert len(commands) > 9
+    assert len(commands) > len(candidate_123)
+    assert all(command in commands for command in candidate_123)
     assert all(command in commands for command in candidate_122)
     assert len(normalized) == len(set(normalized)), "duplicate fresh-extraction command"
     assert set(map(tuple, candidate_121)).issubset(set(map(tuple, commands)))
@@ -173,19 +185,20 @@ def assert_full_coverage(commands: list[list[str]]) -> None:
 
 def main() -> None:
     commands = fresh_extraction_check_commands()
+    candidate_123 = candidate_123_fresh_extraction_check_commands()
     candidate_122 = candidate_122_fresh_extraction_check_commands()
     candidate_121 = candidate_121_fresh_extraction_check_commands()
     candidate_120 = candidate_120_fresh_extraction_check_commands()
     candidate_119 = candidate_119_fresh_extraction_check_commands()
     legacy = legacy_fresh_extraction_check_commands()
-    assert commands == candidate_122 + candidate_121 + candidate_120 + candidate_119 + legacy
+    assert commands == candidate_123 + candidate_122 + candidate_121 + candidate_120 + candidate_119 + legacy
     assert_full_coverage(commands)
     try:
-        assert_full_coverage(candidate_121 + candidate_120 + candidate_119 + legacy)
+        assert_full_coverage(candidate_122 + candidate_121 + candidate_120 + candidate_119 + legacy)
     except AssertionError:
         pass
     else:
-        raise AssertionError("coverage guard accepted a checker missing candidate-122 commands")
+        raise AssertionError("coverage guard accepted a checker missing candidate-123 commands")
     try:
         assert_full_coverage(candidate_120)
     except AssertionError:
@@ -194,7 +207,7 @@ def main() -> None:
         raise AssertionError("coverage guard accepted a candidate-120-only checker mutation")
     print(
         "final_archive_fresh_check_coverage_v119_smoke_test ok "
-        f"candidate_122={len(candidate_122)} candidate_121={len(candidate_121)} candidate_120={len(candidate_120)} candidate_119={len(candidate_119)} "
+        f"candidate_123={len(candidate_123)} candidate_122={len(candidate_122)} candidate_121={len(candidate_121)} candidate_120={len(candidate_120)} candidate_119={len(candidate_119)} "
         f"legacy={len(legacy)} total={len(commands)} mutation_rejected=true"
     )
 

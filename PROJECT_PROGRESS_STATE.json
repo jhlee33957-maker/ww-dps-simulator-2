@@ -14,16 +14,16 @@
   },
   "status": {
     "last_updated": "2026-07-18T00:00:00+09:00",
-    "latest_verified_archive": "ww-dps-simulator-2-121(19).zip",
-    "latest_verified_archive_sha256": "2a031ff8662f0c929305393558191059f4c61ff28e7a06c004e3b9b3e94920fa",
-    "latest_verified_baseline_label": "121",
-    "latest_externally_verified_baseline": "121",
+    "latest_verified_archive": "ww-dps-simulator-2-122.zip",
+    "latest_verified_archive_sha256": "5620584500694b7be1552a74e0b8644c1e93fac381e7c18af55a6258ad3bebcf",
+    "latest_verified_baseline_label": "122",
+    "latest_externally_verified_baseline": "122",
     "current_task_status": "candidate_pending_external_review",
-    "current_task": "candidate-122 account party overlay and exact 120-second content-start configuration",
-    "current_task_expected_next_archive": "122",
+    "current_task": "candidate-123 Aemeath Radiance Heavy and Intro Starlume runtime connections",
+    "current_task_expected_next_archive": "123",
     "do_not_treat_current_task_as_complete_until_reviewed": true,
-    "candidate_expected_next_archive": "ww-dps-simulator-2-122.zip",
-    "current_candidate": "122"
+    "candidate_expected_next_archive": "ww-dps-simulator-2-123.zip",
+    "current_candidate": "123"
   },
   "source_of_truth": {
     "raw_action_workbook": "鸣潮动作数据汇总(5).xlsx",
@@ -756,17 +756,17 @@
     "reference_damage_comparison_status": "horizon_mismatch_not_comparable"
   },
   "current_in_progress_task": {
-    "task": "account party overlay and exact 120-second content-start configuration",
+    "task": "Aemeath precombat Radiance Heavy and Intro Starlume runtime connections",
     "status": "candidate_pending_external_review",
-    "candidate": "122",
-    "current_candidate": "122",
+    "candidate": "123",
+    "current_candidate": "123",
     "external_review_required": true,
     "external_review_status": "pending",
     "external_verification_claimed": false,
-    "latest_externally_verified_baseline": "121",
-    "baseline_archive": "ww-dps-simulator-2-121(19).zip",
-    "baseline_archive_sha256": "2a031ff8662f0c929305393558191059f4c61ff28e7a06c004e3b9b3e94920fa",
-    "candidate_expected_next_archive": "ww-dps-simulator-2-122.zip",
+    "latest_externally_verified_baseline": "122",
+    "baseline_archive": "ww-dps-simulator-2-122.zip",
+    "baseline_archive_sha256": "5620584500694b7be1552a74e0b8644c1e93fac381e7c18af55a6258ad3bebcf",
+    "candidate_expected_next_archive": "ww-dps-simulator-2-123.zip",
     "transition_contract_version": "v114",
     "diagnostic_regression_correction": "legacy placeholder warning leakage removed; unversioned transition foundation smoke test aligned with v114",
     "generic_swap": {
@@ -1153,7 +1153,7 @@
     "existing_benchmark_mornye_weapon_remains": "Discord R5",
     "existing_benchmark_profiles_preserved": true,
     "current_overall_project_winner_remains": "benchmark Beam route 67a4250b3b8d0de9",
-    "next_task": "create a new account-specific manual baseline from scratch",
+    "next_task": "receive the user's full exact combo and encode it as candidate 124 manual baseline",
     "candidate_120_account_profiles": {
       "source_contract_path": "data/source/user_account_actual_v120.json",
       "source_contract_sha256": "a484aca00ed07573083dd2f83b0270847662d3f80af31819c62169c1a78dd457",
@@ -1294,7 +1294,26 @@
       "lynae_s1_precombat_overflow": 120,
       "account_manual_baseline_executed": false,
       "account_bc_ppo_beam_mcts_executed": false,
-      "next_task": "create a new account-specific manual baseline from scratch"
+      "next_task": "receive the user's full exact combo and encode it as candidate 124 manual baseline"
+    },
+    "aemeath_precombat_radiance_heavy_resolver_connected": true,
+    "aemeath_radiance_state_consumed_on_successful_charged_ii": true,
+    "aemeath_intro_starlume_acceleration_connected": true,
+    "aemeath_first_liberation_additional_resonance_rate_connected": true,
+    "user_aemeath_segment_feasibility_verified": true,
+    "account_manual_baseline_authored_by_user": "pending",
+    "candidate_123_aemeath_runtime_fix": {
+      "precombat_radiance_heavy_resolver_connected": true,
+      "radiance_consumed_on_successful_charged_ii": true,
+      "intro_starlume_acceleration_connected": true,
+      "starlume_duration_combat_seconds": 15.0,
+      "starlume_refresh_policy": "refresh_to_15_seconds_on_legal_aemeath_intro",
+      "first_liberation_additional_resonance_rate_connected": true,
+      "user_aemeath_segment_feasibility_verified": true,
+      "account_manual_baseline_executed": false,
+      "account_manual_baseline_authored_by_user": "pending",
+      "account_bc_ppo_beam_mcts_executed": false,
+      "next_task": "receive the user's full exact combo and encode it as candidate 124 manual baseline"
     }
   },
   "manual_cycle_reference": {
@@ -2403,10 +2422,10 @@
     {
       "candidate": "122",
       "task": "account party overlay and exact 120-second content-start configuration",
-      "status": "candidate_pending_external_review",
-      "latest_externally_verified_baseline": "121",
-      "external_review_status": "pending",
-      "external_verification_claimed": false,
+      "status": "externally_verified_complete",
+      "latest_externally_verified_baseline": "122",
+      "external_review_status": "passed",
+      "external_verification_claimed": true,
       "baseline_archive": "ww-dps-simulator-2-121(19).zip",
       "baseline_archive_sha256": "2a031ff8662f0c929305393558191059f4c61ff28e7a06c004e3b9b3e94920fa",
       "account_party_preset_created": true,
@@ -2423,7 +2442,28 @@
       "account_bc_ppo_beam_mcts_executed": false,
       "benchmark_winner": "Beam",
       "global_optimum_claimed": false,
-      "next_task": "create a new account-specific manual baseline from scratch"
+      "next_task": "create a new account-specific manual baseline from scratch",
+      "verified_archive": "ww-dps-simulator-2-122.zip",
+      "verified_archive_sha256": "5620584500694b7be1552a74e0b8644c1e93fac381e7c18af55a6258ad3bebcf"
+    },
+    {
+      "candidate": "123",
+      "task": "connect Aemeath precombat Radiance Heavy resolution and Intro Starlume Liberation runtime",
+      "status": "candidate_pending_external_review",
+      "latest_externally_verified_baseline": "122",
+      "external_review_status": "pending",
+      "external_verification_claimed": false,
+      "baseline_archive": "ww-dps-simulator-2-122.zip",
+      "baseline_archive_sha256": "5620584500694b7be1552a74e0b8644c1e93fac381e7c18af55a6258ad3bebcf",
+      "aemeath_precombat_radiance_heavy_resolver_connected": true,
+      "aemeath_radiance_state_consumed_on_successful_charged_ii": true,
+      "aemeath_intro_starlume_acceleration_connected": true,
+      "aemeath_first_liberation_additional_resonance_rate_connected": true,
+      "user_aemeath_segment_feasibility_verified": true,
+      "account_manual_baseline_executed": false,
+      "account_manual_baseline_authored_by_user": "pending",
+      "account_bc_ppo_beam_mcts_executed": false,
+      "next_task": "receive the user's full exact combo and encode it as candidate 124 manual baseline"
     }
   ]
 }

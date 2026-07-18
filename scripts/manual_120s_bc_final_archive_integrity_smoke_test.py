@@ -21,7 +21,7 @@ DIRECT_ACTION_MANIFEST_SHA256 = "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28
 SOURCE_ROUTE_FILE_SHA256 = "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a"
 
 
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-122.zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-123.zip"
 EXPECTED_BC_MODEL_SHA256 = "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e"
 EXPECTED_PPO_MODEL_SHA256 = "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513"
 EXPECTED_EVAL_SELECTED_SEQUENCE_SHA256 = "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1"
@@ -500,8 +500,8 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         completed_manifest_bytes = zf.read(completed_manifest_path)
         completed_manifest = json.loads(completed_manifest_bytes.decode("utf-8"))
         completed_progress = progress["current_in_progress_task"]["candidate_116_completed_beam"]
-        assert progress["status"]["latest_externally_verified_baseline"] == "121"
-        assert progress["status"]["current_candidate"] == "122"
+        assert progress["status"]["latest_externally_verified_baseline"] == "122"
+        assert progress["status"]["current_candidate"] == "123"
         account_progress = progress["current_in_progress_task"]["candidate_121_account_constellations"]
         assert account_progress["mechanics_implemented"] is True
         assert account_progress["scope_id"] == "single_persistent_boss_no_kill_no_survival"
@@ -520,8 +520,16 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
             "lynae_s1_precombat_overflow": 120,
             "account_manual_baseline_executed": False,
             "account_bc_ppo_beam_mcts_executed": False,
-            "next_task": "create a new account-specific manual baseline from scratch",
+            "next_task": "receive the user's full exact combo and encode it as candidate 124 manual baseline",
         }
+        account_runtime_progress = progress["current_in_progress_task"]["candidate_123_aemeath_runtime_fix"]
+        assert account_runtime_progress["precombat_radiance_heavy_resolver_connected"] is True
+        assert account_runtime_progress["radiance_consumed_on_successful_charged_ii"] is True
+        assert account_runtime_progress["intro_starlume_acceleration_connected"] is True
+        assert account_runtime_progress["first_liberation_additional_resonance_rate_connected"] is True
+        assert account_runtime_progress["user_aemeath_segment_feasibility_verified"] is True
+        assert account_runtime_progress["account_manual_baseline_executed"] is False
+        assert account_runtime_progress["account_bc_ppo_beam_mcts_executed"] is False
         assert not any("account" in name and name.startswith(("results/", "models/")) for name in names)
         production_path = "results/mcts_v118_production_3x50k_v119/result_manifest.json"
         production = json.loads(zf.read(production_path).decode("utf-8"))
@@ -871,6 +879,19 @@ def scan_archive_text(zf: zipfile.ZipFile, names: list[str]) -> dict[str, int]:
     return stats
 
 
+def candidate_123_fresh_extraction_check_commands() -> list[list[str]]:
+    return [
+        [sys.executable, "scripts/aemeath_precombat_radiance_heavy_resolution_v123_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_precombat_radiance_consumption_v123_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_intro_starlume_acceleration_v123_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_starlume_liberation_bonus_v123_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_account_cycle_feasibility_v123_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_v123_policy_action_compatibility_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_v123_no_baseline_search_artifacts_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_aemeath_runtime_fix_v123_alignment_smoke_test.py"],
+    ]
+
+
 def candidate_122_fresh_extraction_check_commands() -> list[list[str]]:
     return [
         [sys.executable, "scripts/account_party_overlay_v122_smoke_test.py"],
@@ -1134,7 +1155,8 @@ def legacy_fresh_extraction_check_commands() -> list[list[str]]:
 
 def fresh_extraction_check_commands() -> list[list[str]]:
     checks = (
-        candidate_122_fresh_extraction_check_commands()
+        candidate_123_fresh_extraction_check_commands()
+        + candidate_122_fresh_extraction_check_commands()
         + candidate_121_fresh_extraction_check_commands()
         + candidate_120_fresh_extraction_check_commands()
         + candidate_119_fresh_extraction_check_commands()

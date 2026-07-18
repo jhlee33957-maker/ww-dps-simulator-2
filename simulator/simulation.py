@@ -1242,6 +1242,8 @@ class Simulation:
             self._apply_mornye_post_action_support_events(action, result)
             self._schedule_aemeath_sigillum_hits(action, result)
             after_account_action(self, action, result)
+        if transition_resolution is not None:
+            self._apply_aemeath_incoming_intro_mechanics(result, transition_resolution)
         self._sync_weapon_result_fields(result)
         self._sync_lynae_spray_paint_window_mirror(result)
         if record_diagnostics:
@@ -2327,6 +2329,36 @@ class Simulation:
         result.lynae_target_tune_shift_remaining = 25.0 if shift_state else 0.0
         if self.state.action_log:
             self.state.action_log[-1] = result.model_dump(mode="json")
+
+    def _apply_aemeath_incoming_intro_mechanics(self, result, transition_resolution) -> None:
+        if not self.account_simulation_scope or not any(
+            character.account_profile for character in self.characters.values()
+        ):
+            return
+        if transition_resolution.incoming_character_id != "aemeath":
+            return
+        if not transition_resolution.incoming_intro_applied:
+            return
+        intro_action_id = transition_resolution.incoming_intro_candidate_id
+        if intro_action_id not in {"aemeath_qte_intro_human", "aemeath_qte_intro_mech"}:
+            return
+        intro_event = next(
+            (
+                event
+                for event in transition_resolution.transition_events
+                if event.get("action_id") == intro_action_id
+                and event.get("applied")
+            ),
+            None,
+        )
+        if intro_event is None:
+            return
+        aemeath_state = self.state.character_mechanics_state.setdefault("aemeath", {})
+        before = float(aemeath_state.get("starlume_acceleration_remaining", 0.0) or 0.0)
+        aemeath_state["starlume_acceleration_remaining"] = 15.0
+        intro_event["starlume_acceleration_applied"] = True
+        intro_event["starlume_acceleration_remaining_before"] = before
+        intro_event["starlume_acceleration_remaining_after"] = 15.0
 
     def _apply_specific_character_buff(
         self,

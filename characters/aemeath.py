@@ -142,10 +142,13 @@ class AemeathMechanic(CharacterMechanic):
             else:
                 resolved_id = "aemeath_liberation_overdrive"
         elif selected_action.id == "aemeath_heavy_attack":
+            instant_response_active = bool(data["instant_response"]) or bool(
+                data.get("account_radiance_quick_charge_ready", False)
+            )
             if data["form"] == "mech":
-                resolved_id = "aemeath_heavy_mech_charged_2" if data["instant_response"] else "aemeath_heavy_mech_charged_1"
+                resolved_id = "aemeath_heavy_mech_charged_2" if instant_response_active else "aemeath_heavy_mech_charged_1"
             else:
-                resolved_id = "aemeath_heavy_aemeath_charged_2" if data["instant_response"] else "aemeath_heavy_aemeath_charged_1"
+                resolved_id = "aemeath_heavy_aemeath_charged_2" if instant_response_active else "aemeath_heavy_aemeath_charged_1"
 
         try:
             return actions_by_id[resolved_id]
@@ -477,6 +480,7 @@ class AemeathMechanic(CharacterMechanic):
             data["resonance_rate"] += float(effects["resonance_rate_delta"])
             if action.id == "aemeath_liberation_overdrive" and data["starlume_acceleration_remaining"] > 0.0:
                 data["resonance_rate"] += 1.0
+                data["starlume_acceleration_remaining"] = 0.0
         if "set_resonance_rate" in effects:
             data["resonance_rate"] = float(effects["set_resonance_rate"])
         if duration_was_set:
