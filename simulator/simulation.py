@@ -13,6 +13,20 @@ from simulator.account_profile_gate import (
     blocked_account_profile_messages,
     validate_simulation_readiness_for_characters,
 )
+from simulator.account_constellation_effects import (
+    ACCOUNT_OBSERVATION_SHAPE,
+    ACCOUNT_OBSERVATION_VERSION,
+    after_account_action,
+    advance_account_constellation_time,
+    before_account_action,
+    build_account_tune_response_damage_context,
+    build_account_observation_labels,
+    build_account_observation_values,
+    initialize_account_constellation_state,
+    initialize_account_runtime_state,
+    collect_constellation_diagnostics,
+    on_account_transition,
+)
 from simulator.build_profiles import (
     build_action_scaling_summary,
     effective_build_stats_summary,
@@ -139,6 +153,9 @@ class Simulation:
         stat_overrides: dict[str, dict[str, float]] | None = None,
         tune_response_defs: dict[str, dict[str, Any]] | None = None,
         weapon_definitions: dict[str, Any] | None = None,
+        account_simulation_scope: dict[str, Any] | str | None = None,
+        precombat_elapsed_seconds: float | None = None,
+        account_optical_sampling_active: bool = False,
     ) -> None:
         self.all_characters = characters
         self.selected_character_ids = parse_party_character_ids(selected_character_ids, characters)
@@ -154,6 +171,11 @@ class Simulation:
             if character.build_profile_id is not None
         }
         self.stat_overrides = stat_overrides or {}
+        self.account_simulation_scope = account_simulation_scope
+        self.precombat_elapsed_seconds = precombat_elapsed_seconds
+        self.account_optical_sampling_active = bool(account_optical_sampling_active)
+        self.account_constellation_state: dict[str, Any] | None = None
+        self.account_constellation_diagnostics: dict[str, Any] = {}
         self.tune_response_defs = dict(tune_response_defs or self._default_tune_response_defs())
         self.weapon_definitions = dict(weapon_definitions or {})
         self.preset_generic_swap = self.party_preset_config.get("generic_swap", {})
@@ -168,7 +190,11 @@ class Simulation:
         self.action_scaling_summary = build_action_scaling_summary(self.actions.values(), self.selected_character_ids)
         self.effective_build_stats_summary = effective_build_stats_summary(self.characters, self.action_scaling_summary)
         self.build_profile_validation = validate_effective_build_profiles(self.effective_build_stats_summary)
-        self.account_profile_gate_errors = blocked_account_profile_messages(self.characters)
+        self.account_profile_gate_errors = blocked_account_profile_messages(
+            self.characters,
+            account_scope=self.account_simulation_scope,
+            precombat_elapsed_seconds=self.precombat_elapsed_seconds,
+        )
         self.buffs = buffs
         self.weapon_effects_enabled = weapon_effects_enabled(self.characters, self.weapon_definitions)
         self.combat_duration = combat_duration
@@ -195,6 +221,14 @@ class Simulation:
         )
         self.state.off_tune_value_mapping_source_report = "reports/off_tune_value_mapping_audit.md"
         self._refresh_off_tune_mapping_metadata()
+        if not self.account_profile_gate_errors and any(character.account_profile for character in self.characters.values()):
+            self.account_constellation_state = initialize_account_constellation_state(
+                self.characters,
+                self.account_simulation_scope,
+                float(self.precombat_elapsed_seconds or 0.0),
+                optical_sampling_active=self.account_optical_sampling_active,
+            )
+            self.account_constellation_diagnostics = collect_constellation_diagnostics(self.account_constellation_state)
         self.state.simplified_assumptions.append(
             "single_target_enemy_off_tune_state"
         )
@@ -213,6 +247,7 @@ class Simulation:
                 (self.transition_config.get("concerto_transition") or {}).get("default_concerto_cap", 100.0)
             ),
         )
+        initialize_account_runtime_state(self)
         self.timeline: list[TimelineEntry] = []
 
     @classmethod
@@ -227,6 +262,9 @@ class Simulation:
         transition_config: dict | None = None,
         build_profile_overrides: dict[str, str] | None = None,
         stat_overrides: dict[str, dict[str, float]] | None = None,
+        account_simulation_scope: dict[str, Any] | str | None = None,
+        precombat_elapsed_seconds: float | None = None,
+        account_optical_sampling_active: bool = False,
     ) -> "Simulation":
         data_path = Path(data_dir)
         characters = {
@@ -314,17 +352,51 @@ class Simulation:
             },
             tune_response_defs=tune_response_defs,
             weapon_definitions=weapon_definitions,
+            account_simulation_scope=account_simulation_scope,
+            precombat_elapsed_seconds=precombat_elapsed_seconds,
+            account_optical_sampling_active=account_optical_sampling_active,
         )
 
     def validate_build_profiles(self) -> dict[str, object]:
         self.action_scaling_summary = build_action_scaling_summary(self.actions.values(), self.selected_character_ids)
         self.effective_build_stats_summary = effective_build_stats_summary(self.characters, self.action_scaling_summary)
         self.build_profile_validation = validate_effective_build_profiles(self.effective_build_stats_summary)
-        self.account_profile_gate_errors = blocked_account_profile_messages(self.characters)
+        self.account_profile_gate_errors = blocked_account_profile_messages(
+            self.characters,
+            account_scope=self.account_simulation_scope,
+            precombat_elapsed_seconds=self.precombat_elapsed_seconds,
+        )
         return dict(self.build_profile_validation)
 
     def validate_simulation_readiness(self, *, entry_point: str = "simulator execution") -> None:
-        validate_simulation_readiness_for_characters(self.characters, entry_point=entry_point)
+        validate_simulation_readiness_for_characters(
+            self.characters,
+            entry_point=entry_point,
+            account_scope=self.account_simulation_scope,
+            precombat_elapsed_seconds=self.precombat_elapsed_seconds,
+        )
+        aemeath = self.characters.get("aemeath")
+        if aemeath is not None and bool(getattr(aemeath, "account_profile", False)) and int(getattr(aemeath, "sequence", 0) or 0) >= 6:
+            mode = aemeath_resonance_mode_from_config(self.state.mechanics_config)
+            if mode not in {"tune_rupture", "fusion_burst"}:
+                raise AccountProfileSimulationBlocked(
+                    f"{entry_point} rejected: Aemeath Sequence 6 account profile requires an explicit "
+                    "aemeath_resonance_mode of 'tune_rupture' or 'fusion_burst'; unresolved is not executable."
+                )
+
+    def account_observation_labels(self) -> list[str]:
+        return build_account_observation_labels()
+
+    def account_observation_values(self) -> list[float]:
+        return build_account_observation_values(self)
+
+    def account_observation_metadata(self) -> dict[str, Any]:
+        return {
+            "observation_version": ACCOUNT_OBSERVATION_VERSION,
+            "observation_shape": ACCOUNT_OBSERVATION_SHAPE,
+            "legacy_v5_prefix_shape": 314,
+            "policy_action_count": len(self.get_policy_action_ids()),
+        }
 
     def set_enemy_context(
         self,
@@ -994,6 +1066,11 @@ class Simulation:
         self.validate_simulation_readiness(entry_point=f"combat action {action_id}")
         if self.state.combat_time >= self.combat_duration:
             return False
+        if (
+            self.state.mechanics_config.get("aemeath", {}).get("aemeath_resonance_mode") == "fusion_burst"
+            and "aemeath" in self.character_mechanics
+        ):
+            self.character_mechanics["aemeath"]._ensure_fusion_minimum_effect(self.state)
 
         selected_action = self.actions[action_id]
         if selected_action.policy_selectable and action_id not in self.policy_actions:
@@ -1062,6 +1139,7 @@ class Simulation:
         )
         actor_character_id = actor_character_id or self.state.active_character_id
         actor_mechanic = self._mechanic_for_character(actor_character_id)
+        before_account_action(self, selected_action, action)
         scheduled_effect_runner = None if zero_time_transition else lambda **kwargs: self.advance_scheduled_effects(
             host_action=action,
             **kwargs,
@@ -1092,6 +1170,7 @@ class Simulation:
             self._apply_transition_resolution(result, transition_resolution)
             self._apply_lynae_transition_buffs(result, transition_resolution)
             self._apply_lynae_incoming_intro_mechanics(result, transition_resolution)
+            on_account_transition(self, transition_resolution, result)
         self._apply_aemeath_outro_upgrade(result, actor_character_id)
 
         weapon_action_log = {}
@@ -1139,6 +1218,7 @@ class Simulation:
                 result.effective_combat_time_cost,
                 action_elapsed=result.action_time,
             )
+        advance_account_constellation_time(self, result.effective_combat_time_cost)
         skip_after_action = bool((action.mechanic_effects or {}).get("skip_character_after_action"))
         auxiliary_zero_time_action = bool((action.mechanic_effects or {}).get("auxiliary_zero_time_action"))
         if (
@@ -1152,6 +1232,7 @@ class Simulation:
         if not result.truncated_by_combat_limit:
             self._apply_mornye_post_action_support_events(action, result)
             self._schedule_aemeath_sigillum_hits(action, result)
+            after_account_action(self, action, result)
         self._sync_weapon_result_fields(result)
         self._sync_lynae_spray_paint_window_mirror(result)
         if record_diagnostics:
@@ -1178,7 +1259,7 @@ class Simulation:
         return self
 
     def valid_action_ids(self) -> list[str]:
-        if self.account_profile_gate_errors:
+        if self.account_profile_gate_errors or not self._account_aemeath_mode_is_executable():
             return []
         return [
             action_id
@@ -1187,13 +1268,21 @@ class Simulation:
         ]
 
     def is_action_available(self, action: ActionData) -> bool:
-        if self.account_profile_gate_errors:
+        if self.account_profile_gate_errors or not self._account_aemeath_mode_is_executable():
             return False
         if self.state.combat_time >= self.combat_duration:
             return False
         if action.policy_selectable and not is_swap_action(action):
             action = self.resolve_action(action)
         return self.is_resolved_action_available(action)
+
+    def _account_aemeath_mode_is_executable(self) -> bool:
+        aemeath = self.characters.get("aemeath")
+        if aemeath is None or not bool(getattr(aemeath, "account_profile", False)):
+            return True
+        if int(getattr(aemeath, "sequence", 0) or 0) < 6:
+            return True
+        return aemeath_resonance_mode_from_config(self.state.mechanics_config) in {"tune_rupture", "fusion_burst"}
 
     def is_resolved_action_available(self, action: ActionData) -> bool:
         valid, _reason = is_action_valid(action, self.state)
@@ -1721,6 +1810,22 @@ class Simulation:
             detail["lynae_spectral_analysis_constellation_variant"] = constellation_variant
             detail["lynae_spectral_analysis_c2_disabled_by_default"] = result.lynae_spectral_analysis_c2_disabled_by_default
         damage = float(detail["tune_response_damage"])
+        account_response_context = build_account_tune_response_damage_context(
+            state=self.state,
+            characters=self.characters,
+            response_id=response_id,
+            source_character_id=source_character_id,
+        )
+        expected_crit_multiplier = float(account_response_context.get("expected_crit_multiplier", 1.0) or 1.0)
+        if expected_crit_multiplier != 1.0:
+            detail["damage_before_account_fixed_crit"] = damage
+            detail["crit_rate_before_override"] = float(getattr(character, "crit_rate", 0.0) or 0.0)
+            detail["crit_damage_before_override"] = float(getattr(character, "crit_damage", 0.0) or 0.0)
+            detail["crit_rate_after_override"] = account_response_context["crit_rate_override"]
+            detail["crit_damage_after_override"] = account_response_context["crit_damage_override"]
+            detail["expected_crit_multiplier"] = expected_crit_multiplier
+            detail["account_constellation_damage_context"] = list(account_response_context.get("events", []))
+            damage *= expected_crit_multiplier
         damage, lynae_tune_strain_log = apply_lynae_tune_strain_damage_amp(
             damage,
             source_character_id=source_character_id,
@@ -2400,6 +2505,9 @@ class Simulation:
         return dict(((self.state.mechanics_config or {}).get("mornye") or {}))
 
     def _mornye_constellation(self) -> int:
+        mornye = self.characters.get("mornye")
+        if mornye is not None and getattr(mornye, "account_profile", False):
+            return max(0, int(getattr(mornye, "sequence", 0) or 0))
         return max(0, int(self._mornye_mechanics_config().get("mornye_constellation", 0) or 0))
 
     def _lynae_mechanics_config(self) -> dict[str, Any]:
@@ -2726,6 +2834,27 @@ class Simulation:
         if action.id != "lynae_visual_impact" or "lynae" not in self.characters:
             return {}
         metadata = self._lynae_spray_paint_snapshot_metadata()
+        lynae_character = self.characters.get("lynae")
+        lynae_sequence = int(getattr(lynae_character, "sequence", 0) or 0)
+        account_sequence_active = bool(self.account_simulation_scope) and bool(
+            getattr(lynae_character, "account_profile", False)
+        ) and lynae_sequence >= 1
+        field_duration_frames = 600 if account_sequence_active else 300
+        relative_application_frames = (
+            [1, 121, 241, 361, 481] if account_sequence_active else [1, 121, 241]
+        )
+        max_application_count = len(relative_application_frames)
+        field_duration_seconds = field_duration_frames / 60.0
+        metadata.update(
+            {
+                "field_duration_frames": field_duration_frames,
+                "relative_application_frames": relative_application_frames,
+                "max_application_count": max_application_count,
+                "sequence_extension_applied": account_sequence_active,
+                "pull_diagnostic_frames": [360] if account_sequence_active else [],
+                "movement_effect_value": 0.0,
+            }
+        )
         schedule_result = self.schedule_effect(
             instance_id=self.LYNAE_SPRAY_PAINT_INSTANCE_ID,
             effect_id="lynae_spray_paint",
@@ -2733,10 +2862,10 @@ class Simulation:
             source_action_id="lynae_visual_impact",
             payload_action_id=self.LYNAE_SPRAY_PAINT_PAYLOAD_ACTION_ID,
             activation_combat_time=float(result.combat_time_end),
-            remaining_duration=300.0 / 60.0,
+            remaining_duration=field_duration_seconds,
             tick_interval=120.0 / 60.0,
             time_until_next_tick=1.0 / 60.0,
-            max_trigger_count=3,
+            max_trigger_count=max_application_count,
             trigger_on_apply=False,
             refresh_rule="replace",
             payload_event_type="status_application",
@@ -2746,8 +2875,8 @@ class Simulation:
             metadata=metadata,
         )
         lynae_state = self.state.character_mechanics_state.setdefault("lynae", {})
-        lynae_state["spray_paint_window_remaining"] = 300.0 / 60.0
-        result.lynae_spray_paint_window_remaining = 300.0 / 60.0
+        lynae_state["spray_paint_window_remaining"] = field_duration_seconds
+        result.lynae_spray_paint_window_remaining = field_duration_seconds
         result.lynae_spray_paint_scheduled = True
         result.lynae_spray_paint_schedule_operation = schedule_result.get("operation")
         result.lynae_spray_paint_mode_snapshot = metadata["paint_mode_snapshot"]

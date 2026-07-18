@@ -54,10 +54,9 @@ def test_aemeath_forte_followups() -> None:
     assert_not_stale_source_status(enhanced.get("source_status"), "enhanced Seraphic Duet follow-up")
 
     fusion_burst = config["modes"]["fusion_burst"]
-    assert fusion_burst["implementation_status"] == "scaffold_only_until_source_confirmed"
+    assert fusion_burst["implementation_status"] == "workbook_confirmed_runtime_settlement"
     unresolved_entries = json.dumps(fusion_burst["unresolved_entries"], ensure_ascii=False).lower()
-    assert "fusion burst" in unresolved_entries
-    assert "unresolved_no_runtime_effect" in unresolved_entries
+    assert unresolved_entries == "[]"
 
 
 def test_aemeath_unsupported_followups() -> None:
@@ -74,7 +73,7 @@ def test_aemeath_unsupported_followups() -> None:
     )
     for term in forbidden_terms:
         assert term not in unsupported_text, f"implemented follow-up still listed unsupported: {term}"
-    assert "fusion_burst" in unsupported_text or "fusion burst" in unsupported_text
+    assert "aemeath_s2_kill_triggered_detonation" in unsupported_text
 
 
 def test_mornye_repeat_aware_source_flags() -> None:

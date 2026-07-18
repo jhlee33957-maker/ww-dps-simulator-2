@@ -103,6 +103,9 @@ class WuwaDpsEnv(gym.Env):
         build_profile_overrides: dict[str, str] | None = None,
         stat_overrides: dict[str, dict[str, float]] | None = None,
         curriculum_reset_mode: str | None = None,
+        account_simulation_scope: dict[str, Any] | str | None = None,
+        precombat_elapsed_seconds: float | None = None,
+        account_optical_sampling_active: bool = False,
     ) -> None:
         super().__init__()
         self.data_dir = Path(data_dir)
@@ -123,6 +126,9 @@ class WuwaDpsEnv(gym.Env):
         self.build_profile_overrides_arg = build_profile_overrides
         self.stat_overrides_arg = stat_overrides
         self.curriculum_reset_mode_arg = self._normalize_curriculum_reset_mode(curriculum_reset_mode)
+        self.account_simulation_scope_arg = account_simulation_scope
+        self.precombat_elapsed_seconds_arg = precombat_elapsed_seconds
+        self.account_optical_sampling_active_arg = bool(account_optical_sampling_active)
         self.last_curriculum_reset_mode = "none"
         self.last_curriculum_reset_metadata = self._curriculum_metadata("none", requested_mode=self.curriculum_reset_mode_arg)
         self.simulation = Simulation.from_json(
@@ -132,6 +138,9 @@ class WuwaDpsEnv(gym.Env):
             transition_config=self.transition_config_arg,
             build_profile_overrides=self.build_profile_overrides_arg,
             stat_overrides=self.stat_overrides_arg,
+            account_simulation_scope=self.account_simulation_scope_arg,
+            precombat_elapsed_seconds=self.precombat_elapsed_seconds_arg,
+            account_optical_sampling_active=self.account_optical_sampling_active_arg,
         )
         self.action_ids = self._get_action_order()
         if len(self.action_ids) > MAX_POLICY_ACTION_SLOTS:
@@ -147,7 +156,11 @@ class WuwaDpsEnv(gym.Env):
             shape=(self._get_observation_size(),),
             dtype=np.float32,
         )
-        self.observation_version = OBSERVATION_VERSION
+        self.observation_version = (
+            self.simulation.account_observation_metadata()["observation_version"]
+            if self._use_account_observation()
+            else OBSERVATION_VERSION
+        )
 
     def reset(self, seed: int | None = None, options: dict | None = None):
         super().reset(seed=seed)
@@ -158,6 +171,9 @@ class WuwaDpsEnv(gym.Env):
             transition_config=self.transition_config_arg,
             build_profile_overrides=self.build_profile_overrides_arg,
             stat_overrides=self.stat_overrides_arg,
+            account_simulation_scope=self.account_simulation_scope_arg,
+            precombat_elapsed_seconds=self.precombat_elapsed_seconds_arg,
+            account_optical_sampling_active=self.account_optical_sampling_active_arg,
         )
         self.action_ids = self._get_action_order()
         if len(self.action_ids) > MAX_POLICY_ACTION_SLOTS:
@@ -246,18 +262,26 @@ class WuwaDpsEnv(gym.Env):
         return len(self.observation_labels())
 
     def _get_observation(self) -> np.ndarray:
-        values = build_observation_values(self.simulation)
+        values = (
+            self.simulation.account_observation_values()
+            if self._use_account_observation()
+            else build_observation_values(self.simulation)
+        )
         labels = self.observation_labels()
         assert len(values) == len(labels), f"Observation value/label mismatch: {len(values)} != {len(labels)}"
         return np.array(values, dtype=np.float32)
 
     def observation_labels(self) -> list[str]:
+        if self._use_account_observation():
+            return self.simulation.account_observation_labels()
         return build_observation_labels()
 
     def global_mechanic_observation_labels(self) -> list[str]:
         return [label for label in self.observation_labels() if label.startswith("global.")]
 
     def observation_channel_mapping(self) -> dict[str, str]:
+        if self._use_account_observation():
+            return {label: "account_constellation_v6" for label in self.observation_labels()}
         return build_observation_channel_mapping(self.simulation)
 
     def observation_slot_mapping(self) -> dict[str, str | None]:
@@ -267,11 +291,20 @@ class WuwaDpsEnv(gym.Env):
         return build_observation_action_slot_mapping(self.simulation)
 
     def observation_metadata(self) -> dict:
-        metadata = observation_metadata(self)
+        if self._use_account_observation():
+            metadata = self.simulation.account_observation_metadata()
+            metadata["observation_shape"] = list(self.observation_space.shape)
+            metadata["observation_labels"] = self.observation_labels()
+            metadata["observation_action_slot_mapping"] = self.observation_action_slot_mapping()
+        else:
+            metadata = observation_metadata(self)
         metadata["curriculum_reset_mode"] = self.curriculum_reset_mode_arg
         metadata["last_curriculum_reset_mode"] = self.last_curriculum_reset_mode
         metadata["last_curriculum_reset_metadata"] = dict(self.last_curriculum_reset_metadata)
         return metadata
+
+    def _use_account_observation(self) -> bool:
+        return self.account_simulation_scope_arg is not None
 
     @staticmethod
     def _normalize_curriculum_reset_mode(mode: str | None) -> str:

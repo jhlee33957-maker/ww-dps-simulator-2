@@ -32,9 +32,6 @@
       "QTE / Intro transition metadata and reviewed transition action candidates"
     ],
     "excluded": [
-      "Fusion Burst explosion runtime damage without source-confirmed coefficient/formula",
-      "Fusion Trail source-confirmed stack mutation rules",
-      "Seraphic Duet follow-up runtime damage without source-confirmed coefficient/formula",
       "full Starflux utility",
       "exact hitstop / enemy movement / hit loss",
       "multi-target state tracking",
@@ -331,8 +328,7 @@
     ]
   },
   "remaining_unresolved_mechanics": [
-    "Fusion Trail source-confirmed stack gain, stack consumption, duration refresh, and Fusion Burst explosion formula.",
-    "C6 trail stack granting remains scaffolded and is not active for default S0.",
+    "Aemeath S1 kill trajectory transfer, Aemeath S2 kill-triggered detonation, and Aemeath S5 all-effects behavior.",
     "Exact hit-level timing, hitstop, enemy movement, hit loss, and multi-target trail state tracking."
   ],
   "action_resolution_priority": [

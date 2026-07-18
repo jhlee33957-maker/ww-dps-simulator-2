@@ -21,6 +21,7 @@ from simulator.build_profiles import (
     support_stat_log_fields,
 )
 from simulator.damage_formula import calc_def_multiplier, calc_res_multiplier, calculate_normal_damage
+from simulator.account_constellation_effects import build_account_direct_damage_context
 from simulator.echo_sets import (
     AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID,
     MORNYE_HIGH_SYNTONY_FIELD_DEF_BUFF_ID,
@@ -252,6 +253,28 @@ def _calculate_hit_damage(
         time_offset=hit.time,
         force_active_buff_ids=force_active_buff_ids,
     )
+    account_damage_context = build_account_direct_damage_context(
+        state=state,
+        characters=characters,
+        action=action,
+        hit=hit,
+    )
+    account_events = list(account_damage_context.get("events", []) or [])
+    if account_events:
+        state.character_mechanics_state.setdefault("_account_constellation", {}).setdefault("events", []).extend(account_events)
+    crit_rate_before_account = float(stats.get("crit_rate", 0.0) or 0.0)
+    crit_damage_before_account = float(stats.get("crit_damage", 0.0) or 0.0)
+    if account_damage_context.get("crit_rate_override") is not None:
+        stats["crit_rate"] = float(account_damage_context["crit_rate_override"])
+    if account_damage_context.get("crit_damage_override") is not None:
+        stats["crit_damage"] = float(account_damage_context["crit_damage_override"])
+    crit_damage_add = float(account_damage_context.get("crit_damage_add", 0.0) or 0.0)
+    if crit_damage_add:
+        stats["crit_damage"] = float(stats.get("crit_damage", 0.0) or 0.0) + crit_damage_add
+        stats["runtime_crit_damage_bonus"] = float(stats.get("runtime_crit_damage_bonus", 0.0) or 0.0) + crit_damage_add
+    account_damage_amp_add = float(account_damage_context.get("damage_amp_add", 0.0) or 0.0)
+    if account_damage_amp_add:
+        damage_amp += account_damage_amp_add
     target_damage_taken_amp = (
         action_start_snapshot.target_damage_taken_amp
         if action_start_snapshot is not None
@@ -289,6 +312,16 @@ def _calculate_hit_damage(
         additive_element_bonuses=runtime_element_bonuses,
         echo_set_element_bonuses=stats.get("echo_set_damage_bonus_by_element") or {},
     )
+    account_damage_bonus_add = float(account_damage_context.get("damage_bonus_add", 0.0) or 0.0)
+    if account_damage_bonus_add:
+        damage_bonus_context["all_dmg_bonus"] = float(damage_bonus_context.get("all_dmg_bonus", 0.0) or 0.0) + account_damage_bonus_add
+        damage_bonus_context["effective_damage_bonus"] = (
+            float(damage_bonus_context.get("effective_damage_bonus", 0.0) or 0.0) + account_damage_bonus_add
+        )
+    base_coefficient = float(hit.damage_multiplier or 0.0)
+    account_coefficient_add = float(account_damage_context.get("coefficient_add", 0.0) or 0.0)
+    account_coefficient_multiplier = float(account_damage_context.get("coefficient_multiplier", 1.0) or 1.0)
+    effective_coefficient = (base_coefficient + account_coefficient_add) * account_coefficient_multiplier
     runtime_weapon_effects = weapon_runtime_damage_effects(
         character=character,
         action=action,
@@ -338,7 +371,7 @@ def _calculate_hit_damage(
     tune_break_detail: dict[str, Any] = {}
     if hit.damage_category == "normal" and hit.damage_multiplier > 0.0:
         damage = calculate_normal_damage(
-            skill_multiplier=hit.damage_multiplier,
+            skill_multiplier=effective_coefficient,
             character_base_atk=stats["character_base_atk"],
             weapon_base_atk=stats["weapon_base_atk"],
             atk_percent=stats["atk_percent"],
@@ -431,6 +464,10 @@ def _calculate_hit_damage(
         "damage_category": hit.damage_category,
         "damage": damage,
         "damage_multiplier": hit.damage_multiplier,
+        "base_coefficient": base_coefficient,
+        "account_coefficient_add": account_coefficient_add,
+        "account_coefficient_multiplier": account_coefficient_multiplier,
+        "effective_coefficient": effective_coefficient,
         "tune_break_multiplier": hit.tune_break_multiplier,
         **damage_bonus_context,
         "scaling_stat": scaling_stat,
@@ -442,6 +479,13 @@ def _calculate_hit_damage(
         "implementation_status": character.implementation_status,
         "applied_havoc_bane_def_reduction": havoc_def_reduction,
         "applied_buff_summary": stats.get("active_buff_summary", []),
+        "account_constellation_damage_context": account_events,
+        "account_crit_rate_before": crit_rate_before_account,
+        "account_crit_damage_before": crit_damage_before_account,
+        "account_crit_rate_after": float(stats.get("crit_rate", 0.0) or 0.0),
+        "account_crit_damage_after": float(stats.get("crit_damage", 0.0) or 0.0),
+        "account_damage_amp_add": account_damage_amp_add,
+        "account_damage_bonus_add": account_damage_bonus_add,
         "active_buff_ids": stats.get("active_buff_summary", []),
         "aemeath_trailblazing_star_5set_active": (
             AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID in stats.get("active_buff_summary", [])

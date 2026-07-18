@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from simulator.build_profiles import calculate_scaling_stat_components, load_build_profiles
+from simulator.build_profiles import calculate_scaling_stat_components, load_build_profile_overlay, load_build_profiles
 from simulator.weapon_effects import load_weapon_definition
 
 
@@ -27,10 +27,13 @@ def static_value(profile: dict, stat: str) -> float:
 
 def main() -> None:
     profiles = load_build_profiles(DATA_DIR)["profiles"]
+    overlay_profiles = load_build_profile_overlay(DATA_DIR)["profiles"]
     weapons = load_weapon_definition(DATA_DIR)["weapons"]
 
     aemeath = profiles["aemeath"]["aemeath_account_actual_01"]
-    assert aemeath["account_profile"] is True and aemeath["simulation_ready"] is False
+    assert overlay_profiles["aemeath"]["aemeath_account_actual_01"]["simulation_ready"] is False
+    assert aemeath["account_profile"] is True and aemeath["simulation_ready"] is True
+    assert aemeath["constellation"]["mechanics_implemented"] is True
     assert aemeath["sequence"] == 6
     assert_close(static_value(aemeath, "atk"), 2657.584, "Aemeath calculated ATK")
     assert int(static_value(aemeath, "atk")) == 2657
@@ -41,7 +44,9 @@ def main() -> None:
     assert aemeath["damage_bonuses"]["by_element"]["fusion"] != 0.52
 
     lynae = profiles["lynae"]["lynae_account_actual_01"]
-    assert lynae["account_profile"] is True and lynae["simulation_ready"] is False
+    assert overlay_profiles["lynae"]["lynae_account_actual_01"]["simulation_ready"] is False
+    assert lynae["account_profile"] is True and lynae["simulation_ready"] is True
+    assert lynae["constellation"]["mechanics_implemented"] is True
     assert lynae["sequence"] == 2
     assert_close(static_value(lynae, "atk"), 1929.758, "Lynae calculated ATK")
     assert int(static_value(lynae, "atk")) == 1929
@@ -51,7 +56,9 @@ def main() -> None:
     assert not math.isclose(lynae["combat_stats"]["energy_regen"], 1.548 + 0.256, rel_tol=0.0, abs_tol=1e-9)
 
     mornye = profiles["mornye"]["mornye_account_actual_01"]
-    assert mornye["account_profile"] is True and mornye["simulation_ready"] is False
+    assert overlay_profiles["mornye"]["mornye_account_actual_01"]["simulation_ready"] is False
+    assert mornye["account_profile"] is True and mornye["simulation_ready"] is True
+    assert mornye["constellation"]["mechanics_implemented"] is True
     assert mornye["sequence"] == 3
     assert_close(static_value(mornye, "atk"), 1158.629, "Mornye calculated ATK")
     assert int(static_value(mornye, "atk")) == 1158

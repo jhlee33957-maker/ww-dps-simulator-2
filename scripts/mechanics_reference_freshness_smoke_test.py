@@ -53,8 +53,9 @@ def main() -> None:
     assert aemeath["generated_mechanic_damage"]["implementation_status"] == "generic_runtime_infrastructure"
     assert "data/character_mechanic_effects/aemeath_forte_circuit.json" in _text(aemeath["forte_circuit"])
     assert "external simulator websites" in _text(aemeath["source_gated_implementation"])
-    assert "fusion burst" in _text(aemeath["remaining_unresolved_mechanics"])
-    assert "c6" in _text(aemeath["remaining_unresolved_mechanics"])
+    assert "fusion burst explosion" not in _text(aemeath["remaining_unresolved_mechanics"])
+    assert "multi-target" in _text(aemeath["remaining_unresolved_mechanics"])
+    assert "c6 trail stack" not in _text(aemeath["remaining_unresolved_mechanics"])
     assert "seraphic_duet_extra_tune_rupture_damage" not in aemeath_text
     assert "seraphic duet tune rupture follow-up damage is implemented" in aemeath_text
 

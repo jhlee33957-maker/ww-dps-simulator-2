@@ -16,8 +16,8 @@ def main() -> None:
     status = progress["status"]
     current = progress["current_in_progress_task"]
     history = next(item for item in progress["candidate_history"] if item.get("candidate") == "115")
-    assert status["latest_externally_verified_baseline"] == "119"
-    assert status["current_candidate"] == "120" and status["current_task_status"] == "candidate_pending_external_review"
+    assert status["latest_externally_verified_baseline"] == "120"
+    assert status["current_candidate"] == "121" and status["current_task_status"] == "candidate_pending_external_review"
     assert current["v114_3m_search_executed"] is True and current["v114_completed_route_count"] == 128
     assert current["v114_checkpoint_resumable"] is True and current["new_reviewed_maximum_expansions"] == 6500000
     assert current["long_v115_resume_executed"] is True

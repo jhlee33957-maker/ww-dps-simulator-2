@@ -8,6 +8,7 @@ from simulator.damage_formula import calc_def_multiplier, calc_res_multiplier
 TUNE_BREAK_BASE_VALUE = 10000.0
 TUNE_BREAK_FORMULA_SOURCE = "excel_tune_break_formula_base_10000"
 TUNE_RESPONSE_FORMULA_SOURCE = "excel_tune_response_formula_base_10000"
+FUSION_EFFECT_FORMULA_SOURCE = "excel_fusion_effect_base_10000"
 INTERFERED_MARKER_AMP_SOURCE = "mornye_interfered_marker"
 INTERFERED_MARKER_AMP_SOURCE_STATUS = "workbook_confirmed_row_4164"
 INTERFERED_MARKER_AMP_SOURCE_REF = "角色-女!4164"
@@ -165,4 +166,36 @@ def calculate_tune_response_damage_detail(
         "response_damage_receives_new_interfered_marker_amp": False,
         "source_status": source_status,
         "tune_response_formula_source": TUNE_RESPONSE_FORMULA_SOURCE,
+    }
+
+
+def calculate_fusion_effect_damage_detail(
+    *,
+    fusion_effect_id: str,
+    fusion_effect_multiplier: float,
+    final_damage_multiplier: float,
+    enemy_res: float,
+    res_pen: float,
+    attacker_level: int,
+    enemy_level: int,
+    def_ignore: float = 0.0,
+    def_reduction: float = 0.0,
+    fusion_effect_base_value: float = 10000.0,
+) -> dict[str, Any]:
+    """Workbook Fusion-effect settlement using dmg!2589's base-10000 route."""
+    res_multiplier = calc_res_multiplier(enemy_res - res_pen)
+    def_multiplier = calc_def_multiplier(attacker_level, enemy_level, def_ignore, def_reduction)
+    damage_before_final = fusion_effect_base_value * fusion_effect_multiplier * res_multiplier * def_multiplier
+    damage = damage_before_final * final_damage_multiplier
+    return {
+        "is_fusion_effect_damage": True,
+        "fusion_effect_id": fusion_effect_id,
+        "fusion_effect_base_value": fusion_effect_base_value,
+        "fusion_effect_multiplier": fusion_effect_multiplier,
+        "fusion_effect_final_damage_multiplier": final_damage_multiplier,
+        "fusion_effect_res_multiplier": res_multiplier,
+        "fusion_effect_def_multiplier": def_multiplier,
+        "fusion_effect_damage_before_final_multiplier": damage_before_final,
+        "fusion_effect_damage": damage,
+        "fusion_effect_formula_source": FUSION_EFFECT_FORMULA_SOURCE,
     }

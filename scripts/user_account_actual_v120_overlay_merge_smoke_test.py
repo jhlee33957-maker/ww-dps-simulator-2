@@ -12,8 +12,10 @@ sys.path.insert(0, str(ROOT))
 from simulator.build_profiles import (  # noqa: E402
     load_base_build_profiles,
     load_build_profile_overlay,
+    load_account_constellation_profile_updates,
     load_build_profiles,
     merge_build_profile_overlay,
+    merge_account_constellation_profile_updates,
 )
 from simulator.weapon_effects import (  # noqa: E402
     load_base_weapon_definition,
@@ -59,6 +61,8 @@ def main() -> None:
     base_profiles_before = copy.deepcopy(base_profiles)
     overlay = load_build_profile_overlay(DATA_DIR)
     merged_profiles = merge_build_profile_overlay(base_profiles, overlay)
+    constellation_updates = load_account_constellation_profile_updates(DATA_DIR)
+    merged_with_constellations = merge_account_constellation_profile_updates(merged_profiles, constellation_updates)
     assert base_profiles == base_profiles_before
     for character_id, profile_id in ACCOUNT_IDS.items():
         assert profile_id not in base_profiles["profiles"][character_id]
@@ -66,7 +70,11 @@ def main() -> None:
         assert profile["account_profile"] is True
         assert profile["simulation_ready"] is False
         assert "?" not in profile["display_name"]
+        enabled_profile = merged_with_constellations["profiles"][character_id][profile_id]
+        assert enabled_profile["simulation_ready"] is True
+        assert enabled_profile["constellation"]["mechanics_implemented"] is True
     assert load_build_profiles(DATA_DIR)["profiles"]["lynae"]["lynae_account_actual_01"]["sequence"] == 2
+    assert load_build_profiles(DATA_DIR)["profiles"]["lynae"]["lynae_account_actual_01"]["simulation_ready"] is True
 
     base_weapons = load_base_weapon_definition(DATA_DIR)
     base_weapons_before = copy.deepcopy(base_weapons)

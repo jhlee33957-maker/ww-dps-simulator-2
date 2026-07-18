@@ -4,17 +4,19 @@ from dataclasses import dataclass, field
 from typing import Any, Literal
 
 from simulator.action_start_snapshot import ActionStartEffectSnapshot
+from simulator.account_constellation_effects import build_account_generated_damage_context
 from simulator.buff_system import buffed_combat_stats
 from simulator.lynae_tune_strain import apply_lynae_tune_strain_damage_amp
 from simulator.models import ActionData, CharacterData, CombatState
 from simulator.tune_break import (
+    calculate_fusion_effect_damage_detail,
     calculate_tune_break_damage_detail,
     calculate_tune_response_damage_detail,
     current_interfered_damage_taken_amp,
 )
 
 
-FormulaType = Literal["normal", "tune_break", "tune_response"]
+FormulaType = Literal["normal", "tune_break", "tune_response", "fusion_effect"]
 ScalingStat = Literal["atk", "def", "hp", "none", "unresolved"]
 DamageTakenAmpMode = Literal["current_target_marker", "none"]
 
@@ -102,16 +104,19 @@ def calculate_generated_damage_packet(
         return 0.0, []
 
     character = characters[packet.source_character_id]
-    stats = buffed_combat_stats(
-        character,
-        state,
-        buffs,
-        time_offset=packet.time_offset,
-        force_active_buff_ids=force_active_buff_ids,
-    )
     total_damage = 0.0
     details: list[dict[str, Any]] = []
     for hit_index in range(packet.repeat_count):
+        hit_time_offset = packet.time_offset + (
+            (hit_index + 1) * float(packet.hit_interval_frames or 0) / 60.0
+        )
+        stats = buffed_combat_stats(
+            character,
+            state,
+            buffs,
+            time_offset=hit_time_offset,
+            force_active_buff_ids=force_active_buff_ids,
+        )
         damage, detail = _calculate_single_generated_hit(
             packet,
             hit_index=hit_index,
@@ -121,6 +126,7 @@ def calculate_generated_damage_packet(
             buffs=buffs,
             stats=stats,
             character=character,
+            hit_time_offset=hit_time_offset,
             force_active_buff_ids=force_active_buff_ids,
             action_start_snapshot=action_start_snapshot,
         )
@@ -139,6 +145,7 @@ def _calculate_single_generated_hit(
     buffs: dict[str, Any],
     stats: dict[str, Any],
     character: CharacterData,
+    hit_time_offset: float,
     force_active_buff_ids: set[str] | None = None,
     action_start_snapshot: ActionStartEffectSnapshot | None = None,
 ) -> tuple[float, dict[str, Any]]:
@@ -151,6 +158,16 @@ def _calculate_single_generated_hit(
         if packet.applied_damage_taken_amp_mode == "current_target_marker"
         else 0.0
     )
+    account_context = build_account_generated_damage_context(
+        state=state,
+        characters=characters,
+        packet=packet,
+        hit_index=hit_index,
+        source_action=source_action,
+    )
+    account_events = list(account_context.get("events", []) or [])
+    if account_events:
+        state.character_mechanics_state.setdefault("_account_constellation", {}).setdefault("events", []).extend(account_events)
     detail: dict[str, Any] = {
         "name": f"{packet.name} {hit_index + 1}",
         "is_generated_mechanic_damage": True,
@@ -166,7 +183,8 @@ def _calculate_single_generated_hit(
         "scaling_stat": packet.scaling_stat,
         "repeat_count": packet.repeat_count,
         "hit_index": hit_index,
-        "time_offset": packet.time_offset,
+        "time_offset": hit_time_offset,
+        "hit_time": hit_time_offset,
         "tags": list(packet.tags),
         "notes": packet.notes,
         "label": packet.label,
@@ -175,6 +193,9 @@ def _calculate_single_generated_hit(
         "hit_interval_frames": packet.hit_interval_frames,
         "everbright_applied": False,
         "normal_damage_bonuses_applied": False,
+        "account_constellation_damage_context": account_events,
+        "account_damage_amp_add": float(account_context.get("damage_amp_add", 0.0) or 0.0),
+        "account_target_deepen_add": float(account_context.get("target_deepen_add", 0.0) or 0.0),
     }
     if packet.formula_type == "normal":
         detail.update(
@@ -187,6 +208,31 @@ def _calculate_single_generated_hit(
             }
         )
         return 0.0, detail
+    if packet.formula_type == "fusion_effect":
+        fusion_detail = calculate_fusion_effect_damage_detail(
+            fusion_effect_id=packet.id,
+            fusion_effect_multiplier=packet.tune_multiplier,
+            final_damage_multiplier=packet.additional_tune_boost,
+            enemy_res=state.enemy_res,
+            res_pen=state.res_pen,
+            attacker_level=int(stats["attacker_level"]),
+            enemy_level=state.enemy_level,
+            def_ignore=0.0,
+            def_reduction=state.def_reduction,
+            fusion_effect_base_value=packet.base_value,
+        )
+        damage = float(fusion_detail["fusion_effect_damage"])
+        account_multiplier = float(account_context.get("expected_crit_multiplier", 1.0) or 1.0)
+        if account_multiplier != 1.0:
+            fusion_detail["damage_before_account_fixed_crit"] = damage
+            damage *= account_multiplier
+            fusion_detail["crit_rate_after_override"] = float(account_context.get("crit_rate_override", 0.0) or 0.0)
+            fusion_detail["crit_damage_after_override"] = float(account_context.get("crit_damage_override", 0.0) or 0.0)
+            fusion_detail["expected_crit_multiplier"] = account_multiplier
+            fusion_detail["override_source"] = "aemeath_s6"
+        detail.update(fusion_detail)
+        detail.update({"damage": damage, "hit_damage_category": "fusion_effect", "damage_category": "fusion_effect"})
+        return damage, detail
     if packet.formula_type == "tune_break":
         tune_detail = calculate_tune_break_damage_detail(
             tune_break_multiplier=packet.tune_multiplier,
@@ -204,13 +250,28 @@ def _calculate_single_generated_hit(
             hit_id=packet.id,
         )
         damage = float(tune_detail["tune_break_damage"])
+        account_multiplier = float(account_context.get("expected_crit_multiplier", 1.0) or 1.0)
+        if account_multiplier != 1.0:
+            tune_detail["damage_before_account_fixed_crit"] = damage
+            damage *= account_multiplier
+            tune_detail["crit_rate_before_override"] = float(stats.get("crit_rate", 0.0) or 0.0)
+            tune_detail["crit_damage_before_override"] = float(stats.get("crit_damage", 0.0) or 0.0)
+            tune_detail["crit_rate_after_override"] = float(account_context.get("crit_rate_override", 0.0) or 0.0)
+            tune_detail["crit_damage_after_override"] = float(account_context.get("crit_damage_override", 0.0) or 0.0)
+            tune_detail["expected_crit_multiplier"] = account_multiplier
+            tune_detail["override_source"] = "aemeath_s6"
+        account_damage_amp = float(account_context.get("damage_amp_add", 0.0) or 0.0)
+        if account_damage_amp:
+            tune_detail["damage_before_account_damage_amp"] = damage
+            damage *= 1.0 + account_damage_amp
+            tune_detail["damage_after_account_damage_amp"] = damage
         damage, lynae_tune_strain_log = apply_lynae_tune_strain_damage_amp(
             damage,
             source_character_id=packet.source_character_id,
             state=state,
             characters=characters,
             buffs=buffs,
-            time_offset=packet.time_offset,
+            time_offset=hit_time_offset,
             force_active_buff_ids=force_active_buff_ids,
         )
         detail.update(tune_detail)
@@ -242,13 +303,28 @@ def _calculate_single_generated_hit(
         source_status=packet.source_status,
     )
     damage = float(response_detail["tune_response_damage"])
+    account_multiplier = float(account_context.get("expected_crit_multiplier", 1.0) or 1.0)
+    if account_multiplier != 1.0:
+        response_detail["damage_before_account_fixed_crit"] = damage
+        damage *= account_multiplier
+        response_detail["crit_rate_before_override"] = float(stats.get("crit_rate", 0.0) or 0.0)
+        response_detail["crit_damage_before_override"] = float(stats.get("crit_damage", 0.0) or 0.0)
+        response_detail["crit_rate_after_override"] = float(account_context.get("crit_rate_override", 0.0) or 0.0)
+        response_detail["crit_damage_after_override"] = float(account_context.get("crit_damage_override", 0.0) or 0.0)
+        response_detail["expected_crit_multiplier"] = account_multiplier
+        response_detail["override_source"] = "aemeath_s6"
+    account_damage_amp = float(account_context.get("damage_amp_add", 0.0) or 0.0)
+    if account_damage_amp:
+        response_detail["damage_before_account_damage_amp"] = damage
+        damage *= 1.0 + account_damage_amp
+        response_detail["damage_after_account_damage_amp"] = damage
     damage, lynae_tune_strain_log = apply_lynae_tune_strain_damage_amp(
         damage,
         source_character_id=packet.source_character_id,
         state=state,
         characters=characters,
         buffs=buffs,
-        time_offset=packet.time_offset,
+        time_offset=hit_time_offset,
         force_active_buff_ids=force_active_buff_ids,
     )
     detail.update(response_detail)

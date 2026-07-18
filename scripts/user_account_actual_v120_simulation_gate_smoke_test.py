@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from simulator.account_profile_gate import AccountProfileSimulationBlocked
+from simulator.account_constellation_effects import ACCOUNT_SCOPE_ID
 from simulator.simulation import Simulation
 
 
@@ -36,8 +37,7 @@ def assert_blocked(callable_obj, *, character_id: str, profile_id: str, sequence
         assert profile_id in text
         assert character_id.capitalize() in text or character_id in text
         assert f"Sequence {sequence}" in text
-        assert contract in text
-        assert "Missing constellation-mechanics contract" in text
+        assert "single_persistent_boss_no_kill_no_survival" in text or "precombat_elapsed_seconds" in text
     else:
         raise AssertionError(f"{profile_id} unexpectedly passed simulation gate")
 
@@ -52,8 +52,9 @@ def main() -> None:
         )
         character = sim.characters[character_id]
         assert character.account_profile is True
-        assert character.simulation_ready is False
+        assert character.simulation_ready is True
         assert character.sequence == sequence
+        assert character.constellation["mechanics_implemented"] is True
         assert character.account_display_stats
         assert sim.account_profile_gate_errors
         assert sim.valid_action_ids() == []
@@ -72,6 +73,20 @@ def main() -> None:
                 sequence=sequence,
                 contract=contract,
             )
+
+        scoped = Simulation.from_json(
+            DATA_DIR,
+            selected_character_ids=[character_id],
+            build_profile_overrides={character_id: profile_id},
+            initial_active_character=character_id,
+            account_simulation_scope=ACCOUNT_SCOPE_ID,
+            precombat_elapsed_seconds=0,
+        )
+        if character_id == "aemeath":
+            scoped.state.mechanics_config.setdefault("aemeath", {})["aemeath_resonance_mode"] = "tune_rupture"
+        assert not scoped.account_profile_gate_errors
+        assert scoped.valid_action_ids()
+        assert scoped.account_constellation_state is not None
 
     benchmark = Simulation.from_json(DATA_DIR, party="aemeath_mornye_lynae_enabled_test_party", initial_active_character="mornye")
     assert not benchmark.account_profile_gate_errors

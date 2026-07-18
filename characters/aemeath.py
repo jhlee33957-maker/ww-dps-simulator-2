@@ -6,7 +6,11 @@ from typing import Any
 
 from characters.base import CharacterMechanic
 from simulator.generated_damage import GeneratedDamagePacket, packet_from_mapping
-from simulator.mechanic_events import aemeath_resonance_mode_from_config
+from simulator.mechanic_events import (
+    FUSION_EFFECT_DURATION_SECONDS,
+    apply_aemeath_fusion_effect_event,
+    aemeath_resonance_mode_from_config,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -41,7 +45,12 @@ class AemeathMechanic(CharacterMechanic):
         "overdrive_form_switch_window_remaining": 0,
         "fusion_trail_stacks": 0,
         "fusion_trail_remaining": 0.0,
-        "fusion_trail_max_stacks": 5,
+        "fusion_trail_max_stacks": 60,
+        "fusion_effect_stacks": 0,
+        "fusion_effect_remaining": 0.0,
+        "fusion_effect_max_stacks": 10,
+        "fusion_application_last_trigger_time": {},
+        "fusion_trail_event_log": [],
         "forte_enhancement_stacks": 0,
         "forte_enhancement_remaining": 0.0,
         "forte_enhancement_max_stacks": 2,
@@ -65,6 +74,9 @@ class AemeathMechanic(CharacterMechanic):
         "last_seraphic_duet_trail_preservation_after": False,
         "last_seraphic_duet_trail_consumed": False,
         "last_seraphic_duet_total_extra_tune_multiplier": 0.0,
+        "last_seraphic_duet_fusion_effect_stacks_before": 0,
+        "last_seraphic_duet_fusion_effect_stacks_after": 0,
+        "last_seraphic_duet_fusion_settlement_multiplier": 0.0,
         "forte_unresolved_runtime_notes": [],
     }
 
@@ -210,6 +222,13 @@ class AemeathMechanic(CharacterMechanic):
         data["last_seraphic_duet_trail_preservation_after"] = False
         data["last_seraphic_duet_trail_consumed"] = False
         data["last_seraphic_duet_total_extra_tune_multiplier"] = 0.0
+        data["last_seraphic_duet_fusion_effect_stacks_before"] = int(data.get("fusion_effect_stacks", 0) or 0)
+        data["last_seraphic_duet_fusion_effect_stacks_after"] = int(data.get("fusion_effect_stacks", 0) or 0)
+        data["last_seraphic_duet_fusion_settlement_multiplier"] = 0.0
+        if aemeath_resonance_mode_from_config(getattr(state, "mechanics_config", {}) or {}) == "fusion_burst":
+            self._ensure_fusion_minimum_effect(state)
+        if action.id in {"aemeath_sync_strike_armament_merge", "aemeath_sync_strike_call_of_dawn"}:
+            return self._enhanced_skill_generated_packets(state, action)
         if action.id not in {"aemeath_seraphic_duet_overturn", "aemeath_seraphic_duet_encore"}:
             return []
 
@@ -235,8 +254,9 @@ class AemeathMechanic(CharacterMechanic):
         packet_data["source_action_id"] = action.id
         base_per_hit_multiplier = float(packet_data.get("tune_multiplier", packet_data.get("source_multiplier", 0.0)) or 0.0)
         repeat_count = int(packet_data.get("repeat_count", 1) or 1)
+        trail_cap = self._rupturous_trail_cap(state)
         trail_stack_snapshot = (
-            max(0, min(RUPTUROUS_TRAIL_MAX_STACKS, int(getattr(state, "rupturous_trail_stacks", 0) or 0)))
+            max(0, min(trail_cap, int(getattr(state, "rupturous_trail_stacks", 0) or 0)))
             if mode == "tune_rupture"
             else 0
         )
@@ -288,6 +308,84 @@ class AemeathMechanic(CharacterMechanic):
             data["last_seraphic_duet_followup_source_status"] = "unresolved_no_runtime_effect"
         return packets
 
+    def _enhanced_skill_generated_packets(self, state: Any, action: Any) -> list[GeneratedDamagePacket]:
+        """Emit the workbook-backed Tune packet selected by the existing Forte state."""
+        data = self._state(state)
+        account = state.character_mechanics_state.get("_account_constellation", {})
+        sequence = int(account.get("aemeath_sequence", 0) or 0)
+        if sequence < 2:
+            return []
+        mode = aemeath_resonance_mode_from_config(getattr(state, "mechanics_config", {}) or {})
+        if mode == "tune_rupture":
+            followups = list(
+                (((self._forte_config().get("modes") or {}).get(mode) or {}).get("seraphic_duet_followups") or [])
+            )
+            wanted = "enhanced" if int(data.get("forte_enhancement_stacks", 0) or 0) > 0 else "normal"
+            packet_data = next((dict(item) for item in followups if item.get("variant") == wanted), None)
+            if packet_data is None:
+                return []
+            cap = self._rupturous_trail_cap(state)
+            snapshot = max(0, min(cap, int(state.rupturous_trail_stacks or 0)))
+            preservation = float(data.get("trail_no_cost_remaining", 0.0) or 0.0) > 0.0
+            packet_data["source_action_id"] = action.id
+            packet_data["tune_multiplier"] = float(packet_data["tune_multiplier"]) * (1.0 + 0.04 * snapshot)
+            packet_data["source_multiplier"] = 1.0935
+            packet = packet_from_mapping(packet_data)
+            data["last_seraphic_duet_trail_stack_snapshot"] = snapshot
+            data["last_seraphic_duet_trail_stack_factor"] = 1.0 + 0.04 * snapshot
+            data["last_seraphic_duet_consumed_rupturous_trail_stacks"] = 0 if preservation else snapshot
+            data["last_seraphic_duet_trail_consumed"] = not preservation and snapshot > 0
+            data["last_seraphic_duet_trail_preservation_active"] = preservation
+            if preservation:
+                data["trail_no_cost_remaining"] = 0.0
+            elif snapshot:
+                state.rupturous_trail_stacks = 0
+                state.rupturous_trail_remaining = 0.0
+            if sequence >= 6:
+                data["s6_pending_enhanced_trajectory_grant"] = 10
+            return [packet]
+        if mode == "fusion_burst":
+            followups = list(
+                (((self._forte_config().get("modes") or {}).get(mode) or {}).get("seraphic_duet_followups") or [])
+            )
+            packet_data = next((dict(item) for item in followups if item.get("variant") == "settlement"), None)
+            if packet_data is None:
+                return []
+            trail_cap = self._fusion_trail_cap(state)
+            trail_snapshot = max(0, min(trail_cap, int(data.get("fusion_trail_stacks", 0) or 0)))
+            effect_stacks = max(0, min(int(data.get("fusion_effect_max_stacks", 10) or 10), int(data.get("fusion_effect_stacks", 0) or 0)))
+            if trail_snapshot <= 0 or effect_stacks <= 0:
+                return []
+            preservation = float(data.get("trail_no_cost_remaining", 0.0) or 0.0) > 0.0
+            final_damage = self._fusion_final_damage_multiplier(
+                removed_trajectory_count=trail_snapshot,
+                enhancement_state=sequence >= 2,
+            )
+            packet_data["source_action_id"] = action.id
+            packet_data["additional_tune_boost"] = final_damage
+            packet = packet_from_mapping(packet_data)
+            data["last_seraphic_duet_trail_stack_snapshot"] = trail_snapshot
+            data["last_seraphic_duet_trail_stack_factor"] = final_damage
+            data["last_seraphic_duet_fusion_effect_stacks_before"] = effect_stacks
+            data["last_seraphic_duet_fusion_effect_stacks_after"] = effect_stacks
+            data["last_seraphic_duet_fusion_settlement_multiplier"] = final_damage
+            data["last_seraphic_duet_followup_variant"] = packet.variant
+            data["last_seraphic_duet_followup_repeat_count"] = 1
+            data["last_seraphic_duet_followup_multiplier"] = float(packet.source_multiplier or 0.0)
+            data["last_seraphic_duet_followup_source_rows"] = list(packet.source_rows)
+            data["last_seraphic_duet_followup_source_status"] = packet.source_status
+            data["last_seraphic_duet_consumed_fusion_trail_stacks"] = 0 if preservation else trail_snapshot
+            data["last_seraphic_duet_trail_consumed"] = not preservation
+            data["last_seraphic_duet_trail_preservation_active"] = preservation
+            if preservation:
+                data["trail_no_cost_remaining"] = 0.0
+                data["last_seraphic_duet_trail_no_cost_consumed"] = True
+            else:
+                data["fusion_trail_stacks"] = 0
+                data["fusion_trail_remaining"] = 0.0
+            return [packet]
+        return []
+
     def on_party_tune_response_resolved(
         self,
         state: Any,
@@ -303,8 +401,10 @@ class AemeathMechanic(CharacterMechanic):
         if response_damage <= 0.0:
             return None
 
-        before = max(0, min(RUPTUROUS_TRAIL_MAX_STACKS, int(getattr(state, "rupturous_trail_stacks", 0) or 0)))
-        after = min(RUPTUROUS_TRAIL_MAX_STACKS, before + RUPTUROUS_TRAIL_GAIN_PER_RESPONSE)
+        trail_cap = self._rupturous_trail_cap(state)
+        gain = self._rupturous_trail_gain(state, source="party_tune_response")
+        before = max(0, min(trail_cap, int(getattr(state, "rupturous_trail_stacks", 0) or 0)))
+        after = min(trail_cap, before + gain)
         event = {
             "event_type": "rupturous_trail_gain",
             "tune_break_event_id": response_context.get("tune_break_event_id"),
@@ -315,12 +415,12 @@ class AemeathMechanic(CharacterMechanic):
             "triggered": True,
             "response_damage": response_damage,
             "stacks_before": before,
-            "requested_gain": RUPTUROUS_TRAIL_GAIN_PER_RESPONSE,
+            "requested_gain": gain,
             "applied_gain": after - before,
             "stack_gain": after - before,
-            "stack_gain_requested": RUPTUROUS_TRAIL_GAIN_PER_RESPONSE,
+            "stack_gain_requested": gain,
             "stacks_after": after,
-            "max_stacks": RUPTUROUS_TRAIL_MAX_STACKS,
+            "max_stacks": trail_cap,
             "duration": RUPTUROUS_TRAIL_DURATION,
             "remaining_after": RUPTUROUS_TRAIL_DURATION,
             "duration_refresh_rule": "refresh_aggregate_duration_to_30s_on_each_application",
@@ -413,7 +513,21 @@ class AemeathMechanic(CharacterMechanic):
             data["forte_enhancement_stacks"] = int(data.get("forte_enhancement_max_stacks", 2) or 2)
             data["forte_enhancement_remaining"] = 30.0
             data["trail_no_cost_remaining"] = 30.0
-        else:
+        if action.id in {"aemeath_sync_strike_armament_merge", "aemeath_sync_strike_call_of_dawn"}:
+            pending = int(data.pop("s6_pending_enhanced_trajectory_grant", 0) or 0)
+            if pending:
+                self._grant_rupturous_trail(state, pending, source="s6_enhanced_skill_post_action")
+            if aemeath_resonance_mode_from_config(getattr(state, "mechanics_config", {}) or {}) == "fusion_burst":
+                apply_aemeath_fusion_effect_event(
+                    state,
+                    source_character_id=action.character_id,
+                    source_action_id=action.id,
+                    source_event_id=action.id,
+                    apply_base_effect=True,
+                    counts_as_party_application=True,
+                    combat_time=float(getattr(state, "combat_time", 0.0) or 0.0),
+                )
+        if action.id == "aemeath_form_switch_to_aemeath_after_overdrive":
             data["overdrive_form_switch_window_remaining"] = 0
         if consumed_instant_response:
             data["instant_response"] = False
@@ -452,6 +566,15 @@ class AemeathMechanic(CharacterMechanic):
                 data["forte_enhancement_stacks"] = 0
         if data["trail_no_cost_remaining"] > 0.0:
             data["trail_no_cost_remaining"] = max(0.0, data["trail_no_cost_remaining"] - combat_elapsed)
+        if FUSION_EFFECT_DURATION_SECONDS is not None and data["fusion_effect_remaining"] > 0.0:
+            data["fusion_effect_remaining"] = max(0.0, data["fusion_effect_remaining"] - combat_elapsed)
+            if data["fusion_effect_remaining"] <= 0.0:
+                data["fusion_effect_stacks"] = 0
+        if (
+            aemeath_resonance_mode_from_config(getattr(state, "mechanics_config", {}) or {}) == "fusion_burst"
+            and float(getattr(state, "combat_time", 0.0) or 0.0) > 0.0
+        ):
+            self._ensure_fusion_minimum_effect(state)
         if data["fusion_trail_remaining"] > 0.0:
             data["fusion_trail_remaining"] = max(0.0, data["fusion_trail_remaining"] - combat_elapsed)
             if data["fusion_trail_remaining"] <= 0.0:
@@ -514,11 +637,15 @@ class AemeathMechanic(CharacterMechanic):
             "overdrive_form_switch_window_remaining": data["overdrive_form_switch_window_remaining"],
             "target_rupturous_trail_stacks": int(getattr(state, "rupturous_trail_stacks", 0) or 0),
             "target_rupturous_trail_remaining": float(getattr(state, "rupturous_trail_remaining", 0.0) or 0.0),
-            "target_rupturous_trail_max_stacks": RUPTUROUS_TRAIL_MAX_STACKS,
+            "target_rupturous_trail_max_stacks": self._rupturous_trail_cap(state),
             "rupturous_trail_state_source": "CombatState",
             "fusion_trail_stacks": data["fusion_trail_stacks"],
             "fusion_trail_remaining": data["fusion_trail_remaining"],
-            "fusion_trail_max_stacks": data["fusion_trail_max_stacks"],
+            "fusion_trail_max_stacks": self._fusion_trail_cap(state),
+            "fusion_effect_stacks": data["fusion_effect_stacks"],
+            "fusion_effect_remaining": data["fusion_effect_remaining"],
+            "fusion_effect_max_stacks": data["fusion_effect_max_stacks"],
+            "fusion_application_last_trigger_time": dict(data["fusion_application_last_trigger_time"]),
             "forte_enhancement_stacks": data["forte_enhancement_stacks"],
             "forte_enhancement_remaining": data["forte_enhancement_remaining"],
             "forte_enhancement_max_stacks": data["forte_enhancement_max_stacks"],
@@ -542,6 +669,9 @@ class AemeathMechanic(CharacterMechanic):
             "last_seraphic_duet_trail_preservation_after": data["last_seraphic_duet_trail_preservation_after"],
             "last_seraphic_duet_trail_consumed": data["last_seraphic_duet_trail_consumed"],
             "last_seraphic_duet_total_extra_tune_multiplier": data["last_seraphic_duet_total_extra_tune_multiplier"],
+            "last_seraphic_duet_fusion_effect_stacks_before": data["last_seraphic_duet_fusion_effect_stacks_before"],
+            "last_seraphic_duet_fusion_effect_stacks_after": data["last_seraphic_duet_fusion_effect_stacks_after"],
+            "last_seraphic_duet_fusion_settlement_multiplier": data["last_seraphic_duet_fusion_settlement_multiplier"],
             "forte_unresolved_runtime_notes": list(data.get("forte_unresolved_runtime_notes", [])),
             "single_target_aemeath_forte_trail_state": True,
         }
@@ -571,7 +701,8 @@ class AemeathMechanic(CharacterMechanic):
         data.pop("rupturous_trail_stacks", None)
         data.pop("rupturous_trail_remaining", None)
         data.pop("rupturous_trail_max_stacks", None)
-        data["fusion_trail_max_stacks"] = max(1, int(data.get("fusion_trail_max_stacks", 5) or 5))
+        data["fusion_trail_max_stacks"] = max(1, int(data.get("fusion_trail_max_stacks", 60) or 60))
+        data["fusion_effect_max_stacks"] = max(1, int(data.get("fusion_effect_max_stacks", 10) or 10))
         data["forte_enhancement_max_stacks"] = max(1, int(data.get("forte_enhancement_max_stacks", 2) or 2))
         data["forte_enhancement_stacks"] = max(
             0,
@@ -586,6 +717,17 @@ class AemeathMechanic(CharacterMechanic):
             min(data["fusion_trail_max_stacks"], int(data.get("fusion_trail_stacks", 0) or 0)),
         )
         data["fusion_trail_remaining"] = max(0.0, float(data.get("fusion_trail_remaining", 0.0) or 0.0))
+        data["fusion_effect_stacks"] = max(
+            0,
+            min(data["fusion_effect_max_stacks"], int(data.get("fusion_effect_stacks", 0) or 0)),
+        )
+        data["fusion_effect_remaining"] = max(0.0, float(data.get("fusion_effect_remaining", 0.0) or 0.0))
+        if FUSION_EFFECT_DURATION_SECONDS is not None and data["fusion_effect_remaining"] <= 0.0:
+            data["fusion_effect_stacks"] = 0
+        if not isinstance(data.get("fusion_application_last_trigger_time"), dict):
+            data["fusion_application_last_trigger_time"] = {}
+        if not isinstance(data.get("fusion_trail_event_log"), list):
+            data["fusion_trail_event_log"] = []
         data["last_seraphic_duet_consumed_rupturous_trail_stacks"] = max(
             0, int(data.get("last_seraphic_duet_consumed_rupturous_trail_stacks", 0) or 0)
         )
@@ -624,6 +766,15 @@ class AemeathMechanic(CharacterMechanic):
         data["last_seraphic_duet_trail_stack_factor"] = max(
             1.0, float(data.get("last_seraphic_duet_trail_stack_factor", 1.0) or 1.0)
         )
+        data["last_seraphic_duet_fusion_effect_stacks_before"] = max(
+            0, int(data.get("last_seraphic_duet_fusion_effect_stacks_before", 0) or 0)
+        )
+        data["last_seraphic_duet_fusion_effect_stacks_after"] = max(
+            0, int(data.get("last_seraphic_duet_fusion_effect_stacks_after", 0) or 0)
+        )
+        data["last_seraphic_duet_fusion_settlement_multiplier"] = max(
+            0.0, float(data.get("last_seraphic_duet_fusion_settlement_multiplier", 0.0) or 0.0)
+        )
         data["last_seraphic_duet_trail_preservation_active"] = bool(
             data.get("last_seraphic_duet_trail_preservation_active", False)
         )
@@ -658,6 +809,71 @@ class AemeathMechanic(CharacterMechanic):
     def _clear_sync_strike_window(self, data: dict[str, Any]) -> None:
         data["sync_strike_window_type"] = None
         data["sync_strike_window_remaining"] = 0
+
+    def _rupturous_trail_cap(self, state: Any) -> int:
+        account_state = state.character_mechanics_state.get("_account_constellation", {})
+        sequence = int(account_state.get("aemeath_sequence", 0) or 0)
+        return 60 if sequence >= 6 else RUPTUROUS_TRAIL_MAX_STACKS
+
+    def _fusion_trail_cap(self, state: Any) -> int:
+        account_state = state.character_mechanics_state.get("_account_constellation", {})
+        return 60 if int(account_state.get("aemeath_sequence", 0) or 0) >= 6 else 30
+
+    def _fusion_final_damage_multiplier(self, *, removed_trajectory_count: int, enhancement_state: bool) -> float:
+        stacks = max(0, int(removed_trajectory_count))
+        return 1.0 + (4.0 if enhancement_state else 2.0) + (0.15 if enhancement_state else 0.10) * stacks
+
+    def _ensure_fusion_minimum_effect(self, state: Any) -> None:
+        """Maintain the workbook's in-combat minimum Fusion Effect without a party application."""
+        data = self._state(state)
+        if int(data.get("fusion_effect_stacks", 0) or 0) > 0:
+            return
+        data["fusion_effect_stacks"] = 1
+        data["fusion_effect_remaining"] = 0.0
+        data["fusion_trail_event_log"].append(
+            {
+                "event_type": "fusion_effect_in_combat_minimum",
+                "fusion_effect_duration_seconds": FUSION_EFFECT_DURATION_SECONDS,
+                "fusion_effect_duration_policy": "persistent_while_in_combat_source_duration_not_specified",
+                "fusion_effect_stacks_before": 0,
+                "fusion_effect_stacks_after": 1,
+                "base_trajectory_gain": 0,
+                "s6_post_application_gain": 0,
+                "source_ref": "\u89d2\u8272-\u5973!D2844",
+            }
+        )
+
+
+    def _rupturous_trail_gain(self, state: Any, *, source: str) -> int:
+        account_state = state.character_mechanics_state.get("_account_constellation", {})
+        sequence = int(account_state.get("aemeath_sequence", 0) or 0)
+        if sequence < 6:
+            return RUPTUROUS_TRAIL_GAIN_PER_RESPONSE
+        gain = RUPTUROUS_TRAIL_GAIN_PER_RESPONSE
+        if source == "party_tune_response":
+            gain += 10
+        return gain
+
+    def _grant_rupturous_trail(self, state: Any, gain: int, *, source: str) -> None:
+        cap = self._rupturous_trail_cap(state)
+        before = max(0, min(cap, int(getattr(state, "rupturous_trail_stacks", 0) or 0)))
+        after = min(cap, before + max(0, int(gain)))
+        state.rupturous_trail_stacks = after
+        state.rupturous_trail_remaining = RUPTUROUS_TRAIL_DURATION
+        state.rupturous_trail_event_log.append(
+            {
+                "event_type": "rupturous_trail_gain",
+                "source": source,
+                "stacks_before": before,
+                "requested_gain": int(gain),
+                "applied_gain": after - before,
+                "stacks_after": after,
+                "max_stacks": cap,
+                "duration": RUPTUROUS_TRAIL_DURATION,
+                "remaining_after": RUPTUROUS_TRAIL_DURATION,
+                "source_status": "account_s6_workbook_confirmed",
+            }
+        )
 
     def _is_finale_ready(self, data: dict[str, Any]) -> bool:
         return (

@@ -90,6 +90,7 @@ COMBAT_STAT_FIELDS = {"crit_rate", "crit_damage", "energy_regen"}
 DEFAULT_ATTACK_REFERENCE_TOLERANCE = 0.01
 DEFAULT_REFERENCE_TOLERANCE = DEFAULT_ATTACK_REFERENCE_TOLERANCE
 ACCOUNT_BUILD_PROFILE_OVERLAY = "account_build_profiles_v120.json"
+ACCOUNT_CONSTELLATION_MECHANICS_OVERLAY = "account_constellation_mechanics_v121.json"
 
 
 def normalize_damage_bonus_category(value: str | None) -> str:
@@ -148,7 +149,8 @@ def normalize_scaling_stat(value: str | None, *, default: str = "unresolved") ->
 def load_build_profiles(data_dir: Path | str = "data") -> dict[str, Any]:
     base = load_base_build_profiles(data_dir)
     overlay = load_build_profile_overlay(data_dir)
-    return merge_build_profile_overlay(base, overlay)
+    merged = merge_build_profile_overlay(base, overlay)
+    return merge_account_constellation_profile_updates(merged, load_account_constellation_profile_updates(data_dir))
 
 
 def load_base_build_profiles(data_dir: Path | str = "data") -> dict[str, Any]:
@@ -168,6 +170,20 @@ def load_build_profile_overlay(data_dir: Path | str = "data") -> dict[str, Any]:
     if not isinstance(overlay, dict) or not isinstance(overlay.get("profiles"), dict):
         raise ValueError(f"Malformed build profile overlay: {path}")
     return overlay
+
+
+def load_account_constellation_profile_updates(data_dir: Path | str = "data") -> dict[str, Any]:
+    path = Path(data_dir) / ACCOUNT_CONSTELLATION_MECHANICS_OVERLAY
+    if not path.exists():
+        return {}
+    with path.open("r", encoding="utf-8-sig") as file:
+        payload = json.load(file)
+    updates = payload.get("profile_updates") if isinstance(payload, dict) else None
+    if updates is None:
+        return {}
+    if not isinstance(updates, dict):
+        raise ValueError(f"Malformed account constellation profile updates: {path}")
+    return updates
 
 
 def merge_build_profile_overlay(base: dict[str, Any], overlay: dict[str, Any] | None) -> dict[str, Any]:
@@ -203,6 +219,50 @@ def merge_build_profile_overlay(base: dict[str, Any], overlay: dict[str, Any] | 
                 raise ValueError(f"Build profile overlay entry {character_id}:{profile_id} must be an account profile.")
             merged_profiles[character_id][profile_id] = copy.deepcopy(profile)
     return merged
+
+
+def merge_account_constellation_profile_updates(
+    base: dict[str, Any],
+    updates: dict[str, Any] | None,
+) -> dict[str, Any]:
+    if not updates:
+        return base
+    merged = copy.deepcopy(base)
+    merged_profiles = merged.setdefault("profiles", {})
+    base_profiles = base.get("profiles") or {}
+    for character_id in sorted(updates):
+        if character_id not in merged_profiles:
+            raise ValueError(f"Account constellation overlay references unknown character {character_id!r}.")
+        character_updates = updates[character_id]
+        if not isinstance(character_updates, dict):
+            raise ValueError(f"Account constellation overlay for {character_id!r} must be a mapping.")
+        for profile_id in sorted(character_updates):
+            if profile_id in (base_profiles.get(character_id) or {}) and not (
+                (base_profiles.get(character_id) or {}).get(profile_id) or {}
+            ).get("account_profile", False):
+                raise ValueError(
+                    f"Account constellation overlay may update only account profiles, got base profile "
+                    f"{character_id}:{profile_id}."
+                )
+            existing = (merged_profiles.get(character_id) or {}).get(profile_id)
+            if not isinstance(existing, dict) or not existing.get("account_profile", False):
+                raise ValueError(
+                    f"Account constellation overlay may update only existing account profiles, got "
+                    f"{character_id}:{profile_id}."
+                )
+            update = character_updates[profile_id]
+            if not isinstance(update, dict):
+                raise ValueError(f"Account constellation overlay entry {character_id}:{profile_id} must be an object.")
+            _deep_update(existing, update)
+    return merged
+
+
+def _deep_update(target: dict[str, Any], source: dict[str, Any]) -> None:
+    for key, value in source.items():
+        if isinstance(value, dict) and isinstance(target.get(key), dict):
+            _deep_update(target[key], value)
+        else:
+            target[key] = copy.deepcopy(value)
 
 
 def get_available_build_profiles(

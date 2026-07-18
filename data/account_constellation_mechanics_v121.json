@@ -1,0 +1,127 @@
+{
+  "schema_version": "account_constellation_mechanics_v121",
+  "source_contract": "data/source/user_account_constellation_single_boss_v121.json",
+  "scope_contract": "data/account_simulation_scope_v121.json",
+  "observation": {
+    "version": "slot_account_constellation_single_boss_v6",
+    "shape": 330,
+    "extends_existing_v5_shape_without_replacing_it": true,
+    "legacy_v5_shape": 314,
+    "policy_action_count_unchanged": 25
+  },
+  "runtime_message": "Constellation mechanics implemented for single boss. Account party and baseline are not configured. Kill, wave, and survival effects are unsupported.",
+  "profile_updates": {
+    "aemeath": {
+      "aemeath_account_actual_01": {
+        "display_name": "Aemeath Account Actual 01 - Stored - single-boss constellation mechanics",
+        "description": "User account Aemeath S6 stat-screen profile. Candidate 121 enables S1-S6 mechanics only under explicit single-persistent-boss/no-kill/no-survival scope.",
+        "implementation_status": "account_single_boss_constellation_implemented",
+        "simulation_ready": true,
+        "simulation_block_reason": null,
+        "simulation_lock_message": "Constellation mechanics implemented for single boss. Account party and baseline are not configured. Kill, wave, and survival effects are unsupported.",
+        "constellation": {
+          "sequence": 6,
+          "mechanics_implemented": true,
+          "supported_scope": "single_persistent_boss_no_kill_no_survival",
+          "precombat_elapsed_seconds_required": true,
+          "unsupported_effects": [
+            "aemeath_s1_kill_trajectory_transfer",
+            "aemeath_s2_kill_detonation",
+            "aemeath_s5_all_effects",
+            "enemy_movement_or_pull",
+            "player_survival_effects"
+          ]
+        }
+      }
+    },
+    "lynae": {
+      "lynae_account_actual_01": {
+        "display_name": "Lynae Account Actual 01 - Stored - single-boss constellation mechanics",
+        "description": "User account Lynae S2 stat-screen profile. Candidate 121 enables S1-S2 mechanics only under explicit single-persistent-boss/no-kill/no-survival scope.",
+        "implementation_status": "account_single_boss_constellation_implemented",
+        "simulation_ready": true,
+        "simulation_block_reason": null,
+        "simulation_lock_message": "Constellation mechanics implemented for single boss. Account party and baseline are not configured. Kill, wave, and survival effects are unsupported.",
+        "constellation": {
+          "sequence": 2,
+          "mechanics_implemented": true,
+          "supported_scope": "single_persistent_boss_no_kill_no_survival",
+          "precombat_elapsed_seconds_required": true,
+          "unsupported_effects": [
+            "enemy_movement_or_pull",
+            "player_survival_effects"
+          ]
+        }
+      }
+    },
+    "mornye": {
+      "mornye_account_actual_01": {
+        "display_name": "Mornye Account Actual 01 - Stored - single-boss constellation mechanics",
+        "description": "User account Mornye S3 stat-screen profile. Candidate 121 enables S1-S3 mechanics only under explicit single-persistent-boss/no-kill/no-survival scope.",
+        "implementation_status": "account_single_boss_constellation_implemented",
+        "simulation_ready": true,
+        "simulation_block_reason": null,
+        "simulation_lock_message": "Constellation mechanics implemented for single boss. Account party and baseline are not configured. Kill, wave, and survival effects are unsupported.",
+        "constellation": {
+          "sequence": 3,
+          "mechanics_implemented": true,
+          "supported_scope": "single_persistent_boss_no_kill_no_survival",
+          "precombat_elapsed_seconds_required": true,
+          "unsupported_effects": [
+            "enemy_movement_or_pull",
+            "player_survival_effects"
+          ]
+        }
+      }
+    }
+  },
+  "mechanics": {
+    "aemeath": {
+      "sequence": 6,
+      "implemented": [
+        "S1 Instant Response heavy/mech-heavy crit damage +3.00",
+        "S1 Radiance precombat quick-charge when explicit precombat_elapsed_seconds > 4",
+        "S1 Charged II grants 100 Sync under Radiance quick-charge conditions",
+        "S2 enhanced Resonance Skill +100%",
+        "S2 Tune Rupture sequential final-damage stacks +20% per hit up to 5 for 1 combat second",
+        "S2 Fusion Burst 400% detonation and 15% trajectory bonus",
+        "S3 Finale +100%, Overdrive +40%, contributor crit-damage branches and threshold deepen",
+        "S4 party all-attribute damage bonus +20% for 30 combat seconds",
+        "S6 Aemeath Liberation target deepen +40%",
+        "S6 fixed crit expected multiplier with 80% crit rate and 275% crit damage",
+        "S6 trajectory cap/gain rules"
+      ],
+      "unsupported": [
+        "S1 kill trajectory transfer",
+        "S2 kill detonation",
+        "S5 all effects"
+      ]
+    },
+    "lynae": {
+      "sequence": 2,
+      "implemented": [
+        "S1 Light Leap multiplier +120%",
+        "S1 paint duration 600 frames with exact no-endpoint scheduled status ticks",
+        "S1 precombat Optical Sampling overflow restore 120 when explicit precombat_elapsed_seconds > 2",
+        "S2 self all-damage deepen +25%",
+        "S2 Outro next incoming all-damage deepen total 40 general and 65 Liberation-specific",
+        "S2 Collective Interference cap +1"
+      ],
+      "diagnostic_only": [
+        "paint pull"
+      ]
+    },
+    "mornye": {
+      "sequence": 3,
+      "implemented": [
+        "S1 marker duration 20 seconds",
+        "S1 Observation Marker directly applies Interfered Marker",
+        "S1 marker amp uses Energy Regen excess and no longer requires target interference state",
+        "S2 marker conditional crit damage cap 32%",
+        "S2 Syntony Field Off-Tune efficiency total 70%",
+        "S3 Distributed Array +25 Concerto and +100 Relative Momentum with independent 25s ICD",
+        "S3 Starfield R5 remains independent +16 Concerto with 20s ICD"
+      ]
+    }
+  }
+}

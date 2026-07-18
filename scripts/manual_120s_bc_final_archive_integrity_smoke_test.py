@@ -21,7 +21,7 @@ DIRECT_ACTION_MANIFEST_SHA256 = "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28
 SOURCE_ROUTE_FILE_SHA256 = "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a"
 
 
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-120.zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-121.zip"
 EXPECTED_BC_MODEL_SHA256 = "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e"
 EXPECTED_PPO_MODEL_SHA256 = "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513"
 EXPECTED_EVAL_SELECTED_SEQUENCE_SHA256 = "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1"
@@ -374,7 +374,11 @@ REQUIRED_FILES = (
     "data/source/user_account_actual_v120.json",
     "data/account_build_profiles_v120.json",
     "data/account_weapon_extensions_v120.json",
+    "data/source/user_account_constellation_single_boss_v121.json",
+    "data/account_simulation_scope_v121.json",
+    "data/account_constellation_mechanics_v121.json",
     "simulator/account_profile_gate.py",
+    "simulator/account_constellation_effects.py",
     "scripts/user_account_actual_v120_source_contract_smoke_test.py",
     "scripts/user_account_actual_v120_build_profiles_smoke_test.py",
     "scripts/user_account_actual_v120_weapon_loadout_smoke_test.py",
@@ -384,6 +388,45 @@ REQUIRED_FILES = (
     "scripts/user_account_actual_v120_overlay_merge_smoke_test.py",
     "scripts/user_account_actual_v120_historical_party_hash_compatibility_smoke_test.py",
     "scripts/project_progress_user_account_v120_alignment_smoke_test.py",
+    "scripts/user_account_constellation_v121_source_contract_smoke_test.py",
+    "scripts/user_account_single_boss_scope_v121_smoke_test.py",
+    "scripts/aemeath_s6_single_boss_v121_smoke_test.py",
+    "scripts/aemeath_s1_precombat_v121_smoke_test.py",
+    "scripts/aemeath_s2_sequential_hit_v121_smoke_test.py",
+    "scripts/aemeath_s3_contributor_v121_smoke_test.py",
+    "scripts/aemeath_s4_party_bonus_v121_smoke_test.py",
+    "scripts/aemeath_s5_unsupported_v121_smoke_test.py",
+    "scripts/aemeath_s6_fixed_crit_trajectory_v121_smoke_test.py",
+    "scripts/lynae_s2_single_boss_v121_smoke_test.py",
+    "scripts/lynae_s1_paint_precombat_v121_smoke_test.py",
+    "scripts/lynae_s2_outro_early_end_v121_smoke_test.py",
+    "scripts/mornye_s3_single_boss_v121_smoke_test.py",
+    "scripts/mornye_s1_marker_v121_smoke_test.py",
+    "scripts/mornye_s2_marker_crit_buildup_v121_smoke_test.py",
+    "scripts/mornye_s3_starfield_independent_icd_v121_smoke_test.py",
+    "scripts/account_constellation_observation_v6_smoke_test.py",
+    "scripts/account_constellation_v121_benchmark_immutability_smoke_test.py",
+    "scripts/account_constellation_v121_runtime_test_utils.py",
+    "scripts/account_constellation_v121_runtime_dispatch_smoke_test.py",
+    "scripts/account_constellation_v121_real_action_damage_smoke_test.py",
+    "scripts/account_constellation_v121_real_resource_state_smoke_test.py",
+    "scripts/account_constellation_v121_real_buff_marker_smoke_test.py",
+    "scripts/account_constellation_v121_real_timing_expiry_smoke_test.py",
+    "scripts/account_constellation_v121_real_observation_smoke_test.py",
+    "scripts/account_constellation_v121_action_id_mapping_smoke_test.py",
+    "scripts/account_constellation_v121_source_audit_quality_smoke_test.py",
+    "scripts/account_constellation_v121_damage_accounting_parity_smoke_test.py",
+    "scripts/aemeath_s2_real_resolved_action_mapping_v121_smoke_test.py",
+    "scripts/aemeath_s3_real_contributor_runtime_v121_smoke_test.py",
+    "scripts/aemeath_s4_real_trigger_and_damage_v121_smoke_test.py",
+    "scripts/aemeath_s6_authoritative_trajectory_fixed_crit_v121_smoke_test.py",
+    "scripts/lynae_s2_first_action_and_outro_exact_v121_smoke_test.py",
+    "scripts/mornye_s2_real_marker_crit_v121_smoke_test.py",
+    "scripts/mornye_s2_field_lifetime_v121_smoke_test.py",
+    "scripts/mornye_s3_starfield_no_duplicate_v121_smoke_test.py",
+    "scripts/account_constellation_v121_authoritative_observation_smoke_test.py",
+    "scripts/account_constellation_v121_source_audit_cell_parity_smoke_test.py",
+    "scripts/project_progress_account_constellation_v121_alignment_smoke_test.py",
     "scripts/full_real_cycle_integration_smoke_test.py",
     "scripts/rl_observation_shape_guard_smoke_test.py",
     "scripts/rl_party_action_mask_smoke_test.py",
@@ -457,14 +500,15 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         completed_manifest_bytes = zf.read(completed_manifest_path)
         completed_manifest = json.loads(completed_manifest_bytes.decode("utf-8"))
         completed_progress = progress["current_in_progress_task"]["candidate_116_completed_beam"]
-        assert progress["status"]["latest_externally_verified_baseline"] == "119"
-        assert progress["status"]["current_candidate"] == "120"
-        account_progress = progress["current_in_progress_task"]["candidate_120_account_profiles"]
-        assert account_progress["simulation_status"] == "blocked_pending_constellation_mechanics"
+        assert progress["status"]["latest_externally_verified_baseline"] == "120"
+        assert progress["status"]["current_candidate"] == "121"
+        account_progress = progress["current_in_progress_task"]["candidate_121_account_constellations"]
+        assert account_progress["mechanics_implemented"] is True
+        assert account_progress["scope_id"] == "single_persistent_boss_no_kill_no_survival"
         assert account_progress["account_party_created"] is False
         assert account_progress["account_result_created"] is False
         assert account_progress["account_route_replay_executed"] is False
-        assert account_progress["beam_mcts_training_model_evaluation_executed"] is False
+        assert account_progress["training_search_or_evaluation_executed"] is False
         assert not any("account" in name and name.startswith(("results/", "models/")) for name in names)
         production_path = "results/mcts_v118_production_3x50k_v119/result_manifest.json"
         production = json.loads(zf.read(production_path).decode("utf-8"))
@@ -814,6 +858,92 @@ def scan_archive_text(zf: zipfile.ZipFile, names: list[str]) -> dict[str, int]:
     return stats
 
 
+def candidate_121_fresh_extraction_check_commands() -> list[list[str]]:
+    return [
+        [sys.executable, "scripts/user_account_constellation_v121_source_contract_smoke_test.py"],
+        [sys.executable, "scripts/user_account_single_boss_scope_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s6_single_boss_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s1_precombat_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s2_sequential_hit_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s3_contributor_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s4_party_bonus_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s5_unsupported_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s6_fixed_crit_trajectory_v121_smoke_test.py"],
+        [sys.executable, "scripts/lynae_s2_single_boss_v121_smoke_test.py"],
+        [sys.executable, "scripts/lynae_s1_paint_precombat_v121_smoke_test.py"],
+        [sys.executable, "scripts/lynae_s2_outro_early_end_v121_smoke_test.py"],
+        [sys.executable, "scripts/mornye_s3_single_boss_v121_smoke_test.py"],
+        [sys.executable, "scripts/mornye_s1_marker_v121_smoke_test.py"],
+        [sys.executable, "scripts/mornye_s2_marker_crit_buildup_v121_smoke_test.py"],
+        [sys.executable, "scripts/mornye_s3_starfield_independent_icd_v121_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_observation_v6_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_benchmark_immutability_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_runtime_dispatch_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_real_action_damage_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_real_resource_state_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_real_buff_marker_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_real_timing_expiry_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_real_observation_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_action_id_mapping_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_source_audit_quality_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_damage_accounting_parity_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s2_real_resolved_action_mapping_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s3_real_contributor_runtime_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s4_real_trigger_and_damage_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s6_authoritative_trajectory_fixed_crit_v121_smoke_test.py"],
+        [sys.executable, "scripts/lynae_s2_first_action_and_outro_exact_v121_smoke_test.py"],
+        [sys.executable, "scripts/mornye_s2_real_marker_crit_v121_smoke_test.py"],
+        [sys.executable, "scripts/mornye_s2_field_lifetime_v121_smoke_test.py"],
+        [sys.executable, "scripts/mornye_s3_starfield_no_duplicate_v121_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_authoritative_observation_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_source_audit_cell_parity_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s2_direct_coefficient_real_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s2_mechanic_hit_sequence_real_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s2_fusion_packet_real_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s2_fusion_real_action_settlement_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s2_fusion_state_consumption_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s6_fusion_fixed_crit_real_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s2_actual_tune_packet_source_parity_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s2_tune_variant_5_vs_10_hits_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s2_tune_trajectory_consumption_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s2_fusion_final_damage_zone_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_fusion_base_trigger_application_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_fusion_per_source_icd_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_fusion_in_combat_minimum_effect_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s3_fusion_heavy_application_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_fusion_natural_state_settlement_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_fusion_qte_application_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_fusion_initial_combat_minimum_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_fusion_first_action_order_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s3_fusion_heavy_source_cooldown_v121_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_metadata_runtime_alignment_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_current_runtime_metadata_strict_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_full_effect_mapping_completeness_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_no_row_only_source_refs_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s3_direct_coefficients_real_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s3_crit_damage_runtime_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s3_exact_contributor_event_and_reset_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s3_charged_mode_effect_real_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s6_liberation_deepen_real_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s6_real_packet_fixed_crit_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s6_real_trajectory_gain_seraphic_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s6_party_response_gain_exact_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s6_starburst_fixed_crit_real_v121_smoke_test.py"],
+        [sys.executable, "scripts/account_aemeath_explicit_mode_gate_v121_smoke_test.py"],
+        [sys.executable, "scripts/account_aemeath_mode_completeness_gate_v121_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s6_no_generic_trajectory_double_v121_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_source_range_sheet_parity_smoke_test.py"],
+        [sys.executable, "scripts/candidate_121_bounded_import_portability_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_exact_source_traceability_smoke_test.py"],
+        [sys.executable, "scripts/aemeath_s1_finale_prerequisite_real_v121_smoke_test.py"],
+        [sys.executable, "scripts/lynae_s1_light_leap_real_v121_smoke_test.py"],
+        [sys.executable, "scripts/lynae_s2_collective_interference_cap_real_v121_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_authoritative_trajectory_observation_smoke_test.py"],
+        [sys.executable, "scripts/account_constellation_v121_full_source_mapping_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_account_constellation_v121_alignment_smoke_test.py"],
+    ]
+
+
 def candidate_120_fresh_extraction_check_commands() -> list[list[str]]:
     return [
         [sys.executable, "scripts/user_account_actual_v120_source_contract_smoke_test.py"],
@@ -968,7 +1098,8 @@ def legacy_fresh_extraction_check_commands() -> list[list[str]]:
 
 def fresh_extraction_check_commands() -> list[list[str]]:
     checks = (
-        candidate_120_fresh_extraction_check_commands()
+        candidate_121_fresh_extraction_check_commands()
+        + candidate_120_fresh_extraction_check_commands()
         + candidate_119_fresh_extraction_check_commands()
         + legacy_fresh_extraction_check_commands()
     )
@@ -1101,6 +1232,7 @@ def _progress_contains(progress: object, value: str) -> bool:
 
 def _run(command: list[str], *, cwd: Path, timeout: float) -> dict[str, Any]:
     env = dict(os.environ)
+    env.pop("PYTHONPATH", None)
     env.update(
         {
             "OMP_NUM_THREADS": "1",

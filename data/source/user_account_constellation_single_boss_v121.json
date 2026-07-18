@@ -1,0 +1,862 @@
+{
+  "schema_version": "user_account_constellation_single_boss_v121",
+  "candidate": "121",
+  "baseline": {
+    "latest_externally_verified_baseline": "120",
+    "archive": "ww-dps-simulator-2-120(1).zip",
+    "archive_sha256": "e61f7152726fdc7c05719c543cee67264a965af9d152c6e8de59d2f59f79b248"
+  },
+  "workbook": {
+    "local_name": "wuthering_waves_action_data.xlsx",
+    "sha256": "81604978551989b5575e2d637ad4dfeb8c3b3b34d48e00a9ea79e9008c62f1f9",
+    "verified_locally": true,
+    "canonical_encoding": "utf-8",
+    "exact_cell_refs": [
+      {
+        "ref": "角色-女!D2844",
+        "contains": "震谐轨迹"
+      },
+      {
+        "ref": "角色-女!C2679",
+        "contains": "视觉冲击"
+      },
+      {
+        "ref": "角色-女!D2679",
+        "contains": "全队30秒内谐破增幅提升40点"
+      },
+      {
+        "ref": "角色-女!C2728",
+        "contains": "共鸣模态·琳奈"
+      },
+      {
+        "ref": "角色-女!C4122",
+        "contains": "谐振场-偏谐效率"
+      },
+      {
+        "ref": "角色-女!D4122",
+        "contains": "解锁C2时额外+20%"
+      },
+      {
+        "ref": "伤害配置!F459",
+        "contains": "全队偏谐值累积效率+20%"
+      },
+      {
+        "ref": "伤害配置!F476",
+        "contains": "目标轨迹层数上限+30"
+      },
+      {
+        "ref": "伤害配置!F776",
+        "contains": "全伤害加深+25%"
+      },
+      {
+        "ref": "伤害配置!F777",
+        "contains": "变奏出场角色全伤害加深+25%"
+      }
+    ]
+  },
+  "web_sources": [
+    {
+      "id": "bwiki_aemeath",
+      "character_id": "aemeath",
+      "url": "https://wiki.biligame.com/wutheringwaves/%E5%85%B1%E9%B8%A3%E8%80%85/%E7%88%B1%E5%BC%A5%E6%96%AF",
+      "access_date": "2026-07-17",
+      "status": "public_character_resonance_chain_reference"
+    },
+    {
+      "id": "bwiki_lynae",
+      "character_id": "lynae",
+      "url": "https://wiki.biligame.com/wutheringwaves/%E5%85%B1%E9%B8%A3%E8%80%85/%E7%90%B3%E5%A5%88",
+      "access_date": "2026-07-17",
+      "status": "public_character_resonance_chain_reference"
+    },
+    {
+      "id": "bwiki_mornye",
+      "character_id": "mornye",
+      "url": "https://wiki.biligame.com/wutheringwaves/%E5%85%B1%E9%B8%A3%E8%80%85/%E8%8E%AB%E5%AE%81",
+      "access_date": "2026-07-17",
+      "status": "public_character_resonance_chain_reference"
+    },
+    {
+      "id": "uploaded_workbook_sha256_81604978551989b5575e2d637ad4dfeb8c3b3b34d48e00a9ea79e9008c62f1f9",
+      "access_date": "2026-07-17",
+      "status": "local_uploaded_source"
+    }
+  ],
+  "scope": {
+    "supported_scope": "single_persistent_boss_no_kill_no_survival",
+    "enemy_model": "single_persistent_target",
+    "enemy_count": 1,
+    "enemy_death_respawn_waves": false,
+    "player_hp_death_survival": false,
+    "target_pull_movement": false,
+    "precombat_elapsed_seconds_required": true,
+    "explicit_zero_precombat_allowed": true,
+    "default_precombat_not_inferred": true
+  },
+  "source_text": {
+    "aemeath": {
+      "source_backed_interpretation": [
+        "状态下，重击暴击伤害提升百分之三百；非战斗超过四秒获得即刻响应辉芒。",
+        "二段蓄力获得一百点同步值；击败转移与击败引爆不在单首领范围内。",
+        "共鸣解放伤害提升百分之四十；震谐与聚爆相关上限提升至六十层。"
+      ],
+      "korean_interpretation": "단일 지속 보스 범위에서는 처치 전이, 처치 폭발, 생존 효과를 배제하고 즉각 응답, 동조, 강화 피해, 파티 버프, 궤적 규칙만 구현한다.",
+      "english_interpretation": "Only source-backed single persistent boss mechanics are active. Kill transfer, kill detonation, S5, movement, and survival clauses are unsupported and must not be approximated."
+    },
+    "lynae": {
+      "source_backed_interpretation": [
+        "跃迁伤害提升百分之一百二十。",
+        "涂绘区域持续时间由三百帧延长至六百帧；吸引效果仅记录诊断。",
+        "退场后下一名角色获得伤害加深，切换至其他角色时提前结束。"
+      ],
+      "korean_interpretation": "단일 지속 보스 범위에서는 도약 추가 피해, 분사장 지속 시간, 사전 오버플로 회복, 자기 및 다음 등장 캐릭터 피해 심화만 구현한다.",
+      "english_interpretation": "Paint pull remains diagnostic-only because movement and pull are outside the account single-boss scope."
+    },
+    "mornye": {
+      "source_backed_interpretation": [
+        "观测标记持续二十秒，并同时附加干涉标记。",
+        "共鸣效率超过百分之一的部分转化为暴击伤害，上限百分之三十二。",
+        "施放分布式阵列时回复二十五点协奏能量和一百点相对动量，每二十五秒触发一次。"
+      ],
+      "korean_interpretation": "단일 지속 보스 범위에서는 관측 표식, 공명 효율 기반 치명 피해, 편향 축적 효율, 분산 배열 자원 회복과 별빛 보정기 독립 재사용 대기시간만 구현한다.",
+      "english_interpretation": "Marker-dependent values disappear when the marker is absent; Starfield R5 remains a separate weapon ICD."
+    }
+  },
+  "effect_mappings": [
+    {
+      "effect_id": "aemeath_s1_heavy_crit_damage",
+      "character_id": "aemeath",
+      "sequence": 1,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FE73",
+        "base!FN73"
+      ],
+      "exact_source_excerpt": "速蓄状态下，蓄力期间获得牵引效果、重击/强化重击的暴击伤害提升300%。",
+      "implementation_interpretation": "Applies aemeath s1 heavy crit damage through characters/aemeath.py::AemeathMechanic.get_action_damage_multiplier using the source-backed value/timing (300%) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "characters/aemeath.py::AemeathMechanic.get_action_damage_multiplier",
+      "real_end_to_end_test_id": "scripts/aemeath_s1_finale_prerequisite_real_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s1_precombat_radiance",
+      "character_id": "aemeath",
+      "sequence": 1,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FE73",
+        "base!FN73"
+      ],
+      "exact_source_excerpt": "非战斗状态且不处于重击/强化重击/大招2动作超过4秒时，获得C1速蓄状态，此时若未持有【大招2解锁前置】，施放强化重击时可额外获得100点同步率。",
+      "implementation_interpretation": "Applies aemeath s1 precombat radiance through simulator/account_constellation_effects.py::apply_precombat_constellation_state using the source-backed value/timing (4) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::apply_precombat_constellation_state",
+      "real_end_to_end_test_id": "scripts/aemeath_s1_finale_prerequisite_real_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s1_charged_ii_sync",
+      "character_id": "aemeath",
+      "sequence": 1,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FE73",
+        "base!FN73"
+      ],
+      "exact_source_excerpt": "非战斗状态且不处于重击/强化重击/大招2动作超过4秒时，获得C1速蓄状态，此时若未持有【大招2解锁前置】，施放强化重击时可额外获得100点同步率。",
+      "implementation_interpretation": "Applies aemeath s1 charged ii sync through characters/aemeath.py::AemeathMechanic.resolve_action using the source-backed value/timing (100) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "characters/aemeath.py::AemeathMechanic.resolve_action",
+      "real_end_to_end_test_id": "scripts/aemeath_s1_finale_prerequisite_real_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s1_kill_trajectory_transfer_unsupported",
+      "character_id": "aemeath",
+      "sequence": 1,
+      "support_status": "unsupported_scope",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FE73",
+        "base!FN73"
+      ],
+      "exact_source_excerpt": "攻击击杀目标后记录其最高震谐/聚爆轨迹层数，10秒内可复制给下一命中目标并清空记录，清空后记录冷却1秒。",
+      "implementation_interpretation": "Records aemeath_s1_kill_trajectory_transfer_unsupported from the source clause (攻击击杀目标, 10) but excludes enemy death, replacement, revive, or kill settlement from the accepted single-boss runtime.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::unsupported_constellation_effects",
+      "real_end_to_end_test_id": "scripts/aemeath_s1_finale_prerequisite_real_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s2_direct_enhanced_skill_coefficient",
+      "character_id": "aemeath",
+      "sequence": 2,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FF73",
+        "base!FO73"
+      ],
+      "exact_source_excerpt": "除强化E-震谐/震谐增幅以外的强化E伤害倍率提升100%。",
+      "implementation_interpretation": "Applies aemeath s2 direct enhanced skill coefficient through simulator/account_constellation_effects.py::aemeath_s2_skill_multiplier using the source-backed value/timing (100%) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s2_skill_multiplier",
+      "real_end_to_end_test_id": "scripts/aemeath_s2_actual_tune_packet_source_parity_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s2_tune_packet_normal",
+      "character_id": "aemeath",
+      "sequence": 2,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "角色-女!C2786:D2787",
+        "角色-女!C2931:D2932",
+        "角色技能类型!A2724:I2725",
+        "dmg!B2578:B2579"
+      ],
+      "exact_source_excerpt": "持续帧内每4F进行一次判定，最多5次，每次随机命中1个目标",
+      "implementation_interpretation": "Applies aemeath s2 tune packet normal through simulator/account_constellation_effects.py::aemeath_s2_tune_sequential_multipliers using the source-backed value/timing (4F, 5) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s2_tune_sequential_multipliers",
+      "real_end_to_end_test_id": "scripts/aemeath_s2_actual_tune_packet_source_parity_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s2_tune_packet_enhanced",
+      "character_id": "aemeath",
+      "sequence": 2,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "角色-女!C2786:D2787",
+        "角色-女!C2931:D2932",
+        "角色技能类型!A2779:I2780",
+        "dmg!B2628:B2629"
+      ],
+      "exact_source_excerpt": "持续帧内每2F进行一次判定，最多10次，每次随机命中1个目标",
+      "implementation_interpretation": "Applies aemeath s2 tune packet enhanced through simulator/account_constellation_effects.py::aemeath_s2_tune_sequential_multipliers using the source-backed value/timing (2F, 10) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s2_tune_sequential_multipliers",
+      "real_end_to_end_test_id": "scripts/aemeath_s2_actual_tune_packet_source_parity_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s2_tune_per_hit_stack",
+      "character_id": "aemeath",
+      "sequence": 2,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FF73",
+        "base!FO73"
+      ],
+      "exact_source_excerpt": "震谐模态：强化E-震谐/震谐增幅命中后，其对该目标造成的3类最终伤害提升20%，最多提升100%，持续1秒，重复命中刷新持续时间。",
+      "implementation_interpretation": "Applies aemeath s2 tune per hit stack through simulator/account_constellation_effects.py::aemeath_s2_tune_sequential_multipliers using the source-backed value/timing (20%) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s2_tune_sequential_multipliers",
+      "real_end_to_end_test_id": "scripts/aemeath_s2_actual_tune_packet_source_parity_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s2_tune_stack_duration_refresh",
+      "character_id": "aemeath",
+      "sequence": 2,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FF73",
+        "base!FO73"
+      ],
+      "exact_source_excerpt": "持续1秒，重复命中刷新持续时间。",
+      "implementation_interpretation": "Applies aemeath s2 tune stack duration refresh through simulator/account_constellation_effects.py::aemeath_s2_tune_sequential_multipliers using the source-backed value/timing (持续1秒，重复命中刷新) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s2_tune_sequential_multipliers",
+      "real_end_to_end_test_id": "scripts/aemeath_s2_actual_tune_packet_source_parity_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s2_tune_trajectory_removed_bonus",
+      "character_id": "aemeath",
+      "sequence": 2,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "角色-女!D2844"
+      ],
+      "exact_source_excerpt": "·施放强化E期间，移除目标震谐轨迹层数，每移除1层，使 强化E-震谐/震谐增幅 对目标造成伤害时获得2类最终伤害提升4%，持续1秒，该提升至多叠加60层。",
+      "implementation_interpretation": "Applies aemeath s2 tune trajectory removed bonus through characters/aemeath.py::AemeathMechanic._rupturous_trail_gain using the source-backed value/timing (4%) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "characters/aemeath.py::AemeathMechanic._rupturous_trail_gain",
+      "real_end_to_end_test_id": "scripts/aemeath_s2_actual_tune_packet_source_parity_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s2_fusion_base_enhancement_formula",
+      "character_id": "aemeath",
+      "sequence": 2,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "角色-女!C2788:D2788",
+        "角色-女!C2933:D2933",
+        "dmg!B2589",
+        "dmg!DB2589:DC2589",
+        "伤害计算!T299:V308"
+      ],
+      "exact_source_excerpt": "命中目标持有聚爆轨迹时，结算上限层数的聚爆效应伤害",
+      "implementation_interpretation": "Applies aemeath s2 fusion base enhancement formula through simulator/account_constellation_effects.py::aemeath_s2_fusion_final_damage_multiplier using the source-backed value/timing (结算, 聚爆) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s2_fusion_final_damage_multiplier",
+      "real_end_to_end_test_id": "scripts/aemeath_s2_actual_tune_packet_source_parity_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s2_fusion_c2_enhancement_formula",
+      "character_id": "aemeath",
+      "sequence": 2,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FF73",
+        "base!FO73"
+      ],
+      "exact_source_excerpt": "聚爆模态：强化E增幅状态对强化E引爆的聚爆效应121类最终伤害提升效果提升至400%；聚爆轨迹对强化E引爆的聚爆效应121类最终伤害提升效果提升至15%。",
+      "implementation_interpretation": "Applies aemeath s2 fusion c2 enhancement formula through simulator/account_constellation_effects.py::aemeath_s2_fusion_final_damage_multiplier using the source-backed value/timing (400%, 15%) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s2_fusion_final_damage_multiplier",
+      "real_end_to_end_test_id": "scripts/aemeath_s2_actual_tune_packet_source_parity_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s2_kill_settlement_unsupported",
+      "character_id": "aemeath",
+      "sequence": 2,
+      "support_status": "unsupported_scope",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "角色-女!D2844"
+      ],
+      "exact_source_excerpt": "·死亡时，结算上限层数的聚爆效应",
+      "implementation_interpretation": "Records aemeath_s2_kill_settlement_unsupported from the source clause (死亡时，结算) but excludes enemy death, replacement, revive, or kill settlement from the accepted single-boss runtime.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::unsupported_constellation_effects",
+      "real_end_to_end_test_id": "scripts/aemeath_s2_actual_tune_packet_source_parity_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s3_finale_coefficient",
+      "character_id": "aemeath",
+      "sequence": 3,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FG73",
+        "base!FP73"
+      ],
+      "exact_source_excerpt": "大招1、大招2伤害倍率分别提升100%、40%。",
+      "implementation_interpretation": "Applies aemeath s3 finale coefficient through characters/aemeath.py::AemeathMechanic.get_action_damage_multiplier using the source-backed value/timing (100%) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "characters/aemeath.py::AemeathMechanic.get_action_damage_multiplier",
+      "real_end_to_end_test_id": "scripts/aemeath_s3_real_contributor_runtime_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s3_overdrive_coefficient",
+      "character_id": "aemeath",
+      "sequence": 3,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FG73",
+        "base!FP73"
+      ],
+      "exact_source_excerpt": "大招1、大招2伤害倍率分别提升100%、40%。",
+      "implementation_interpretation": "Applies aemeath s3 overdrive coefficient through characters/aemeath.py::AemeathMechanic.get_action_damage_multiplier using the source-backed value/timing (40%) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "characters/aemeath.py::AemeathMechanic.get_action_damage_multiplier",
+      "real_end_to_end_test_id": "scripts/aemeath_s3_real_contributor_runtime_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s3_enhanced_heavy_mode_application",
+      "character_id": "aemeath",
+      "sequence": 3,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FG73",
+        "base!FP73"
+      ],
+      "exact_source_excerpt": "速蓄状态下，强化重击可赋予半径12米内的目标1层震谐偏移/聚爆效应。",
+      "implementation_interpretation": "Applies aemeath s3 enhanced heavy mode application through characters/aemeath.py::AemeathMechanic.resolve_action using the source-backed value/timing (12) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "characters/aemeath.py::AemeathMechanic.resolve_action",
+      "real_end_to_end_test_id": "scripts/aemeath_s3_real_contributor_runtime_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s3_tune_contributor_bonus",
+      "character_id": "aemeath",
+      "sequence": 3,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FL73",
+        "base!FU73"
+      ],
+      "exact_source_excerpt": "震谐模态：队伍中每名角色首次造成震谐伤害或成功赋予目标震谐偏移时，爱弥斯暴击伤害提升20%，该效果最多叠加3层；达到3层时，爱弥斯大招2获得0类加深25%。",
+      "implementation_interpretation": "Applies aemeath s3 tune contributor bonus through simulator/account_constellation_effects.py::aemeath_s3_register_contributor using the source-backed value/timing (20%, 3) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s3_register_contributor",
+      "real_end_to_end_test_id": "scripts/aemeath_s3_real_contributor_runtime_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s3_fusion_contributor_bonus",
+      "character_id": "aemeath",
+      "sequence": 3,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FL73",
+        "base!FU73"
+      ],
+      "exact_source_excerpt": "震谐模态：队伍中每名角色首次造成震谐伤害或成功赋予目标震谐偏移时，爱弥斯暴击伤害提升20%，该效果最多叠加3层；达到3层时，爱弥斯大招2获得0类加深25%。聚爆模态：队伍中每名角色首次尝试赋予目标聚爆效应时，爱弥斯暴击伤害提升30%，该效果最多叠加2层；达到2层时，爱弥斯大招2获得0类加深25%。",
+      "implementation_interpretation": "Applies aemeath s3 fusion contributor bonus through simulator/account_constellation_effects.py::aemeath_s3_register_contributor using the source-backed value/timing (30%, 2) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s3_register_contributor",
+      "real_end_to_end_test_id": "scripts/aemeath_s3_real_contributor_runtime_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s4_party_all_attribute_bonus",
+      "character_id": "aemeath",
+      "sequence": 4,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FH73",
+        "base!FQ73"
+      ],
+      "exact_source_excerpt": "施放E2、强化E、变奏时，全队获得持续时间为30秒的20%全属性伤害加成提升buff。",
+      "implementation_interpretation": "Applies aemeath s4 party all attribute bonus through simulator/account_constellation_effects.py::aemeath_s4_apply_party_bonus using the source-backed value/timing (30, 20%) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s4_apply_party_bonus",
+      "real_end_to_end_test_id": "scripts/aemeath_s4_real_trigger_and_damage_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s5_kill_radiant_overflow_unsupported",
+      "character_id": "aemeath",
+      "sequence": 5,
+      "support_status": "unsupported_scope",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FI73",
+        "base!FR73"
+      ],
+      "exact_source_excerpt": "攻击击杀目标后，回满流溢辉光。",
+      "implementation_interpretation": "Records aemeath_s5_kill_radiant_overflow_unsupported from the source clause (回满) but excludes enemy death, replacement, revive, or kill settlement from the accepted single-boss runtime.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s5_unsupported_effects",
+      "real_end_to_end_test_id": "scripts/aemeath_s5_unsupported_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s5_fatal_state_shield_revive_unsupported",
+      "character_id": "aemeath",
+      "sequence": 5,
+      "support_status": "unsupported_scope",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FI73",
+        "base!FR73"
+      ],
+      "exact_source_excerpt": "自身死亡时，全队角色各获得爱弥斯360%攻击的护盾量，持续5秒；5秒后爱弥斯满血复活并获得30点大招能量；该效果冷却600秒。",
+      "implementation_interpretation": "Records aemeath_s5_fatal_state_shield_revive_unsupported from the source clause (600) but excludes enemy death, replacement, revive, or kill settlement from the accepted single-boss runtime.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s5_unsupported_effects",
+      "real_end_to_end_test_id": "scripts/aemeath_s5_unsupported_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s6_liberation_target_deepen",
+      "character_id": "aemeath",
+      "sequence": 6,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FJ73",
+        "base!FS73"
+      ],
+      "exact_source_excerpt": "对目标造成的共鸣解放类型伤害提升40%，该提升作用于目标减伤区。",
+      "implementation_interpretation": "Applies aemeath s6 liberation target deepen through simulator/account_constellation_effects.py::aemeath_s6_liberation_deepen using the source-backed value/timing (40%) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s6_liberation_deepen",
+      "real_end_to_end_test_id": "scripts/aemeath_s6_real_packet_fixed_crit_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s6_trajectory_cap",
+      "character_id": "aemeath",
+      "sequence": 6,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FJ73",
+        "base!FS73",
+        "角色-女!D2844"
+      ],
+      "exact_source_excerpt": "目标轨迹层数上限+30。",
+      "implementation_interpretation": "Applies aemeath s6 trajectory cap through simulator/account_constellation_effects.py::aemeath_s6_trajectory_gain using the source-backed value/timing (+30) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s6_trajectory_gain",
+      "real_end_to_end_test_id": "scripts/aemeath_s6_real_packet_fixed_crit_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s6_enhanced_skill_trajectory_gain",
+      "character_id": "aemeath",
+      "sequence": 6,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FJ73",
+        "base!FS73"
+      ],
+      "exact_source_excerpt": "强化E额外赋予目标10层轨迹。",
+      "implementation_interpretation": "Applies aemeath s6 enhanced skill trajectory gain through simulator/account_constellation_effects.py::aemeath_s6_trajectory_gain using the source-backed value/timing (10) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s6_trajectory_gain",
+      "real_end_to_end_test_id": "scripts/aemeath_s6_real_packet_fixed_crit_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s6_tune_response_trajectory_gain",
+      "character_id": "aemeath",
+      "sequence": 6,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FJ73",
+        "base!FS73"
+      ],
+      "exact_source_excerpt": "震谐响应子类型伤害时，额外赋予目标10层轨迹。",
+      "implementation_interpretation": "Applies aemeath s6 tune response trajectory gain through simulator/account_constellation_effects.py::aemeath_s6_trajectory_gain using the source-backed value/timing (震谐响应, 10) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s6_trajectory_gain",
+      "real_end_to_end_test_id": "scripts/aemeath_s6_real_packet_fixed_crit_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s6_fusion_application_trajectory_gain",
+      "character_id": "aemeath",
+      "sequence": 6,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FJ73",
+        "base!FS73"
+      ],
+      "exact_source_excerpt": "聚爆效应时，额外赋予1层轨迹。",
+      "implementation_interpretation": "Applies aemeath s6 fusion application trajectory gain through simulator/account_constellation_effects.py::aemeath_s6_trajectory_gain using the source-backed value/timing (聚爆模态, 1) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s6_trajectory_gain",
+      "real_end_to_end_test_id": "scripts/aemeath_s6_real_packet_fixed_crit_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s6_tune_fixed_crit",
+      "character_id": "aemeath",
+      "sequence": 6,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FJ73",
+        "base!FS73"
+      ],
+      "exact_source_excerpt": "震谐模态：震谐类型伤害有80%概率获得1类最终伤害提升175%；队伍角色造成震谐响应子类型伤害时，额外赋予目标10层轨迹。",
+      "implementation_interpretation": "Applies aemeath s6 tune fixed crit through simulator/account_constellation_effects.py::aemeath_s6_fixed_crit_expected_multiplier using the source-backed value/timing (震谐, 80%, 175%) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s6_fixed_crit_expected_multiplier",
+      "real_end_to_end_test_id": "scripts/aemeath_s6_real_packet_fixed_crit_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "aemeath_s6_fusion_fixed_crit",
+      "character_id": "aemeath",
+      "sequence": 6,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FJ73",
+        "base!FS73"
+      ],
+      "exact_source_excerpt": "聚爆模态：处于战斗状态时，目标受到聚爆效应子类型的异常类型伤害有80%概率获得1类最终伤害提升175%；",
+      "implementation_interpretation": "Applies aemeath s6 fusion fixed crit through simulator/account_constellation_effects.py::aemeath_s6_fixed_crit_expected_multiplier using the source-backed value/timing (聚爆, 80%, 175%) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::aemeath_s6_fixed_crit_expected_multiplier",
+      "real_end_to_end_test_id": "scripts/aemeath_s6_real_packet_fixed_crit_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "lynae_s1_light_leap_coefficient",
+      "character_id": "lynae",
+      "sequence": 1,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FE103",
+        "base!FN103"
+      ],
+      "exact_source_excerpt": "折跃倍率提升120%。",
+      "implementation_interpretation": "Applies lynae s1 light leap coefficient through simulator/account_constellation_effects.py::lynae_s1_light_leap_multiplier using the source-backed value/timing (120%) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::lynae_s1_light_leap_multiplier",
+      "real_end_to_end_test_id": "scripts/lynae_s1_paint_precombat_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "lynae_s1_paint_duration",
+      "character_id": "lynae",
+      "sequence": 1,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FE103",
+        "base!FN103"
+      ],
+      "exact_source_excerpt": "E3-颜料持续时间提升至10秒，获得牵引效果。",
+      "implementation_interpretation": "Applies lynae s1 paint duration through simulator/account_constellation_effects.py::lynae_s1_paint_schedule using the source-backed value/timing (10) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::lynae_s1_paint_schedule",
+      "real_end_to_end_test_id": "scripts/lynae_s1_paint_precombat_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "lynae_s1_paint_application_cadence",
+      "character_id": "lynae",
+      "sequence": 1,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "角色-女!C2683:D2688"
+      ],
+      "exact_source_excerpt": "圆柱(1500,0,300),持续帧内每120F进行一次判定",
+      "implementation_interpretation": "Applies lynae s1 paint application cadence through simulator/account_constellation_effects.py::lynae_s1_paint_schedule using the source-backed value/timing (120F) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::lynae_s1_paint_schedule",
+      "real_end_to_end_test_id": "scripts/lynae_s1_paint_precombat_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "lynae_s1_pull_diagnostic",
+      "character_id": "lynae",
+      "sequence": 1,
+      "support_status": "diagnostic_only",
+      "source_type": "bwiki_exact",
+      "exact_source_excerpt": "每6秒将处于颜料范围内的敌人向颜料中心进行一次牵引。",
+      "implementation_interpretation": "Applies lynae s1 pull diagnostic through simulator/account_constellation_effects.py::lynae_s1_paint_schedule using the source-backed value/timing (6) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::lynae_s1_paint_schedule",
+      "real_end_to_end_test_id": "scripts/lynae_s1_paint_precombat_v121_smoke_test.py",
+      "source_url": "https://wiki.biligame.com/wutheringwaves/%E5%85%B1%E9%B8%A3%E8%80%85/%E7%90%B3%E5%A5%88",
+      "access_date": "2026-07-18"
+    },
+    {
+      "effect_id": "lynae_s1_precombat_overflow",
+      "character_id": "lynae",
+      "sequence": 1,
+      "support_status": "implemented",
+      "source_type": "bwiki_exact",
+      "exact_source_excerpt": "非战斗状态大于2秒时，回复120点〖溢彩〗，每2秒触发一次。",
+      "implementation_interpretation": "Applies lynae s1 precombat overflow through simulator/account_constellation_effects.py::lynae_s1_precombat_overflow using the source-backed value/timing (120, 2) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::lynae_s1_precombat_overflow",
+      "real_end_to_end_test_id": "scripts/lynae_s1_paint_precombat_v121_smoke_test.py",
+      "source_url": "https://wiki.biligame.com/wutheringwaves/%E5%85%B1%E9%B8%A3%E8%80%85/%E7%90%B3%E5%A5%88",
+      "access_date": "2026-07-18"
+    },
+    {
+      "effect_id": "lynae_s2_self_deepen",
+      "character_id": "lynae",
+      "sequence": 2,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FF103",
+        "base!FO103"
+      ],
+      "exact_source_excerpt": "全伤害加深25%。",
+      "implementation_interpretation": "Applies lynae s2 self deepen through simulator/account_constellation_effects.py::lynae_s2_self_deepen using the source-backed value/timing (25%) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::lynae_s2_self_deepen",
+      "real_end_to_end_test_id": "scripts/lynae_s2_first_action_and_outro_exact_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "lynae_s2_outro_deepen",
+      "character_id": "lynae",
+      "sequence": 2,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FF103",
+        "base!FO103"
+      ],
+      "exact_source_excerpt": "全伤害加深25%。下一变奏入场角色额外获得14秒25%全伤害加深，切人后移除该效果。",
+      "implementation_interpretation": "Applies lynae s2 outro deepen through simulator/account_constellation_effects.py::lynae_s2_outro_totals using the source-backed value/timing (14, 25%) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::lynae_s2_outro_totals",
+      "real_end_to_end_test_id": "scripts/lynae_s2_first_action_and_outro_exact_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "lynae_s2_outro_duration_and_early_end",
+      "character_id": "lynae",
+      "sequence": 2,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FF103",
+        "base!FO103"
+      ],
+      "exact_source_excerpt": "下一变奏入场角色额外获得14秒25%全伤害加深，切人后移除该效果。",
+      "implementation_interpretation": "Applies lynae s2 outro duration and early end through simulator/account_constellation_effects.py::lynae_s2_outro_after_switch using the source-backed value/timing (14) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::lynae_s2_outro_after_switch",
+      "real_end_to_end_test_id": "scripts/lynae_s2_first_action_and_outro_exact_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "lynae_s2_collective_interference_cap",
+      "character_id": "lynae",
+      "sequence": 2,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "角色-女!C2728:D2728"
+      ],
+      "exact_source_excerpt": "·解锁C2后获得1层【集谐干涉上限】。",
+      "implementation_interpretation": "Applies lynae s2 collective interference cap through simulator/account_constellation_effects.py::lynae_s2_collective_interference_cap using the source-backed value/timing (C2) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::lynae_s2_collective_interference_cap",
+      "real_end_to_end_test_id": "scripts/lynae_s2_first_action_and_outro_exact_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "mornye_s1_marker_duration",
+      "character_id": "mornye",
+      "sequence": 1,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FE72",
+        "base!FN72"
+      ],
+      "exact_source_excerpt": "赋予目标观测标记时，可同时直接赋予干涉标记，干涉标记持续时间延长至20秒。",
+      "implementation_interpretation": "Applies mornye s1 marker duration through simulator/account_constellation_effects.py::mornye_s1_marker_duration_seconds using the source-backed value/timing (20) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::mornye_s1_marker_duration_seconds",
+      "real_end_to_end_test_id": "scripts/mornye_s1_marker_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "mornye_s1_observation_applies_interfered_marker",
+      "character_id": "mornye",
+      "sequence": 1,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FE72",
+        "base!FN72"
+      ],
+      "exact_source_excerpt": "赋予目标观测标记时，可同时直接赋予干涉标记，干涉标记持续时间延长至20秒。",
+      "implementation_interpretation": "Applies mornye s1 observation applies interfered marker through simulator/account_constellation_effects.py::mornye_s1_observation_marker_applies_interfered_marker using the source-backed value/timing (20) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::mornye_s1_observation_marker_applies_interfered_marker",
+      "real_end_to_end_test_id": "scripts/mornye_s1_marker_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "mornye_s1_marker_amp_formula",
+      "character_id": "mornye",
+      "sequence": 1,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "角色-女!D4164"
+      ],
+      "exact_source_excerpt": "·莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的伤害加成+0.25%，至多40%。",
+      "implementation_interpretation": "Applies mornye s1 marker amp formula through simulator/account_constellation_effects.py::mornye_dynamic_energy_regen_excess_amp using the source-backed value/timing (0.25%, 40%) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::mornye_dynamic_energy_regen_excess_amp",
+      "real_end_to_end_test_id": "scripts/mornye_s1_marker_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "mornye_s2_party_crit_damage_formula",
+      "character_id": "mornye",
+      "sequence": 2,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FF72",
+        "base!FO72"
+      ],
+      "exact_source_excerpt": "莫宁自身共鸣效率大于100%的部分，每1%使持有干涉标记的目标受到攻击造成的暴击伤害提升0.2%，至多32%。",
+      "implementation_interpretation": "Applies mornye s2 party crit damage formula through simulator/account_constellation_effects.py::mornye_s2_marker_crit_damage using the source-backed value/timing (0.2%, 32%) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::mornye_s2_marker_crit_damage",
+      "real_end_to_end_test_id": "scripts/mornye_s2_real_marker_crit_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "mornye_s2_field_off_tune_bonus",
+      "character_id": "mornye",
+      "sequence": 2,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "角色-女!C4122:D4122"
+      ],
+      "exact_source_excerpt": "全队偏谐效率+50%，解锁C2时额外+20%",
+      "implementation_interpretation": "Applies mornye s2 field off tune bonus through simulator/account_constellation_effects.py::mornye_s2_field_off_tune_efficiency using the source-backed value/timing (50%, 20%) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::mornye_s2_field_off_tune_efficiency",
+      "real_end_to_end_test_id": "scripts/mornye_s2_real_marker_crit_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "mornye_s3_concerto_restore",
+      "character_id": "mornye",
+      "sequence": 3,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FG72",
+        "base!FP72"
+      ],
+      "exact_source_excerpt": "施放E2后，额外获得25点协奏能量、获得100点核心能量，冷却25秒。",
+      "implementation_interpretation": "Applies mornye s3 concerto restore through simulator/account_constellation_effects.py::mornye_s3_distributed_array using the source-backed value/timing (25) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::mornye_s3_distributed_array",
+      "real_end_to_end_test_id": "scripts/mornye_s3_single_boss_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "mornye_s3_relative_momentum_restore",
+      "character_id": "mornye",
+      "sequence": 3,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FG72",
+        "base!FP72"
+      ],
+      "exact_source_excerpt": "施放E2后，额外获得25点协奏能量、获得100点核心能量，冷却25秒。",
+      "implementation_interpretation": "Applies mornye s3 relative momentum restore through simulator/account_constellation_effects.py::mornye_s3_distributed_array using the source-backed value/timing (100) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::mornye_s3_distributed_array",
+      "real_end_to_end_test_id": "scripts/mornye_s3_single_boss_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "mornye_s3_internal_cooldown",
+      "character_id": "mornye",
+      "sequence": 3,
+      "support_status": "implemented",
+      "source_type": "workbook_exact",
+      "sheet_cell_refs": [
+        "base!FG72",
+        "base!FP72"
+      ],
+      "exact_source_excerpt": "施放E2后，额外获得25点协奏能量、获得100点核心能量，冷却25秒。",
+      "implementation_interpretation": "Applies mornye s3 internal cooldown through simulator/account_constellation_effects.py::mornye_s3_distributed_array using the source-backed value/timing (25) once per accepted single-boss event without double-counting overlapping clauses.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::mornye_s3_distributed_array",
+      "real_end_to_end_test_id": "scripts/mornye_s3_single_boss_v121_smoke_test.py"
+    },
+    {
+      "effect_id": "mornye_s3_starfield_independent_trigger",
+      "character_id": "mornye",
+      "sequence": 3,
+      "support_status": "implemented",
+      "source_type": "interpretation",
+      "exact_source_excerpt": null,
+      "implementation_interpretation": "Keeps Mornye S3 source state (+25 Concerto, +100 Momentum, 25s cooldown) separate from the equipped Starfield Calibrator R5 weapon state (+16 Concerto, 20s cooldown); the two source IDs and cooldown states never combine.",
+      "runtime_code_id": "simulator/account_constellation_effects.py::mornye_starfield_r5_concerto",
+      "real_end_to_end_test_id": "scripts/mornye_s3_single_boss_v121_smoke_test.py",
+      "source_artifact": "data/source/user_account_actual_v120.json",
+      "source_description": "Confirmed equipped Starfield Calibrator R5 account contract.",
+      "paraphrase": true,
+      "sheet_cell_refs": [
+        "base!FG72",
+        "base!FP72"
+      ],
+      "weapon_source_artifact": "data/weapons.json",
+      "source_evidence": {
+        "mornye_s3_source_refs": [
+          "base!FG72",
+          "base!FP72"
+        ],
+        "mornye_s3_concerto_restore": 25,
+        "mornye_s3_relative_momentum_restore": 100,
+        "mornye_s3_internal_cooldown_seconds": 25,
+        "account_profile_id": "mornye_account_actual_01",
+        "weapon_id": "starfield_calibrator",
+        "weapon_rank": 5,
+        "weapon_concerto_restore": 16,
+        "weapon_internal_cooldown_seconds": 20,
+        "separate_source_ids_and_cooldowns": true
+      }
+    }
+  ],
+  "implemented_effects": [
+    "Aemeath S1, S2, S3, S4, S6 single-boss supported clauses",
+    "Lynae S1 and S2 single-boss supported clauses",
+    "Mornye S1, S2, and S3 single-boss supported clauses"
+  ],
+  "diagnostic_only_effects": [
+    "Lynae Spray Paint pull",
+    "enemy movement or pull text"
+  ],
+  "unsupported_effects": [
+    "Aemeath S1 kill trajectory transfer",
+    "Aemeath S2 kill detonation",
+    "Aemeath S5 all effects",
+    "enemy movement/pull",
+    "player survival effects"
+  ],
+  "assumptions": [
+    "All duration effects advance by combat time.",
+    "The account mechanics require explicit account_simulation_scope and explicit precombat_elapsed_seconds.",
+    "No account party, account route, account baseline, training, evaluation, search, or result artifact is created in candidate 121.",
+    "Existing v5/314 benchmark observation and 25 policy action surface remain unchanged."
+  ],
+  "precombat_status": {
+    "aemeath_s1_threshold_seconds": 4.0,
+    "lynae_s1_threshold_seconds": 2.0,
+    "explicit_zero_is_valid": true,
+    "implicit_default_is_not_allowed": true
+  }
+}

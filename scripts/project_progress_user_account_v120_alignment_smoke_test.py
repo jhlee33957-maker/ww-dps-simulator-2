@@ -12,20 +12,20 @@ sys.path.insert(0, str(ROOT))
 def main() -> None:
     progress = json.loads((ROOT / "PROJECT_PROGRESS_STATE.json").read_text(encoding="utf-8"))
     status = progress["status"]
-    assert status["latest_externally_verified_baseline"] == "119"
-    assert status["latest_verified_archive"] == "ww-dps-simulator-2-119(1).zip"
-    assert status["latest_verified_archive_sha256"] == "7248290f4b3f3f8107cfd10ff1b5e539167721b19a182fdb69b875221ce394ae"
-    assert status["current_candidate"] == "120"
+    assert status["latest_externally_verified_baseline"] == "120"
+    assert status["latest_verified_archive"] == "ww-dps-simulator-2-120(1).zip"
+    assert status["latest_verified_archive_sha256"] == "e61f7152726fdc7c05719c543cee67264a965af9d152c6e8de59d2f59f79b248"
+    assert status["current_candidate"] == "121"
     assert status["current_task_status"] == "candidate_pending_external_review"
-    assert status["candidate_expected_next_archive"] == "ww-dps-simulator-2-120.zip"
+    assert status["candidate_expected_next_archive"] == "ww-dps-simulator-2-121.zip"
 
     current = progress["current_in_progress_task"]
-    assert current["candidate"] == "120"
+    assert current["candidate"] == "121"
     assert current["external_verification_claimed"] is False
     assert current["account_profiles_stored"] is True
     assert current["account_weapon_loadouts_stored"] is True
-    assert current["account_constellation_mechanics_implemented"] is False
-    assert current["account_simulation_ready"] is False
+    assert current["account_constellation_mechanics_implemented"] is True
+    assert current["account_simulation_ready"] is True
     assert current["account_manual_baseline_executed"] is False
     assert current["account_bc_demonstration_regenerated"] is False
     assert current["account_bc_ppo_training_executed"] is False
@@ -103,7 +103,10 @@ def main() -> None:
         "210538d4bf99789d0af08ecff5fb76dc3f472f5b170a144d9f1b3b1f46116b9c"
     )
 
-    assert progress["candidate_history"][-1]["candidate"] == "120"
+    history_120 = [item for item in progress["candidate_history"] if item.get("candidate") == "120"][-1]
+    assert history_120["status"] == "externally_verified_complete"
+    assert history_120["verified_archive"] == "ww-dps-simulator-2-120(1).zip"
+    assert progress["candidate_history"][-1]["candidate"] == "121"
     assert progress["candidate_history"][-1]["status"] == "candidate_pending_external_review"
     print("project_progress_user_account_v120_alignment_smoke_test ok")
 

@@ -938,6 +938,7 @@ class ActionResult(BaseModel):
     aemeath_sigillum_activation_combat_time: float | None = None
     aemeath_sigillum_source_end_frame: int | None = None
     aemeath_sigillum_hit_schedule_events: list[dict[str, Any]] = Field(default_factory=list)
+    account_constellation_events: list[dict[str, Any]] = Field(default_factory=list)
     reason: str | None = None
 
 

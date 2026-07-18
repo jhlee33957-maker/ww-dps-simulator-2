@@ -205,25 +205,37 @@
     },
     "fusion_burst": {
       "trail_state": "fusion_trail",
-      "seraphic_duet_followups": [],
-      "implementation_status": "scaffold_only_until_source_confirmed",
-      "unresolved_entries": [
+      "seraphic_duet_followups": [
         {
-          "name": "Fusion Burst / Fusion Trail generated damage",
-          "implementation_status": "unresolved_no_runtime_effect",
-          "source_rows": [
-            2788,
-            2933
-          ],
-          "notes": "Fusion Burst trail/damage scaffold is present, but no runtime damage is applied without source-confirmed coefficient and formula type."
+          "id": "aemeath_seraphic_duet_fusion_burst_settlement",
+          "name": "Seraphic Duet Fusion Burst Settlement",
+          "source_character_id": "aemeath",
+          "variant": "settlement",
+          "formula_type": "fusion_effect",
+          "damage_element": "fusion",
+          "damage_bonus_category": "fusion_effect",
+          "scaling_stat": "none",
+          "tune_multiplier": 6.9863,
+          "source_multiplier": 6.9863,
+          "repeat_count": 1,
+          "base_value": 10000.0,
+          "additional_tune_boost": 1.0,
+          "applied_damage_taken_amp_mode": "none",
+          "tags": ["aemeath_forte", "fusion_burst", "fusion_effect_settlement", "workbook_confirmed"],
+          "source_status": "workbook_confirmed",
+          "source_ref": "角色-女!2788/2933; 伤害计算!V299:V308; dmg!B2589",
+          "source_rows": [2788, 2933, 2589],
+          "notes": "The source settles the target's existing maximum-stack Fusion Effect. The C0/C2 final multiplier is supplied at runtime after trajectory snapshotting."
         }
-      ]
+      ],
+      "implementation_status": "workbook_confirmed_runtime_settlement",
+      "unresolved_entries": []
     }
   },
   "remaining_unresolved_mechanics": [
-    "Fusion Trail source-confirmed stack application and duration",
-    "Fusion Burst explosion/follow-up damage",
-    "C6 trail stack granting remains disabled for S0 default runtime",
+    "Aemeath S1 kill trajectory transfer",
+    "Aemeath S2 kill-triggered detonation",
+    "Aemeath S5 all-effects behavior",
     "Multi-target trail tracking"
   ]
 }
