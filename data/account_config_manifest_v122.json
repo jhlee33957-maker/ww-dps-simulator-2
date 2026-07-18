@@ -1,0 +1,24 @@
+{
+  "schema_version": "account_config_manifest_v122",
+  "account_party_id": "aemeath_mornye_lynae_account_actual_01",
+  "account_config_hash": "a4cc5fcf0f3d5074af0a740944dfe12f89c2e0535a768b818319bf56fc2f0bca",
+  "component_paths": [
+    "data/account_build_profiles_v120.json",
+    "data/account_weapon_extensions_v120.json",
+    "data/account_constellation_mechanics_v121.json",
+    "data/account_simulation_scope_v121.json",
+    "data/account_party_presets_v122.json",
+    "data/account_content_start_v122.json"
+  ],
+  "component_sha256": {
+    "data/account_build_profiles_v120.json": "a195de7f2ee505613685e15bcc673692dbc5704bd94df05171a52536ba96a789",
+    "data/account_weapon_extensions_v120.json": "f3858c8c2a038662d270ae48c51e1cc793a5d757e9f1b9d5cb18b7edb0443390",
+    "data/account_constellation_mechanics_v121.json": "0099b472f8b2f50e85040984f9f76ff8725d23fc34f2f8738e023d414fda9c23",
+    "data/account_simulation_scope_v121.json": "5525104f4b5fd92b0ce0882f3874dfb7c9bf39c1cada85172a0ee5ba24f54a8f",
+    "data/account_party_presets_v122.json": "105baff5fd7de567e93ab892e3e2983652022a794434e9dbff08b75acb216346",
+    "data/account_content_start_v122.json": "733348695ae784c31e02bd6d36cafb35b95440e8fade4e8f567f1e3a440b214b"
+  },
+  "observation_version": "slot_account_constellation_single_boss_v6",
+  "observation_shape": 330,
+  "policy_action_count": 25
+}

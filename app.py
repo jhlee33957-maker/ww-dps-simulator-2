@@ -264,6 +264,27 @@ def party_selection() -> tuple[list[str], dict[str, Any] | None, str | None]:
             format_func=lambda preset_id: presets[preset_id].get("display_name", preset_id),
         )
         selected = list(presets[selected_preset_id]["members"])
+        account_summary = presets[selected_preset_id].get("account_ui_summary")
+        if account_summary:
+            st.sidebar.info(presets[selected_preset_id].get("configuration_status", "Stored and configuration-ready"))
+            st.sidebar.caption(
+                " | ".join(
+                    (
+                        f"Aemeath mode: {account_summary['aemeath_mode']}",
+                        f"Precombat: {account_summary['precombat']}",
+                        f"Initial active: {account_summary['initial_active']}",
+                    )
+                )
+            )
+            st.sidebar.caption(
+                " | ".join(
+                    (
+                        account_summary["scope"],
+                        account_summary["unsupported"],
+                        account_summary["baseline"],
+                    )
+                )
+            )
         if any(is_dummy_character(characters[character_id]) for character_id in selected):
             st.sidebar.warning("Dummy sample characters are test-only and are not intended for real DPS analysis.")
         return parse_character_ids(selected, list(characters)), presets[selected_preset_id], selected_preset_id

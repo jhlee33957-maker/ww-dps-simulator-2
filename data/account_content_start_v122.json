@@ -1,0 +1,32 @@
+{
+  "schema_version": "account_content_start_v122",
+  "party_id": "aemeath_mornye_lynae_account_actual_01",
+  "content": "End Matrix",
+  "combat_time_limit_seconds": 120,
+  "scope_id": "single_persistent_boss_no_kill_no_survival",
+  "initial_active_character": "mornye",
+  "precombat_elapsed_seconds": 4.01,
+  "aemeath_resonance_mode": "tune_rupture",
+  "account_optical_sampling_active": true,
+  "precombat_results": {
+    "aemeath_s1_radiance_quick_charge_active": true,
+    "aemeath_s1_ordinary_instant_response_runtime_governed": true,
+    "lynae_s1_overflow_gain": 120,
+    "lynae_optical_sampling_active": true,
+    "lynae_overflow_is_deterministic_consequence_of_confirmed_precombat_start": true
+  },
+  "unsupported_scope": {
+    "enemy_death": false,
+    "enemy_waves": false,
+    "target_replacement": false,
+    "player_hp_death_survival": false,
+    "pull_movement_simulation": false,
+    "aemeath_s1_kill_transfer": "unsupported",
+    "aemeath_s2_kill_settlement": "unsupported",
+    "aemeath_s5_all_effects": "unsupported"
+  },
+  "configuration_only": true,
+  "starting_damage": null,
+  "route_actions": [],
+  "optimization_results": []
+}

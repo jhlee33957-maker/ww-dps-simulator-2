@@ -11,8 +11,8 @@ def main() -> None:
     status = progress["status"]
     current = progress["current_in_progress_task"]
     completed = current["candidate_116_completed_beam"]
-    assert status["latest_externally_verified_baseline"] == "120"
-    assert status["current_candidate"] == "121"
+    assert status["latest_externally_verified_baseline"] == "121"
+    assert status["current_candidate"] == "122"
     assert status["current_task_status"] == "candidate_pending_external_review"
     assert completed["termination_status"] == "completed_search"
     assert completed["expansions"] == 4908270

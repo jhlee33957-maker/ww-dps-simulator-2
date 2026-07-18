@@ -9,10 +9,10 @@ def main() -> None:
     root = Path(__file__).resolve().parents[1]
     progress = json.loads((root / "PROJECT_PROGRESS_STATE.json").read_text(encoding="utf-8"))
     status = progress["status"]
-    assert status["latest_externally_verified_baseline"] == "120"
-    assert status["latest_verified_archive"] == "ww-dps-simulator-2-120(1).zip"
-    assert status["latest_verified_archive_sha256"] == "e61f7152726fdc7c05719c543cee67264a965af9d152c6e8de59d2f59f79b248"
-    assert status["current_candidate"] == "121" and status["current_task_status"] == "candidate_pending_external_review"
+    assert status["latest_externally_verified_baseline"] == "121"
+    assert status["latest_verified_archive"] == "ww-dps-simulator-2-121(19).zip"
+    assert status["latest_verified_archive_sha256"] == "2a031ff8662f0c929305393558191059f4c61ff28e7a06c004e3b9b3e94920fa"
+    assert status["current_candidate"] == "122" and status["current_task_status"] == "candidate_pending_external_review"
     current = progress["current_in_progress_task"]
     production = current["candidate_119_mcts"]
     assert production["pending_review_note"] == (
@@ -33,7 +33,7 @@ def main() -> None:
     history_119 = [item for item in progress["candidate_history"] if item.get("candidate") == "119"][-1]
     assert history_119["status"] == "externally_verified_complete"
     assert history_119["external_review_status"] == "passed"
-    print("project_progress_mcts_v119_alignment_smoke_test ok baseline=120 current_candidate=121 production=3/3 winner=beam")
+    print("project_progress_mcts_v119_alignment_smoke_test ok baseline=121 current_candidate=122 production=3/3 winner=beam")
 
 
 if __name__ == "__main__": main()

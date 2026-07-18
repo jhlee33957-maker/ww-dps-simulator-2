@@ -8,9 +8,9 @@ def main() -> None:
     root = Path(__file__).resolve().parents[1]
     progress = json.loads((root / "PROJECT_PROGRESS_STATE.json").read_text(encoding="utf-8"))
     status = progress["status"]
-    assert status["latest_externally_verified_baseline"] == "120"
-    assert status["latest_verified_archive"] == "ww-dps-simulator-2-120(1).zip"
-    assert status["current_candidate"] == "121" and status["current_task_status"] == "candidate_pending_external_review"
+    assert status["latest_externally_verified_baseline"] == "121"
+    assert status["latest_verified_archive"] == "ww-dps-simulator-2-121(19).zip"
+    assert status["current_candidate"] == "122" and status["current_task_status"] == "candidate_pending_external_review"
     current = progress["current_in_progress_task"]
     calibration = current["candidate_117_mcts"]; candidate = current["candidate_118_mcts"]
     assert calibration["calibration_20k_executed"] and calibration["simulations_completed"] == 20000
@@ -29,7 +29,7 @@ def main() -> None:
     assert history["external_review_status"] == "passed" and history["external_verification_claimed"] is True
     assert history["production_search_executed"] is True
     assert progress["current_in_progress_task"]["candidate_119_mcts"]["production_seeds_completed"] == 3
-    print("project_progress_mcts_v118_alignment_smoke_test ok baseline=120 candidate=121 production=true")
+    print("project_progress_mcts_v118_alignment_smoke_test ok baseline=121 candidate=122 production=true")
 
 
 if __name__ == "__main__": main()

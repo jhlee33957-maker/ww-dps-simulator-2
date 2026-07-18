@@ -21,7 +21,7 @@ DIRECT_ACTION_MANIFEST_SHA256 = "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28
 SOURCE_ROUTE_FILE_SHA256 = "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a"
 
 
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-121.zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-122.zip"
 EXPECTED_BC_MODEL_SHA256 = "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e"
 EXPECTED_PPO_MODEL_SHA256 = "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513"
 EXPECTED_EVAL_SELECTED_SEQUENCE_SHA256 = "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1"
@@ -500,8 +500,8 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         completed_manifest_bytes = zf.read(completed_manifest_path)
         completed_manifest = json.loads(completed_manifest_bytes.decode("utf-8"))
         completed_progress = progress["current_in_progress_task"]["candidate_116_completed_beam"]
-        assert progress["status"]["latest_externally_verified_baseline"] == "120"
-        assert progress["status"]["current_candidate"] == "121"
+        assert progress["status"]["latest_externally_verified_baseline"] == "121"
+        assert progress["status"]["current_candidate"] == "122"
         account_progress = progress["current_in_progress_task"]["candidate_121_account_constellations"]
         assert account_progress["mechanics_implemented"] is True
         assert account_progress["scope_id"] == "single_persistent_boss_no_kill_no_survival"
@@ -509,6 +509,19 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         assert account_progress["account_result_created"] is False
         assert account_progress["account_route_replay_executed"] is False
         assert account_progress["training_search_or_evaluation_executed"] is False
+        account_party_progress = progress["current_in_progress_task"]["candidate_122_account_party_configuration"]
+        assert account_party_progress == {
+            "party_id": "aemeath_mornye_lynae_account_actual_01",
+            "configuration_status": "stored_and_configuration_ready",
+            "initial_active": "mornye",
+            "aemeath_resonance_mode": "tune_rupture",
+            "precombat_elapsed_seconds": 4.01,
+            "aemeath_s1_precombat_radiance": True,
+            "lynae_s1_precombat_overflow": 120,
+            "account_manual_baseline_executed": False,
+            "account_bc_ppo_beam_mcts_executed": False,
+            "next_task": "create a new account-specific manual baseline from scratch",
+        }
         assert not any("account" in name and name.startswith(("results/", "models/")) for name in names)
         production_path = "results/mcts_v118_production_3x50k_v119/result_manifest.json"
         production = json.loads(zf.read(production_path).decode("utf-8"))
@@ -858,6 +871,29 @@ def scan_archive_text(zf: zipfile.ZipFile, names: list[str]) -> dict[str, int]:
     return stats
 
 
+def candidate_122_fresh_extraction_check_commands() -> list[list[str]]:
+    return [
+        [sys.executable, "scripts/account_party_overlay_v122_smoke_test.py"],
+        [sys.executable, "scripts/account_party_v122_contract_smoke_test.py"],
+        [sys.executable, "scripts/account_content_start_v122_smoke_test.py"],
+        [sys.executable, "scripts/account_precombat_initial_state_v122_smoke_test.py"],
+        [sys.executable, "scripts/account_party_v122_no_action_execution_smoke_test.py"],
+        [sys.executable, "scripts/account_config_hash_v122_smoke_test.py"],
+        [sys.executable, "scripts/account_party_v122_historical_hash_compatibility_smoke_test.py"],
+        [sys.executable, "scripts/account_party_v122_ui_visibility_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_account_party_v122_alignment_smoke_test.py"],
+        [
+            sys.executable,
+            "scripts/validate_account_party_v122.py",
+            "--project-root",
+            ".",
+            "--party",
+            "aemeath_mornye_lynae_account_actual_01",
+            "--dry-run",
+        ],
+    ]
+
+
 def candidate_121_fresh_extraction_check_commands() -> list[list[str]]:
     return [
         [sys.executable, "scripts/user_account_constellation_v121_source_contract_smoke_test.py"],
@@ -1098,7 +1134,8 @@ def legacy_fresh_extraction_check_commands() -> list[list[str]]:
 
 def fresh_extraction_check_commands() -> list[list[str]]:
     checks = (
-        candidate_121_fresh_extraction_check_commands()
+        candidate_122_fresh_extraction_check_commands()
+        + candidate_121_fresh_extraction_check_commands()
         + candidate_120_fresh_extraction_check_commands()
         + candidate_119_fresh_extraction_check_commands()
         + legacy_fresh_extraction_check_commands()

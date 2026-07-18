@@ -303,6 +303,16 @@ class Simulation:
             if isinstance(selection_value, str)
             else None
         )
+        content_start = _account_content_start_for_party(data_path, party_preset_config)
+        if account_simulation_scope is None and party_preset_config and party_preset_config.get("account_scope"):
+            account_simulation_scope = party_preset_config["account_scope"]
+        if content_start:
+            if precombat_elapsed_seconds is None:
+                precombat_elapsed_seconds = float(content_start["precombat_elapsed_seconds"])
+            if not account_optical_sampling_active:
+                account_optical_sampling_active = bool(content_start["account_optical_sampling_active"])
+            if initial_active_character is None:
+                initial_active_character = str(content_start["initial_active_character"])
         selection_value, preset_initial_active = resolve_party_preset(selection_value, party_presets)
         selected_ids = parse_party_character_ids(selection_value, characters)
         build_profiles = load_build_profiles(data_path)
@@ -356,7 +366,6 @@ class Simulation:
             precombat_elapsed_seconds=precombat_elapsed_seconds,
             account_optical_sampling_active=account_optical_sampling_active,
         )
-
     def validate_build_profiles(self) -> dict[str, object]:
         self.action_scaling_summary = build_action_scaling_summary(self.actions.values(), self.selected_character_ids)
         self.effective_build_stats_summary = effective_build_stats_summary(self.characters, self.action_scaling_summary)
@@ -3644,6 +3653,19 @@ class Simulation:
             action_log=list(self.state.action_log),
             cooldowns=dict(self.state.cooldowns),
         )
+
+
+def _account_content_start_for_party(data_path: Path, party_preset: dict[str, Any] | None) -> dict[str, Any] | None:
+    relative_path = (party_preset or {}).get("content_start_contract_path")
+    if not relative_path:
+        return None
+    path = data_path.parent / str(relative_path)
+    if not path.is_file():
+        raise ValueError(f"Account content-start contract is missing: {path}")
+    payload = _read_json_object(path)
+    if payload.get("party_id") != party_preset.get("party_id"):
+        raise ValueError("Account content-start contract party_id does not match the party preset")
+    return payload
 
 
 def _read_json(path: Path) -> list[dict]:

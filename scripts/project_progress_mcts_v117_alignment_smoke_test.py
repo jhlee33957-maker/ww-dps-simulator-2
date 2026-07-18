@@ -8,10 +8,10 @@ def main() -> None:
     root = Path(__file__).resolve().parents[1]
     progress = json.loads((root / "PROJECT_PROGRESS_STATE.json").read_text(encoding="utf-8"))
     status = progress["status"]
-    assert status["latest_externally_verified_baseline"] == "120"
-    assert status["latest_verified_archive"] == "ww-dps-simulator-2-120(1).zip"
-    assert status["latest_verified_archive_sha256"] == "e61f7152726fdc7c05719c543cee67264a965af9d152c6e8de59d2f59f79b248"
-    assert status["current_candidate"] == "121"
+    assert status["latest_externally_verified_baseline"] == "121"
+    assert status["latest_verified_archive"] == "ww-dps-simulator-2-121(19).zip"
+    assert status["latest_verified_archive_sha256"] == "2a031ff8662f0c929305393558191059f4c61ff28e7a06c004e3b9b3e94920fa"
+    assert status["current_candidate"] == "122"
     assert status["current_task_status"] == "candidate_pending_external_review"
     current = progress["current_in_progress_task"]
     assert current["overall_project_winner"]["winner_kind"] == "beam_search_route"

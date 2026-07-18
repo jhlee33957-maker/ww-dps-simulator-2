@@ -8,6 +8,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from scripts.manual_120s_bc_final_archive_integrity_smoke_test import (
+    candidate_122_fresh_extraction_check_commands,
     candidate_121_fresh_extraction_check_commands,
     candidate_120_fresh_extraction_check_commands,
     candidate_119_fresh_extraction_check_commands,
@@ -25,6 +26,16 @@ HISTORY_AWARE_PROGRESS_TESTS = {
 }
 
 REQUIRED_COMMAND_PATHS = {
+    "scripts/account_party_overlay_v122_smoke_test.py",
+    "scripts/account_party_v122_contract_smoke_test.py",
+    "scripts/account_content_start_v122_smoke_test.py",
+    "scripts/account_precombat_initial_state_v122_smoke_test.py",
+    "scripts/account_party_v122_no_action_execution_smoke_test.py",
+    "scripts/account_config_hash_v122_smoke_test.py",
+    "scripts/account_party_v122_historical_hash_compatibility_smoke_test.py",
+    "scripts/account_party_v122_ui_visibility_smoke_test.py",
+    "scripts/project_progress_account_party_v122_alignment_smoke_test.py",
+    "scripts/validate_account_party_v122.py",
     "scripts/user_account_constellation_v121_source_contract_smoke_test.py",
     "scripts/user_account_single_boss_scope_v121_smoke_test.py",
     "scripts/aemeath_s6_single_boss_v121_smoke_test.py",
@@ -142,12 +153,14 @@ def command_paths(commands: list[list[str]]) -> set[str]:
 
 
 def assert_full_coverage(commands: list[list[str]]) -> None:
+    candidate_122 = candidate_122_fresh_extraction_check_commands()
     candidate_121 = candidate_121_fresh_extraction_check_commands()
     candidate_120 = candidate_120_fresh_extraction_check_commands()
     candidate_119 = candidate_119_fresh_extraction_check_commands()
     legacy = legacy_fresh_extraction_check_commands()
     normalized = [tuple(command[1:]) for command in commands]
     assert len(commands) > 9
+    assert all(command in commands for command in candidate_122)
     assert len(normalized) == len(set(normalized)), "duplicate fresh-extraction command"
     assert set(map(tuple, candidate_121)).issubset(set(map(tuple, commands)))
     assert set(map(tuple, candidate_120)).issubset(set(map(tuple, commands)))
@@ -160,18 +173,19 @@ def assert_full_coverage(commands: list[list[str]]) -> None:
 
 def main() -> None:
     commands = fresh_extraction_check_commands()
+    candidate_122 = candidate_122_fresh_extraction_check_commands()
     candidate_121 = candidate_121_fresh_extraction_check_commands()
     candidate_120 = candidate_120_fresh_extraction_check_commands()
     candidate_119 = candidate_119_fresh_extraction_check_commands()
     legacy = legacy_fresh_extraction_check_commands()
-    assert commands == candidate_121 + candidate_120 + candidate_119 + legacy
+    assert commands == candidate_122 + candidate_121 + candidate_120 + candidate_119 + legacy
     assert_full_coverage(commands)
     try:
-        assert_full_coverage(candidate_120 + candidate_119 + legacy)
+        assert_full_coverage(candidate_121 + candidate_120 + candidate_119 + legacy)
     except AssertionError:
         pass
     else:
-        raise AssertionError("coverage guard accepted a checker missing candidate-121 commands")
+        raise AssertionError("coverage guard accepted a checker missing candidate-122 commands")
     try:
         assert_full_coverage(candidate_120)
     except AssertionError:
@@ -180,7 +194,7 @@ def main() -> None:
         raise AssertionError("coverage guard accepted a candidate-120-only checker mutation")
     print(
         "final_archive_fresh_check_coverage_v119_smoke_test ok "
-        f"candidate_121={len(candidate_121)} candidate_120={len(candidate_120)} candidate_119={len(candidate_119)} "
+        f"candidate_122={len(candidate_122)} candidate_121={len(candidate_121)} candidate_120={len(candidate_120)} candidate_119={len(candidate_119)} "
         f"legacy={len(legacy)} total={len(commands)} mutation_rejected=true"
     )
 

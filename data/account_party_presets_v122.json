@@ -1,0 +1,105 @@
+{
+  "schema_version": "account_party_presets_v122",
+  "parties": [
+    {
+      "party_id": "aemeath_mornye_lynae_account_actual_01",
+      "display_name": "Aemeath S6 / Mornye S3 / Lynae S2 Account Actual",
+      "configuration_status": "Stored and configuration-ready",
+      "members": [
+        "mornye",
+        "aemeath",
+        "lynae"
+      ],
+      "initial_active": "mornye",
+      "build_profiles": {
+        "mornye": "mornye_account_actual_01",
+        "aemeath": "aemeath_account_actual_01",
+        "lynae": "lynae_account_actual_01"
+      },
+      "account_scope": {
+        "scope_id": "single_persistent_boss_no_kill_no_survival",
+        "enemy_model": "single_persistent_target",
+        "enemy_count": 1,
+        "enemy_death_enabled": false,
+        "enemy_respawn_enabled": false,
+        "waves_enabled": false,
+        "player_hp_model_enabled": false,
+        "player_death_enabled": false,
+        "player_survival_enabled": false,
+        "target_pull_or_movement_enabled": false
+      },
+      "content_start_contract_path": "data/account_content_start_v122.json",
+      "transition_overrides": {
+        "characters": {
+          "aemeath": {
+            "intro_qte": {
+              "mode": "enabled",
+              "enabled": true
+            }
+          },
+          "mornye": {
+            "intro_qte": {
+              "mode": "enabled",
+              "enabled": true
+            },
+            "outro": {
+              "enabled": true,
+              "requires_concerto": true
+            }
+          },
+          "lynae": {
+            "intro_qte": {
+              "mode": "enabled",
+              "enabled": true
+            },
+            "outro": {
+              "enabled": true,
+              "requires_concerto": true
+            }
+          }
+        }
+      },
+      "mechanic_overrides": {
+        "aemeath": {
+          "aemeath_resonance_mode": "tune_rupture",
+          "aemeath_resonance_mode_source": "user_confirmed_account_party_v122"
+        },
+        "mornye": {
+          "mornye_heal_event_mode": "scheduled_180f_exact",
+          "mornye_heal_event_mode_source": "party_preset_source_exact_180f",
+          "interfered_marker": {
+            "mode": "tune_break_triggered"
+          }
+        },
+        "lynae": {
+          "lynae_resonance_mode": "tune_rupture",
+          "lynae_constellation": 2,
+          "spectral_analysis_enabled": true
+        },
+        "tune_break_system": {
+          "mode": "excel_off_tune_mistune_action",
+          "enemy_off_tune_max": 3920,
+          "enemy_tune_break_cooldown_seconds": 3.0,
+          "enemy_tune_break_cooldown_source_status": "workbook_confirmed_cost4_red_name_boss_default",
+          "enemy_tune_break_cooldown_source_ref": "\u9644\u4EF62!B227"
+        }
+      },
+      "generic_swap": {
+        "action_time": 0.0,
+        "combat_time_cost": 0.0,
+        "is_placeholder": false,
+        "source_status": "user_approved_benchmark_assumption_after_workbook_and_web_review",
+        "source": "party_presets.aemeath_mornye_lynae_enabled_test_party.generic_swap",
+        "warning": "User-approved fixed benchmark assumption after workbook and web review; not a workbook/client-frame-confirmed duration."
+      },
+      "account_ui_summary": {
+        "aemeath_mode": "Tune Rupture",
+        "precombat": "4.01 seconds",
+        "initial_active": "Mornye",
+        "scope": "Single persistent boss",
+        "unsupported": "Kill/wave/survival effects unsupported",
+        "baseline": "No account baseline has been executed"
+      }
+    }
+  ]
+}
