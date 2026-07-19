@@ -15,6 +15,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from env.wuwa_env import WuwaDpsEnv
+from simulator.timing_training_gate import assert_timing_runtime_workload_allowed
 from rl.demo_contract import (
     DEFAULT_DEMO_PATH,
     DIRECT_ACTION_MANIFEST_SHA256,
@@ -68,6 +69,8 @@ def load_demo(path: Path) -> dict[str, Any]:
 
 
 def run_pretrain(args: argparse.Namespace) -> dict[str, Any]:
+    if not args.dry_run:
+        assert_timing_runtime_workload_allowed("BC", PROJECT_ROOT)
     demo = load_demo(args.demo_path)
     initial_active_character = resolve_demo_initial_active_character(
         demo,

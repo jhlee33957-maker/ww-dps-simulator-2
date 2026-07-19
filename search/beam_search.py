@@ -573,6 +573,10 @@ def dry_run_plan(plan_path: Path) -> dict[str, Any]:
 
 
 def run_search_from_args(args: argparse.Namespace) -> dict[str, Any]:
+    if not args.dry_run_plan:
+        from simulator.timing_training_gate import assert_timing_runtime_workload_allowed
+
+        assert_timing_runtime_workload_allowed("Beam", ROOT)
     plan = load_plan(args.plan)
     validate_plan(plan, plan_path=args.plan)
     if args.dry_run_plan:

@@ -93,6 +93,10 @@ def build_plan(args: argparse.Namespace) -> dict[str, Any]:
 
 
 def run_plan(args: argparse.Namespace) -> dict[str, Any]:
+    if not args.dry_run_plan and not args.no_execute:
+        from simulator.timing_training_gate import assert_timing_runtime_workload_allowed
+
+        assert_timing_runtime_workload_allowed("PPO", ROOT)
     plan = build_plan(args)
     metadata_path = Path(f"{args.output_prefix}_plan_metadata.json")
     metadata_path.parent.mkdir(parents=True, exist_ok=True)

@@ -22,6 +22,7 @@ from simulator.build_profiles import (
 )
 from simulator.damage_formula import calc_def_multiplier, calc_res_multiplier, calculate_normal_damage
 from simulator.account_constellation_effects import build_account_direct_damage_context
+from simulator.action_timing_contract import same_character_input_locked, swap_input_locked
 from simulator.echo_sets import (
     AEMEATH_TRAILBLAZING_STAR_5SET_BUFF_ID,
     MORNYE_HIGH_SYNTONY_FIELD_DEF_BUFF_ID,
@@ -56,12 +57,20 @@ def is_action_valid(action: ActionData, state: CombatState) -> tuple[bool, str |
     if action.action_type == "swap":
         if action.character_id == state.active_character_id:
             return False, "Target character is already active."
+        if swap_input_locked(state, state.active_character_id):
+            return False, "Active character action has not reached its swap-input frame."
         if state.cooldowns.get(cooldown_key(action), 0.0) > 0.0:
             return False, "Target character is on swap re-entry cooldown."
         return True, None
 
     if action.character_id != state.active_character_id:
         return False, "Character is not active."
+
+    if (
+        not bool((action.mechanic_effects or {}).get("v124_timing_contract_control_slice", False))
+        and same_character_input_locked(state, action.character_id)
+    ):
+        return False, "Active character action has not reached its same-character input frame."
 
     if state.cooldowns.get(cooldown_key(action), 0.0) > 0.0:
         return False, "Action is on cooldown."
@@ -103,9 +112,19 @@ def _active_interfered_marker_buff_damage_amp(
     return 0.0
 
 
-def reduce_cooldowns(state: CombatState, elapsed: float) -> None:
+def reduce_cooldowns(
+    state: CombatState,
+    elapsed: float,
+    *,
+    action_elapsed: float | None = None,
+) -> None:
     for action_id, remaining in list(state.cooldowns.items()):
-        updated = max(0.0, remaining - elapsed)
+        cooldown_elapsed = (
+            float(action_elapsed if action_elapsed is not None else elapsed)
+            if action_id.startswith("swap_reentry:")
+            else float(elapsed)
+        )
+        updated = max(0.0, remaining - cooldown_elapsed)
         if updated > 0.0:
             state.cooldowns[action_id] = updated
         else:
@@ -1324,7 +1343,7 @@ def execute_action(
 
     state.current_time += action_time
     state.combat_time = combat_time_end
-    reduce_cooldowns(state, effective_combat_time_cost)
+    reduce_cooldowns(state, effective_combat_time_cost, action_elapsed=action_time)
     tick_buffs(state, effective_combat_time_cost)
     anomaly_tick_damage, anomaly_damage_by_type = advance_anomalies(state, effective_combat_time_cost)
     if truncated_by_combat_limit:

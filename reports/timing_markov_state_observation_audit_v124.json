@@ -1,0 +1,166 @@
+{
+  "schema_version": "timing_markov_state_observation_audit_v124",
+  "candidate": 124,
+  "stage": "timing-core-1",
+  "observation_version": "slot_account_constellation_single_boss_v6",
+  "observation_v6_shape": 330,
+  "observation_v6_modified": false,
+  "observation_v6_labels_sha256_before": "b32bfb6fc3287ccf10bef65b9ac146902c69cb0b1ce6808ef0acadf7bc50e374",
+  "observation_v6_labels_sha256_after": "b32bfb6fc3287ccf10bef65b9ac146902c69cb0b1ce6808ef0acadf7bc50e374",
+  "observation_v6_initial_vector_sha256_before": "6ccc4a5f228329c7b02ed72d4b1354cffc0c8a222d0ed1115be40316a18b3a4f",
+  "observation_v6_initial_vector_sha256_after": "6ccc4a5f228329c7b02ed72d4b1354cffc0c8a222d0ed1115be40316a18b3a4f",
+  "findings": [
+    {
+      "item": "ongoing action owner",
+      "future_transition_reward_affected": true,
+      "present_in_v6_observation": false,
+      "derivable_from_current_observation_and_action_history": false,
+      "markov_aliasing_risk": "high",
+      "recommended_v7_field_or_aggregation": "ongoing_action_owner_slot",
+      "finding": "Different off-field owners change persistence, cancellation, and future packet ownership."
+    },
+    {
+      "item": "ongoing action source ID or behavior class",
+      "future_transition_reward_affected": true,
+      "present_in_v6_observation": false,
+      "derivable_from_current_observation_and_action_history": false,
+      "markov_aliasing_risk": "high",
+      "recommended_v7_field_or_aggregation": "ongoing_action_behavior_class",
+      "finding": "Actions with identical visible resources can have different remaining locks, tails, and packet rules."
+    },
+    {
+      "item": "time until same-character input unlock",
+      "future_transition_reward_affected": true,
+      "present_in_v6_observation": false,
+      "derivable_from_current_observation_and_action_history": false,
+      "markov_aliasing_risk": "high",
+      "recommended_v7_field_or_aggregation": "same_input_lock_remaining",
+      "finding": "The action-slot available bit does not expose the unlock horizon."
+    },
+    {
+      "item": "time until swap unlock",
+      "future_transition_reward_affected": true,
+      "present_in_v6_observation": false,
+      "derivable_from_current_observation_and_action_history": false,
+      "markov_aliasing_risk": "high",
+      "recommended_v7_field_or_aggregation": "swap_lock_remaining",
+      "finding": "The action-slot available bit aliases 1F and long swap-lock states."
+    },
+    {
+      "item": "time until action end",
+      "future_transition_reward_affected": true,
+      "present_in_v6_observation": false,
+      "derivable_from_current_observation_and_action_history": false,
+      "markov_aliasing_risk": "high",
+      "recommended_v7_field_or_aggregation": "action_end_remaining",
+      "finding": "Control may return while the source action and reward tail remain active."
+    },
+    {
+      "item": "character persistence after swap",
+      "future_transition_reward_affected": true,
+      "present_in_v6_observation": false,
+      "derivable_from_current_observation_and_action_history": false,
+      "markov_aliasing_risk": "high",
+      "recommended_v7_field_or_aggregation": "persistent_off_field_owner_slot",
+      "finding": "Persistent execution changes cancellation and future packet outcomes."
+    },
+    {
+      "item": "time until persistence cutoff",
+      "future_transition_reward_affected": true,
+      "present_in_v6_observation": false,
+      "derivable_from_current_observation_and_action_history": false,
+      "markov_aliasing_risk": "high",
+      "recommended_v7_field_or_aggregation": "persistence_cutoff_remaining",
+      "finding": "The same visible swap can select different persistence branches."
+    },
+    {
+      "item": "pending packet count",
+      "future_transition_reward_affected": true,
+      "present_in_v6_observation": false,
+      "derivable_from_current_observation_and_action_history": false,
+      "markov_aliasing_risk": "high",
+      "recommended_v7_field_or_aggregation": "pending_packet_count",
+      "finding": "Pending reward multiplicity is not represented by scheduled-effect v5 channels."
+    },
+    {
+      "item": "time until next packet",
+      "future_transition_reward_affected": true,
+      "present_in_v6_observation": false,
+      "derivable_from_current_observation_and_action_history": false,
+      "markov_aliasing_risk": "high",
+      "recommended_v7_field_or_aggregation": "next_packet_time_remaining",
+      "finding": "Near and distant packet states alias under v6."
+    },
+    {
+      "item": "time until final packet",
+      "future_transition_reward_affected": true,
+      "present_in_v6_observation": false,
+      "derivable_from_current_observation_and_action_history": false,
+      "markov_aliasing_risk": "high",
+      "recommended_v7_field_or_aggregation": "last_packet_time_remaining",
+      "finding": "Tail completion changes future reward and action-instance lifetime."
+    },
+    {
+      "item": "pending packet behavior class",
+      "future_transition_reward_affected": true,
+      "present_in_v6_observation": false,
+      "derivable_from_current_observation_and_action_history": false,
+      "markov_aliasing_risk": "high",
+      "recommended_v7_field_or_aggregation": "pending_packet_behavior_class",
+      "finding": "Detachable, cancellable, and persistent packet families are behaviorally distinct."
+    },
+    {
+      "item": "pending damage/resource/marker/buff flags",
+      "future_transition_reward_affected": true,
+      "present_in_v6_observation": false,
+      "derivable_from_current_observation_and_action_history": false,
+      "markov_aliasing_risk": "high",
+      "recommended_v7_field_or_aggregation": "pending_packet_effect_flags",
+      "finding": "Equal packet counts can affect different transition and reward channels."
+    },
+    {
+      "item": "character re-entry cooldowns",
+      "future_transition_reward_affected": true,
+      "present_in_v6_observation": true,
+      "derivable_from_current_observation_and_action_history": true,
+      "markov_aliasing_risk": "low",
+      "recommended_v7_field_or_aggregation": "character_reentry_remaining_by_slot",
+      "finding": "Fixed policy action slots currently expose target swap cooldown ratios and availability, but a slot-generic v7 aggregation is clearer."
+    }
+  ],
+  "hidden_future_affecting_state_not_derivable": [
+    "ongoing action owner",
+    "ongoing action source ID or behavior class",
+    "time until same-character input unlock",
+    "time until swap unlock",
+    "time until action end",
+    "character persistence after swap",
+    "time until persistence cutoff",
+    "pending packet count",
+    "time until next packet",
+    "time until final packet",
+    "pending packet behavior class",
+    "pending damage/resource/marker/buff flags"
+  ],
+  "markov_aliasing_found": true,
+  "observation_v7_required": true,
+  "recommended_compact_v7_fields": [
+    "ongoing_action_owner_slot",
+    "ongoing_action_behavior_class",
+    "same_input_lock_remaining",
+    "swap_lock_remaining",
+    "action_end_remaining",
+    "pending_packet_count",
+    "next_packet_time_remaining",
+    "last_packet_time_remaining",
+    "pending_packet_behavior_class",
+    "pending_packet_effect_flags",
+    "persistent_off_field_owner_slot",
+    "persistence_cutoff_remaining",
+    "character_reentry_remaining_by_slot"
+  ],
+  "raw_unbounded_packet_arrays_recommended": false,
+  "training_allowed_under_v6_after_timing_patch": false,
+  "search_allowed_under_v6_after_timing_patch": false,
+  "conclusion": "v7_required_before_BC_PPO_Beam_MCTS"
+}

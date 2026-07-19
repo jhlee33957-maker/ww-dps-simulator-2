@@ -11,6 +11,7 @@ if str(ROOT) not in sys.path: sys.path.insert(0, str(ROOT))
 from search.mcts_plan import load_mcts_plan, stage_contract_hash
 from search.mcts_reporting import write_mcts_results
 from search.mcts_search import MCTSSearch
+from simulator.timing_training_gate import assert_timing_runtime_workload_allowed
 
 
 def parser() -> argparse.ArgumentParser:
@@ -40,6 +41,7 @@ def main() -> None:
            "execution_requested": bool(args.execute), "calibration_executed": False, "global_optimum_proven": False}
     if args.dry_run_plan or not args.execute:
         print(json.dumps(dry, indent=2)); return
+    assert_timing_runtime_workload_allowed("MCTS", ROOT)
     output_root = (args.output_root or (ROOT / stage["canonical_output_root"])).resolve()
     runner = MCTSSearch(plan=plan, stage=stage, output_root=output_root, max_simulations=args.max_simulations,
                         memory_budget_bytes=args.memory_budget_bytes)

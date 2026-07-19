@@ -1,0 +1,60 @@
+{
+  "schema_version": "action_timing_contract_v124",
+  "fps": 60.0,
+  "audit_contract": "audit_inputs/WW_3CHAR_ACTION_TIMING_AUDIT_V2.json",
+  "audit_contract_sha256": "f50f06ca092b60f5019b460f87072b88ba05168be4a8fbd94a599b48a327dd9b",
+  "actions": [
+    {
+      "action_id": "lynae_resonance_liberation_prismatic_overblast",
+      "same_character_input_frame": 238,
+      "swap_input_frame": 240,
+      "action_end_frame": 299,
+      "global_time_stop_frames": 240,
+      "persist_character_after_swap": true,
+      "defer_legacy_payload_to_scheduled_packets": false,
+      "scheduled_packet_groups": [],
+      "source_refs": ["角色-女!A2692:AT2692", "角色-女!A2693:AT2693", "角色-女!A2694:AT2694", "角色-女!A2695:AT2695"],
+      "source_type": "workbook_audit_v2",
+      "confidence": "high"
+    },
+    {
+      "action_id": "lynae_to_a_vivid_tomorrow",
+      "same_character_input_frame": 153,
+      "swap_input_frame": 1,
+      "action_end_frame": 181,
+      "global_time_stop_frames": 0,
+      "persist_character_after_swap": false,
+      "persist_if_swapped_before_frame": 179,
+      "defer_legacy_payload_to_scheduled_packets": true,
+      "scheduled_packet_groups": [
+        {
+          "packet_group_id": "row_2697_packet_family",
+          "scheduled_frames": [52, 57, 62, 67, 72, 77, 82, 87, 92, 97, 102, 107],
+          "damage_payload": {"placeholder": true, "source_row": 2697, "final_coefficient_deferred_to_stage_2": true},
+          "resource_payload": {"placeholder": true, "source_row": 2697, "final_split_deferred_to_stage_2": true},
+          "detachable": false,
+          "cancel_on_swap": false,
+          "persist_after_swap": true,
+          "source_refs": ["角色-女!A2697:AT2697"],
+          "source_type": "workbook_audit_v2",
+          "confidence": "high"
+        },
+        {
+          "packet_group_id": "row_2698_packet_family",
+          "scheduled_frames": [92, 98, 104, 110, 116, 122, 128, 134, 140, 146],
+          "damage_payload": {"placeholder": true, "source_row": 2698, "final_coefficient_deferred_to_stage_2": true},
+          "resource_payload": {"placeholder": true, "source_row": 2698, "final_split_deferred_to_stage_2": true},
+          "detachable": true,
+          "cancel_on_swap": false,
+          "persist_after_swap": true,
+          "source_refs": ["角色-女!A2698:AT2698"],
+          "source_type": "workbook_audit_v2",
+          "confidence": "high"
+        }
+      ],
+      "source_refs": ["角色-女!A2696:AT2696", "角色-女!A2697:AT2697", "角色-女!A2698:AT2698", "user_measurement:vivid_swap_input_1F"],
+      "source_type": "workbook_audit_v2_plus_user_measured_swap",
+      "confidence": "high"
+    }
+  ]
+}

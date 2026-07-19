@@ -14,6 +14,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from simulator.roster import read_party_presets
+from simulator.timing_training_gate import assert_timing_runtime_workload_allowed
 from simulator.build_profiles import parse_build_profile_overrides, parse_stat_overrides
 from simulator.mechanic_events import mechanic_event_metadata_for_config
 from simulator.transition_config import (
@@ -143,6 +144,7 @@ def build_effective_config_from_args(args: argparse.Namespace) -> tuple[dict[str
 
 def main() -> None:
     args = parse_args()
+    assert_timing_runtime_workload_allowed("PPO", PROJECT_ROOT)
     try:
         from stable_baselines3.common.env_checker import check_env
         from stable_baselines3.common.callbacks import BaseCallback

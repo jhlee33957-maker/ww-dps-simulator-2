@@ -7,7 +7,22 @@ from typing import Any
 
 from characters.base import CharacterMechanic
 from characters.registry import get_mechanic, get_mechanics_for_characters
-from simulator.action_executor import execute_action, execute_scheduled_damage_event, is_action_valid, timeline_entry
+from simulator.action_executor import (
+    execute_action,
+    execute_scheduled_damage_event,
+    is_action_valid,
+    reduce_cooldowns,
+    timeline_entry,
+)
+from simulator.action_timing_contract import (
+    ActionTimingContract,
+    advance_ongoing_action_runtime,
+    handle_character_swap,
+    load_action_timing_contracts,
+    prepare_control_point_action,
+    release_prior_owner_input_locks_for_followup,
+    start_ongoing_action,
+)
 from simulator.account_profile_gate import (
     AccountProfileSimulationBlocked,
     blocked_account_profile_messages,
@@ -156,6 +171,7 @@ class Simulation:
         account_simulation_scope: dict[str, Any] | str | None = None,
         precombat_elapsed_seconds: float | None = None,
         account_optical_sampling_active: bool = False,
+        action_timing_contracts: dict[str, ActionTimingContract] | None = None,
     ) -> None:
         self.all_characters = characters
         self.selected_character_ids = parse_party_character_ids(selected_character_ids, characters)
@@ -184,6 +200,7 @@ class Simulation:
             for character_id in self.selected_character_ids
         }
         self.actions = dict(actions)
+        self.action_timing_contracts = dict(action_timing_contracts or {})
         self._ensure_party_swap_actions()
         self.actions_by_id = self.actions
         self.policy_actions = self._build_policy_actions()
@@ -365,6 +382,7 @@ class Simulation:
             account_simulation_scope=account_simulation_scope,
             precombat_elapsed_seconds=precombat_elapsed_seconds,
             account_optical_sampling_active=account_optical_sampling_active,
+            action_timing_contracts=load_action_timing_contracts(data_path),
         )
     def validate_build_profiles(self) -> dict[str, object]:
         self.action_scaling_summary = build_action_scaling_summary(self.actions.values(), self.selected_character_ids)
@@ -1073,6 +1091,7 @@ class Simulation:
 
     def execute_action(self, action_id: str, *, record_diagnostics: bool = True) -> bool:
         self.validate_simulation_readiness(entry_point=f"combat action {action_id}")
+        advance_ongoing_action_runtime(self.state)
         if self.state.combat_time >= self.combat_duration:
             return False
         if (
@@ -1111,6 +1130,15 @@ class Simulation:
             action = self.resolve_action(selected_action)
         if not self.is_resolved_action_available(action):
             return False
+
+        timing_contract = self.action_timing_contracts.get(action.id)
+        if timing_contract is not None:
+            release_prior_owner_input_locks_for_followup(
+                self.state,
+                str(action.character_id or self.state.active_character_id),
+            )
+            start_ongoing_action(self.state, action, timing_contract)
+            action = prepare_control_point_action(action, timing_contract)
 
         if transition_resolution is not None:
             outgoing_key = swap_reentry_key(transition_resolution.outgoing_character_id)
@@ -1180,6 +1208,7 @@ class Simulation:
             self._apply_lynae_transition_buffs(result, transition_resolution)
             self._apply_lynae_incoming_intro_mechanics(result, transition_resolution)
             on_account_transition(self, transition_resolution, result)
+            handle_character_swap(self.state, transition_resolution.outgoing_character_id)
         self._apply_aemeath_outro_upgrade(result, actor_character_id)
 
         weapon_action_log = {}
@@ -1206,6 +1235,8 @@ class Simulation:
             self._sync_weapon_result_fields(result, weapon_action_log)
         if not bool(weapon_action_log.get("weapon_effect_triggered", False)):
             advance_weapon_effect_cooldowns(self.state, result.action_time)
+
+        advance_ongoing_action_runtime(self.state)
 
         self._advance_tune_break_runtime(
             action_elapsed=result.action_time,
@@ -1268,6 +1299,23 @@ class Simulation:
                 break
             self.execute_action(action_id)
         return self
+
+    def advance_timing_runtime(self, wall_elapsed: float, *, combat_elapsed: float | None = None) -> None:
+        """Advance the two clocks without inserting a policy action.
+
+        This is the deterministic Stage-1 timing-core hook used for action tails,
+        packet deadlines, and exact frame-boundary proofs. It is not a policy wait.
+        """
+        wall_elapsed = max(0.0, float(wall_elapsed))
+        resolved_combat_elapsed = wall_elapsed if combat_elapsed is None else max(0.0, float(combat_elapsed))
+        self.state.current_time += wall_elapsed
+        self.state.combat_time += resolved_combat_elapsed
+        reduce_cooldowns(
+            self.state,
+            resolved_combat_elapsed,
+            action_elapsed=wall_elapsed,
+        )
+        advance_ongoing_action_runtime(self.state)
 
     def valid_action_ids(self) -> list[str]:
         if self.account_profile_gate_errors or not self._account_aemeath_mode_is_executable():

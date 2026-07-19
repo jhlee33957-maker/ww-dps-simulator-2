@@ -25,6 +25,11 @@ from search.beam_spill import STREAMING_CHUNK_SCHEMA
 from search.beam_state import clone_simulation_for_search, future_state_fingerprint
 
 
+PROTECTED_HISTORICAL_RESULTS_ROOT = (ROOT / "results").resolve()
+PROTECTED_HISTORICAL_SUMMARY = PROTECTED_HISTORICAL_RESULTS_ROOT / "beam_search_v114_lowmem_10000_probe_summary.json"
+EXPECTED_HISTORICAL_SUMMARY_SHA256 = "61e789992660dd49e9183c7f4e7306ceafb52d7eff5a2ee79ac24292bb78ecff"
+
+
 def directory_bytes(root: Path) -> int:
     return sum(path.stat().st_size for path in root.rglob("*") if path.is_file())
 
@@ -41,11 +46,43 @@ def tree_digest(root: Path) -> str | None:
     return digest.hexdigest()
 
 
+def resolve_summary_output(path: Path | None) -> Path | None:
+    if path is None:
+        return None
+    resolved = (path if path.is_absolute() else ROOT / path).resolve()
+    if resolved == PROTECTED_HISTORICAL_RESULTS_ROOT or PROTECTED_HISTORICAL_RESULTS_ROOT in resolved.parents:
+        raise ValueError("--summary-output must not target protected historical results")
+    return resolved
+
+
+def write_diagnostic_summary(path: Path, *, plan: dict, metrics: dict) -> None:
+    summary = {
+        "schema_version": "beam_search_lowmem_10000_probe_diagnostic",
+        "candidate": plan.get("candidate"),
+        **metrics,
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path = path.with_name(path.name + ".tmp")
+    temporary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    os.replace(temporary_path, path)
+
+
+def historical_summary_state() -> tuple[str, int, int]:
+    assert PROTECTED_HISTORICAL_SUMMARY.is_file(), PROTECTED_HISTORICAL_SUMMARY
+    stat = PROTECTED_HISTORICAL_SUMMARY.stat()
+    digest = sha256_file(PROTECTED_HISTORICAL_SUMMARY)
+    assert digest == EXPECTED_HISTORICAL_SUMMARY_SHA256, digest
+    return digest, stat.st_size, stat.st_mtime_ns
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--plan", type=Path, default=LOWMEM_32GB_PLAN_PATH)
+    parser.add_argument("--summary-output", type=Path)
     args = parser.parse_args(argv)
     plan_path = args.plan if args.plan.is_absolute() else ROOT / args.plan
+    summary_output = resolve_summary_output(args.summary_output)
+    historical_summary_before = historical_summary_state()
     process_started = time.perf_counter()
     plan = load_plan(plan_path)
     stage = dict(plan["stages"][0], maximum_expansions=10000)
@@ -167,16 +204,9 @@ def main(argv: list[str] | None = None) -> int:
         metrics["total_process_runtime_seconds"] = time.perf_counter() - process_started
         metrics["normal_process_exit"] = True
         assert metrics["cleanup_completed"]
-        if plan.get("candidate") == 114:
-            summary = {
-                "schema_version": "beam_search_v114_lowmem_10000_probe_summary_corrected",
-                "candidate": 114,
-                **metrics,
-            }
-            summary_path = ROOT / "results/beam_search_v114_lowmem_10000_probe_summary.json"
-            temp_summary = summary_path.with_name(summary_path.name + ".tmp")
-            temp_summary.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-            os.replace(temp_summary, summary_path)
+        if summary_output is not None:
+            write_diagnostic_summary(summary_output, plan=plan, metrics=metrics)
+        assert historical_summary_state() == historical_summary_before
         print("LOWMEM_PROBE_METRICS=" + json.dumps(metrics, sort_keys=True), flush=True)
     finally:
         if temporary.exists():

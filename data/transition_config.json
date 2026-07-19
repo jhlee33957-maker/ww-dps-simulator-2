@@ -7,7 +7,7 @@
     "source": "transition_config.generic_swap_zero_time_v114",
     "source_status": "user_approved_benchmark_assumption_after_workbook_and_web_review",
     "reentry_cooldown_seconds": 1.0,
-    "reentry_cooldown_clock": "combat_time",
+    "reentry_cooldown_clock": "current_time",
     "warning": ""
   },
   "concerto_transition": {

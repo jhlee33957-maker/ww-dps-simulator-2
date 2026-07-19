@@ -1,0 +1,11 @@
+{
+  "schema_version": "timing_runtime_training_gate_v124",
+  "timing_runtime_enabled": true,
+  "markov_state_observation_audit_completed": true,
+  "observation_v7_required": true,
+  "observation_v7_implemented": false,
+  "training_allowed_after_timing_patch": false,
+  "search_allowed_after_timing_patch": false,
+  "blocked_workloads": ["BC", "PPO", "Beam", "MCTS"],
+  "reason": "Corrected timing state is future-affecting and hidden from account observation v6/330."
+}

@@ -299,6 +299,9 @@ def execute_plan(
     training_timeout_seconds: float = DEFAULT_TRAINING_TIMEOUT_SECONDS,
     evaluation_timeout_seconds: float = DEFAULT_EVALUATION_TIMEOUT_SECONDS,
 ) -> dict[str, Any]:
+    from simulator.timing_training_gate import assert_timing_runtime_workload_allowed
+
+    assert_timing_runtime_workload_allowed("PPO", PROJECT_ROOT)
     plan_path = plan_path.resolve()
     plan = load_plan(plan_path)
     validate_plan(plan, plan_path=plan_path)

@@ -360,6 +360,52 @@ class ScheduledEffectState(BaseModel):
     insertion_order: int = Field(default=0, ge=0)
 
 
+class ScheduledPacketInstance(BaseModel):
+    packet_instance_id: str
+    action_instance_id: str
+    owner_character_id: str
+    source_action_id: str
+    packet_group_id: str
+    scheduled_wall_time: float = Field(ge=0)
+    scheduled_combat_time: float | None = Field(default=None, ge=0)
+    combat_time_resolution_rule: str = "wall_time_due"
+    damage_payload: dict[str, Any] = Field(default_factory=dict)
+    resource_payload: dict[str, Any] = Field(default_factory=dict)
+    marker_payload: dict[str, Any] = Field(default_factory=dict)
+    buff_payload: dict[str, Any] = Field(default_factory=dict)
+    detachable: bool = False
+    cancel_on_swap: bool = False
+    persist_after_swap: bool = False
+    resolved: bool = False
+    cancelled: bool = False
+    resolved_wall_time: float | None = None
+    resolved_combat_time: float | None = None
+    source_refs: list[str] = Field(default_factory=list)
+    source_type: str | None = None
+    confidence: str | None = None
+
+
+class OngoingActionInstance(BaseModel):
+    action_instance_id: str
+    owner_character_id: str
+    source_action_id: str
+    start_wall_time: float = Field(ge=0)
+    start_combat_time: float = Field(ge=0)
+    same_character_lock_until_wall_time: float = Field(ge=0)
+    swap_lock_until_wall_time: float = Field(ge=0)
+    action_end_wall_time: float = Field(ge=0)
+    persist_after_swap: bool = False
+    persistence_cutoff_wall_time: float | None = Field(default=None, ge=0)
+    scheduled_packet_instances: list[str] = Field(default_factory=list)
+    owner_character_persistent: bool = False
+    owner_character_executing: bool = True
+    ended: bool = False
+    cancelled: bool = False
+    source_refs: list[str] = Field(default_factory=list)
+    source_type: str | None = None
+    confidence: str | None = None
+
+
 class CombatState(BaseModel):
     current_time: float = 0.0
     combat_time: float = 0.0
@@ -389,6 +435,12 @@ class CombatState(BaseModel):
     scheduled_effects: list[ScheduledEffectState] = Field(default_factory=list)
     scheduled_effect_next_order: int = 0
     scheduled_effect_event_log: list[dict[str, Any]] = Field(default_factory=list)
+    ongoing_action_instances: list[OngoingActionInstance] = Field(default_factory=list)
+    scheduled_packet_instances: list[ScheduledPacketInstance] = Field(default_factory=list)
+    action_instance_next_order: int = 0
+    packet_instance_next_order: int = 0
+    scheduled_packet_event_log: list[dict[str, Any]] = Field(default_factory=list)
+    persistent_off_field_character_ids: list[str] = Field(default_factory=list)
     action_log: list[dict[str, Any]] = Field(default_factory=list)
     damage_log: list[dict[str, Any]] = Field(default_factory=list)
     resonance_energy: dict[str, float] = Field(default_factory=dict)

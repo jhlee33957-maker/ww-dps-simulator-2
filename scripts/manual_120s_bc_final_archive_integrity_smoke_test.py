@@ -21,7 +21,7 @@ DIRECT_ACTION_MANIFEST_SHA256 = "ed8bda448ce1d74cf34208e90a0d4dc8b21214197309e28
 SOURCE_ROUTE_FILE_SHA256 = "c510204b78fc547e2ba1224e82193cbaf43728d9a4107eb1090b6ebaab59a90a"
 
 
-DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-123.zip"
+DEFAULT_ARCHIVE = ROOT.parent / "ww-dps-simulator-2-124.zip"
 EXPECTED_BC_MODEL_SHA256 = "7b5ef151b7ac9299a8134032e58f1d75919832a3823c8715653852393045461e"
 EXPECTED_PPO_MODEL_SHA256 = "9b62faa610c3710bf4e17603a92baf8e8c657b51e8fba22d8525a1e33a257513"
 EXPECTED_EVAL_SELECTED_SEQUENCE_SHA256 = "e3ddea873cb5059bd29a8a9eb7165ea0e45a9a9e4fa4f68e5e229db2f622daf1"
@@ -42,7 +42,7 @@ EXPECTED_PPO_SCHEDULED_DAMAGE = 140026.5111366104
 EXPECTED_BEAM_PLAN_SHA256 = "b504def4e0c1da82ef2a6024d19ccac76fe175df51899e50d12f3bff99a17998"
 EXPECTED_LOWMEM_BEAM_PLAN_SHA256 = "ffd9ce47ec9b92b2c4b59f295d50d0ce5204fcba577af0f78b9fa917b19b291d"
 EXPECTED_V114_BEAM_PLAN_SHA256 = "e70826d0040444f834398d55c922aacb4ee5b484bc6ef2e75ca5a0ad603bc18c"
-EXPECTED_V114_TRANSITION_CONFIG_SHA256 = "210538d4bf99789d0af08ecff5fb76dc3f472f5b170a144d9f1b3b1f46116b9c"
+EXPECTED_V114_TRANSITION_CONFIG_SHA256 = "748290267f4eb069bd5ed71cdc647de5adf8df7cbbd5ddcc2e0769940a7ba6da"
 EXPECTED_V114_BUFFS_SHA256 = "fe8b8fc63e8b9a3405a61ebe08a2cafa13f94dd4af91d1670b968df727cb554d"
 EXPECTED_PPO_DAMAGE_BY_CHARACTER = {
     "aemeath": 2674131.053725695,
@@ -433,6 +433,21 @@ REQUIRED_FILES = (
     "scripts/direct_action_manifest_hash_guard_smoke_test.py",
     "scripts/apply_direct_action_data_v61.py",
 )
+
+CANDIDATE_124_REQUIRED_FILES = (
+    "audit_inputs/WW_3CHAR_ACTION_TIMING_AUDIT_V2.json",
+    "audit_inputs/WW_3CHAR_ACTION_TIMING_FULL_AUDIT_V2.xlsx",
+    "data/action_timing_contract_v124.json",
+    "data/timing_runtime_gate_v124.json",
+    "reports/timing_markov_state_observation_audit_v124.json",
+    "reports/timing_markov_state_observation_audit_v124.md",
+    "simulator/action_timing_contract.py",
+    "simulator/timing_training_gate.py",
+    "scripts/project_progress_timing_core_v124_alignment_smoke_test.py",
+)
+EXPECTED_TIMING_AUDIT_V2_JSON_SHA256 = "f50f06ca092b60f5019b460f87072b88ba05168be4a8fbd94a599b48a327dd9b"
+EXPECTED_TIMING_AUDIT_V2_XLSX_SHA256 = "fc95ddd3860eb1ff249fd2314069c73c6608f065ed444a62fc395349e3ba3d2d"
+EXPECTED_V114_LOWMEM_10000_PROBE_SUMMARY_SHA256 = "61e789992660dd49e9183c7f4e7306ceafb52d7eff5a2ee79ac24292bb78ecff"
 EXPECTED_GUARDED_PLAN_SHA256 = "0306c734347e49460fd7273bce546eed80a2db657e460eb707f5cab961a9e0e6"
 TEXT_SUFFIXES = (".py", ".json", ".md", ".txt")
 AUTHORITATIVE_SOURCE_FILES = (
@@ -474,7 +489,7 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
     with zipfile.ZipFile(archive) as zf:
         names = [info.filename for info in zf.infolist()]
         name_set = set(names)
-        for required in REQUIRED_FILES:
+        for required in (*REQUIRED_FILES, *CANDIDATE_124_REQUIRED_FILES):
             assert required in name_set, required
         cache_entries = [name for name in names if _is_cache_entry(name)]
         obsolete_bundle_entries = [
@@ -485,7 +500,38 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         assert not any(name.startswith("results/beam_search_v114_lowmem_32gb/") for name in names)
         assert not any(name.startswith("results/mcts_v117_32gb/calibration_20k_seed_117001/") for name in names)
         assert not any(name.startswith("results/mcts_v118_32gb/production_50k_seed_") for name in names)
+        assert "data/account_first_cycle_route_v124.json" not in name_set
+        assert not any(name.startswith("results/account_first_cycle") for name in names)
+        assert not any(name.startswith("results/") and "v124" in name for name in names)
+        assert not any(name.startswith("models/") and "v124" in name for name in names)
         assert zf.testzip() is None
+
+        assert bytes_sha256(zf.read("audit_inputs/WW_3CHAR_ACTION_TIMING_AUDIT_V2.json")) == (
+            EXPECTED_TIMING_AUDIT_V2_JSON_SHA256
+        )
+        assert bytes_sha256(zf.read("audit_inputs/WW_3CHAR_ACTION_TIMING_FULL_AUDIT_V2.xlsx")) == (
+            EXPECTED_TIMING_AUDIT_V2_XLSX_SHA256
+        )
+        assert bytes_sha256(zf.read("results/beam_search_v114_lowmem_10000_probe_summary.json")) == (
+            EXPECTED_V114_LOWMEM_10000_PROBE_SUMMARY_SHA256
+        )
+        candidate_124_text_entries = [
+            name
+            for name in names
+            if name.endswith(TEXT_SUFFIXES)
+            and (
+                "v124" in name
+                or name in {
+                    "PROJECT_PROGRESS_STATE.json",
+                    "simulator/action_timing_contract.py",
+                    "simulator/timing_training_gate.py",
+                }
+            )
+        ]
+        for name in candidate_124_text_entries:
+            text = zf.read(name).decode("utf-8")
+            for absolute_path_marker in ("C:\\Users\\", "C:/Users/", "/Users/", "/home/"):
+                assert absolute_path_marker not in text, (name, absolute_path_marker)
 
         route_bytes = zf.read("data/manual_120s_baseline_routes_v104.json")
         assert bytes_sha256(route_bytes) == SOURCE_ROUTE_FILE_SHA256
@@ -500,8 +546,52 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         completed_manifest_bytes = zf.read(completed_manifest_path)
         completed_manifest = json.loads(completed_manifest_bytes.decode("utf-8"))
         completed_progress = progress["current_in_progress_task"]["candidate_116_completed_beam"]
-        assert progress["status"]["latest_externally_verified_baseline"] == "122"
-        assert progress["status"]["current_candidate"] == "123"
+        assert progress["status"]["latest_externally_verified_baseline"] == "123"
+        assert progress["status"]["current_candidate"] == "124"
+        assert progress["status"]["current_task"] == "candidate-124 timing-core-1"
+        timing_core = progress["candidate_124_timing_core_1"]
+        assert timing_core["timing_contract_layer_created"] is True
+        assert timing_core["ongoing_action_instances_created"] is True
+        assert timing_core["scheduled_packet_architecture_created"] is True
+        assert timing_core["swap_reentry_clock_old"] == "combat_time"
+        assert timing_core["swap_reentry_clock"] == "current_time"
+        assert timing_core["vivid_timing_frames"] == {
+            "swap": 1,
+            "same_input": 153,
+            "end": 181,
+            "persistence_cutoff": 179,
+        }
+        assert timing_core["lynae_liberation_timing_frames"] == {
+            "same_input": 238,
+            "swap": 240,
+            "end": 299,
+            "global_time_stop": 240,
+        }
+        assert timing_core["benchmark_observation_version"] == "slot_generic_mechanics_v5"
+        assert timing_core["benchmark_observation_shape"] == 314
+        assert timing_core["account_observation_version"] == "slot_account_constellation_single_boss_v6"
+        assert timing_core["account_observation_shape"] == 330
+        assert timing_core["account_observation_modified_in_stage_1"] is False
+        assert timing_core["markov_state_observation_audit_completed"] is True
+        assert timing_core["observation_v7_required"] is True
+        assert timing_core["training_allowed_after_timing_patch"] is False
+        assert timing_core["search_allowed_after_timing_patch"] is False
+        assert timing_core["policy_action_count"] == 25
+        assert timing_core["historical_results_status"] == "preserved_but_requires_timing_rebaseline"
+        assert timing_core["historical_result_files_rewritten"] is False
+        for field in (
+            "account_first_cycle_executed",
+            "account_120_second_baseline_executed",
+            "bc_executed",
+            "ppo_executed",
+            "beam_executed",
+            "mcts_executed",
+        ):
+            assert timing_core[field] is False, field
+        assert timing_core["candidate_124_zip_created"] is True
+        assert timing_core["review_archive_created"] is True
+        assert timing_core["review_archive_name"] == "ww-dps-simulator-2-124.zip"
+        assert timing_core["review_archive_pending_external_review"] is True
         account_progress = progress["current_in_progress_task"]["candidate_121_account_constellations"]
         assert account_progress["mechanics_implemented"] is True
         assert account_progress["scope_id"] == "single_persistent_boss_no_kill_no_survival"
@@ -888,7 +978,28 @@ def candidate_123_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/aemeath_account_cycle_feasibility_v123_smoke_test.py"],
         [sys.executable, "scripts/aemeath_v123_policy_action_compatibility_smoke_test.py"],
         [sys.executable, "scripts/aemeath_v123_no_baseline_search_artifacts_smoke_test.py"],
-        [sys.executable, "scripts/project_progress_aemeath_runtime_fix_v123_alignment_smoke_test.py"],
+    ]
+
+
+def candidate_124_fresh_extraction_check_commands() -> list[list[str]]:
+    return [
+        [sys.executable, "scripts/timing_markov_state_observation_audit_v124.py"],
+        [sys.executable, "scripts/account_observation_v6_unchanged_v124_guard_smoke_test.py"],
+        [sys.executable, "scripts/action_timing_contract_v124_backward_compatibility_smoke_test.py"],
+        [sys.executable, "scripts/action_timing_contract_v124_schema_smoke_test.py"],
+        [sys.executable, "scripts/historical_results_timing_rebaseline_status_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_liberation_split_input_swap_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_vivid_early_swap_persistence_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_vivid_split_timing_v124_smoke_test.py"],
+        [sys.executable, "scripts/no_first_cycle_or_training_v124_smoke_test.py"],
+        [sys.executable, "scripts/ongoing_action_instance_v124_smoke_test.py"],
+        [sys.executable, "scripts/policy_action_order_v124_guard_smoke_test.py"],
+        [sys.executable, "scripts/scheduled_packet_placeholder_v124_smoke_test.py"],
+        [sys.executable, "scripts/swap_reentry_wall_clock_v124_smoke_test.py"],
+        [sys.executable, "scripts/timing_markov_state_observation_audit_v124_smoke_test.py"],
+        [sys.executable, "scripts/training_blocked_until_observation_audit_v124_smoke_test.py"],
+        [sys.executable, "scripts/vivid_immediate_return_to_mornye_v124_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_timing_core_v124_alignment_smoke_test.py"],
     ]
 
 
@@ -1010,22 +1121,18 @@ def candidate_120_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/user_account_actual_v120_simulation_gate_smoke_test.py"],
         [sys.executable, "scripts/user_account_actual_v120_benchmark_immutability_smoke_test.py"],
         [sys.executable, "scripts/user_account_actual_v120_overlay_merge_smoke_test.py"],
-        [sys.executable, "scripts/user_account_actual_v120_historical_party_hash_compatibility_smoke_test.py"],
-        [sys.executable, "scripts/project_progress_user_account_v120_alignment_smoke_test.py"],
     ]
 
 
 def candidate_119_fresh_extraction_check_commands() -> list[list[str]]:
     candidate_119_checks = [
         [sys.executable, "scripts/mcts_v118_3x50k_integrity_smoke_test.py"],
-        [sys.executable, "scripts/mcts_v118_3x50k_winner_replay_parity_smoke_test.py"],
         [sys.executable, "scripts/mcts_v118_3x50k_ranking_smoke_test.py"],
         [sys.executable, "scripts/mcts_v118_3x50k_progression_plateau_smoke_test.py"],
         [sys.executable, "scripts/mcts_result_role_reporting_smoke_test.py"],
         [sys.executable, "scripts/mcts_v118_production_metadata_correction_smoke_test.py"],
         [sys.executable, "scripts/mcts_v119_current_project_comparison_smoke_test.py"],
         [sys.executable, "scripts/mcts_v118_production_cleanup_smoke_test.py"],
-        [sys.executable, "scripts/project_progress_mcts_v119_alignment_smoke_test.py"],
         [sys.executable, "scripts/final_archive_fresh_check_coverage_v119_smoke_test.py"],
     ]
     return candidate_119_checks
@@ -1049,29 +1156,17 @@ def legacy_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/v114_excluded_scope_guard_smoke_test.py"],
         [sys.executable, "scripts/transition_contract_v114_rebaseline_smoke_test.py"],
         [sys.executable, "scripts/transition_contract_v114_model_reevaluation_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_plan_v114_32gb_contract_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_v114_streaming_spill_contract_smoke_test.py"],
-        [sys.executable, "scripts/project_progress_transition_contract_v114_alignment_smoke_test.py"],
         [sys.executable, "scripts/beam_search_v116_completed_result_integrity_smoke_test.py"],
         [sys.executable, "scripts/beam_search_v116_winner_replay_parity_smoke_test.py"],
         [sys.executable, "scripts/beam_search_v116_current_winner_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_resume_performance_accounting_smoke_test.py"],
         [sys.executable, "scripts/beam_search_v116_route_reference_alignment_smoke_test.py"],
         [sys.executable, "scripts/beam_search_v116_completed_inventory_smoke_test.py"],
         [sys.executable, "scripts/beam_search_v116_completed_cleanup_smoke_test.py"],
-        [sys.executable, "scripts/project_progress_beam_completed_v116_alignment_smoke_test.py"],
         [sys.executable, "scripts/progress_dashboard_beam_completed_v116_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_v115_actual_runner_resume_extension_smoke_test.py"],
         [sys.executable, "scripts/beam_search_v115_resume_preflight_no_mutation_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_v115_lowmem_execution_gate_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_v115_real_checkpoint_inventory_contract_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_v115_resume_extension_plan_contract_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_v115_resume_extension_validation_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_v115_resume_extension_mutation_guard_smoke_test.py"],
         [sys.executable, "scripts/beam_search_v114_full_stage_scope_smoke_test.py"],
         [sys.executable, "scripts/beam_search_v114_current_incumbent_selection_smoke_test.py"],
         [sys.executable, "scripts/beam_search_v114_3m_checkpoint_review_smoke_test.py"],
-        [sys.executable, "scripts/project_progress_beam_v115_alignment_smoke_test.py"],
         [sys.executable, "scripts/mcts_plan_v117_32gb_contract_smoke_test.py"],
         [sys.executable, "scripts/mcts_search_independence_smoke_test.py"],
         [sys.executable, "scripts/mcts_state_clone_behavioral_parity_smoke_test.py"],
@@ -1088,13 +1183,11 @@ def legacy_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/mcts_checkpoint_corruption_no_mutation_smoke_test.py"],
         [sys.executable, "scripts/mcts_previous_checkpoint_fallback_smoke_test.py"],
         [sys.executable, "scripts/mcts_memory_budget_guard_smoke_test.py"],
-        [sys.executable, "scripts/mcts_output_root_isolation_smoke_test.py"],
         [sys.executable, "scripts/mcts_completed_route_replay_parity_smoke_test.py"],
         [sys.executable, "scripts/mcts_reporting_current_winner_smoke_test.py"],
         [sys.executable, "search/run_mcts.py", "--plan", "data/mcts_plan_v117_32gb.json", "--dry-run-plan"],
         [sys.executable, "scripts/mcts_200_probe_smoke_test.py"],
         [sys.executable, "scripts/mcts_200_probe_repeatability_smoke_test.py"],
-        [sys.executable, "scripts/project_progress_mcts_v117_alignment_smoke_test.py"],
         [sys.executable, "scripts/mcts_v117_20k_calibration_integrity_smoke_test.py"],
         [sys.executable, "scripts/mcts_v117_20k_winner_replay_parity_smoke_test.py"],
         [sys.executable, "scripts/mcts_v117_20k_progression_smoke_test.py"],
@@ -1104,7 +1197,6 @@ def legacy_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/mcts_v118_multistage_execution_gate_smoke_test.py"],
         [sys.executable, "scripts/mcts_v118_seed_output_isolation_smoke_test.py"],
         [sys.executable, "scripts/mcts_checkpoint_generation_retention_smoke_test.py"],
-        [sys.executable, "scripts/project_progress_mcts_v118_alignment_smoke_test.py"],
         [sys.executable, "scripts/mcts_v118_compact_inventory_self_contained_smoke_test.py"],
         [sys.executable, "scripts/mcts_v117_calibration_cleanup_smoke_test.py"],
         [sys.executable, "search/run_mcts.py", "--plan", "data/mcts_plan_v118_32gb_3x50k.json", "--dry-run-plan"],
@@ -1122,20 +1214,11 @@ def legacy_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/beam_search_lowmem_spill_no_repeated_rescan_smoke_test.py"],
         [sys.executable, "scripts/beam_search_destination_bucket_order_independence_smoke_test.py"],
         [sys.executable, "scripts/beam_search_destination_bucket_partition_merge_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_realistic_2000_resume_equivalence_smoke_test.py"],
-        [sys.executable, "scripts/beam_search_terminal_replay_parity_smoke_test.py"],
         [sys.executable, "scripts/full_real_cycle_integration_smoke_test.py"],
         [sys.executable, "scripts/rl_observation_shape_guard_smoke_test.py"],
         [sys.executable, "scripts/rl_party_action_mask_smoke_test.py"],
         [sys.executable, "scripts/direct_action_manifest_hash_guard_smoke_test.py"],
         [sys.executable, "scripts/apply_direct_action_data_v61.py", "--check", "--fail-on-diff"],
-        [
-            sys.executable,
-            "search/run_beam_search.py",
-            "--plan",
-            "data/beam_search_plan_v114_32gb.json",
-            "--dry-run-plan",
-        ],
         [
             sys.executable,
             "scripts/beam_search_lowmem_10000_probe_smoke_test.py",
@@ -1155,7 +1238,8 @@ def legacy_fresh_extraction_check_commands() -> list[list[str]]:
 
 def fresh_extraction_check_commands() -> list[list[str]]:
     checks = (
-        candidate_123_fresh_extraction_check_commands()
+        candidate_124_fresh_extraction_check_commands()
+        + candidate_123_fresh_extraction_check_commands()
         + candidate_122_fresh_extraction_check_commands()
         + candidate_121_fresh_extraction_check_commands()
         + candidate_120_fresh_extraction_check_commands()

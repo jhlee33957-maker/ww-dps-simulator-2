@@ -8,6 +8,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from scripts.manual_120s_bc_final_archive_integrity_smoke_test import (
+    candidate_124_fresh_extraction_check_commands,
     candidate_123_fresh_extraction_check_commands,
     candidate_122_fresh_extraction_check_commands,
     candidate_121_fresh_extraction_check_commands,
@@ -19,15 +20,29 @@ from scripts.manual_120s_bc_final_archive_integrity_smoke_test import (
 
 
 HISTORY_AWARE_PROGRESS_TESTS = {
-    "scripts/project_progress_transition_contract_v114_alignment_smoke_test.py",
-    "scripts/project_progress_beam_v115_alignment_smoke_test.py",
-    "scripts/project_progress_beam_completed_v116_alignment_smoke_test.py",
-    "scripts/project_progress_mcts_v117_alignment_smoke_test.py",
-    "scripts/project_progress_mcts_v118_alignment_smoke_test.py",
-    "scripts/project_progress_aemeath_runtime_fix_v123_alignment_smoke_test.py",
+    "scripts/project_progress_timing_core_v124_alignment_smoke_test.py",
+    "scripts/project_progress_account_party_v122_alignment_smoke_test.py",
+    "scripts/project_progress_account_constellation_v121_alignment_smoke_test.py",
 }
 
 REQUIRED_COMMAND_PATHS = {
+    "scripts/timing_markov_state_observation_audit_v124.py",
+    "scripts/account_observation_v6_unchanged_v124_guard_smoke_test.py",
+    "scripts/action_timing_contract_v124_backward_compatibility_smoke_test.py",
+    "scripts/action_timing_contract_v124_schema_smoke_test.py",
+    "scripts/historical_results_timing_rebaseline_status_v124_smoke_test.py",
+    "scripts/lynae_liberation_split_input_swap_v124_smoke_test.py",
+    "scripts/lynae_vivid_early_swap_persistence_v124_smoke_test.py",
+    "scripts/lynae_vivid_split_timing_v124_smoke_test.py",
+    "scripts/no_first_cycle_or_training_v124_smoke_test.py",
+    "scripts/ongoing_action_instance_v124_smoke_test.py",
+    "scripts/policy_action_order_v124_guard_smoke_test.py",
+    "scripts/scheduled_packet_placeholder_v124_smoke_test.py",
+    "scripts/swap_reentry_wall_clock_v124_smoke_test.py",
+    "scripts/timing_markov_state_observation_audit_v124_smoke_test.py",
+    "scripts/training_blocked_until_observation_audit_v124_smoke_test.py",
+    "scripts/vivid_immediate_return_to_mornye_v124_smoke_test.py",
+    "scripts/project_progress_timing_core_v124_alignment_smoke_test.py",
     "scripts/aemeath_precombat_radiance_heavy_resolution_v123_smoke_test.py",
     "scripts/aemeath_precombat_radiance_consumption_v123_smoke_test.py",
     "scripts/aemeath_intro_starlume_acceleration_v123_smoke_test.py",
@@ -35,7 +50,6 @@ REQUIRED_COMMAND_PATHS = {
     "scripts/aemeath_account_cycle_feasibility_v123_smoke_test.py",
     "scripts/aemeath_v123_policy_action_compatibility_smoke_test.py",
     "scripts/aemeath_v123_no_baseline_search_artifacts_smoke_test.py",
-    "scripts/project_progress_aemeath_runtime_fix_v123_alignment_smoke_test.py",
     "scripts/account_party_overlay_v122_smoke_test.py",
     "scripts/account_party_v122_contract_smoke_test.py",
     "scripts/account_content_start_v122_smoke_test.py",
@@ -134,10 +148,7 @@ REQUIRED_COMMAND_PATHS = {
     "scripts/user_account_actual_v120_simulation_gate_smoke_test.py",
     "scripts/user_account_actual_v120_benchmark_immutability_smoke_test.py",
     "scripts/user_account_actual_v120_overlay_merge_smoke_test.py",
-    "scripts/user_account_actual_v120_historical_party_hash_compatibility_smoke_test.py",
-    "scripts/project_progress_user_account_v120_alignment_smoke_test.py",
     "scripts/mcts_v118_3x50k_integrity_smoke_test.py",
-    "scripts/mcts_v118_3x50k_winner_replay_parity_smoke_test.py",
     "scripts/mcts_result_role_reporting_smoke_test.py",
     "scripts/mcts_v118_production_cleanup_smoke_test.py",
     "scripts/mcts_v118_seed_output_isolation_smoke_test.py",
@@ -146,7 +157,6 @@ REQUIRED_COMMAND_PATHS = {
     "scripts/mcts_200_probe_smoke_test.py",
     "scripts/mcts_200_probe_repeatability_smoke_test.py",
     "scripts/beam_search_v116_completed_result_integrity_smoke_test.py",
-    "scripts/beam_search_v114_streaming_spill_contract_smoke_test.py",
     "scripts/beam_search_lowmem_10000_probe_smoke_test.py",
     "scripts/beam_search_lowmem_10000_probe_repeatability_smoke_test.py",
     "scripts/transition_contract_v114_rebaseline_smoke_test.py",
@@ -163,6 +173,7 @@ def command_paths(commands: list[list[str]]) -> set[str]:
 
 
 def assert_full_coverage(commands: list[list[str]]) -> None:
+    candidate_124 = candidate_124_fresh_extraction_check_commands()
     candidate_123 = candidate_123_fresh_extraction_check_commands()
     candidate_122 = candidate_122_fresh_extraction_check_commands()
     candidate_121 = candidate_121_fresh_extraction_check_commands()
@@ -170,7 +181,8 @@ def assert_full_coverage(commands: list[list[str]]) -> None:
     candidate_119 = candidate_119_fresh_extraction_check_commands()
     legacy = legacy_fresh_extraction_check_commands()
     normalized = [tuple(command[1:]) for command in commands]
-    assert len(commands) > len(candidate_123)
+    assert len(commands) > len(candidate_124)
+    assert all(command in commands for command in candidate_124)
     assert all(command in commands for command in candidate_123)
     assert all(command in commands for command in candidate_122)
     assert len(normalized) == len(set(normalized)), "duplicate fresh-extraction command"
@@ -185,30 +197,41 @@ def assert_full_coverage(commands: list[list[str]]) -> None:
 
 def main() -> None:
     commands = fresh_extraction_check_commands()
+    candidate_124 = candidate_124_fresh_extraction_check_commands()
     candidate_123 = candidate_123_fresh_extraction_check_commands()
     candidate_122 = candidate_122_fresh_extraction_check_commands()
     candidate_121 = candidate_121_fresh_extraction_check_commands()
     candidate_120 = candidate_120_fresh_extraction_check_commands()
     candidate_119 = candidate_119_fresh_extraction_check_commands()
     legacy = legacy_fresh_extraction_check_commands()
-    assert commands == candidate_123 + candidate_122 + candidate_121 + candidate_120 + candidate_119 + legacy
+    older = candidate_123 + candidate_122 + candidate_121 + candidate_120 + candidate_119 + legacy
+    assert commands == candidate_124 + older
     assert_full_coverage(commands)
-    try:
-        assert_full_coverage(candidate_122 + candidate_121 + candidate_120 + candidate_119 + legacy)
-    except AssertionError:
-        pass
-    else:
-        raise AssertionError("coverage guard accepted a checker missing candidate-123 commands")
-    try:
-        assert_full_coverage(candidate_120)
-    except AssertionError:
-        pass
-    else:
-        raise AssertionError("coverage guard accepted a candidate-120-only checker mutation")
+
+    mutations = {
+        "candidate-124 commands omitted": older,
+        "candidate-124 audit generator omitted": [
+            command for command in candidate_124 + older
+            if command[1] != "scripts/timing_markov_state_observation_audit_v124.py"
+        ],
+        "candidate-124 progress alignment omitted": [
+            command for command in candidate_124 + older
+            if command[1] != "scripts/project_progress_timing_core_v124_alignment_smoke_test.py"
+        ],
+        "candidate-123 and older coverage removed": candidate_124,
+        "duplicate command introduced": commands + [commands[0]],
+    }
+    for label, mutation in mutations.items():
+        try:
+            assert_full_coverage(mutation)
+        except AssertionError:
+            pass
+        else:
+            raise AssertionError(f"coverage guard accepted mutation: {label}")
     print(
         "final_archive_fresh_check_coverage_v119_smoke_test ok "
-        f"candidate_123={len(candidate_123)} candidate_122={len(candidate_122)} candidate_121={len(candidate_121)} candidate_120={len(candidate_120)} candidate_119={len(candidate_119)} "
-        f"legacy={len(legacy)} total={len(commands)} mutation_rejected=true"
+        f"candidate_124={len(candidate_124)} candidate_123={len(candidate_123)} candidate_122={len(candidate_122)} candidate_121={len(candidate_121)} candidate_120={len(candidate_120)} candidate_119={len(candidate_119)} "
+        f"legacy={len(legacy)} total={len(commands)} mutations_rejected={len(mutations)}"
     )
 
 
