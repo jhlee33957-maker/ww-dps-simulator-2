@@ -5,6 +5,37 @@
   "audit_contract_sha256": "f50f06ca092b60f5019b460f87072b88ba05168be4a8fbd94a599b48a327dd9b",
   "actions": [
     {
+      "action_id": "mornye_liberation_critical_protocol",
+      "timing_variants": [
+        {
+          "variant_id": "normal",
+          "condition": {"observation_state_active": false},
+          "same_character_input_frame": 282,
+          "swap_input_frame": 300,
+          "source_action_end_frame": 282,
+          "lifecycle_end_frame": 300,
+          "global_time_stop_frames": 300,
+          "legacy_hit_frame_overrides": [272]
+        },
+        {
+          "variant_id": "observation",
+          "condition": {"observation_state_active": true},
+          "same_character_input_frame": 296,
+          "swap_input_frame": 300,
+          "source_action_end_frame": 296,
+          "lifecycle_end_frame": 300,
+          "global_time_stop_frames": 300,
+          "legacy_hit_frame_overrides": [277]
+        }
+      ],
+      "persist_character_after_swap": false,
+      "defer_legacy_payload_to_scheduled_packets": false,
+      "scheduled_packet_groups": [],
+      "source_refs": ["角色-女!A4150:AT4150", "角色-女!A4153:AT4153", "角色-女!A4154:AT4154"],
+      "source_type": "workbook_audit_v2",
+      "confidence": "high"
+    },
+    {
       "action_id": "lynae_resonance_liberation_prismatic_overblast",
       "same_character_input_frame": 238,
       "swap_input_frame": 240,

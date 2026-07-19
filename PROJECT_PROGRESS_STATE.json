@@ -16,10 +16,13 @@
     "last_updated": "2026-07-19T00:00:00+09:00",
     "latest_verified_archive": "ww-dps-simulator-2-123(3).zip",
     "latest_verified_archive_sha256": "2d6c396df09645c4a304acebffea88d41555a6de05ed41d6ee7867648a5712f8",
+    "latest_externally_reviewed_archive": "ww-dps-simulator-2-124(3).zip",
+    "latest_externally_reviewed_archive_sha256": "c341c77e0ee461ab8a2e5b450e2813bf6bc1e7cf6164d8cd8920b0a032f67754",
     "latest_verified_baseline_label": "123",
     "latest_externally_verified_baseline": "123",
     "current_task_status": "candidate_pending_external_review",
-    "current_task": "candidate-124 timing-core-1",
+    "current_task": "candidate-124 timing-core-2a-mornye-liberation",
+    "current_candidate_stage": "timing-core-2a-mornye-liberation",
     "current_task_expected_next_archive": "ww-dps-simulator-2-124.zip",
     "do_not_treat_current_task_as_complete_until_reviewed": true,
     "candidate_expected_next_archive": "ww-dps-simulator-2-124.zip",
@@ -1991,12 +1994,15 @@
       ]
     }
   ],
-  "next_planned_task": "Stage 2 P0 scheduled-packet/action corrections, then observation-v7 implementation if required",
+  "next_planned_task": "Continue remaining Stage 2 P0 packet/action corrections, then observation-v7 implementation if required",
   "candidate_124_timing_core_1": {
-    "latest_externally_reviewed_candidate": 123,
+    "latest_externally_reviewed_candidate": 124,
+    "latest_externally_reviewed_archive": "ww-dps-simulator-2-124(3).zip",
+    "latest_externally_reviewed_archive_sha256": "c341c77e0ee461ab8a2e5b450e2813bf6bc1e7cf6164d8cd8920b0a032f67754",
     "current_candidate": 124,
     "status": "candidate_pending_external_review",
-    "stage": "timing-core-1",
+    "stage": "timing-core-2a-mornye-liberation",
+    "stage_2a_externally_verified": false,
     "timing_contract_layer_created": true,
     "ongoing_action_instances_created": true,
     "scheduled_packet_architecture_created": true,
@@ -2004,6 +2010,9 @@
     "swap_reentry_clock": "current_time",
     "vivid_timing_frames": {"swap": 1, "same_input": 153, "end": 181, "persistence_cutoff": 179},
     "lynae_liberation_timing_frames": {"same_input": 238, "swap": 240, "end": 299, "global_time_stop": 240},
+    "mornye_liberation_state_timing_implemented": true,
+    "mornye_liberation_timing_frames": {"normal_hit": 272, "normal_same_input": 282, "observation_hit": 277, "observation_same_input": 296, "swap": 300, "lifecycle_end": 300, "global_time_stop": 300},
+    "remaining_p0_packet_action_corrections": "pending",
     "benchmark_observation_version": "slot_generic_mechanics_v5",
     "benchmark_observation_shape": 314,
     "account_observation_version": "slot_account_constellation_single_boss_v6",
@@ -2026,7 +2035,7 @@
     "review_archive_created": true,
     "review_archive_name": "ww-dps-simulator-2-124.zip",
     "review_archive_pending_external_review": true,
-    "next_task": "Stage 2 P0 scheduled-packet/action corrections, then observation-v7 implementation if required"
+    "next_task": "Continue remaining Stage 2 P0 packet/action corrections, then observation-v7 implementation if required"
   },
   "candidate_history": [
     {
@@ -2503,14 +2512,24 @@
     },
     {
       "candidate": "124",
-      "task": "timing-core-1 split inputs, ongoing actions, scheduled packets, wall-clock re-entry, and observation audit",
+      "task": "timing-core-2a Mornye Liberation state-dependent timing variants",
       "status": "candidate_pending_external_review",
       "latest_externally_verified_baseline": "123",
       "external_review_status": "pending",
       "external_verification_claimed": false,
       "baseline_archive": "ww-dps-simulator-2-123(3).zip",
       "baseline_archive_sha256": "2d6c396df09645c4a304acebffea88d41555a6de05ed41d6ee7867648a5712f8",
-      "stage": "timing-core-1",
+      "stage": "timing-core-2a-mornye-liberation",
+      "latest_externally_reviewed_archive": "ww-dps-simulator-2-124(3).zip",
+      "latest_externally_reviewed_archive_sha256": "c341c77e0ee461ab8a2e5b450e2813bf6bc1e7cf6164d8cd8920b0a032f67754",
+      "stage_2a_externally_verified": false,
+      "mornye_liberation_state_timing_implemented": true,
+      "mornye_liberation_normal_same_input_frame": 282,
+      "mornye_liberation_observation_same_input_frame": 296,
+      "mornye_liberation_swap_unlock_frame": 300,
+      "mornye_liberation_global_time_stop_frames": 300,
+      "mornye_liberation_branch_hit_frames": [272, 277],
+      "remaining_p0_packet_action_corrections": "pending",
       "timing_architecture_implemented": true,
       "markov_state_observation_audit_completed": true,
       "observation_v7_required": true,
@@ -2522,7 +2541,7 @@
       "review_archive_created": true,
       "review_archive_name": "ww-dps-simulator-2-124.zip",
       "review_archive_pending_external_review": true,
-      "next_task": "Stage 2 P0 scheduled-packet/action corrections, then observation-v7 implementation if required"
+      "next_task": "Continue remaining Stage 2 P0 packet/action corrections, then observation-v7 implementation if required"
     }
   ]
 }

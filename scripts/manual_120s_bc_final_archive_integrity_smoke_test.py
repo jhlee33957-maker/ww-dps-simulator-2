@@ -444,6 +444,14 @@ CANDIDATE_124_REQUIRED_FILES = (
     "simulator/action_timing_contract.py",
     "simulator/timing_training_gate.py",
     "scripts/project_progress_timing_core_v124_alignment_smoke_test.py",
+    "scripts/project_progress_timing_core_stage2a_v124_alignment_smoke_test.py",
+    "scripts/mornye_liberation_timing_variant_schema_v124_smoke_test.py",
+    "scripts/mornye_liberation_normal_timing_v124_smoke_test.py",
+    "scripts/mornye_liberation_observation_timing_v124_smoke_test.py",
+    "scripts/mornye_liberation_variant_selection_stability_v124_smoke_test.py",
+    "scripts/mornye_liberation_payload_parity_v124_smoke_test.py",
+    "scripts/mornye_liberation_zero_combat_time_v124_smoke_test.py",
+    "scripts/mornye_liberation_no_duplicate_payload_v124_smoke_test.py",
 )
 EXPECTED_TIMING_AUDIT_V2_JSON_SHA256 = "f50f06ca092b60f5019b460f87072b88ba05168be4a8fbd94a599b48a327dd9b"
 EXPECTED_TIMING_AUDIT_V2_XLSX_SHA256 = "fc95ddd3860eb1ff249fd2314069c73c6608f065ed444a62fc395349e3ba3d2d"
@@ -547,9 +555,16 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         completed_manifest = json.loads(completed_manifest_bytes.decode("utf-8"))
         completed_progress = progress["current_in_progress_task"]["candidate_116_completed_beam"]
         assert progress["status"]["latest_externally_verified_baseline"] == "123"
+        assert progress["status"]["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(3).zip"
+        assert progress["status"]["latest_externally_reviewed_archive_sha256"] == (
+            "c341c77e0ee461ab8a2e5b450e2813bf6bc1e7cf6164d8cd8920b0a032f67754"
+        )
         assert progress["status"]["current_candidate"] == "124"
-        assert progress["status"]["current_task"] == "candidate-124 timing-core-1"
+        assert progress["status"]["current_task"] == "candidate-124 timing-core-2a-mornye-liberation"
+        assert progress["status"]["current_candidate_stage"] == "timing-core-2a-mornye-liberation"
         timing_core = progress["candidate_124_timing_core_1"]
+        assert timing_core["stage"] == "timing-core-2a-mornye-liberation"
+        assert timing_core["stage_2a_externally_verified"] is False
         assert timing_core["timing_contract_layer_created"] is True
         assert timing_core["ongoing_action_instances_created"] is True
         assert timing_core["scheduled_packet_architecture_created"] is True
@@ -567,6 +582,17 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
             "end": 299,
             "global_time_stop": 240,
         }
+        assert timing_core["mornye_liberation_state_timing_implemented"] is True
+        assert timing_core["mornye_liberation_timing_frames"] == {
+            "normal_hit": 272,
+            "normal_same_input": 282,
+            "observation_hit": 277,
+            "observation_same_input": 296,
+            "swap": 300,
+            "lifecycle_end": 300,
+            "global_time_stop": 300,
+        }
+        assert timing_core["remaining_p0_packet_action_corrections"] == "pending"
         assert timing_core["benchmark_observation_version"] == "slot_generic_mechanics_v5"
         assert timing_core["benchmark_observation_shape"] == 314
         assert timing_core["account_observation_version"] == "slot_account_constellation_single_boss_v6"
@@ -978,6 +1004,7 @@ def candidate_123_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/aemeath_account_cycle_feasibility_v123_smoke_test.py"],
         [sys.executable, "scripts/aemeath_v123_policy_action_compatibility_smoke_test.py"],
         [sys.executable, "scripts/aemeath_v123_no_baseline_search_artifacts_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_aemeath_runtime_fix_v123_alignment_smoke_test.py"],
     ]
 
 
@@ -988,9 +1015,17 @@ def candidate_124_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/action_timing_contract_v124_backward_compatibility_smoke_test.py"],
         [sys.executable, "scripts/action_timing_contract_v124_schema_smoke_test.py"],
         [sys.executable, "scripts/historical_results_timing_rebaseline_status_v124_smoke_test.py"],
+        [sys.executable, "scripts/mcts_v118_3x50k_winner_replay_parity_smoke_test.py"],
         [sys.executable, "scripts/lynae_liberation_split_input_swap_v124_smoke_test.py"],
         [sys.executable, "scripts/lynae_vivid_early_swap_persistence_v124_smoke_test.py"],
         [sys.executable, "scripts/lynae_vivid_split_timing_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_liberation_timing_variant_schema_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_liberation_normal_timing_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_liberation_observation_timing_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_liberation_variant_selection_stability_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_liberation_payload_parity_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_liberation_zero_combat_time_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_liberation_no_duplicate_payload_v124_smoke_test.py"],
         [sys.executable, "scripts/no_first_cycle_or_training_v124_smoke_test.py"],
         [sys.executable, "scripts/ongoing_action_instance_v124_smoke_test.py"],
         [sys.executable, "scripts/policy_action_order_v124_guard_smoke_test.py"],
@@ -1000,6 +1035,7 @@ def candidate_124_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/training_blocked_until_observation_audit_v124_smoke_test.py"],
         [sys.executable, "scripts/vivid_immediate_return_to_mornye_v124_smoke_test.py"],
         [sys.executable, "scripts/project_progress_timing_core_v124_alignment_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_timing_core_stage2a_v124_alignment_smoke_test.py"],
     ]
 
 

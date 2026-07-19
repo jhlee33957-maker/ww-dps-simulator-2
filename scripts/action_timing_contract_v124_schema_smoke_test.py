@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from v124_timing_test_support import DATA_DIR, LIBERATION_ID, VIVID_ID
+from v124_timing_test_support import DATA_DIR, LIBERATION_ID, MORNYE_LIBERATION_ID, VIVID_ID
 from simulator.action_timing_contract import TIMING_CONTRACT_SCHEMA_VERSION, load_action_timing_contracts
 
 
 def main() -> None:
     contracts = load_action_timing_contracts(DATA_DIR)
     assert TIMING_CONTRACT_SCHEMA_VERSION == "action_timing_contract_v124"
-    assert set(contracts) == {LIBERATION_ID, VIVID_ID}
+    assert set(contracts) == {MORNYE_LIBERATION_ID, LIBERATION_ID, VIVID_ID}
     liberation, vivid = contracts[LIBERATION_ID], contracts[VIVID_ID]
     assert (liberation.same_character_input_frame, liberation.swap_input_frame, liberation.action_end_frame) == (238, 240, 299)
     assert liberation.global_time_stop_frames == 240
@@ -19,4 +19,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

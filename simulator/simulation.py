@@ -21,6 +21,7 @@ from simulator.action_timing_contract import (
     load_action_timing_contracts,
     prepare_control_point_action,
     release_prior_owner_input_locks_for_followup,
+    select_action_timing,
     start_ongoing_action,
 )
 from simulator.account_profile_gate import (
@@ -1137,8 +1138,9 @@ class Simulation:
                 self.state,
                 str(action.character_id or self.state.active_character_id),
             )
-            start_ongoing_action(self.state, action, timing_contract)
-            action = prepare_control_point_action(action, timing_contract)
+            selected_timing = select_action_timing(self.state, action, timing_contract)
+            start_ongoing_action(self.state, action, timing_contract, selected_timing)
+            action = prepare_control_point_action(action, timing_contract, selected_timing)
 
         if transition_resolution is not None:
             outgoing_key = swap_reentry_key(transition_resolution.outgoing_character_id)

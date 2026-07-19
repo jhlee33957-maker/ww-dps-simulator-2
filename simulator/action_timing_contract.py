@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from simulator.models import ActionData, CombatState, OngoingActionInstance, ScheduledPacketInstance
 
@@ -37,12 +37,60 @@ class ScheduledPacketGroupContract(BaseModel):
         return self
 
 
-class ActionTimingContract(BaseModel):
-    action_id: str
+class TimingVariantCondition(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    observation_state_active: bool
+
+
+class ActionTimingVariant(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    variant_id: str = Field(min_length=1)
+    condition: TimingVariantCondition
     same_character_input_frame: float = Field(ge=0)
     swap_input_frame: float = Field(ge=0)
-    action_end_frame: float = Field(ge=0)
+    source_action_end_frame: float = Field(ge=0)
+    lifecycle_end_frame: float = Field(ge=0)
     global_time_stop_frames: float = Field(default=0, ge=0)
+    legacy_hit_frame_overrides: list[float] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_lifecycle(self) -> "ActionTimingVariant":
+        required_end = max(
+            self.source_action_end_frame,
+            self.same_character_input_frame,
+            self.swap_input_frame,
+        )
+        if self.lifecycle_end_frame < required_end:
+            raise ValueError("lifecycle_end_frame must cover source end and both input unlocks")
+        if any(frame < 0 for frame in self.legacy_hit_frame_overrides):
+            raise ValueError("legacy hit frame overrides must be non-negative")
+        return self
+
+
+class SelectedActionTiming(BaseModel):
+    variant_id: str | None = None
+    variant_source: str
+    same_character_input_frame: float = Field(ge=0)
+    swap_input_frame: float = Field(ge=0)
+    source_action_end_frame: float = Field(ge=0)
+    lifecycle_end_frame: float = Field(ge=0)
+    global_time_stop_frames: float = Field(default=0, ge=0)
+    legacy_hit_frame_overrides: list[float] = Field(default_factory=list)
+
+    @property
+    def first_control_frame(self) -> float:
+        return min(self.same_character_input_frame, self.swap_input_frame)
+
+
+class ActionTimingContract(BaseModel):
+    action_id: str
+    same_character_input_frame: float | None = Field(default=None, ge=0)
+    swap_input_frame: float | None = Field(default=None, ge=0)
+    action_end_frame: float | None = Field(default=None, ge=0)
+    global_time_stop_frames: float = Field(default=0, ge=0)
+    timing_variants: list[ActionTimingVariant] = Field(default_factory=list)
     persist_character_after_swap: bool = False
     persist_if_swapped_before_frame: float | None = Field(default=None, ge=0)
     defer_legacy_payload_to_scheduled_packets: bool = False
@@ -53,21 +101,96 @@ class ActionTimingContract(BaseModel):
 
     @model_validator(mode="after")
     def validate_timing_order(self) -> "ActionTimingContract":
-        if self.action_end_frame < max(self.same_character_input_frame, self.swap_input_frame):
-            raise ValueError("action_end_frame must not precede an input unlock")
+        static_values = (
+            self.same_character_input_frame,
+            self.swap_input_frame,
+            self.action_end_frame,
+        )
+        if self.timing_variants:
+            if any(value is not None for value in static_values):
+                raise ValueError("variant timing contracts must not also define static timing frames")
+            variant_ids = [variant.variant_id for variant in self.timing_variants]
+            if len(variant_ids) != len(set(variant_ids)):
+                raise ValueError("timing variant IDs must be unique within an action")
+            conditions = [variant.condition.model_dump_json() for variant in self.timing_variants]
+            if len(conditions) != len(set(conditions)):
+                raise ValueError("timing variant conditions must be deterministic and unique")
+        else:
+            if any(value is None for value in static_values):
+                raise ValueError("static timing contracts require input unlock and action end frames")
+            if float(self.action_end_frame) < max(
+                float(self.same_character_input_frame),
+                float(self.swap_input_frame),
+            ):
+                raise ValueError("action_end_frame must not precede an input unlock")
         if (
             self.persist_if_swapped_before_frame is not None
-            and self.persist_if_swapped_before_frame > self.action_end_frame
+            and not self.timing_variants
+            and self.persist_if_swapped_before_frame > float(self.action_end_frame)
         ):
             raise ValueError("persistence cutoff must not follow action end")
         group_ids = [group.packet_group_id for group in self.scheduled_packet_groups]
         if len(group_ids) != len(set(group_ids)):
             raise ValueError("packet_group_id values must be unique within an action")
+        last_packet_frame = max(
+            (max(group.scheduled_frames) for group in self.scheduled_packet_groups),
+            default=0.0,
+        )
+        if self.timing_variants:
+            for variant in self.timing_variants:
+                if variant.lifecycle_end_frame < last_packet_frame:
+                    raise ValueError("lifecycle_end_frame must cover the last scheduled packet")
+        elif float(self.action_end_frame) < last_packet_frame:
+            raise ValueError("action_end_frame must cover the last scheduled packet")
         return self
 
     @property
     def first_control_frame(self) -> float:
-        return min(self.same_character_input_frame, self.swap_input_frame)
+        if self.timing_variants:
+            raise ValueError("state-dependent timing requires variant selection")
+        return min(float(self.same_character_input_frame), float(self.swap_input_frame))
+
+
+def select_action_timing(
+    state: CombatState,
+    action: ActionData,
+    contract: ActionTimingContract,
+) -> SelectedActionTiming:
+    if not contract.timing_variants:
+        action_end_frame = float(contract.action_end_frame)
+        return SelectedActionTiming(
+            variant_source="static_action_timing_contract",
+            same_character_input_frame=float(contract.same_character_input_frame),
+            swap_input_frame=float(contract.swap_input_frame),
+            source_action_end_frame=action_end_frame,
+            lifecycle_end_frame=action_end_frame,
+            global_time_stop_frames=contract.global_time_stop_frames,
+        )
+
+    owner_character_id = str(action.character_id or state.active_character_id)
+    marker_state = state.character_mechanics_state.get(owner_character_id, {})
+    observation_state_active = bool(marker_state.get("observation_marker_active", False))
+    matching = [
+        variant
+        for variant in contract.timing_variants
+        if variant.condition.observation_state_active is observation_state_active
+    ]
+    if len(matching) != 1:
+        raise ValueError(
+            f"Expected exactly one timing variant for {action.id!r} and "
+            f"observation_state_active={observation_state_active}, got {len(matching)}"
+        )
+    variant = matching[0]
+    return SelectedActionTiming(
+        variant_id=variant.variant_id,
+        variant_source=f"character_mechanics_state.{owner_character_id}.observation_marker_active",
+        same_character_input_frame=variant.same_character_input_frame,
+        swap_input_frame=variant.swap_input_frame,
+        source_action_end_frame=variant.source_action_end_frame,
+        lifecycle_end_frame=variant.lifecycle_end_frame,
+        global_time_stop_frames=variant.global_time_stop_frames,
+        legacy_hit_frame_overrides=list(variant.legacy_hit_frame_overrides),
+    )
 
 
 def load_action_timing_contracts(data_dir: Path | str) -> dict[str, ActionTimingContract]:
@@ -85,19 +208,39 @@ def load_action_timing_contracts(data_dir: Path | str) -> dict[str, ActionTiming
     return by_id
 
 
-def wall_elapsed_to_combat_elapsed(contract: ActionTimingContract, wall_elapsed: float) -> float:
+def wall_elapsed_to_combat_elapsed(
+    timing: ActionTimingContract | SelectedActionTiming,
+    wall_elapsed: float,
+) -> float:
     elapsed_frames = max(0.0, float(wall_elapsed) * FPS)
-    stopped_frames = min(elapsed_frames, contract.global_time_stop_frames)
+    stopped_frames = min(elapsed_frames, timing.global_time_stop_frames)
     return max(0.0, elapsed_frames - stopped_frames) / FPS
 
 
-def prepare_control_point_action(action: ActionData, contract: ActionTimingContract) -> ActionData:
+def prepare_control_point_action(
+    action: ActionData,
+    contract: ActionTimingContract,
+    selected_timing: SelectedActionTiming | None = None,
+) -> ActionData:
     """Return a start/control slice without paying deferred packet gains twice."""
+    if selected_timing is None:
+        if contract.timing_variants:
+            raise ValueError("state-dependent timing must be selected before preparing the action")
+        action_end_frame = float(contract.action_end_frame)
+        selected_timing = SelectedActionTiming(
+            variant_source="static_action_timing_contract",
+            same_character_input_frame=float(contract.same_character_input_frame),
+            swap_input_frame=float(contract.swap_input_frame),
+            source_action_end_frame=action_end_frame,
+            lifecycle_end_frame=action_end_frame,
+            global_time_stop_frames=contract.global_time_stop_frames,
+        )
     runtime_action = action.model_copy(deep=True)
-    control_seconds = contract.first_control_frame / FPS
+    control_seconds = selected_timing.first_control_frame / FPS
     runtime_action.duration = control_seconds
     runtime_action.action_time = control_seconds
-    runtime_action.combat_time_cost = wall_elapsed_to_combat_elapsed(contract, control_seconds)
+    runtime_action.combat_time_cost = wall_elapsed_to_combat_elapsed(selected_timing, control_seconds)
+    runtime_action.timing_overrides = {}
     if contract.defer_legacy_payload_to_scheduled_packets:
         runtime_action.hits = []
         runtime_action.damage_multiplier = 0.0
@@ -106,13 +249,23 @@ def prepare_control_point_action(action: ActionData, contract: ActionTimingContr
         runtime_action.resonance_energy_gain = 0.0
         runtime_action.concerto_energy_gain = 0.0
     else:
-        for hit in runtime_action.hits:
-            hit.time = min(hit.time, control_seconds)
+        if selected_timing.legacy_hit_frame_overrides:
+            if len(selected_timing.legacy_hit_frame_overrides) != len(runtime_action.hits):
+                raise ValueError("legacy hit frame override count must match the action's legacy hit count")
+            for hit, frame in zip(runtime_action.hits, selected_timing.legacy_hit_frame_overrides):
+                hit.time = frame / FPS
+        else:
+            for hit in runtime_action.hits:
+                hit.time = min(hit.time, control_seconds)
     runtime_action.mechanic_effects = {
         **runtime_action.mechanic_effects,
         "v124_timing_contract_control_slice": True,
         "v124_deferred_packet_payloads": contract.defer_legacy_payload_to_scheduled_packets,
         "v124_original_action_time": action.effective_action_time,
+        "selected_timing_variant_id": selected_timing.variant_id,
+        "selected_timing_variant_source": selected_timing.variant_source,
+        "selected_source_action_end_frame": selected_timing.source_action_end_frame,
+        "selected_lifecycle_end_frame": selected_timing.lifecycle_end_frame,
     }
     return runtime_action
 
@@ -121,7 +274,9 @@ def start_ongoing_action(
     state: CombatState,
     action: ActionData,
     contract: ActionTimingContract,
+    selected_timing: SelectedActionTiming | None = None,
 ) -> OngoingActionInstance:
+    selected_timing = selected_timing or select_action_timing(state, action, contract)
     state.action_instance_next_order += 1
     instance_id = f"action-instance-v124-{state.action_instance_next_order}:{action.id}"
     start_wall = float(state.current_time)
@@ -132,9 +287,19 @@ def start_ongoing_action(
         source_action_id=action.id,
         start_wall_time=start_wall,
         start_combat_time=start_combat,
-        same_character_lock_until_wall_time=start_wall + contract.same_character_input_frame / FPS,
-        swap_lock_until_wall_time=start_wall + contract.swap_input_frame / FPS,
-        action_end_wall_time=start_wall + contract.action_end_frame / FPS,
+        same_character_lock_until_wall_time=start_wall + selected_timing.same_character_input_frame / FPS,
+        swap_lock_until_wall_time=start_wall + selected_timing.swap_input_frame / FPS,
+        action_end_wall_time=start_wall + selected_timing.lifecycle_end_frame / FPS,
+        source_action_end_wall_time=start_wall + selected_timing.source_action_end_frame / FPS,
+        lifecycle_end_wall_time=start_wall + selected_timing.lifecycle_end_frame / FPS,
+        selected_timing_variant_id=selected_timing.variant_id,
+        selected_timing_variant_source=selected_timing.variant_source,
+        selected_same_character_input_frame=selected_timing.same_character_input_frame,
+        selected_swap_input_frame=selected_timing.swap_input_frame,
+        selected_source_action_end_frame=selected_timing.source_action_end_frame,
+        selected_lifecycle_end_frame=selected_timing.lifecycle_end_frame,
+        selected_global_time_stop_frames=selected_timing.global_time_stop_frames,
+        selected_legacy_hit_frame_overrides=list(selected_timing.legacy_hit_frame_overrides),
         persist_after_swap=contract.persist_character_after_swap,
         persistence_cutoff_wall_time=(
             start_wall + contract.persist_if_swapped_before_frame / FPS
@@ -161,7 +326,7 @@ def start_ongoing_action(
                 source_action_id=action.id,
                 packet_group_id=group.packet_group_id,
                 scheduled_wall_time=start_wall + wall_offset,
-                scheduled_combat_time=start_combat + wall_elapsed_to_combat_elapsed(contract, wall_offset),
+                scheduled_combat_time=start_combat + wall_elapsed_to_combat_elapsed(selected_timing, wall_offset),
                 combat_time_resolution_rule=group.combat_time_resolution_rule,
                 damage_payload=dict(group.damage_payload),
                 resource_payload=dict(group.resource_payload),
@@ -272,7 +437,11 @@ def advance_ongoing_action_runtime(state: CombatState) -> list[dict[str, Any]]:
         state.scheduled_packet_event_log.append(event)
         events.append(event)
     for instance in state.ongoing_action_instances:
-        if not instance.ended and not instance.cancelled and now_wall + 1e-9 >= instance.action_end_wall_time:
+        source_end = instance.source_action_end_wall_time or instance.action_end_wall_time
+        if not instance.source_action_ended and now_wall + 1e-9 >= source_end:
+            instance.source_action_ended = True
+        lifecycle_end = instance.lifecycle_end_wall_time or instance.action_end_wall_time
+        if not instance.ended and not instance.cancelled and now_wall + 1e-9 >= lifecycle_end:
             instance.ended = True
             instance.owner_character_executing = False
             if instance.owner_character_id in state.persistent_off_field_character_ids:

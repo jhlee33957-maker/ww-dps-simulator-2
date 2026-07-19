@@ -394,11 +394,22 @@ class OngoingActionInstance(BaseModel):
     same_character_lock_until_wall_time: float = Field(ge=0)
     swap_lock_until_wall_time: float = Field(ge=0)
     action_end_wall_time: float = Field(ge=0)
+    source_action_end_wall_time: float | None = Field(default=None, ge=0)
+    lifecycle_end_wall_time: float | None = Field(default=None, ge=0)
+    selected_timing_variant_id: str | None = None
+    selected_timing_variant_source: str | None = None
+    selected_same_character_input_frame: float | None = Field(default=None, ge=0)
+    selected_swap_input_frame: float | None = Field(default=None, ge=0)
+    selected_source_action_end_frame: float | None = Field(default=None, ge=0)
+    selected_lifecycle_end_frame: float | None = Field(default=None, ge=0)
+    selected_global_time_stop_frames: float | None = Field(default=None, ge=0)
+    selected_legacy_hit_frame_overrides: list[float] = Field(default_factory=list)
     persist_after_swap: bool = False
     persistence_cutoff_wall_time: float | None = Field(default=None, ge=0)
     scheduled_packet_instances: list[str] = Field(default_factory=list)
     owner_character_persistent: bool = False
     owner_character_executing: bool = True
+    source_action_ended: bool = False
     ended: bool = False
     cancelled: bool = False
     source_refs: list[str] = Field(default_factory=list)
