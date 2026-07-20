@@ -42,7 +42,7 @@ EXPECTED_PPO_SCHEDULED_DAMAGE = 140026.5111366104
 EXPECTED_BEAM_PLAN_SHA256 = "b504def4e0c1da82ef2a6024d19ccac76fe175df51899e50d12f3bff99a17998"
 EXPECTED_LOWMEM_BEAM_PLAN_SHA256 = "ffd9ce47ec9b92b2c4b59f295d50d0ce5204fcba577af0f78b9fa917b19b291d"
 EXPECTED_V114_BEAM_PLAN_SHA256 = "e70826d0040444f834398d55c922aacb4ee5b484bc6ef2e75ca5a0ad603bc18c"
-EXPECTED_V114_TRANSITION_CONFIG_SHA256 = "748290267f4eb069bd5ed71cdc647de5adf8df7cbbd5ddcc2e0769940a7ba6da"
+EXPECTED_V114_TRANSITION_CONFIG_SHA256 = "210538d4bf99789d0af08ecff5fb76dc3f472f5b170a144d9f1b3b1f46116b9c"
 EXPECTED_V114_BUFFS_SHA256 = "fe8b8fc63e8b9a3405a61ebe08a2cafa13f94dd4af91d1670b968df727cb554d"
 EXPECTED_PPO_DAMAGE_BY_CHARACTER = {
     "aemeath": 2674131.053725695,
@@ -452,6 +452,19 @@ CANDIDATE_124_REQUIRED_FILES = (
     "scripts/mornye_liberation_payload_parity_v124_smoke_test.py",
     "scripts/mornye_liberation_zero_combat_time_v124_smoke_test.py",
     "scripts/mornye_liberation_no_duplicate_payload_v124_smoke_test.py",
+    "scripts/mornye_basic_stage2_packet_contract_v124_smoke_test.py",
+    "scripts/mornye_basic_stage2_tail_persistence_v124_smoke_test.py",
+    "scripts/mornye_basic_stage2_payload_parity_v124_smoke_test.py",
+    "scripts/mornye_basic_stage3_packet_contract_v124_smoke_test.py",
+    "scripts/mornye_basic_stage3_tail_persistence_v124_smoke_test.py",
+    "scripts/mornye_basic_stage3_payload_parity_v124_smoke_test.py",
+    "scripts/mornye_basic_packet_swap_persistence_v124_smoke_test.py",
+    "scripts/mornye_basic_packet_no_duplicate_payload_v124_smoke_test.py",
+    "scripts/project_progress_timing_core_stage2b_v124_alignment_smoke_test.py",
+    "scripts/scheduled_packet_chronological_interleaving_v124_smoke_test.py",
+    "scripts/scheduled_packet_actual_processing_time_v124_smoke_test.py",
+    "scripts/scheduled_packet_source_attribution_v124_smoke_test.py",
+    "scripts/scheduled_packet_off_tune_ordering_v124_smoke_test.py",
 )
 EXPECTED_TIMING_AUDIT_V2_JSON_SHA256 = "f50f06ca092b60f5019b460f87072b88ba05168be4a8fbd94a599b48a327dd9b"
 EXPECTED_TIMING_AUDIT_V2_XLSX_SHA256 = "fc95ddd3860eb1ff249fd2314069c73c6608f065ed444a62fc395349e3ba3d2d"
@@ -555,21 +568,63 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         completed_manifest = json.loads(completed_manifest_bytes.decode("utf-8"))
         completed_progress = progress["current_in_progress_task"]["candidate_116_completed_beam"]
         assert progress["status"]["latest_externally_verified_baseline"] == "123"
-        assert progress["status"]["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(3).zip"
+        transition_config_bytes = zf.read("data/transition_config.json")
+        assert bytes_sha256(transition_config_bytes) == (
+            "210538d4bf99789d0af08ecff5fb76dc3f472f5b170a144d9f1b3b1f46116b9c"
+        )
+        transition_config = json.loads(transition_config_bytes.decode("utf-8"))
+        assert transition_config["generic_swap_fallback"]["reentry_cooldown_clock"] == "combat_time"
+        timing_runtime_gate = json.loads(zf.read("data/timing_runtime_gate_v124.json").decode("utf-8"))
+        assert timing_runtime_gate["historical_swap_reentry_clock"] == "combat_time"
+        assert timing_runtime_gate["effective_swap_reentry_clock"] == "current_time"
+        assert timing_runtime_gate["effective_swap_reentry_clock_source"] == (
+            "candidate_124_timing_runtime_override"
+        )
+        party_hash = hashlib.sha256()
+        for relative_path in sorted(
+            (
+                "data/party_presets.json",
+                "data/build_profiles.json",
+                "data/transition_config.json",
+                "data/characters.json",
+                "data/weapons.json",
+                "data/buffs.json",
+            )
+        ):
+            payload = json.loads(zf.read(relative_path).decode("utf-8-sig"))
+            canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            party_hash.update(relative_path.encode("utf-8"))
+            party_hash.update(b"\0")
+            party_hash.update(canonical)
+            party_hash.update(b"\0")
+        assert party_hash.hexdigest() == "baff722d9ce79cf7f57891c439b7b3fd746ad76e779e4d582eaa51802eba2684"
+
+        assert progress["status"]["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(10).zip"
         assert progress["status"]["latest_externally_reviewed_archive_sha256"] == (
-            "c341c77e0ee461ab8a2e5b450e2813bf6bc1e7cf6164d8cd8920b0a032f67754"
+            "bb18b83842a4ccf698254c6b6ae9d6da16d87ba4e05dee53b31ddb2d8b6521ff"
         )
         assert progress["status"]["current_candidate"] == "124"
-        assert progress["status"]["current_task"] == "candidate-124 timing-core-2a-mornye-liberation"
-        assert progress["status"]["current_candidate_stage"] == "timing-core-2a-mornye-liberation"
+        assert progress["status"]["current_task"] == "candidate-124 timing-core-2b-mornye-basic-tails"
+        assert progress["status"]["current_candidate_stage"] == "timing-core-2b-mornye-basic-tails"
         timing_core = progress["candidate_124_timing_core_1"]
-        assert timing_core["stage"] == "timing-core-2a-mornye-liberation"
+        assert timing_core["stage"] == "timing-core-2b-mornye-basic-tails"
         assert timing_core["stage_2a_externally_verified"] is False
+        assert timing_core["stage_2b_externally_verified"] is False
         assert timing_core["timing_contract_layer_created"] is True
         assert timing_core["ongoing_action_instances_created"] is True
         assert timing_core["scheduled_packet_architecture_created"] is True
         assert timing_core["swap_reentry_clock_old"] == "combat_time"
         assert timing_core["swap_reentry_clock"] == "current_time"
+        assert timing_core["historical_transition_config_clock"] == "combat_time"
+        assert timing_core["historical_transition_config_sha256"] == (
+            "210538d4bf99789d0af08ecff5fb76dc3f472f5b170a144d9f1b3b1f46116b9c"
+        )
+        assert timing_core["historical_party_config_hash"] == (
+            "baff722d9ce79cf7f57891c439b7b3fd746ad76e779e4d582eaa51802eba2684"
+        )
+        assert timing_core["effective_candidate_124_swap_reentry_clock"] == "current_time"
+        assert timing_core["effective_swap_reentry_clock_source"] == "candidate_124_timing_runtime_override"
+        assert timing_core["historical_base_config_modified"] is False
         assert timing_core["vivid_timing_frames"] == {
             "swap": 1,
             "same_input": 153,
@@ -592,6 +647,18 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
             "lifecycle_end": 300,
             "global_time_stop": 300,
         }
+        assert timing_core["mornye_basic_stage_2_packet_schedule_implemented"] is True
+        assert timing_core["mornye_basic_stage_3_packet_schedule_implemented"] is True
+        assert timing_core["mornye_basic_detachable_tails_implemented"] is True
+        assert timing_core["mornye_basic_legacy_aggregate_duplicate_removed"] is True
+        assert timing_core["mornye_basic_payload_parity_preserved"] is True
+        assert timing_core["scheduled_packet_chronological_interleaving"] is True
+        assert timing_core["scheduled_packet_actual_time_processing"] is True
+        assert timing_core["scheduled_packet_source_attribution"] is True
+        assert timing_core["scheduled_packet_retroactive_backdating"] is False
+        assert timing_core["mornye_tail_before_overlapping_aemeath_hit_verified"] is True
+        assert timing_core["candidate_124_smoke_test_count"] == 39
+        assert timing_core["authoritative_fresh_extraction_command_count"] == 235
         assert timing_core["remaining_p0_packet_action_corrections"] == "pending"
         assert timing_core["benchmark_observation_version"] == "slot_generic_mechanics_v5"
         assert timing_core["benchmark_observation_shape"] == 314
@@ -1036,6 +1103,19 @@ def candidate_124_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/vivid_immediate_return_to_mornye_v124_smoke_test.py"],
         [sys.executable, "scripts/project_progress_timing_core_v124_alignment_smoke_test.py"],
         [sys.executable, "scripts/project_progress_timing_core_stage2a_v124_alignment_smoke_test.py"],
+        [sys.executable, "scripts/mornye_basic_stage2_packet_contract_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_basic_stage2_tail_persistence_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_basic_stage2_payload_parity_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_basic_stage3_packet_contract_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_basic_stage3_tail_persistence_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_basic_stage3_payload_parity_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_basic_packet_swap_persistence_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_basic_packet_no_duplicate_payload_v124_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_timing_core_stage2b_v124_alignment_smoke_test.py"],
+        [sys.executable, "scripts/scheduled_packet_chronological_interleaving_v124_smoke_test.py"],
+        [sys.executable, "scripts/scheduled_packet_actual_processing_time_v124_smoke_test.py"],
+        [sys.executable, "scripts/scheduled_packet_source_attribution_v124_smoke_test.py"],
+        [sys.executable, "scripts/scheduled_packet_off_tune_ordering_v124_smoke_test.py"],
     ]
 
 
@@ -1157,6 +1237,7 @@ def candidate_120_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/user_account_actual_v120_simulation_gate_smoke_test.py"],
         [sys.executable, "scripts/user_account_actual_v120_benchmark_immutability_smoke_test.py"],
         [sys.executable, "scripts/user_account_actual_v120_overlay_merge_smoke_test.py"],
+        [sys.executable, "scripts/user_account_actual_v120_historical_party_hash_compatibility_smoke_test.py"],
     ]
 
 
@@ -1192,6 +1273,7 @@ def legacy_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/v114_excluded_scope_guard_smoke_test.py"],
         [sys.executable, "scripts/transition_contract_v114_rebaseline_smoke_test.py"],
         [sys.executable, "scripts/transition_contract_v114_model_reevaluation_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_transition_contract_v114_alignment_smoke_test.py"],
         [sys.executable, "scripts/beam_search_v116_completed_result_integrity_smoke_test.py"],
         [sys.executable, "scripts/beam_search_v116_winner_replay_parity_smoke_test.py"],
         [sys.executable, "scripts/beam_search_v116_current_winner_smoke_test.py"],

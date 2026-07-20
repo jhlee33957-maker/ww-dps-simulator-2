@@ -22,6 +22,13 @@ from scripts.manual_120s_bc_final_archive_integrity_smoke_test import (
 HISTORY_AWARE_PROGRESS_TESTS = {
     "scripts/project_progress_timing_core_v124_alignment_smoke_test.py",
     "scripts/project_progress_timing_core_stage2a_v124_alignment_smoke_test.py",
+    "scripts/project_progress_timing_core_stage2b_v124_alignment_smoke_test.py",
+    "scripts/user_account_actual_v120_historical_party_hash_compatibility_smoke_test.py",
+    "scripts/project_progress_transition_contract_v114_alignment_smoke_test.py",
+    "scripts/scheduled_packet_chronological_interleaving_v124_smoke_test.py",
+    "scripts/scheduled_packet_actual_processing_time_v124_smoke_test.py",
+    "scripts/scheduled_packet_source_attribution_v124_smoke_test.py",
+    "scripts/scheduled_packet_off_tune_ordering_v124_smoke_test.py",
     "scripts/project_progress_aemeath_runtime_fix_v123_alignment_smoke_test.py",
     "scripts/project_progress_account_party_v122_alignment_smoke_test.py",
     "scripts/project_progress_account_constellation_v121_alignment_smoke_test.py",
@@ -44,6 +51,15 @@ REQUIRED_COMMAND_PATHS = {
     "scripts/mornye_liberation_payload_parity_v124_smoke_test.py",
     "scripts/mornye_liberation_zero_combat_time_v124_smoke_test.py",
     "scripts/mornye_liberation_no_duplicate_payload_v124_smoke_test.py",
+    "scripts/mornye_basic_stage2_packet_contract_v124_smoke_test.py",
+    "scripts/mornye_basic_stage2_tail_persistence_v124_smoke_test.py",
+    "scripts/mornye_basic_stage2_payload_parity_v124_smoke_test.py",
+    "scripts/mornye_basic_stage3_packet_contract_v124_smoke_test.py",
+    "scripts/mornye_basic_stage3_tail_persistence_v124_smoke_test.py",
+    "scripts/mornye_basic_stage3_payload_parity_v124_smoke_test.py",
+    "scripts/mornye_basic_packet_swap_persistence_v124_smoke_test.py",
+    "scripts/mornye_basic_packet_no_duplicate_payload_v124_smoke_test.py",
+    "scripts/project_progress_timing_core_stage2b_v124_alignment_smoke_test.py",
     "scripts/no_first_cycle_or_training_v124_smoke_test.py",
     "scripts/ongoing_action_instance_v124_smoke_test.py",
     "scripts/policy_action_order_v124_guard_smoke_test.py",
@@ -218,14 +234,14 @@ def main() -> None:
     legacy = legacy_fresh_extraction_check_commands()
     older = candidate_123 + candidate_122 + candidate_121 + candidate_120 + candidate_119 + legacy
     assert commands == candidate_124 + older
-    assert len(candidate_124) == 26
+    assert len(candidate_124) == 39
     assert len(candidate_123) == 8
     assert len(candidate_122) == 10
     assert len(candidate_121) == 81
-    assert len(candidate_120) == 7
+    assert len(candidate_120) == 8
     assert len(candidate_119) == 8
-    assert len(legacy) == 82
-    assert len(commands) == 222
+    assert len(legacy) == 83
+    assert len(commands) == 237
     assert_full_coverage(commands)
 
     mutations = {
@@ -245,6 +261,38 @@ def main() -> None:
         "candidate-124 Stage-2A behavior test omitted": [
             command for command in candidate_124 + older
             if command[1] != "scripts/mornye_liberation_normal_timing_v124_smoke_test.py"
+        ],
+        "candidate-124 Stage-2B contract test omitted": [
+            command for command in candidate_124 + older
+            if command[1] != "scripts/mornye_basic_stage2_packet_contract_v124_smoke_test.py"
+        ],
+        "candidate-124 Stage-2B progress alignment omitted": [
+            command for command in candidate_124 + older
+            if command[1] != "scripts/project_progress_timing_core_stage2b_v124_alignment_smoke_test.py"
+        ],
+        "candidate-124 chronological interleaving omitted": [
+            command for command in candidate_124 + older
+            if command[1] != "scripts/scheduled_packet_chronological_interleaving_v124_smoke_test.py"
+        ],
+        "candidate-124 actual processing time omitted": [
+            command for command in candidate_124 + older
+            if command[1] != "scripts/scheduled_packet_actual_processing_time_v124_smoke_test.py"
+        ],
+        "candidate-124 source attribution omitted": [
+            command for command in candidate_124 + older
+            if command[1] != "scripts/scheduled_packet_source_attribution_v124_smoke_test.py"
+        ],
+        "candidate-124 Off-Tune ordering omitted": [
+            command for command in candidate_124 + older
+            if command[1] != "scripts/scheduled_packet_off_tune_ordering_v124_smoke_test.py"
+        ],
+        "historical party-config hash compatibility omitted": [
+            command for command in candidate_124 + older
+            if command[1] != "scripts/user_account_actual_v120_historical_party_hash_compatibility_smoke_test.py"
+        ],
+        "historical v114 progress alignment omitted": [
+            command for command in candidate_124 + older
+            if command[1] != "scripts/project_progress_transition_contract_v114_alignment_smoke_test.py"
         ],
         "candidate-123 progress regression omitted": [
             command for command in candidate_124 + older

@@ -1,6 +1,9 @@
 {
   "schema_version": "timing_runtime_training_gate_v124",
   "timing_runtime_enabled": true,
+  "historical_swap_reentry_clock": "combat_time",
+  "effective_swap_reentry_clock": "current_time",
+  "effective_swap_reentry_clock_source": "candidate_124_timing_runtime_override",
   "markov_state_observation_audit_completed": true,
   "observation_v7_required": true,
   "observation_v7_implemented": false,

@@ -35,7 +35,17 @@ from simulator.echo_sets import (
 from simulator.generated_damage import calculate_generated_damage_packet
 from simulator.lynae_tune_strain import apply_lynae_tune_strain_damage_amp
 from simulator.mechanic_events import preview_mechanic_event_trigger, process_mechanic_event_triggers
-from simulator.models import ActionData, ActionResult, BuffData, CharacterData, CombatState, HitData, ScheduledEffectState, TimelineEntry
+from simulator.models import (
+    ActionData,
+    ActionResult,
+    BuffData,
+    CharacterData,
+    CombatState,
+    HitData,
+    ScheduledEffectState,
+    ScheduledPacketInstance,
+    TimelineEntry,
+)
 from simulator.resource_system import apply_resource_changes, can_pay_resources
 from simulator.tune_break import (
     INTERFERED_MARKER_AMP_SOURCE,
@@ -118,10 +128,14 @@ def reduce_cooldowns(
     *,
     action_elapsed: float | None = None,
 ) -> None:
+    timing_runtime = dict(state.mechanics_config.get("timing_runtime") or {})
+    swap_reentry_clock = str(timing_runtime.get("swap_reentry_cooldown_clock", "combat_time"))
+    if swap_reentry_clock not in {"combat_time", "current_time"}:
+        raise ValueError(f"Unsupported swap re-entry cooldown clock {swap_reentry_clock!r}")
     for action_id, remaining in list(state.cooldowns.items()):
         cooldown_elapsed = (
             float(action_elapsed if action_elapsed is not None else elapsed)
-            if action_id.startswith("swap_reentry:")
+            if action_id.startswith("swap_reentry:") and swap_reentry_clock == "current_time"
             else float(elapsed)
         )
         updated = max(0.0, remaining - cooldown_elapsed)
@@ -640,6 +654,9 @@ def _calculate_hit_damage_totals(
     force_active_buff_ids: set[str] | None = None,
     action_start_snapshot: ActionStartEffectSnapshot | None = None,
     weapon_definitions: dict[str, Any] | None = None,
+    wall_start_time: float = 0.0,
+    before_hit_event: Any | None = None,
+    record_hit_event: Any | None = None,
 ) -> tuple[float, float, list[dict], dict[str, float], float, dict[str, Any], dict[str, Any]]:
     normal_damage = 0.0
     tune_break_damage = 0.0
@@ -663,6 +680,19 @@ def _calculate_hit_damage_totals(
     for hit in sorted(_resolved_action_hits(action, action_time=action_time), key=lambda item: item.time):
         if hit.time > action_time:
             continue
+        hit_combat_offset = _hit_combat_offset(
+            hit,
+            action_time=action_time,
+            combat_time_cost=combat_time_cost,
+            untimed_fallback=not has_explicit_hit_timing,
+        )
+        hit_wall_time = wall_start_time + hit.time
+        hit_combat_time = combat_start_time + hit_combat_offset
+        if before_hit_event is not None:
+            before_hit_event(
+                event_wall_time=hit_wall_time,
+                event_combat_time=hit_combat_time,
+            )
         damage, detail = _calculate_hit_damage(
             hit,
             action,
@@ -693,13 +723,6 @@ def _calculate_hit_damage_totals(
             ):
                 if key in detail:
                     detail[key] = float(detail.get(key, 0.0) or 0.0) * action_damage_multiplier
-        hit_combat_offset = _hit_combat_offset(
-            hit,
-            action_time=action_time,
-            combat_time_cost=combat_time_cost,
-            untimed_fallback=not has_explicit_hit_timing,
-        )
-        hit_combat_time = combat_start_time + hit_combat_offset
         if detail:
             detail["hit_combat_offset"] = hit_combat_offset
             detail["hit_combat_time"] = hit_combat_time
@@ -713,6 +736,15 @@ def _calculate_hit_damage_totals(
             damage_after_cutoff_excluded += damage
             continue
         if detail:
+            if record_hit_event is not None:
+                detail.update(
+                    record_hit_event(
+                        event_wall_time=hit_wall_time,
+                        event_combat_time=hit_combat_time,
+                        hit=hit,
+                        damage=damage,
+                    )
+                )
             hit_details.append(detail)
             amp_bonus_damage = float(detail.get("target_damage_taken_amp_bonus_damage", 0.0) or 0.0)
             direct_damage_taken_amp_total_bonus_damage += amp_bonus_damage
@@ -972,6 +1004,8 @@ def execute_action(
     pre_action_echo_set_log_fields: dict[str, Any] | None = None,
     weapon_definitions: dict[str, Any] | None = None,
     scheduled_effect_runner: Any | None = None,
+    chronological_event_runner: Any | None = None,
+    record_hit_event: Any | None = None,
     record_diagnostics: bool = True,
 ) -> ActionResult:
     valid, reason = is_action_valid(action, state)
@@ -987,6 +1021,7 @@ def execute_action(
         else action.character_id
     )
     actor_character_id = actor_character_id or active_character_before
+    action_instance_id = (action.mechanic_effects or {}).get("v124_action_instance_id")
     actor_state = state.character_mechanics_state.get(action.character_id or state.active_character_id, {})
     _duration, action_time, combat_time_cost = resolve_action_runtime_timing(action, actor_state)
     if combat_duration is not None and combat_start_time >= combat_duration:
@@ -1003,6 +1038,7 @@ def execute_action(
             action_name=action.name,
             character_id=action.character_id,
             actor_character_id=actor_character_id,
+            action_instance_id=action_instance_id,
             active_character_before=active_character_before,
             active_character_after=state.active_character_id,
             start_time=start_time,
@@ -1098,7 +1134,15 @@ def execute_action(
         force_active_buff_ids=force_active_buff_ids,
         action_start_snapshot=action_start_snapshot,
         weapon_definitions=weapon_definitions,
+        wall_start_time=start_time,
+        before_hit_event=chronological_event_runner,
+        record_hit_event=record_hit_event,
     )
+    if chronological_event_runner is not None:
+        chronological_event_runner(
+            event_wall_time=start_time + action_time,
+            event_combat_time=combat_time_end,
+        )
     direct_damage = normal_damage + tune_break_damage
     mechanic_event_log_fields = process_mechanic_event_triggers(
         action,
@@ -1459,6 +1503,7 @@ def execute_action(
         action_name=action.name,
         character_id=action.character_id,
         actor_character_id=actor_character_id,
+        action_instance_id=action_instance_id,
         active_character_before=active_character_before,
         active_character_after=state.active_character_id,
         start_time=start_time,
@@ -1851,12 +1896,111 @@ def execute_scheduled_damage_event(
     return event
 
 
+def execute_scheduled_action_packet(
+    *,
+    packet: ScheduledPacketInstance,
+    source_action: ActionData,
+    state: CombatState,
+    characters: dict[str, CharacterData],
+    buffs: dict[str, BuffData],
+    weapon_definitions: dict[str, Any] | None = None,
+) -> tuple[ActionData, dict[str, Any]]:
+    """Resolve one source-backed v124 packet without ordinary action side effects."""
+    if packet.owner_character_id not in characters:
+        raise ValueError(f"Scheduled packet owner {packet.owner_character_id!r} is unavailable")
+    damage_multiplier = float(packet.damage_payload.get("damage_multiplier", 0.0) or 0.0)
+    processed_wall_time = float(state.event_cursor_wall_time)
+    processed_combat_time = float(state.event_cursor_combat_time)
+    packet_combat_offset = max(0.0, processed_combat_time - float(state.combat_time))
+    packet_action = source_action.model_copy(deep=True)
+    packet_action.character_id = packet.owner_character_id
+    packet_action.duration = packet_combat_offset
+    packet_action.action_time = packet_combat_offset
+    packet_action.combat_time_cost = packet_combat_offset
+    packet_action.damage_multiplier = damage_multiplier
+    packet_action.resonance_energy_gain = float(
+        packet.resource_payload.get("resonance_energy_gain", 0.0) or 0.0
+    )
+    packet_action.concerto_energy_gain = float(packet.resource_payload.get("concerto_energy_gain", 0.0) or 0.0)
+    packet_action.off_tune_value = float(packet.resource_payload.get("off_tune_value", 0.0) or 0.0)
+    source_hit = source_action.effective_hits()[0]
+    packet_action.hits = [
+        source_hit.model_copy(
+            update={
+                "time": packet_combat_offset,
+                "damage_multiplier": damage_multiplier,
+                "name": f"{source_action.name} scheduled packet ({packet.packet_group_id})",
+            }
+        )
+    ]
+    (
+        normal_damage,
+        tune_break_damage,
+        hit_details,
+        hit_damage_by_category,
+        _damage_after_cutoff_excluded,
+        action_damage_bonus_context,
+        direct_amp_summary,
+    ) = _calculate_hit_damage_totals(
+        packet_action,
+        state,
+        characters,
+        buffs,
+        action_time=packet_combat_offset,
+        combat_time_cost=packet_combat_offset,
+        combat_start_time=float(state.combat_time),
+        combat_duration=None,
+        truncated_by_combat_limit=False,
+        weapon_definitions=weapon_definitions,
+    )
+    damage = normal_damage + tune_break_damage
+    event = {
+        "event_type": "v124_scheduled_action_packet",
+        "packet_instance_id": packet.packet_instance_id,
+        "action_instance_id": packet.action_instance_id,
+        "owner_character_id": packet.owner_character_id,
+        "source_action_id": packet.source_action_id,
+        "packet_group_id": packet.packet_group_id,
+        "combat_time": packet.scheduled_combat_time,
+        "processed_wall_time": processed_wall_time,
+        "processed_combat_time": processed_combat_time,
+        "damage": damage,
+        "normal_damage": normal_damage,
+        "tune_break_damage": tune_break_damage,
+        "hit_details": hit_details,
+        "hit_damage_by_category": hit_damage_by_category,
+        "direct_damage_taken_amp_total_bonus_damage": float(
+            direct_amp_summary.get("direct_damage_taken_amp_total_bonus_damage", 0.0) or 0.0
+        ),
+        "ordinary_player_action_side_effects_applied": False,
+        **action_damage_bonus_context,
+    }
+    state.total_damage += damage
+    if damage > 0.0:
+        state.damage_log.append(
+            {
+                "event_type": "v124_scheduled_action_packet",
+                "action_id": source_action.id,
+                "actor_character_id": packet.owner_character_id,
+                "packet_instance_id": packet.packet_instance_id,
+                "action_instance_id": packet.action_instance_id,
+                "damage_before_cutoff": damage,
+                "damage_after_cutoff_excluded": 0.0,
+                "combat_time_start": packet.scheduled_combat_time,
+                "combat_time_end": packet.scheduled_combat_time,
+                **action_damage_bonus_context,
+            }
+        )
+    return packet_action, event
+
+
 def timeline_entry(result: ActionResult, active_character_name: str) -> TimelineEntry:
     return TimelineEntry(
         selected_action_id=result.selected_action_id,
         selected_action_name=result.selected_action_name,
         resolved_action_id=result.resolved_action_id or result.action_id,
         resolved_action_name=result.resolved_action_name or result.action_name,
+        action_instance_id=result.action_instance_id,
         time_start=result.start_time,
         time_end=result.end_time,
         action_id=result.action_id,

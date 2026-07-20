@@ -9,6 +9,7 @@ from characters.base import CharacterMechanic
 from characters.registry import get_mechanic, get_mechanics_for_characters
 from simulator.action_executor import (
     execute_action,
+    execute_scheduled_action_packet,
     execute_scheduled_damage_event,
     is_action_valid,
     reduce_cooldowns,
@@ -80,7 +81,17 @@ from simulator.lynae_tune_strain import (
     refresh_lynae_tune_strain_amp,
 )
 from simulator.mechanic_events import aemeath_resonance_mode_from_config, mechanic_event_metadata_for_config
-from simulator.models import ActionData, BuffData, CharacterData, CombatState, EnemyData, PartyState, SimulationSummary, TimelineEntry
+from simulator.models import (
+    ActionData,
+    BuffData,
+    CharacterData,
+    CombatState,
+    EnemyData,
+    PartyState,
+    ScheduledPacketInstance,
+    SimulationSummary,
+    TimelineEntry,
+)
 from simulator.party_transition import (
     GENERIC_SWAP_SOURCE_STATUS,
     SWAP_REENTRY_COOLDOWN_SECONDS,
@@ -173,6 +184,7 @@ class Simulation:
         precombat_elapsed_seconds: float | None = None,
         account_optical_sampling_active: bool = False,
         action_timing_contracts: dict[str, ActionTimingContract] | None = None,
+        timing_runtime_config: dict[str, Any] | None = None,
     ) -> None:
         self.all_characters = characters
         self.selected_character_ids = parse_party_character_ids(selected_character_ids, characters)
@@ -223,6 +235,18 @@ class Simulation:
         self.last_action_result = None
         self.state.combat_duration = self.combat_duration
         self.state.mechanics_config = dict(self.transition_config.get("mechanics") or {})
+        if timing_runtime_config and bool(timing_runtime_config.get("timing_runtime_enabled", False)):
+            self.state.mechanics_config["timing_runtime"] = {
+                "swap_reentry_cooldown_clock": str(
+                    timing_runtime_config.get("effective_swap_reentry_clock", "combat_time")
+                ),
+                "swap_reentry_cooldown_clock_source": timing_runtime_config.get(
+                    "effective_swap_reentry_clock_source"
+                ),
+                "historical_swap_reentry_clock": str(
+                    timing_runtime_config.get("historical_swap_reentry_clock", "combat_time")
+                ),
+            }
         tune_break_config = self._tune_break_system_config()
         self.state.enemy_off_tune_max = float(tune_break_config.get("enemy_off_tune_max", 3920.0) or 3920.0)
         self.state.enemy_tune_break_cooldown_seconds = float(
@@ -384,6 +408,11 @@ class Simulation:
             precombat_elapsed_seconds=precombat_elapsed_seconds,
             account_optical_sampling_active=account_optical_sampling_active,
             action_timing_contracts=load_action_timing_contracts(data_path),
+            timing_runtime_config=(
+                _read_json_object(data_path / "timing_runtime_gate_v124.json")
+                if (data_path / "timing_runtime_gate_v124.json").exists()
+                else None
+            ),
         )
     def validate_build_profiles(self) -> dict[str, object]:
         self.action_scaling_summary = build_action_scaling_summary(self.actions.values(), self.selected_character_ids)
@@ -1090,9 +1119,127 @@ class Simulation:
         if self.state.scheduled_effect_event_log:
             self.state.scheduled_effect_event_log[-1].update(event)
 
+    def _resolve_scheduled_action_packet(self, packet: ScheduledPacketInstance) -> dict[str, Any]:
+        source_action = self.actions.get(packet.source_action_id)
+        if source_action is None:
+            raise ValueError(f"Unknown scheduled packet source action {packet.source_action_id!r}")
+        packet_action, event = execute_scheduled_action_packet(
+            packet=packet,
+            source_action=source_action,
+            state=self.state,
+            characters=self.characters,
+            buffs=self.buffs,
+            weapon_definitions=self.weapon_definitions,
+        )
+        packet_action.off_tune_value_source_status = "workbook_confirmed_packet_payload"
+        packet_action.off_tune_value_source_ref = packet.source_refs[0] if packet.source_refs else None
+        self.state.scheduled_effect_event_log.append(event)
+        self._apply_scheduled_off_tune_accumulation(packet_action, event, packet.owner_character_id)
+        self._apply_scheduled_resource_policy(
+            packet_action,
+            event,
+            packet.owner_character_id,
+            "source_confirmed_positive_gains",
+        )
+        return event
+
+    @staticmethod
+    def _add_scheduled_packet_to_damage_summary(summary: Any, event: dict[str, Any]) -> None:
+        damage = float(event.get("damage_applied", 0.0) or 0.0)
+        if isinstance(summary, dict):
+            summary["scheduled_damage"] = float(summary.get("scheduled_damage", 0.0) or 0.0) + damage
+            summary.setdefault("scheduled_damage_events", []).append(event)
+            for key in ("damage_before_cutoff", "damage", "total_action_damage"):
+                summary[key] = float(summary.get(key, 0.0) or 0.0) + damage
+            return
+        summary.scheduled_damage += damage
+        summary.scheduled_damage_events.append(event)
+        summary.damage_before_cutoff += damage
+        summary.damage += damage
+        summary.total_action_damage += damage
+
+    def _attribute_scheduled_packet_to_source(self, event: dict[str, Any]) -> None:
+        action_instance_id = str(event["action_instance_id"])
+        ledger = self.state.scheduled_packet_source_ledger.setdefault(
+            action_instance_id,
+            {"scheduled_damage": 0.0, "events": [], "materialized": False},
+        )
+        ledger["scheduled_damage"] = float(ledger.get("scheduled_damage", 0.0) or 0.0) + float(
+            event.get("damage_applied", 0.0) or 0.0
+        )
+        ledger.setdefault("events", []).append(event)
+
+        for entry in self.timeline:
+            if entry.action_instance_id == action_instance_id:
+                self._add_scheduled_packet_to_damage_summary(entry, event)
+                entry.total_damage_after = self.state.total_damage
+                break
+        for action_log_entry in self.state.action_log:
+            if action_log_entry.get("action_instance_id") == action_instance_id:
+                self._add_scheduled_packet_to_damage_summary(action_log_entry, event)
+                action_log_entry["total_damage_after"] = self.state.total_damage
+                break
+
+    def _apply_source_packet_ledger_to_result(self, result: Any) -> None:
+        if not result.action_instance_id:
+            result.total_damage_after = self.state.total_damage
+            return
+        ledger = self.state.scheduled_packet_source_ledger.get(result.action_instance_id)
+        if not ledger or ledger.get("materialized"):
+            result.total_damage_after = self.state.total_damage
+            return
+        for event in ledger.get("events", []):
+            self._add_scheduled_packet_to_damage_summary(result, event)
+        ledger["materialized"] = True
+        result.total_damage_after = self.state.total_damage
+
+    def _advance_scheduled_packets_to(self, *, event_wall_time: float, event_combat_time: float) -> list[dict[str, Any]]:
+        events = advance_ongoing_action_runtime(
+            self.state,
+            self._resolve_scheduled_action_packet,
+            through_wall_time=event_wall_time,
+            through_combat_time=event_combat_time,
+        )
+        for event in events:
+            self._attribute_scheduled_packet_to_source(event)
+        return events
+
+    def _record_chronological_action_event(
+        self,
+        *,
+        event_wall_time: float,
+        event_combat_time: float,
+        event_type: str,
+        owner_character_id: str,
+        source_action_id: str,
+        action_instance_id: str,
+        **extra: Any,
+    ) -> dict[str, Any]:
+        self.state.event_cursor_wall_time = max(self.state.event_cursor_wall_time, float(event_wall_time))
+        self.state.event_cursor_combat_time = max(self.state.event_cursor_combat_time, float(event_combat_time))
+        self.state.chronological_event_next_sequence += 1
+        event = {
+            "event_sequence": self.state.chronological_event_next_sequence,
+            "event_wall_time": float(event_wall_time),
+            "event_combat_time": float(event_combat_time),
+            "event_type": event_type,
+            "owner_character_id": owner_character_id,
+            "source_action_id": source_action_id,
+            "action_instance_id": action_instance_id,
+            "enemy_off_tune_current": self.state.enemy_off_tune_current,
+            "enemy_mistune_active": self.state.enemy_mistune_active,
+            "enemy_tune_break_available": self.state.enemy_tune_break_available,
+            **extra,
+        }
+        self.state.chronological_event_log.append(event)
+        return event
+
     def execute_action(self, action_id: str, *, record_diagnostics: bool = True) -> bool:
         self.validate_simulation_readiness(entry_point=f"combat action {action_id}")
-        advance_ongoing_action_runtime(self.state)
+        self._advance_scheduled_packets_to(
+            event_wall_time=self.state.current_time,
+            event_combat_time=self.state.combat_time,
+        )
         if self.state.combat_time >= self.combat_duration:
             return False
         if (
@@ -1133,14 +1280,24 @@ class Simulation:
             return False
 
         timing_contract = self.action_timing_contracts.get(action.id)
+        action_instance_id: str
         if timing_contract is not None:
             release_prior_owner_input_locks_for_followup(
                 self.state,
                 str(action.character_id or self.state.active_character_id),
             )
             selected_timing = select_action_timing(self.state, action, timing_contract)
-            start_ongoing_action(self.state, action, timing_contract, selected_timing)
+            ongoing_action = start_ongoing_action(self.state, action, timing_contract, selected_timing)
+            action_instance_id = ongoing_action.action_instance_id
             action = prepare_control_point_action(action, timing_contract, selected_timing)
+        else:
+            self.state.action_instance_next_order += 1
+            action_instance_id = f"action-instance-v124-{self.state.action_instance_next_order}:{action.id}"
+        action = action.model_copy(deep=True)
+        action.mechanic_effects = {
+            **(action.mechanic_effects or {}),
+            "v124_action_instance_id": action_instance_id,
+        }
 
         if transition_resolution is not None:
             outgoing_key = swap_reentry_key(transition_resolution.outgoing_character_id)
@@ -1179,8 +1336,26 @@ class Simulation:
         actor_character_id = actor_character_id or self.state.active_character_id
         actor_mechanic = self._mechanic_for_character(actor_character_id)
         before_account_action(self, selected_action, action)
+        event_owner_character_id = str(action.character_id or actor_character_id)
+        self._record_chronological_action_event(
+            event_wall_time=self.state.current_time,
+            event_combat_time=self.state.combat_time,
+            event_type="action_start",
+            owner_character_id=event_owner_character_id,
+            source_action_id=action.id,
+            action_instance_id=action_instance_id,
+        )
         scheduled_effect_runner = None if zero_time_transition else lambda **kwargs: self.advance_scheduled_effects(
             host_action=action,
+            **kwargs,
+        )
+        chronological_event_runner = lambda **kwargs: self._advance_scheduled_packets_to(**kwargs)
+        record_hit_event = lambda **kwargs: self._record_chronological_action_event(
+            event_type="action_hit",
+            owner_character_id=event_owner_character_id,
+            source_action_id=action.id,
+            action_instance_id=action_instance_id,
+            hit_name=kwargs.pop("hit").name,
             **kwargs,
         )
         result = execute_action(
@@ -1193,11 +1368,22 @@ class Simulation:
             pre_action_echo_set_log_fields=pre_action_echo_set_log_fields,
             weapon_definitions=self.weapon_definitions,
             scheduled_effect_runner=scheduled_effect_runner,
+            chronological_event_runner=chronological_event_runner,
+            record_hit_event=record_hit_event,
             record_diagnostics=record_diagnostics,
         )
+        self._apply_source_packet_ledger_to_result(result)
         self.last_action_result = result
         if not result.valid:
             return False
+        self._record_chronological_action_event(
+            event_wall_time=result.end_time,
+            event_combat_time=result.combat_time_end,
+            event_type="action_end",
+            owner_character_id=event_owner_character_id,
+            source_action_id=action.id,
+            action_instance_id=action_instance_id,
+        )
         result.selected_action_id = selected_action.id
         result.selected_action_name = selected_action.name
         result.resolved_action_id = action.id
@@ -1237,8 +1423,6 @@ class Simulation:
             self._sync_weapon_result_fields(result, weapon_action_log)
         if not bool(weapon_action_log.get("weapon_effect_triggered", False)):
             advance_weapon_effect_cooldowns(self.state, result.action_time)
-
-        advance_ongoing_action_runtime(self.state)
 
         self._advance_tune_break_runtime(
             action_elapsed=result.action_time,
@@ -1310,14 +1494,21 @@ class Simulation:
         """
         wall_elapsed = max(0.0, float(wall_elapsed))
         resolved_combat_elapsed = wall_elapsed if combat_elapsed is None else max(0.0, float(combat_elapsed))
-        self.state.current_time += wall_elapsed
-        self.state.combat_time += resolved_combat_elapsed
+        target_wall_time = self.state.current_time + wall_elapsed
+        target_combat_time = self.state.combat_time + resolved_combat_elapsed
+        self._advance_scheduled_packets_to(
+            event_wall_time=target_wall_time,
+            event_combat_time=target_combat_time,
+        )
+        self.state.current_time = target_wall_time
+        self.state.combat_time = target_combat_time
+        self.state.event_cursor_wall_time = max(self.state.event_cursor_wall_time, target_wall_time)
+        self.state.event_cursor_combat_time = max(self.state.event_cursor_combat_time, target_combat_time)
         reduce_cooldowns(
             self.state,
             resolved_combat_elapsed,
             action_elapsed=wall_elapsed,
         )
-        advance_ongoing_action_runtime(self.state)
 
     def valid_action_ids(self) -> list[str]:
         if self.account_profile_gate_errors or not self._account_aemeath_mode_is_executable():

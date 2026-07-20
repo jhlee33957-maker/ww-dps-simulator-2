@@ -7,7 +7,13 @@ from simulator.action_timing_contract import TIMING_CONTRACT_SCHEMA_VERSION, loa
 def main() -> None:
     contracts = load_action_timing_contracts(DATA_DIR)
     assert TIMING_CONTRACT_SCHEMA_VERSION == "action_timing_contract_v124"
-    assert set(contracts) == {MORNYE_LIBERATION_ID, LIBERATION_ID, VIVID_ID}
+    assert set(contracts) == {
+        MORNYE_LIBERATION_ID,
+        LIBERATION_ID,
+        VIVID_ID,
+        "mornye_basic_stage_2",
+        "mornye_basic_stage_3",
+    }
     liberation, vivid = contracts[LIBERATION_ID], contracts[VIVID_ID]
     assert (liberation.same_character_input_frame, liberation.swap_input_frame, liberation.action_end_frame) == (238, 240, 299)
     assert liberation.global_time_stop_frames == 240

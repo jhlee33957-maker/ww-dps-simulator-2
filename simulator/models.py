@@ -380,6 +380,8 @@ class ScheduledPacketInstance(BaseModel):
     cancelled: bool = False
     resolved_wall_time: float | None = None
     resolved_combat_time: float | None = None
+    processed_wall_time: float | None = None
+    processed_combat_time: float | None = None
     source_refs: list[str] = Field(default_factory=list)
     source_type: str | None = None
     confidence: str | None = None
@@ -451,6 +453,11 @@ class CombatState(BaseModel):
     action_instance_next_order: int = 0
     packet_instance_next_order: int = 0
     scheduled_packet_event_log: list[dict[str, Any]] = Field(default_factory=list)
+    chronological_event_next_sequence: int = 0
+    event_cursor_wall_time: float = 0.0
+    event_cursor_combat_time: float = 0.0
+    chronological_event_log: list[dict[str, Any]] = Field(default_factory=list)
+    scheduled_packet_source_ledger: dict[str, dict[str, Any]] = Field(default_factory=dict)
     persistent_off_field_character_ids: list[str] = Field(default_factory=list)
     action_log: list[dict[str, Any]] = Field(default_factory=list)
     damage_log: list[dict[str, Any]] = Field(default_factory=list)
@@ -536,6 +543,7 @@ class ActionResult(BaseModel):
     selected_action_name: str | None = None
     resolved_action_id: str | None = None
     resolved_action_name: str | None = None
+    action_instance_id: str | None = None
     action_id: str
     action_name: str
     character_id: str | None
@@ -1010,6 +1018,7 @@ class TimelineEntry(BaseModel):
     selected_action_name: str | None = None
     resolved_action_id: str | None = None
     resolved_action_name: str | None = None
+    action_instance_id: str | None = None
     time_start: float
     time_end: float
     action_id: str

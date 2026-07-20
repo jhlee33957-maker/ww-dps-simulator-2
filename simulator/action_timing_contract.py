@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -25,6 +25,10 @@ class ScheduledPacketGroupContract(BaseModel):
     cancel_on_swap: bool = False
     persist_after_swap: bool = False
     source_refs: list[str] = Field(default_factory=list)
+    source_frame_row_ref: str | None = None
+    source_coefficient_resource_row_ref: str | None = None
+    packet_count: int | None = Field(default=None, gt=0)
+    payload_partition_rules: dict[str, str] = Field(default_factory=dict)
     source_type: str | None = None
     confidence: str | None = None
 
@@ -34,6 +38,8 @@ class ScheduledPacketGroupContract(BaseModel):
             raise ValueError("scheduled packet frames must be non-negative")
         if self.scheduled_frames != sorted(self.scheduled_frames):
             raise ValueError("scheduled packet frames must be sorted")
+        if self.packet_count is not None and self.packet_count != len(self.scheduled_frames):
+            raise ValueError("packet_count must match scheduled_frames")
         return self
 
 
@@ -132,6 +138,26 @@ class ActionTimingContract(BaseModel):
         group_ids = [group.packet_group_id for group in self.scheduled_packet_groups]
         if len(group_ids) != len(set(group_ids)):
             raise ValueError("packet_group_id values must be unique within an action")
+        if self.defer_legacy_payload_to_scheduled_packets:
+            for group in self.scheduled_packet_groups:
+                if group.damage_payload.get("placeholder"):
+                    continue
+                if not group.source_frame_row_ref or not group.source_coefficient_resource_row_ref:
+                    raise ValueError("resolved packet groups require frame and coefficient/resource source refs")
+                if group.packet_count != len(group.scheduled_frames):
+                    raise ValueError("resolved packet groups require an exact packet_count")
+                allowed_rules = {
+                    "source_row_per_occurrence",
+                    "source_row_total_first_occurrence",
+                    "source_row_total_final_occurrence",
+                    "action_start_frame_1_once",
+                    "none",
+                }
+                required_payloads = {"damage", "off_tune", "resonance_energy", "concerto", "rest_mass"}
+                if set(group.payload_partition_rules) != required_payloads:
+                    raise ValueError("resolved packet groups require partition rules for every payload class")
+                if not set(group.payload_partition_rules.values()) <= allowed_rules:
+                    raise ValueError("equal or unsupported packet payload splitting is not source-backed")
         last_packet_frame = max(
             (max(group.scheduled_frames) for group in self.scheduled_packet_groups),
             default=0.0,
@@ -248,6 +274,11 @@ def prepare_control_point_action(
         runtime_action.off_tune_value = 0.0
         runtime_action.resonance_energy_gain = 0.0
         runtime_action.concerto_energy_gain = 0.0
+        if any(
+            group.resource_payload.get("rest_mass_application") == "action_start_frame_1_once"
+            for group in contract.scheduled_packet_groups
+        ):
+            runtime_action.mechanic_effects.pop("rest_mass_energy_delta", None)
     else:
         if selected_timing.legacy_hit_frame_overrides:
             if len(selected_timing.legacy_hit_frame_overrides) != len(runtime_action.hits):
@@ -311,6 +342,36 @@ def start_ongoing_action(
         confidence=contract.confidence,
     )
     state.ongoing_action_instances.append(instance)
+    rest_mass_payloads = [
+        float(group.resource_payload.get("rest_mass_total", 0.0) or 0.0)
+        for group in contract.scheduled_packet_groups
+        if group.resource_payload.get("rest_mass_application") == "action_start_frame_1_once"
+    ]
+    nonzero_rest_mass_payloads = [value for value in rest_mass_payloads if abs(value) > 1e-12]
+    if len(nonzero_rest_mass_payloads) > 1:
+        raise ValueError(f"{action.id!r} has more than one frame-1 Rest Mass payload")
+    if nonzero_rest_mass_payloads:
+        owner_state = state.character_mechanics_state.setdefault(instance.owner_character_id, {})
+        cap = float(owner_state.get("rest_mass_energy_cap", 100.0) or 100.0)
+        before = float(owner_state.get("rest_mass_energy", 0.0) or 0.0)
+        delta = nonzero_rest_mass_payloads[0]
+        after = max(0.0, min(cap, before + delta))
+        owner_state["rest_mass_energy"] = after
+        state.scheduled_packet_event_log.append(
+            {
+                "event_type": "v124_action_start_payload",
+                "action_instance_id": instance_id,
+                "owner_character_id": instance.owner_character_id,
+                "source_action_id": action.id,
+                "scheduled_frame": 1.0,
+                "scheduled_wall_time": start_wall + 1.0 / FPS,
+                "resolved_wall_time": start_wall + 1.0 / FPS,
+                "rest_mass_before": before,
+                "rest_mass_payload": delta,
+                "rest_mass_applied": after - before,
+                "rest_mass_after": after,
+            }
+        )
     for group in contract.scheduled_packet_groups:
         for occurrence_index, scheduled_frame in enumerate(group.scheduled_frames, start=1):
             state.packet_instance_next_order += 1
@@ -319,6 +380,31 @@ def start_ongoing_action(
                 f"{action.id}:{group.packet_group_id}:{occurrence_index}"
             )
             wall_offset = scheduled_frame / FPS
+            damage_payload = dict(group.damage_payload)
+            resource_payload = dict(group.resource_payload)
+            damage_payload["damage_multiplier"] = float(
+                damage_payload.get("damage_multiplier_per_packet", 0.0) or 0.0
+            )
+            resource_payload["resonance_energy_gain"] = float(
+                resource_payload.get("resonance_energy_per_packet", 0.0) or 0.0
+            )
+            resource_payload["concerto_energy_gain"] = float(
+                resource_payload.get("concerto_per_packet", 0.0) or 0.0
+            )
+            off_tune_total = float(resource_payload.get("off_tune_total", 0.0) or 0.0)
+            off_tune_application = resource_payload.get("off_tune_application", "none")
+            resource_payload["off_tune_value"] = (
+                off_tune_total
+                if off_tune_application == "source_row_total_first_occurrence" and occurrence_index == 1
+                else off_tune_total
+                if (
+                    off_tune_application == "source_row_total_final_occurrence"
+                    and occurrence_index == len(group.scheduled_frames)
+                )
+                else float(resource_payload.get("off_tune_per_packet", 0.0) or 0.0)
+                if off_tune_application == "source_row_per_occurrence"
+                else 0.0
+            )
             packet = ScheduledPacketInstance(
                 packet_instance_id=packet_id,
                 action_instance_id=instance_id,
@@ -328,8 +414,8 @@ def start_ongoing_action(
                 scheduled_wall_time=start_wall + wall_offset,
                 scheduled_combat_time=start_combat + wall_elapsed_to_combat_elapsed(selected_timing, wall_offset),
                 combat_time_resolution_rule=group.combat_time_resolution_rule,
-                damage_payload=dict(group.damage_payload),
-                resource_payload=dict(group.resource_payload),
+                damage_payload=damage_payload,
+                resource_payload=resource_payload,
                 marker_payload=dict(group.marker_payload),
                 buff_payload=dict(group.buff_payload),
                 detachable=group.detachable,
@@ -405,18 +491,48 @@ def handle_character_swap(state: CombatState, outgoing_character_id: str) -> Non
     state.persistent_off_field_character_ids = sorted(persistent)
 
 
-def advance_ongoing_action_runtime(state: CombatState) -> list[dict[str, Any]]:
-    now_wall = float(state.current_time)
-    now_combat = float(state.combat_time)
+def advance_ongoing_action_runtime(
+    state: CombatState,
+    packet_resolver: Callable[[ScheduledPacketInstance], dict[str, Any]] | None = None,
+    *,
+    through_wall_time: float | None = None,
+    through_combat_time: float | None = None,
+) -> list[dict[str, Any]]:
+    now_wall = float(state.current_time if through_wall_time is None else through_wall_time)
+    now_combat = float(state.combat_time if through_combat_time is None else through_combat_time)
     events: list[dict[str, Any]] = []
-    for packet in state.scheduled_packet_instances:
+    for packet in sorted(
+        state.scheduled_packet_instances,
+        key=lambda item: (item.scheduled_wall_time, item.packet_instance_id),
+    ):
         if packet.resolved or packet.cancelled or packet.scheduled_wall_time > now_wall + 1e-9:
             continue
+        cursor_floor_wall = max(float(state.current_time), float(state.event_cursor_wall_time))
+        cursor_floor_combat = max(float(state.combat_time), float(state.event_cursor_combat_time))
+        processed_wall_time = max(float(packet.scheduled_wall_time), cursor_floor_wall)
+        scheduled_combat_time = float(packet.scheduled_combat_time or now_combat)
+        processed_combat_time = (
+            scheduled_combat_time
+            if processed_wall_time <= float(packet.scheduled_wall_time) + 1e-9
+            else max(scheduled_combat_time, cursor_floor_combat)
+        )
+        state.event_cursor_wall_time = processed_wall_time
+        state.event_cursor_combat_time = processed_combat_time
+        placeholder = bool(packet.damage_payload.get("placeholder"))
+        if not placeholder and packet_resolver is None:
+            raise ValueError(f"Scheduled packet {packet.packet_instance_id!r} requires a payload resolver")
+        resolved_payload = {} if placeholder else dict(packet_resolver(packet))
         packet.resolved = True
-        packet.resolved_wall_time = packet.scheduled_wall_time
-        packet.resolved_combat_time = min(now_combat, packet.scheduled_combat_time or now_combat)
+        packet.processed_wall_time = processed_wall_time
+        packet.processed_combat_time = processed_combat_time
+        packet.resolved_wall_time = processed_wall_time
+        packet.resolved_combat_time = processed_combat_time
+        state.chronological_event_next_sequence += 1
         event = {
-            "event_type": "v124_scheduled_packet_placeholder",
+            "event_type": "v124_scheduled_packet_placeholder" if placeholder else "v124_scheduled_action_packet",
+            "event_sequence": state.chronological_event_next_sequence,
+            "event_wall_time": processed_wall_time,
+            "event_combat_time": processed_combat_time,
             "packet_instance_id": packet.packet_instance_id,
             "action_instance_id": packet.action_instance_id,
             "owner_character_id": packet.owner_character_id,
@@ -424,17 +540,21 @@ def advance_ongoing_action_runtime(state: CombatState) -> list[dict[str, Any]]:
             "packet_group_id": packet.packet_group_id,
             "scheduled_wall_time": packet.scheduled_wall_time,
             "scheduled_combat_time": packet.scheduled_combat_time,
+            "processed_wall_time": packet.processed_wall_time,
+            "processed_combat_time": packet.processed_combat_time,
             "resolved_wall_time": packet.resolved_wall_time,
             "resolved_combat_time": packet.resolved_combat_time,
             "damage_payload": dict(packet.damage_payload),
             "resource_payload": dict(packet.resource_payload),
             "marker_payload": dict(packet.marker_payload),
             "buff_payload": dict(packet.buff_payload),
-            "damage_applied": 0.0,
-            "resource_applied": 0.0,
-            "stage_2_payload_resolution_required": True,
+            "damage_applied": float(resolved_payload.get("damage", 0.0) or 0.0),
+            "resource_applied": float(resolved_payload.get("resonance_energy_gained", 0.0) or 0.0),
+            "stage_2_payload_resolution_required": placeholder,
+            **resolved_payload,
         }
         state.scheduled_packet_event_log.append(event)
+        state.chronological_event_log.append(event)
         events.append(event)
     for instance in state.ongoing_action_instances:
         source_end = instance.source_action_end_wall_time or instance.action_end_wall_time

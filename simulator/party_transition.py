@@ -89,7 +89,7 @@ def default_transition_config() -> dict[str, Any]:
             "source": GENERIC_SWAP_SOURCE,
             "source_status": GENERIC_SWAP_SOURCE_STATUS,
             "reentry_cooldown_seconds": SWAP_REENTRY_COOLDOWN_SECONDS,
-            "reentry_cooldown_clock": "current_time",
+            "reentry_cooldown_clock": "combat_time",
             "warning": "",
         },
         "concerto_transition": {
@@ -171,7 +171,7 @@ def fallback_swap_timing(
     fallback.setdefault("source", GENERIC_SWAP_SOURCE)
     fallback.setdefault("source_status", GENERIC_SWAP_SOURCE_STATUS)
     fallback.setdefault("reentry_cooldown_seconds", SWAP_REENTRY_COOLDOWN_SECONDS)
-    fallback.setdefault("reentry_cooldown_clock", "current_time")
+    fallback.setdefault("reentry_cooldown_clock", "combat_time")
     fallback.setdefault("warning", "")
     if float(fallback.get("action_time", 0.0) or 0.0) == 0.0 and float(
         fallback.get("combat_time_cost", 0.0) or 0.0
@@ -182,7 +182,7 @@ def fallback_swap_timing(
                 "source": GENERIC_SWAP_SOURCE,
                 "source_status": GENERIC_SWAP_SOURCE_STATUS,
                 "reentry_cooldown_seconds": SWAP_REENTRY_COOLDOWN_SECONDS,
-                "reentry_cooldown_clock": "current_time",
+                "reentry_cooldown_clock": "combat_time",
                 "warning": "",
             }
         )

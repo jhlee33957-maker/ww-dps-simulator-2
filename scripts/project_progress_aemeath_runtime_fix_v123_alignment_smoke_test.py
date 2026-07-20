@@ -16,7 +16,7 @@ def main() -> None:
     assert status["latest_verified_archive"] == "ww-dps-simulator-2-123(3).zip"
     assert status["latest_verified_archive_sha256"] == "2d6c396df09645c4a304acebffea88d41555a6de05ed41d6ee7867648a5712f8"
     assert status["current_candidate"] == "124"
-    assert status["current_candidate_stage"] == "timing-core-2a-mornye-liberation"
+    assert status["current_candidate_stage"] == "timing-core-2b-mornye-basic-tails"
     assert status["candidate_expected_next_archive"] == "ww-dps-simulator-2-124.zip"
     current = progress["current_in_progress_task"]
     runtime = current["candidate_123_aemeath_runtime_fix"]
@@ -36,7 +36,7 @@ def main() -> None:
     assert v123["baseline_archive_sha256"] == status["latest_verified_archive_sha256"]
     assert history[-1]["candidate"] == "124"
     assert history[-1]["status"] == "candidate_pending_external_review"
-    assert history[-1]["stage"] == "timing-core-2a-mornye-liberation"
+    assert history[-1]["stage"] == "timing-core-2b-mornye-basic-tails"
     print("project_progress_aemeath_runtime_fix_v123_alignment_smoke_test ok")
 
 
