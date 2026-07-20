@@ -118,6 +118,100 @@
       "confidence": "high"
     },
     {
+      "action_id": "mornye_heavy_inversion",
+      "same_character_input_frame": 86,
+      "swap_input_frame": 86,
+      "source_action_end_frame": 78,
+      "action_end_frame": 86,
+      "global_time_stop_frames": 0,
+      "persist_character_after_swap": false,
+      "defer_legacy_payload_to_scheduled_packets": true,
+      "scheduled_packet_groups": [
+        {
+          "packet_group_id": "mornye_heavy_inversion_impact",
+          "scheduled_frames": [66],
+          "source_frame_row_ref": "鰲믦돯-也?A4135:AT4135",
+          "source_coefficient_resource_row_ref": "鰲믦돯??썹굳??A2664:AH2664",
+          "packet_count": 1,
+          "payload_partition_rules": {"damage": "source_row_per_occurrence", "off_tune": "source_row_total_first_occurrence", "resonance_energy": "source_row_per_occurrence", "concerto": "source_row_per_occurrence", "rest_mass": "none"},
+          "damage_payload": {"damage_multiplier_per_packet": 2.5846, "damage_multiplier_total": 2.5846},
+          "resource_payload": {"off_tune_total": 104.0, "off_tune_application": "source_row_total_first_occurrence", "resonance_energy_per_packet": 3.25, "resonance_energy_total": 3.25, "concerto_per_packet": 11.96, "concerto_total": 11.96, "rest_mass_total": 0.0, "rest_mass_application": "none", "relative_momentum_application": "action_start_consume_once"},
+          "marker_payload": {"self_hitstop_frames": 8, "observation_marker_duration": 30.0, "observation_marker_source": "Mornye Heavy Inversion"},
+          "detachable": false,
+          "cancel_on_swap": false,
+          "persist_after_swap": false,
+          "source_refs": ["鰲믦돯-也?A4135:AT4135", "鰲믦돯-也?A4136:AT4136", "鰲믦돯??썹굳??A2664:AH2664"],
+          "source_type": "workbook_audit_v2_source_join",
+          "confidence": "high"
+        }
+      ],
+      "source_refs": ["鰲믦돯-也?A4135:AT4135", "鰲믦돯-也?A4136:AT4136", "鰲믦돯??썹굳??A2664:AH2664"],
+      "source_type": "workbook_audit_v2_source_join",
+      "confidence": "high"
+    },
+    {
+      "action_id": "mornye_skill_distributed_array",
+      "same_character_input_frame": 60,
+      "swap_input_frame": 60,
+      "action_end_frame": 60,
+      "global_time_stop_frames": 0,
+      "persist_character_after_swap": false,
+      "defer_legacy_payload_to_scheduled_packets": true,
+      "scheduled_packet_groups": [
+        {
+          "packet_group_id": "mornye_distributed_array_e2_1",
+          "scheduled_frames": [22],
+          "source_frame_row_ref": "鰲믦돯-也?A4143:AT4143",
+          "source_coefficient_resource_row_ref": "鰲믦돯??썹굳??A2666:AH2666",
+          "packet_count": 1,
+          "payload_partition_rules": {"damage": "source_row_per_occurrence", "off_tune": "source_row_total_first_occurrence", "resonance_energy": "source_row_per_occurrence", "concerto": "source_row_per_occurrence", "rest_mass": "none"},
+          "damage_payload": {"damage_multiplier_per_packet": 0.3977, "damage_multiplier_total": 0.3977},
+          "resource_payload": {"off_tune_total": 20.0, "off_tune_application": "source_row_total_first_occurrence", "resonance_energy_per_packet": 4.63, "resonance_energy_total": 4.63, "concerto_per_packet": 2.5, "concerto_total": 2.5, "rest_mass_total": 0.0, "rest_mass_application": "none", "relative_momentum_gain": 15.0},
+          "marker_payload": {"self_hitstop_frames": 0}, "detachable": false, "cancel_on_swap": false, "persist_after_swap": false,
+          "source_refs": ["鰲믦돯-也?A4143:AT4143", "鰲믦돯??썹굳??A2666:AH2666"], "source_type": "workbook_audit_v2_source_join", "confidence": "high"
+        },
+        {
+          "packet_group_id": "mornye_distributed_array_e2_2",
+          "scheduled_frames": [22],
+          "source_frame_row_ref": "鰲믦돯-也?A4144:AT4144",
+          "source_coefficient_resource_row_ref": "鰲믦돯??썹굳??A2667:AH2667",
+          "packet_count": 1,
+          "payload_partition_rules": {"damage": "source_row_per_occurrence", "off_tune": "source_row_total_first_occurrence", "resonance_energy": "source_row_per_occurrence", "concerto": "source_row_per_occurrence", "rest_mass": "none"},
+          "damage_payload": {"damage_multiplier_per_packet": 0.3977, "damage_multiplier_total": 0.3977},
+          "resource_payload": {"off_tune_total": 20.0, "off_tune_application": "source_row_total_first_occurrence", "resonance_energy_per_packet": 4.63, "resonance_energy_total": 4.63, "concerto_per_packet": 2.5, "concerto_total": 2.5, "rest_mass_total": 0.0, "rest_mass_application": "none", "relative_momentum_gain": 15.0},
+          "marker_payload": {"self_hitstop_frames": 0}, "detachable": false, "cancel_on_swap": false, "persist_after_swap": false,
+          "source_refs": ["鰲믦돯-也?A4144:AT4144", "鰲믦돯??썹굳??A2667:AH2667"], "source_type": "workbook_audit_v2_source_join", "confidence": "high"
+        },
+        {
+          "packet_group_id": "mornye_distributed_array_e2_3",
+          "scheduled_frames": [36],
+          "source_frame_row_ref": "鰲믦돯-也?A4145:AT4145",
+          "source_coefficient_resource_row_ref": "鰲믦돯??썹굳??A2668:AH2668",
+          "packet_count": 1,
+          "payload_partition_rules": {"damage": "source_row_per_occurrence", "off_tune": "source_row_total_first_occurrence", "resonance_energy": "source_row_per_occurrence", "concerto": "source_row_per_occurrence", "rest_mass": "none"},
+          "damage_payload": {"damage_multiplier_per_packet": 0.3977, "damage_multiplier_total": 0.3977},
+          "resource_payload": {"off_tune_total": 20.0, "off_tune_application": "source_row_total_first_occurrence", "resonance_energy_per_packet": 4.63, "resonance_energy_total": 4.63, "concerto_per_packet": 2.5, "concerto_total": 2.5, "rest_mass_total": 0.0, "rest_mass_application": "none", "relative_momentum_gain": 15.0},
+          "marker_payload": {"self_hitstop_frames": 0}, "detachable": false, "cancel_on_swap": false, "persist_after_swap": false,
+          "source_refs": ["鰲믦돯-也?A4145:AT4145", "鰲믦돯??썹굳??A2668:AH2668"], "source_type": "workbook_audit_v2_source_join", "confidence": "high"
+        },
+        {
+          "packet_group_id": "mornye_distributed_array_e2_4",
+          "scheduled_frames": [36],
+          "source_frame_row_ref": "鰲믦돯-也?A4146:AT4146",
+          "source_coefficient_resource_row_ref": "鰲믦돯??썹굳??A2669:AH2669",
+          "packet_count": 1,
+          "payload_partition_rules": {"damage": "source_row_per_occurrence", "off_tune": "source_row_total_first_occurrence", "resonance_energy": "source_row_per_occurrence", "concerto": "source_row_per_occurrence", "rest_mass": "none"},
+          "damage_payload": {"damage_multiplier_per_packet": 0.3977, "damage_multiplier_total": 0.3977},
+          "resource_payload": {"off_tune_total": 20.0, "off_tune_application": "source_row_total_first_occurrence", "resonance_energy_per_packet": 4.63, "resonance_energy_total": 4.63, "concerto_per_packet": 2.5, "concerto_total": 2.5, "rest_mass_total": 0.0, "rest_mass_application": "none", "relative_momentum_gain": 15.0},
+          "marker_payload": {"self_hitstop_frames": 0}, "detachable": false, "cancel_on_swap": false, "persist_after_swap": false,
+          "source_refs": ["鰲믦돯-也?A4146:AT4146", "鰲믦돯??썹굳??A2669:AH2669"], "source_type": "workbook_audit_v2_source_join", "confidence": "high"
+        }
+      ],
+      "source_refs": ["鰲믦돯-也?A4143:AT4143", "鰲믦돯-也?A4144:AT4144", "鰲믦돯-也?A4145:AT4145", "鰲믦돯-也?A4146:AT4146", "鰲믦돯-也?A4147:AT4147", "鰲믦돯??썹굳??A2666:AH2666", "鰲믦돯??썹굳??A2667:AH2667", "鰲믦돯??썹굳??A2668:AH2668", "鰲믦돯??썹굳??A2669:AH2669", "dmg!A2522:DF2525"],
+      "source_type": "workbook_audit_v2_source_join",
+      "confidence": "high"
+    },
+    {
       "action_id": "mornye_liberation_critical_protocol",
       "timing_variants": [
         {

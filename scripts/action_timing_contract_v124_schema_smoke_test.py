@@ -13,6 +13,8 @@ def main() -> None:
         VIVID_ID,
         "mornye_basic_stage_2",
         "mornye_basic_stage_3",
+        "mornye_heavy_inversion",
+        "mornye_skill_distributed_array",
     }
     liberation, vivid = contracts[LIBERATION_ID], contracts[VIVID_ID]
     assert (liberation.same_character_input_frame, liberation.swap_input_frame, liberation.action_end_frame) == (238, 240, 299)

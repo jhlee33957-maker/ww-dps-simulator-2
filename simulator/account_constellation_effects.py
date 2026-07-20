@@ -986,6 +986,30 @@ def mornye_dynamic_energy_regen_excess_amp(energy_regen: float, *, cap: float = 
     return min(cap, excess_percentage_points * 0.0025)
 
 
+def apply_mornye_s1_interfered_marker(simulation: Any) -> dict[str, Any] | None:
+    """Apply the account S1 enemy amp without changing the source Observation duration."""
+    if _sequence_for(simulation, "mornye") < 1:
+        return None
+    duration = mornye_s1_marker_duration_seconds()
+    simulation.state.interfered_marker_remaining = duration
+    simulation.state.interfered_marker_applied_count += 1
+    amp = mornye_dynamic_energy_regen_excess_amp(simulation.characters["mornye"].energy_regen)
+    simulation.state.interfered_marker_damage_taken_amp = amp
+    buff = _buff(
+        "mornye_interfered_marker_damage_amp",
+        "Mornye Interfered Marker dynamic damage amp",
+        "dmg_taken",
+        amp,
+        duration,
+        target_scope="enemy",
+        metadata={"dynamic_value": amp, "account_s1_direct_application": True},
+    )
+    simulation.buffs[buff.id] = buff
+    from simulator.buff_system import apply_buff
+    apply_buff(simulation.state, buff, "mornye")
+    return {"event_type": "mornye_s1_marker", "remaining_seconds": duration, "damage_amp": amp}
+
+
 def mornye_s2_marker_crit_damage(energy_regen: float, *, cap: float = 0.32) -> float:
     excess_percentage_points = max(0.0, (float(energy_regen) - 1.0) * 100.0)
     return min(cap, excess_percentage_points * 0.002)
@@ -1096,27 +1120,13 @@ def _apply_mornye_runtime(simulation: Any, action: Any, result: Any) -> list[dic
     account_state = simulation.state.character_mechanics_state.setdefault("_account_constellation", {})
     mornye_state = simulation.state.character_mechanics_state.setdefault("mornye", {})
     action_id = str(action.id)
-    if sequence >= 1 and action_id in MORNYE_OBSERVATION_MARKER_IDS:
+    deferred_marker_packet = bool((getattr(action, "mechanic_effects", {}) or {}).get("v124_deferred_packet_payloads", False))
+    if sequence >= 1 and action_id in MORNYE_OBSERVATION_MARKER_IDS and not deferred_marker_packet:
         mornye_state["observation_marker_active"] = True
         mornye_state["observation_marker_remaining"] = 20.0
-        simulation.state.interfered_marker_remaining = 20.0
-        simulation.state.interfered_marker_applied_count += 1
-        amp = mornye_dynamic_energy_regen_excess_amp(simulation.characters["mornye"].energy_regen)
-        simulation.state.interfered_marker_damage_taken_amp = amp
-        buff = _buff(
-            "mornye_interfered_marker_damage_amp",
-            "Mornye Interfered Marker dynamic damage amp",
-            "dmg_taken",
-            amp,
-            20.0,
-            target_scope="enemy",
-            metadata={"dynamic_value": amp, "account_s1_direct_application": True},
-        )
-        simulation.buffs[buff.id] = buff
-        from simulator.buff_system import apply_buff
-
-        apply_buff(simulation.state, buff, "mornye")
-        events.append({"event_type": "mornye_s1_marker", "remaining_seconds": 20.0, "damage_amp": amp})
+        marker_event = apply_mornye_s1_interfered_marker(simulation)
+        if marker_event is not None:
+            events.append(marker_event)
     if sequence >= 2 and bool(mornye_state.get("observation_marker_active", False)):
         crit = mornye_s2_marker_crit_damage(simulation.characters["mornye"].energy_regen)
         events.append({"event_type": "mornye_s2_marker_crit_damage_runtime_active", "crit_damage_bonus": crit})

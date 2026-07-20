@@ -77,7 +77,7 @@ def test_distributed_array_wfo_combo_reaches_inversion() -> None:
     assert heavy.relative_momentum_gain_source_rows == [4135]
     assert state["relative_momentum"] == 0.0
     assert state["observation_marker_active"] is True
-    assert state["observation_marker_remaining"] == 30.0
+    assert 29.0 < state["observation_marker_remaining"] < 30.0
     assert_close(sim.state.combat_time, 4.15, "time through Heavy Inversion")
 
 

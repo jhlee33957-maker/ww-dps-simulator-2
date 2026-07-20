@@ -10,12 +10,12 @@ ROOT = Path(__file__).resolve().parents[1]
 def main() -> None:
     progress = json.loads((ROOT / "PROJECT_PROGRESS_STATE.json").read_text(encoding="utf-8"))
     status = progress["status"]
-    assert status["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(10).zip"
-    assert status["latest_externally_reviewed_archive_sha256"] == "bb18b83842a4ccf698254c6b6ae9d6da16d87ba4e05dee53b31ddb2d8b6521ff"
+    assert status["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(11).zip"
+    assert status["latest_externally_reviewed_archive_sha256"] == "4dd56f71f959025c429a9cf65fa64d81afc70a9c97591454cc525a635598802b"
     assert status["current_candidate"] == "124"
-    assert status["current_candidate_stage"] == "timing-core-2b-mornye-basic-tails"
+    assert status["current_candidate_stage"] == "timing-core-2c-mornye-inversion-distributed-array"
     stage = progress["candidate_124_timing_core_1"]
-    assert stage["stage"] == "timing-core-2b-mornye-basic-tails"
+    assert stage["stage"] == "timing-core-2c-mornye-inversion-distributed-array"
     assert stage["stage_2b_externally_verified"] is False
     for field in (
         "mornye_basic_stage_2_packet_schedule_implemented",
@@ -33,8 +33,8 @@ def main() -> None:
     ):
         assert stage[field] is True, field
     assert stage["scheduled_packet_retroactive_backdating"] is False
-    assert stage["candidate_124_smoke_test_count"] == 39
-    assert stage["authoritative_fresh_extraction_command_count"] == 235
+    assert stage["candidate_124_smoke_test_count"] == 49
+    assert stage["authoritative_fresh_extraction_command_count"] == 247
     assert stage["remaining_p0_packet_action_corrections"] == "pending"
     assert stage["policy_action_count"] == 25
     assert stage["account_observation_version"] == "slot_account_constellation_single_boss_v6"

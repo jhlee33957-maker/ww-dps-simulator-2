@@ -60,6 +60,16 @@ REQUIRED_COMMAND_PATHS = {
     "scripts/mornye_basic_packet_swap_persistence_v124_smoke_test.py",
     "scripts/mornye_basic_packet_no_duplicate_payload_v124_smoke_test.py",
     "scripts/project_progress_timing_core_stage2b_v124_alignment_smoke_test.py",
+    "scripts/mornye_heavy_inversion_packet_contract_v124_smoke_test.py",
+    "scripts/mornye_heavy_inversion_marker_timing_v124_smoke_test.py",
+    "scripts/mornye_heavy_inversion_payload_parity_v124_smoke_test.py",
+    "scripts/mornye_heavy_inversion_no_duplicate_payload_v124_smoke_test.py",
+    "scripts/mornye_distributed_array_packet_contract_v124_smoke_test.py",
+    "scripts/mornye_distributed_array_payload_parity_v124_smoke_test.py",
+    "scripts/mornye_distributed_array_cast_trigger_independence_v124_smoke_test.py",
+    "scripts/mornye_distributed_array_no_duplicate_payload_v124_smoke_test.py",
+    "scripts/mornye_stage2c_prefix_readiness_v124_smoke_test.py",
+    "scripts/project_progress_timing_core_stage2c_v124_alignment_smoke_test.py",
     "scripts/no_first_cycle_or_training_v124_smoke_test.py",
     "scripts/ongoing_action_instance_v124_smoke_test.py",
     "scripts/policy_action_order_v124_guard_smoke_test.py",
@@ -234,14 +244,14 @@ def main() -> None:
     legacy = legacy_fresh_extraction_check_commands()
     older = candidate_123 + candidate_122 + candidate_121 + candidate_120 + candidate_119 + legacy
     assert commands == candidate_124 + older
-    assert len(candidate_124) == 39
+    assert len(candidate_124) == 49
     assert len(candidate_123) == 8
     assert len(candidate_122) == 10
     assert len(candidate_121) == 81
     assert len(candidate_120) == 8
     assert len(candidate_119) == 8
     assert len(legacy) == 83
-    assert len(commands) == 237
+    assert len(commands) == 247
     assert_full_coverage(commands)
 
     mutations = {

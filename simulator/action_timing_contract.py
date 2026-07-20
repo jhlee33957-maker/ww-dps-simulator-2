@@ -94,6 +94,7 @@ class ActionTimingContract(BaseModel):
     action_id: str
     same_character_input_frame: float | None = Field(default=None, ge=0)
     swap_input_frame: float | None = Field(default=None, ge=0)
+    source_action_end_frame: float | None = Field(default=None, ge=0)
     action_end_frame: float | None = Field(default=None, ge=0)
     global_time_stop_frames: float = Field(default=0, ge=0)
     timing_variants: list[ActionTimingVariant] = Field(default_factory=list)
@@ -127,6 +128,7 @@ class ActionTimingContract(BaseModel):
             if float(self.action_end_frame) < max(
                 float(self.same_character_input_frame),
                 float(self.swap_input_frame),
+                float(self.source_action_end_frame or self.action_end_frame),
             ):
                 raise ValueError("action_end_frame must not precede an input unlock")
         if (
@@ -168,6 +170,26 @@ class ActionTimingContract(BaseModel):
                     raise ValueError("lifecycle_end_frame must cover the last scheduled packet")
         elif float(self.action_end_frame) < last_packet_frame:
             raise ValueError("action_end_frame must cover the last scheduled packet")
+        if self.action_id == "mornye_heavy_inversion":
+            if (
+                self.same_character_input_frame != 86
+                or self.swap_input_frame != 86
+                or self.source_action_end_frame != 78
+                or self.action_end_frame != 86
+                or len(self.scheduled_packet_groups) != 1
+                or self.scheduled_packet_groups[0].scheduled_frames != [66]
+            ):
+                raise ValueError("Mornye Heavy Inversion requires its audited 66F packet and 86F lifecycle")
+        if self.action_id == "mornye_skill_distributed_array":
+            expected = ["mornye_distributed_array_e2_1", "mornye_distributed_array_e2_2", "mornye_distributed_array_e2_3", "mornye_distributed_array_e2_4"]
+            if (
+                self.same_character_input_frame != 60
+                or self.swap_input_frame != 60
+                or self.action_end_frame != 60
+                or [group.packet_group_id for group in self.scheduled_packet_groups] != expected
+                or [group.scheduled_frames for group in self.scheduled_packet_groups] != [[22], [22], [36], [36]]
+            ):
+                raise ValueError("Mornye Distributed Array requires ordered 22F/22F/36F/36F source packets")
         return self
 
     @property
@@ -188,7 +210,7 @@ def select_action_timing(
             variant_source="static_action_timing_contract",
             same_character_input_frame=float(contract.same_character_input_frame),
             swap_input_frame=float(contract.swap_input_frame),
-            source_action_end_frame=action_end_frame,
+            source_action_end_frame=float(contract.source_action_end_frame or action_end_frame),
             lifecycle_end_frame=action_end_frame,
             global_time_stop_frames=contract.global_time_stop_frames,
         )
@@ -257,7 +279,7 @@ def prepare_control_point_action(
             variant_source="static_action_timing_contract",
             same_character_input_frame=float(contract.same_character_input_frame),
             swap_input_frame=float(contract.swap_input_frame),
-            source_action_end_frame=action_end_frame,
+            source_action_end_frame=float(contract.source_action_end_frame or action_end_frame),
             lifecycle_end_frame=action_end_frame,
             global_time_stop_frames=contract.global_time_stop_frames,
         )
@@ -274,6 +296,15 @@ def prepare_control_point_action(
         runtime_action.off_tune_value = 0.0
         runtime_action.resonance_energy_gain = 0.0
         runtime_action.concerto_energy_gain = 0.0
+        # These two actions historically carried their complete payload in the
+        # aggregate action.  Their source-backed packet contracts now own the
+        # Momentum and Observation Marker mutations as well as damage/resources.
+        for key in (
+            "relative_momentum_delta",
+            "consume_relative_momentum",
+            "observation_marker_duration",
+        ):
+            runtime_action.mechanic_effects.pop(key, None)
         if any(
             group.resource_payload.get("rest_mass_application") == "action_start_frame_1_once"
             for group in contract.scheduled_packet_groups
@@ -370,6 +401,31 @@ def start_ongoing_action(
                 "rest_mass_payload": delta,
                 "rest_mass_applied": after - before,
                 "rest_mass_after": after,
+            }
+        )
+    momentum_consumptions = [
+        group.resource_payload
+        for group in contract.scheduled_packet_groups
+        if group.resource_payload.get("relative_momentum_application") == "action_start_consume_once"
+    ]
+    if len(momentum_consumptions) > 1:
+        raise ValueError(f"{action.id!r} has more than one action-start Relative Momentum consumption")
+    if momentum_consumptions:
+        owner_state = state.character_mechanics_state.setdefault(instance.owner_character_id, {})
+        before = float(owner_state.get("relative_momentum", 0.0) or 0.0)
+        owner_state["relative_momentum"] = 0.0
+        state.scheduled_packet_event_log.append(
+            {
+                "event_type": "v124_action_start_payload",
+                "action_instance_id": instance_id,
+                "owner_character_id": instance.owner_character_id,
+                "source_action_id": action.id,
+                "scheduled_frame": 0.0,
+                "scheduled_wall_time": start_wall,
+                "resolved_wall_time": start_wall,
+                "relative_momentum_before": before,
+                "relative_momentum_consumed": before,
+                "relative_momentum_after": 0.0,
             }
         )
     for group in contract.scheduled_packet_groups:

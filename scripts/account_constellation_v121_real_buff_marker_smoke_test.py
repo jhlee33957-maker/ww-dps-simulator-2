@@ -23,8 +23,8 @@ def main() -> None:
     assert mornye.execute_action("mornye_heavy_inversion")
     state = mornye.state.character_mechanics_state["mornye"]
     assert state["observation_marker_active"] is True
-    assert state["observation_marker_remaining"] == 20.0
-    assert mornye.state.interfered_marker_remaining == 20.0
+    assert 29.0 < state["observation_marker_remaining"] < 30.0
+    assert 18.0 < mornye.state.interfered_marker_remaining < 20.0
     assert "mornye_interfered_marker_damage_amp" in {buff.buff_id for buff in mornye.state.active_buffs}
     assert mornye.execute_action("mornye_basic_stage_1")
     marker_hit = mornye.last_action_result.hit_details[0]

@@ -598,16 +598,29 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
             party_hash.update(canonical)
             party_hash.update(b"\0")
         assert party_hash.hexdigest() == "baff722d9ce79cf7f57891c439b7b3fd746ad76e779e4d582eaa51802eba2684"
+        timing_contract = json.loads(zf.read("data/action_timing_contract_v124.json").decode("utf-8-sig"))
+        timing_actions = {item["action_id"]: item for item in timing_contract["actions"]}
+        inversion = timing_actions["mornye_heavy_inversion"]
+        assert (inversion["same_character_input_frame"], inversion["swap_input_frame"], inversion["action_end_frame"]) == (86, 86, 86)
+        assert inversion["source_action_end_frame"] == 78
+        inversion_packet = inversion["scheduled_packet_groups"][0]
+        assert inversion_packet["scheduled_frames"] == [66]
+        assert inversion_packet["damage_payload"]["damage_multiplier_per_packet"] == 2.5846
+        assert inversion_packet["marker_payload"]["observation_marker_duration"] == 30.0
+        array = timing_actions["mornye_skill_distributed_array"]
+        assert (array["same_character_input_frame"], array["swap_input_frame"], array["action_end_frame"]) == (60, 60, 60)
+        assert [group["scheduled_frames"] for group in array["scheduled_packet_groups"]] == [[22], [22], [36], [36]]
+        assert all(group["damage_payload"]["damage_multiplier_per_packet"] == 0.3977 for group in array["scheduled_packet_groups"])
 
-        assert progress["status"]["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(10).zip"
+        assert progress["status"]["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(11).zip"
         assert progress["status"]["latest_externally_reviewed_archive_sha256"] == (
-            "bb18b83842a4ccf698254c6b6ae9d6da16d87ba4e05dee53b31ddb2d8b6521ff"
+            "4dd56f71f959025c429a9cf65fa64d81afc70a9c97591454cc525a635598802b"
         )
         assert progress["status"]["current_candidate"] == "124"
-        assert progress["status"]["current_task"] == "candidate-124 timing-core-2b-mornye-basic-tails"
-        assert progress["status"]["current_candidate_stage"] == "timing-core-2b-mornye-basic-tails"
+        assert progress["status"]["current_task"] == "candidate-124 timing-core-2c-mornye-inversion-distributed-array"
+        assert progress["status"]["current_candidate_stage"] == "timing-core-2c-mornye-inversion-distributed-array"
         timing_core = progress["candidate_124_timing_core_1"]
-        assert timing_core["stage"] == "timing-core-2b-mornye-basic-tails"
+        assert timing_core["stage"] == "timing-core-2c-mornye-inversion-distributed-array"
         assert timing_core["stage_2a_externally_verified"] is False
         assert timing_core["stage_2b_externally_verified"] is False
         assert timing_core["timing_contract_layer_created"] is True
@@ -652,13 +665,21 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         assert timing_core["mornye_basic_detachable_tails_implemented"] is True
         assert timing_core["mornye_basic_legacy_aggregate_duplicate_removed"] is True
         assert timing_core["mornye_basic_payload_parity_preserved"] is True
+        assert timing_core["mornye_heavy_inversion_packet_timing_implemented"] is True
+        assert timing_core["mornye_observation_marker_applied_at_66f"] is True
+        assert timing_core["mornye_heavy_inversion_payload_parity_preserved"] is True
+        assert timing_core["distributed_array_1f_22f_36f_schedule_implemented"] is True
+        assert timing_core["distributed_array_per_packet_payload_implemented"] is True
+        assert timing_core["mornye_s3_starfield_cast_triggers_independent"] is True
+        assert timing_core["distributed_array_complete_first_cast_concerto"] == 51
+        assert timing_core["distributed_array_legacy_aggregate_duplicates_removed"] is True
         assert timing_core["scheduled_packet_chronological_interleaving"] is True
         assert timing_core["scheduled_packet_actual_time_processing"] is True
         assert timing_core["scheduled_packet_source_attribution"] is True
         assert timing_core["scheduled_packet_retroactive_backdating"] is False
         assert timing_core["mornye_tail_before_overlapping_aemeath_hit_verified"] is True
-        assert timing_core["candidate_124_smoke_test_count"] == 39
-        assert timing_core["authoritative_fresh_extraction_command_count"] == 235
+        assert timing_core["candidate_124_smoke_test_count"] == 49
+        assert timing_core["authoritative_fresh_extraction_command_count"] == 247
         assert timing_core["remaining_p0_packet_action_corrections"] == "pending"
         assert timing_core["benchmark_observation_version"] == "slot_generic_mechanics_v5"
         assert timing_core["benchmark_observation_shape"] == 314
@@ -1112,6 +1133,16 @@ def candidate_124_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/mornye_basic_packet_swap_persistence_v124_smoke_test.py"],
         [sys.executable, "scripts/mornye_basic_packet_no_duplicate_payload_v124_smoke_test.py"],
         [sys.executable, "scripts/project_progress_timing_core_stage2b_v124_alignment_smoke_test.py"],
+        [sys.executable, "scripts/mornye_heavy_inversion_packet_contract_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_heavy_inversion_marker_timing_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_heavy_inversion_payload_parity_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_heavy_inversion_no_duplicate_payload_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_distributed_array_packet_contract_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_distributed_array_payload_parity_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_distributed_array_cast_trigger_independence_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_distributed_array_no_duplicate_payload_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_stage2c_prefix_readiness_v124_smoke_test.py"],
+        [sys.executable, "scripts/project_progress_timing_core_stage2c_v124_alignment_smoke_test.py"],
         [sys.executable, "scripts/scheduled_packet_chronological_interleaving_v124_smoke_test.py"],
         [sys.executable, "scripts/scheduled_packet_actual_processing_time_v124_smoke_test.py"],
         [sys.executable, "scripts/scheduled_packet_source_attribution_v124_smoke_test.py"],

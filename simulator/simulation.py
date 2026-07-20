@@ -39,6 +39,7 @@ from simulator.account_constellation_effects import (
     build_account_tune_response_damage_context,
     build_account_observation_labels,
     build_account_observation_values,
+    apply_mornye_s1_interfered_marker,
     initialize_account_constellation_state,
     initialize_account_runtime_state,
     collect_constellation_diagnostics,
@@ -1141,6 +1142,43 @@ class Simulation:
             packet.owner_character_id,
             "source_confirmed_positive_gains",
         )
+        momentum_delta = float(packet.resource_payload.get("relative_momentum_gain", 0.0) or 0.0)
+        if momentum_delta:
+            owner_state = self.state.character_mechanics_state.setdefault(packet.owner_character_id, {})
+            before = float(owner_state.get("relative_momentum", 0.0) or 0.0)
+            cap = float(owner_state.get("relative_momentum_cap", 100.0) or 100.0)
+            after = max(0.0, min(cap, before + momentum_delta))
+            owner_state["relative_momentum"] = after
+            event.update(
+                {
+                    "relative_momentum_before": before,
+                    "relative_momentum_payload": momentum_delta,
+                    "relative_momentum_gained": after - before,
+                    "relative_momentum_after": after,
+                }
+            )
+        marker_duration = float(packet.marker_payload.get("observation_marker_duration", 0.0) or 0.0)
+        if marker_duration:
+            owner_state = self.state.character_mechanics_state.setdefault(packet.owner_character_id, {})
+            # execute_action advances its combat-duration bookkeeping after it
+            # drains chronological packets.  Offset that later full-action tick
+            # so a marker born at the source hit loses only post-hit time.
+            owner_state["observation_marker_remaining"] = marker_duration + max(
+                0.0, float(packet.scheduled_wall_time) - float(self.state.current_time)
+            )
+            owner_state["observation_marker_active"] = True
+            event.update(
+                {
+                    "observation_marker_applied": True,
+                    "observation_marker_duration": marker_duration,
+                    "observation_marker_source": packet.marker_payload.get("observation_marker_source"),
+                }
+            )
+            marker_event = apply_mornye_s1_interfered_marker(self)
+            if marker_event is not None:
+                event["account_constellation_marker_event"] = marker_event
+        if self.state.scheduled_effect_event_log:
+            self.state.scheduled_effect_event_log[-1].update(event)
         return event
 
     @staticmethod
@@ -1373,6 +1411,10 @@ class Simulation:
             record_diagnostics=record_diagnostics,
         )
         self._apply_source_packet_ledger_to_result(result)
+        if any(event.get("observation_marker_applied") for event in result.scheduled_damage_events):
+            result.observation_marker_applied = True
+            result.observation_marker_active = True
+            result.observation_marker_remaining = self._mornye_observation_marker_remaining()
         self.last_action_result = result
         if not result.valid:
             return False
