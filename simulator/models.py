@@ -411,6 +411,7 @@ class OngoingActionInstance(BaseModel):
     selected_swap_input_frame: float | None = Field(default=None, ge=0)
     effective_swap_lock_until_wall_time: float | None = Field(default=None, ge=0)
     effective_swap_lock_source: str | None = None
+    selected_mode_snapshot: str | None = None
     selected_source_action_end_frame: float | None = Field(default=None, ge=0)
     selected_lifecycle_end_frame: float | None = Field(default=None, ge=0)
     selected_global_time_stop_frames: float | None = Field(default=None, ge=0)

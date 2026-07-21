@@ -471,6 +471,11 @@ CANDIDATE_124_REQUIRED_FILES = (
     "scripts/lynae_polychrome_leap_stage2_stage3_overlap_v124_smoke_test.py",
     "scripts/lynae_polychrome_leap_stage2_payload_parity_v124_smoke_test.py",
     "scripts/lynae_polychrome_leap_stage2_source_attribution_no_duplicate_v124_smoke_test.py",
+    "scripts/lynae_visual_impact_mode_timing_contract_v124_smoke_test.py",
+    "scripts/lynae_visual_impact_landing_packet_v124_smoke_test.py",
+    "scripts/lynae_visual_impact_payload_parity_no_duplicate_v124_smoke_test.py",
+    "scripts/lynae_visual_impact_completion_mechanics_timing_v124_smoke_test.py",
+    "scripts/lynae_visual_impact_natural_route_v124_smoke_test.py",
 )
 EXPECTED_TIMING_AUDIT_V2_JSON_SHA256 = "f50f06ca092b60f5019b460f87072b88ba05168be4a8fbd94a599b48a327dd9b"
 EXPECTED_TIMING_AUDIT_V2_XLSX_SHA256 = "fc95ddd3860eb1ff249fd2314069c73c6608f065ed444a62fc395349e3ba3d2d"
@@ -770,9 +775,9 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         assert timing_core["scheduled_packet_source_attribution"] is True
         assert timing_core["scheduled_packet_retroactive_backdating"] is False
         assert timing_core["mornye_tail_before_overlapping_aemeath_hit_verified"] is True
-        assert timing_core["candidate_124_smoke_test_count"] == 63
-        assert timing_core["candidate_124_fresh_extraction_command_count"] == 65
-        assert timing_core["authoritative_fresh_extraction_command_count"] == 263
+        assert timing_core["candidate_124_smoke_test_count"] == 68
+        assert timing_core["candidate_124_fresh_extraction_command_count"] == 70
+        assert timing_core["authoritative_fresh_extraction_command_count"] == 268
         assert timing_core["vivid_packet_families_implemented"] is True
         assert timing_core["vivid_measured_1f_swap_persistence_implemented"] is True
         assert timing_core["vivid_off_field_resource_credit_implemented"] is True
@@ -1300,6 +1305,11 @@ def candidate_124_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/lynae_polychrome_leap_stage2_stage3_overlap_v124_smoke_test.py"],
         [sys.executable, "scripts/lynae_polychrome_leap_stage2_payload_parity_v124_smoke_test.py"],
         [sys.executable, "scripts/lynae_polychrome_leap_stage2_source_attribution_no_duplicate_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_visual_impact_mode_timing_contract_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_visual_impact_landing_packet_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_visual_impact_payload_parity_no_duplicate_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_visual_impact_completion_mechanics_timing_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_visual_impact_natural_route_v124_smoke_test.py"],
     ]
 
 

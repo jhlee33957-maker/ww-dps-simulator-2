@@ -6,7 +6,7 @@ from pathlib import Path
 def main() -> None:
     progress = json.loads((Path(__file__).resolve().parents[1] / "PROJECT_PROGRESS_STATE.json").read_text(encoding="utf-8-sig"))
     current = progress["candidate_history"][-1]
-    assert current["candidate"] == "124" and current["stage"] == "timing-core-2d-b1-lynae-polychrome-leap-stage2"
+    assert current["candidate"] == "124" and current["stage"] == "timing-core-2d-b2-lynae-visual-impact"
     assert current["mornye_heavy_inversion_packet_timing_implemented"] is True
     assert current["distributed_array_complete_first_cast_concerto"] == 51
     assert current["vivid_packet_families_implemented"] is True

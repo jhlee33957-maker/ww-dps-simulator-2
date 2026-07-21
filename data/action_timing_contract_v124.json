@@ -385,6 +385,23 @@
       "confidence": "high"
     },
     {
+      "action_id": "lynae_visual_impact",
+      "scheduled_payload_end_frame": 45,
+      "global_time_stop_frames": 0,
+      "defer_legacy_payload_to_scheduled_packets": true,
+      "timing_variants": [
+        {"variant_id": "tune_rupture", "condition": {"lynae_resonance_mode": "tune_rupture"}, "same_character_input_frame": 53, "swap_input_frame": null, "unresolved_swap_runtime_fallback_frame": 53, "source_action_end_frame": 42, "lifecycle_end_frame": 53},
+        {"variant_id": "tune_strain", "condition": {"lynae_resonance_mode": "tune_strain"}, "same_character_input_frame": 59, "swap_input_frame": null, "unresolved_swap_runtime_fallback_frame": 59, "source_action_end_frame": 42, "lifecycle_end_frame": 59}
+      ],
+      "scheduled_packet_groups": [
+        {"packet_group_id": "tune_strain_landing", "mode_selection": "tune_strain", "scheduled_frames": [45], "source_frame_row_ref": "角色-女!A2681:AT2681", "source_coefficient_resource_row_ref": "dmg!A2465:DF2465", "packet_count": 1, "payload_partition_rules": {"damage": "source_row_per_occurrence", "off_tune": "source_row_per_occurrence", "resonance_energy": "source_row_per_occurrence", "concerto": "source_row_per_occurrence", "rest_mass": "none"}, "damage_payload": {"damage_multiplier_per_packet": 12.1672, "damage_multiplier_total": 12.1672}, "resource_payload": {"off_tune_per_packet": 609.6, "off_tune_total": 609.6, "off_tune_application": "source_row_per_occurrence", "resonance_energy_per_packet": 14.05, "resonance_energy_total": 14.05, "concerto_per_packet": 14.58, "concerto_total": 14.58, "rest_mass_total": 0.0, "rest_mass_application": "none"}, "detachable": true, "cancel_on_swap": false, "persist_after_swap": true, "source_refs": ["角色-女!A2681:AT2681", "dmg!A2465:DF2465"], "source_type": "workbook_audit_v2", "confidence": "high"},
+        {"packet_group_id": "tune_rupture_landing", "mode_selection": "tune_rupture", "scheduled_frames": [45], "source_frame_row_ref": "角色-女!A2682:AT2682", "source_coefficient_resource_row_ref": "dmg!A2464:DF2464", "packet_count": 1, "payload_partition_rules": {"damage": "source_row_per_occurrence", "off_tune": "source_row_per_occurrence", "resonance_energy": "source_row_per_occurrence", "concerto": "source_row_per_occurrence", "rest_mass": "none"}, "damage_payload": {"damage_multiplier_per_packet": 12.1672, "damage_multiplier_total": 12.1672}, "resource_payload": {"off_tune_per_packet": 609.6, "off_tune_total": 609.6, "off_tune_application": "source_row_per_occurrence", "resonance_energy_per_packet": 14.05, "resonance_energy_total": 14.05, "concerto_per_packet": 14.58, "concerto_total": 14.58, "rest_mass_total": 0.0, "rest_mass_application": "none"}, "detachable": true, "cancel_on_swap": false, "persist_after_swap": true, "source_refs": ["角色-女!A2682:AT2682", "dmg!A2464:DF2464"], "source_type": "workbook_audit_v2", "confidence": "high"}
+      ],
+      "source_refs": ["角色-女!A2679:AT2679", "角色-女!A2680:AT2680", "角色-女!A2681:AT2681", "角色-女!A2682:AT2682", "dmg!A2464:DF2464", "dmg!A2465:DF2465"],
+      "source_type": "workbook_audit_v2",
+      "confidence": "high"
+    },
+    {
       "action_id": "lynae_outro_lets_hit_the_road",
       "same_character_input_frame": 0,
       "swap_input_frame": 0,

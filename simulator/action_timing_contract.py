@@ -125,7 +125,8 @@ class ScheduledPacketGroupContract(BaseModel):
 class TimingVariantCondition(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
-    observation_state_active: bool
+    observation_state_active: bool | None = None
+    lynae_resonance_mode: str | None = None
 
 
 class ActionTimingVariant(BaseModel):
@@ -134,8 +135,9 @@ class ActionTimingVariant(BaseModel):
     variant_id: str = Field(min_length=1)
     condition: TimingVariantCondition
     same_character_input_frame: float = Field(ge=0)
-    swap_input_frame: float = Field(ge=0)
-    source_action_end_frame: float = Field(ge=0)
+    swap_input_frame: float | None = Field(default=None, ge=0)
+    unresolved_swap_runtime_fallback_frame: float | None = Field(default=None, ge=0)
+    source_action_end_frame: float | None = Field(default=None, ge=0)
     lifecycle_end_frame: float = Field(ge=0)
     global_time_stop_frames: float = Field(default=0, ge=0)
     legacy_hit_frame_overrides: list[float] = Field(default_factory=list)
@@ -143,9 +145,9 @@ class ActionTimingVariant(BaseModel):
     @model_validator(mode="after")
     def validate_lifecycle(self) -> "ActionTimingVariant":
         required_end = max(
-            self.source_action_end_frame,
+            self.source_action_end_frame or 0.0,
             self.same_character_input_frame,
-            self.swap_input_frame,
+            self.swap_input_frame or self.unresolved_swap_runtime_fallback_frame or 0.0,
         )
         if self.lifecycle_end_frame < required_end:
             raise ValueError("lifecycle_end_frame must cover source end and both input unlocks")
@@ -400,6 +402,39 @@ class ActionTimingContract(BaseModel):
                     or group.resource_payload.get("concerto_per_packet") != 0.9
                 ):
                     raise ValueError("Lynae Polychrome Leap Stage 2 requires exact non-detachable packet payloads")
+        if self.action_id == "lynae_visual_impact":
+            expected = {
+                "tune_rupture": (53, "tune_rupture_landing", "角色-女!A2682:AT2682", "dmg!A2464:DF2464"),
+                "tune_strain": (59, "tune_strain_landing", "角色-女!A2681:AT2681", "dmg!A2465:DF2465"),
+            }
+            if self.scheduled_payload_end_frame != 45 or self.global_time_stop_frames != 0 or not self.defer_legacy_payload_to_scheduled_packets:
+                raise ValueError("Lynae Visual Impact requires its 45F scheduled landing payload")
+            by_mode = {item.condition.lynae_resonance_mode: item for item in self.timing_variants}
+            groups = {item.mode_selection: item for item in self.scheduled_packet_groups}
+            if set(by_mode) != set(expected) or set(groups) != set(expected):
+                raise ValueError("Lynae Visual Impact requires exactly one timing and packet branch per resonance mode")
+            for mode, (control, group_id, frame_ref, damage_ref) in expected.items():
+                variant, group = by_mode[mode], groups[mode]
+                if (
+                    variant.same_character_input_frame != control
+                    or variant.swap_input_frame is not None
+                    or variant.unresolved_swap_runtime_fallback_frame != control
+                    or variant.source_action_end_frame != 42
+                    or variant.lifecycle_end_frame != control
+                    or group.packet_group_id != group_id
+                    or group.scheduled_frames != [45]
+                    or group.source_frame_row_ref != frame_ref
+                    or group.source_coefficient_resource_row_ref != damage_ref
+                    or group.packet_count != 1
+                    or not group.detachable
+                    or group.cancel_on_swap
+                    or not group.persist_after_swap
+                    or group.damage_payload.get("damage_multiplier_per_packet") != 12.1672
+                    or group.resource_payload.get("off_tune_per_packet") != 609.6
+                    or group.resource_payload.get("resonance_energy_per_packet") != 14.05
+                    or group.resource_payload.get("concerto_per_packet") != 14.58
+                ):
+                    raise ValueError("Lynae Visual Impact requires exact selected-mode landing timing and payload")
         _validate_v124_stage2c_source_refs(self)
         _validate_lynae_outro_source_refs(self)
         return self
@@ -441,15 +476,21 @@ def select_action_timing(
     owner_character_id = str(action.character_id or state.active_character_id)
     marker_state = state.character_mechanics_state.get(owner_character_id, {})
     observation_state_active = bool(marker_state.get("observation_marker_active", False))
+    resonance_mode = marker_state.get("lynae_resonance_mode")
     matching = [
         variant
         for variant in contract.timing_variants
-        if variant.condition.observation_state_active is observation_state_active
+        if (
+            (variant.condition.observation_state_active is None
+             or variant.condition.observation_state_active is observation_state_active)
+            and (variant.condition.lynae_resonance_mode is None
+                 or variant.condition.lynae_resonance_mode == resonance_mode)
+        )
     ]
     if len(matching) != 1:
         raise ValueError(
             f"Expected exactly one timing variant for {action.id!r} and "
-            f"observation_state_active={observation_state_active}, got {len(matching)}"
+            f"observation_state_active={observation_state_active}, resonance_mode={resonance_mode!r}, got {len(matching)}"
         )
     variant = matching[0]
     return SelectedActionTiming(
@@ -457,6 +498,7 @@ def select_action_timing(
         variant_source=f"character_mechanics_state.{owner_character_id}.observation_marker_active",
         same_character_input_frame=variant.same_character_input_frame,
         swap_input_frame=variant.swap_input_frame,
+        unresolved_swap_runtime_fallback_frame=variant.unresolved_swap_runtime_fallback_frame,
         source_action_end_frame=variant.source_action_end_frame,
         lifecycle_end_frame=variant.lifecycle_end_frame,
         global_time_stop_frames=variant.global_time_stop_frames,
@@ -670,7 +712,8 @@ def start_ongoing_action(
             }
         )
     owner_state = state.character_mechanics_state.setdefault(instance.owner_character_id, {})
-    selected_mode = owner_state.get("lynae_resonance_mode") if action.id == "lynae_polychrome_leap_stage_2" else None
+    selected_mode = owner_state.get("lynae_resonance_mode")
+    instance.selected_mode_snapshot = selected_mode
     for group in contract.scheduled_packet_groups:
         if group.mode_selection is not None and group.mode_selection != selected_mode:
             continue

@@ -3246,9 +3246,9 @@ class Simulation:
             "high_syntony_field_healing_multiplier_metadata_only": False,
         }
 
-    def _lynae_spray_paint_snapshot_metadata(self) -> dict[str, Any]:
+    def _lynae_spray_paint_snapshot_metadata(self, mode_snapshot: str | None = None) -> dict[str, Any]:
         lynae_state = self.state.character_mechanics_state.setdefault("lynae", {})
-        mode = str(lynae_state.get("lynae_resonance_mode", "tune_rupture") or "tune_rupture")
+        mode = str(mode_snapshot or lynae_state.get("lynae_resonance_mode", "tune_rupture") or "tune_rupture")
         if mode == "tune_strain":
             shift_state = "tune_strain_shifting"
             source_row = "角色-女!2683"
@@ -3285,7 +3285,14 @@ class Simulation:
     def _schedule_lynae_spray_paint_status_field(self, action: ActionData, result: Any) -> dict[str, Any]:
         if action.id != "lynae_visual_impact" or "lynae" not in self.characters:
             return {}
-        metadata = self._lynae_spray_paint_snapshot_metadata()
+        action_instance_id = (action.mechanic_effects or {}).get("v124_action_instance_id")
+        ongoing = next(
+            (item for item in self.state.ongoing_action_instances if item.action_instance_id == action_instance_id),
+            None,
+        )
+        metadata = self._lynae_spray_paint_snapshot_metadata(
+            getattr(ongoing, "selected_mode_snapshot", None),
+        )
         lynae_character = self.characters.get("lynae")
         lynae_sequence = int(getattr(lynae_character, "sequence", 0) or 0)
         account_sequence_active = bool(self.account_simulation_scope) and bool(

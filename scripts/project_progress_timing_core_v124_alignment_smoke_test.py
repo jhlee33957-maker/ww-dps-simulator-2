@@ -13,18 +13,18 @@ def main() -> None:
     assert status["latest_externally_verified_baseline"] == "123"
     assert status["latest_verified_archive"] == "ww-dps-simulator-2-123(3).zip"
     assert status["latest_verified_archive_sha256"] == "2d6c396df09645c4a304acebffea88d41555a6de05ed41d6ee7867648a5712f8"
-    assert status["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(21).zip"
-    assert status["latest_externally_reviewed_archive_sha256"] == "48280980bfe52d5c3e7966f5b87aa9dad996da26c06cedb3c7197d47778ccc41"
+    assert status["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(23).zip"
+    assert status["latest_externally_reviewed_archive_sha256"] == "05c123f96681a9ec7fbc5bace5673e8d0d4891fa886e56a590424dbc058fd6b7"
     assert status["current_candidate"] == "124"
-    assert status["current_task"] == "candidate-124 timing-core-2d-b1-lynae-polychrome-leap-stage2"
-    assert status["current_candidate_stage"] == "timing-core-2d-b1-lynae-polychrome-leap-stage2"
+    assert status["current_task"] == "candidate-124 timing-core-2d-b2-lynae-visual-impact"
+    assert status["current_candidate_stage"] == "timing-core-2d-b2-lynae-visual-impact"
     assert status["current_task_status"] == "candidate_pending_external_review"
     assert status["current_task_expected_next_archive"] == "ww-dps-simulator-2-124.zip"
     assert status["candidate_expected_next_archive"] == "ww-dps-simulator-2-124.zip"
 
     stage = progress["candidate_124_timing_core_1"]
     assert stage["status"] == "candidate_pending_external_review"
-    assert stage["stage"] == "timing-core-2d-b1-lynae-polychrome-leap-stage2"
+    assert stage["stage"] == "timing-core-2d-b2-lynae-visual-impact"
     assert stage["stage_2a_externally_verified"] is False
     assert stage["timing_contract_layer_created"] is True
     assert stage["ongoing_action_instances_created"] is True
@@ -92,7 +92,7 @@ def main() -> None:
     assert history["status"] == "candidate_pending_external_review"
     assert history["external_review_status"] == "pending"
     assert history["external_verification_claimed"] is False
-    assert history["stage"] == "timing-core-2d-b1-lynae-polychrome-leap-stage2"
+    assert history["stage"] == "timing-core-2d-b2-lynae-visual-impact"
     assert history["stage_2a_externally_verified"] is False
     assert history["mornye_liberation_state_timing_implemented"] is True
     assert history["lynae_leap_stage_2_swap_input_source_status"] == "unresolved"
