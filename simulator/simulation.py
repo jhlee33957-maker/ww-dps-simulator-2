@@ -1269,6 +1269,57 @@ class Simulation:
                 self._add_scheduled_packet_to_damage_summary(action_log_entry, event)
                 action_log_entry["total_damage_after"] = self.state.total_damage
                 break
+        self._sync_outgoing_transition_source_summary(action_instance_id)
+
+    def _build_outgoing_transition_source_summary(self, action_instance_id: str) -> dict[str, Any]:
+        ledger = self.state.scheduled_packet_source_ledger.get(action_instance_id, {})
+        instance = next(
+            (item for item in self.state.ongoing_action_instances if item.action_instance_id == action_instance_id),
+            None,
+        )
+        return {
+            "auxiliary_transition_source_action": True,
+            "policy_step": False,
+            "action_time": 0.0,
+            "combat_time_cost": 0.0,
+            "action_instance_id": action_instance_id,
+            "source_action_id": instance.source_action_id if instance is not None else None,
+            "owner_character_id": instance.owner_character_id if instance is not None else None,
+            "start_wall_time": instance.start_wall_time if instance is not None else None,
+            "start_combat_time": instance.start_combat_time if instance is not None else None,
+            "scheduled_damage": float(ledger.get("scheduled_damage", 0.0) or 0.0),
+            "scheduled_damage_events": list(ledger.get("events", [])),
+            "scheduled_packet_count": len(ledger.get("events", [])),
+        }
+
+    def _sync_outgoing_transition_source_summary(self, action_instance_id: str) -> None:
+        summary = self._build_outgoing_transition_source_summary(action_instance_id)
+        for entry in self.timeline:
+            if entry.outgoing_scheduled_action_instance_id == action_instance_id:
+                entry.outgoing_scheduled_source_summary = summary
+        for action_log_entry in self.state.action_log:
+            if action_log_entry.get("outgoing_scheduled_action_instance_id") == action_instance_id:
+                action_log_entry["outgoing_scheduled_source_summary"] = summary
+
+    def _start_outgoing_transition_scheduled_action(self, transition_resolution: Any) -> None:
+        action_id = transition_resolution.outgoing_scheduled_action_id
+        if not action_id or transition_resolution.outgoing_scheduled_action_started:
+            return
+        action = self.actions.get(action_id)
+        contract = self.action_timing_contracts.get(action_id)
+        if action is None or contract is None:
+            raise ValueError(f"Outgoing transition source {action_id!r} requires an action and timing contract")
+        selected_timing = select_action_timing(self.state, action, contract)
+        instance = start_ongoing_action(self.state, action, contract, selected_timing)
+        transition_resolution.outgoing_scheduled_action_started = True
+        transition_resolution.outgoing_scheduled_action_instance_id = instance.action_instance_id
+        self.state.scheduled_packet_source_ledger.setdefault(
+            instance.action_instance_id,
+            {"scheduled_damage": 0.0, "events": [], "healing_events": [], "materialized": True},
+        )
+        transition_resolution.outgoing_scheduled_source_summary = (
+            self._build_outgoing_transition_source_summary(instance.action_instance_id)
+        )
 
     def _apply_source_packet_ledger_to_result(self, result: Any) -> None:
         if not result.action_instance_id:
@@ -1369,6 +1420,12 @@ class Simulation:
             action = self.resolve_action(selected_action)
         if not self.is_resolved_action_available(action):
             return False
+
+        if transition_resolution is not None:
+            # The Lynae Outro is an auxiliary outgoing source.  Starting it here
+            # schedules packets at the shared transition timestamp without creating
+            # a policy action or delaying the incoming transition host action.
+            self._start_outgoing_transition_scheduled_action(transition_resolution)
 
         timing_contract = self.action_timing_contracts.get(action.id)
         action_instance_id: str
@@ -2452,6 +2509,14 @@ class Simulation:
         result.incoming_intro_trigger_classification = transition_resolution.incoming_intro_trigger_classification
         result.incoming_intro_source_damage_label = transition_resolution.incoming_intro_source_damage_label
         result.outgoing_outro_applied = transition_resolution.outgoing_outro_applied
+        result.outgoing_scheduled_action_id = transition_resolution.outgoing_scheduled_action_id
+        result.outgoing_scheduled_action_started = transition_resolution.outgoing_scheduled_action_started
+        result.outgoing_scheduled_action_instance_id = transition_resolution.outgoing_scheduled_action_instance_id
+        result.outgoing_scheduled_source_summary = (
+            self._build_outgoing_transition_source_summary(transition_resolution.outgoing_scheduled_action_instance_id)
+            if transition_resolution.outgoing_scheduled_action_instance_id
+            else dict(transition_resolution.outgoing_scheduled_source_summary)
+        )
         result.transition_events = transition_resolution.transition_events
         result.transition_event_details = transition_resolution.transition_events
         result.outgoing_outro_event_id = transition_resolution.outgoing_outro_event_id

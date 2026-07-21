@@ -381,6 +381,8 @@ class ScheduledPacketInstance(BaseModel):
     cancel_on_generic_owner_exit: bool = False
     persist_after_swap: bool = False
     persist_on_vivid_pre_179_swap_branch: bool = False
+    transition_source_persistence: bool = False
+    cancel_on_outro_transition: bool = False
     resolved: bool = False
     cancelled: bool = False
     resolved_wall_time: float | None = None
@@ -412,6 +414,7 @@ class OngoingActionInstance(BaseModel):
     selected_global_time_stop_frames: float | None = Field(default=None, ge=0)
     selected_legacy_hit_frame_overrides: list[float] = Field(default_factory=list)
     persist_after_swap: bool = False
+    transition_source_persistence: bool = False
     persistence_cutoff_wall_time: float | None = Field(default=None, ge=0)
     scheduled_packet_instances: list[str] = Field(default_factory=list)
     owner_character_persistent: bool = False
@@ -938,6 +941,10 @@ class ActionResult(BaseModel):
     incoming_intro_trigger_classification: str | None = None
     incoming_intro_source_damage_label: str | None = None
     outgoing_outro_applied: bool = False
+    outgoing_scheduled_action_id: str | None = None
+    outgoing_scheduled_action_started: bool = False
+    outgoing_scheduled_action_instance_id: str | None = None
+    outgoing_scheduled_source_summary: dict[str, Any] = Field(default_factory=dict)
     transition_events: list[dict[str, Any]] = Field(default_factory=list)
     transition_event_details: list[dict[str, Any]] = Field(default_factory=list)
     outgoing_outro_event_id: str | None = None
@@ -1411,6 +1418,10 @@ class TimelineEntry(BaseModel):
     incoming_intro_trigger_classification: str | None = None
     incoming_intro_source_damage_label: str | None = None
     outgoing_outro_applied: bool = False
+    outgoing_scheduled_action_id: str | None = None
+    outgoing_scheduled_action_started: bool = False
+    outgoing_scheduled_action_instance_id: str | None = None
+    outgoing_scheduled_source_summary: dict[str, Any] = Field(default_factory=dict)
     transition_events: list[dict[str, Any]] = Field(default_factory=list)
     transition_event_details: list[dict[str, Any]] = Field(default_factory=list)
     outgoing_outro_event_id: str | None = None

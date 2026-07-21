@@ -1923,6 +1923,18 @@ def execute_scheduled_action_packet(
     )
     packet_action.concerto_energy_gain = float(packet.resource_payload.get("concerto_energy_gain", 0.0) or 0.0)
     packet_action.off_tune_value = float(packet.resource_payload.get("off_tune_value", 0.0) or 0.0)
+    transition_source_damage_enabled = (
+        packet.transition_source_persistence
+        and source_action.action_type == "swap"
+        and source_action.id == "lynae_outro_lets_hit_the_road"
+        and damage_multiplier > 0.0
+    )
+    if transition_source_damage_enabled:
+        packet_action.mechanic_effects = {
+            **(packet_action.mechanic_effects or {}),
+            "transition_action": True,
+            "auxiliary_transition_source_action": True,
+        }
     source_hit = source_action.effective_hits()[0]
     packet_action.hits = [
         source_hit.model_copy(
@@ -1973,6 +1985,7 @@ def execute_scheduled_action_packet(
             direct_amp_summary.get("direct_damage_taken_amp_total_bonus_damage", 0.0) or 0.0
         ),
         "ordinary_player_action_side_effects_applied": False,
+        "transition_source_damage_enabled": transition_source_damage_enabled,
         **action_damage_bonus_context,
     }
     state.total_damage += damage
@@ -2255,6 +2268,10 @@ def timeline_entry(result: ActionResult, active_character_name: str) -> Timeline
         incoming_intro_trigger_classification=result.incoming_intro_trigger_classification,
         incoming_intro_source_damage_label=result.incoming_intro_source_damage_label,
         outgoing_outro_applied=result.outgoing_outro_applied,
+        outgoing_scheduled_action_id=result.outgoing_scheduled_action_id,
+        outgoing_scheduled_action_started=result.outgoing_scheduled_action_started,
+        outgoing_scheduled_action_instance_id=result.outgoing_scheduled_action_instance_id,
+        outgoing_scheduled_source_summary=result.outgoing_scheduled_source_summary,
         transition_events=result.transition_events,
         transition_event_details=result.transition_event_details,
         outgoing_outro_event_id=result.outgoing_outro_event_id,

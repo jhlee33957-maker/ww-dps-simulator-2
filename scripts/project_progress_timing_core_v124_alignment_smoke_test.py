@@ -13,18 +13,18 @@ def main() -> None:
     assert status["latest_externally_verified_baseline"] == "123"
     assert status["latest_verified_archive"] == "ww-dps-simulator-2-123(3).zip"
     assert status["latest_verified_archive_sha256"] == "2d6c396df09645c4a304acebffea88d41555a6de05ed41d6ee7867648a5712f8"
-    assert status["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(15).zip"
-    assert status["latest_externally_reviewed_archive_sha256"] == "c1ebaeb010692e0428382d7ddeca6342f7ea6a4bf5a0167bdedee63379fefff6"
+    assert status["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(18).zip"
+    assert status["latest_externally_reviewed_archive_sha256"] == "5ca068ca55627b812a0e1703d658048ebc16ae1ef59e3b14ca76a1892116d919"
     assert status["current_candidate"] == "124"
-    assert status["current_task"] == "candidate-124 timing-core-2d-a1-lynae-vivid-runtime"
-    assert status["current_candidate_stage"] == "timing-core-2d-a1-lynae-vivid-runtime"
+    assert status["current_task"] == "candidate-124 timing-core-2d-a2-lynae-outro-concurrent-packets"
+    assert status["current_candidate_stage"] == "timing-core-2d-a2-lynae-outro-concurrent-packets"
     assert status["current_task_status"] == "candidate_pending_external_review"
     assert status["current_task_expected_next_archive"] == "ww-dps-simulator-2-124.zip"
     assert status["candidate_expected_next_archive"] == "ww-dps-simulator-2-124.zip"
 
     stage = progress["candidate_124_timing_core_1"]
     assert stage["status"] == "candidate_pending_external_review"
-    assert stage["stage"] == "timing-core-2d-a1-lynae-vivid-runtime"
+    assert stage["stage"] == "timing-core-2d-a2-lynae-outro-concurrent-packets"
     assert stage["stage_2a_externally_verified"] is False
     assert stage["timing_contract_layer_created"] is True
     assert stage["ongoing_action_instances_created"] is True
@@ -79,7 +79,7 @@ def main() -> None:
     assert history["status"] == "candidate_pending_external_review"
     assert history["external_review_status"] == "pending"
     assert history["external_verification_claimed"] is False
-    assert history["stage"] == "timing-core-2d-a1-lynae-vivid-runtime"
+    assert history["stage"] == "timing-core-2d-a2-lynae-outro-concurrent-packets"
     assert history["stage_2a_externally_verified"] is False
     assert history["mornye_liberation_state_timing_implemented"] is True
     assert history["candidate_zip_created"] is True

@@ -641,16 +641,43 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         assert vivid_first["persist_after_swap"] is False
         assert vivid_first["persist_on_vivid_pre_179_swap_branch"] is True
         assert (vivid_second["detachable"], vivid_second["cancel_on_swap"], vivid_second["persist_after_swap"]) == (True, False, True)
+        outro = timing_actions["lynae_outro_lets_hit_the_road"]
+        outro_sheet = "\u89d2\u8272-\u5973"
+        outro_refs = [
+            f"{outro_sheet}!A2699:AT2699",
+            f"{outro_sheet}!A2700:AT2700",
+            f"{outro_sheet}!A2701:AT2701",
+            "dmg!A2486:DF2486",
+            "dmg!A2487:DF2487",
+            "verified_transition_runtime:lynae_outro_zero_time",
+        ]
+        assert outro["source_refs"] == outro_refs
+        outro_first, outro_second = outro["scheduled_packet_groups"]
+        assert outro_first["source_frame_row_ref"] == outro_refs[1]
+        assert outro_first["source_refs"] == [outro_refs[1], outro_refs[3]]
+        assert outro_second["source_frame_row_ref"] == outro_refs[2]
+        assert outro_second["source_refs"] == [outro_refs[2], outro_refs[4]]
+        assert all("?" not in ref and "\ufffd" not in ref and "\ufeff" not in ref for ref in outro_refs)
+        outro_ref_paths = (
+            "data/action_timing_contract_v124.json",
+            "simulator/action_timing_contract.py",
+            "scripts/lynae_outro_packet_contract_v124_smoke_test.py",
+            "scripts/evaluation_event_source_damage_attribution_smoke_test.py",
+        )
+        forbidden_outro_refs = tuple(f"{outro_sheet}?A{row}" for row in (2699, 2700, 2701))
+        for relative_path in outro_ref_paths:
+            source_text = zf.read(relative_path).decode("utf-8")
+            assert not any(ref in source_text for ref in forbidden_outro_refs), relative_path
 
-        assert progress["status"]["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(15).zip"
+        assert progress["status"]["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(18).zip"
         assert progress["status"]["latest_externally_reviewed_archive_sha256"] == (
-            "c1ebaeb010692e0428382d7ddeca6342f7ea6a4bf5a0167bdedee63379fefff6"
+            "5ca068ca55627b812a0e1703d658048ebc16ae1ef59e3b14ca76a1892116d919"
         )
         assert progress["status"]["current_candidate"] == "124"
-        assert progress["status"]["current_task"] == "candidate-124 timing-core-2d-a1-lynae-vivid-runtime"
-        assert progress["status"]["current_candidate_stage"] == "timing-core-2d-a1-lynae-vivid-runtime"
+        assert progress["status"]["current_task"] == "candidate-124 timing-core-2d-a2-lynae-outro-concurrent-packets"
+        assert progress["status"]["current_candidate_stage"] == "timing-core-2d-a2-lynae-outro-concurrent-packets"
         timing_core = progress["candidate_124_timing_core_1"]
-        assert timing_core["stage"] == "timing-core-2d-a1-lynae-vivid-runtime"
+        assert timing_core["stage"] == "timing-core-2d-a2-lynae-outro-concurrent-packets"
         assert timing_core["stage_2a_externally_verified"] is False
         assert timing_core["stage_2b_externally_verified"] is False
         assert timing_core["timing_contract_layer_created"] is True
@@ -708,9 +735,9 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         assert timing_core["scheduled_packet_source_attribution"] is True
         assert timing_core["scheduled_packet_retroactive_backdating"] is False
         assert timing_core["mornye_tail_before_overlapping_aemeath_hit_verified"] is True
-        assert timing_core["candidate_124_smoke_test_count"] == 53
-        assert timing_core["candidate_124_fresh_extraction_command_count"] == 55
-        assert timing_core["authoritative_fresh_extraction_command_count"] == 253
+        assert timing_core["candidate_124_smoke_test_count"] == 57
+        assert timing_core["candidate_124_fresh_extraction_command_count"] == 59
+        assert timing_core["authoritative_fresh_extraction_command_count"] == 257
         assert timing_core["vivid_packet_families_implemented"] is True
         assert timing_core["vivid_measured_1f_swap_persistence_implemented"] is True
         assert timing_core["vivid_off_field_resource_credit_implemented"] is True
@@ -719,7 +746,19 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         assert timing_core["scheduled_packet_equal_timestamp_numeric_ordering"] is True
         assert timing_core["vivid_92f_source_order_invariant_to_prior_packet_history"] is True
         assert timing_core["vivid_row_2697_persistence"] == "measured pre-179 branch only"
-        assert timing_core["lynae_outro_concurrent_packets"] == "pending Stage 2D-A2"
+        assert timing_core["lynae_outro_concurrent_packets"] is True
+        assert timing_core["lynae_outro_transition_action_time_frames"] == 0
+        assert timing_core["lynae_outro_source_lifecycle_frames"] == 181
+        assert timing_core["lynae_outro_packet_families_implemented"] is True
+        assert timing_core["lynae_outro_raw_multiplier_total"] == 1.001
+        assert timing_core["lynae_outro_executable_multiplier_total"] == 1.0
+        assert timing_core["lynae_outro_concurrent_incoming_intro"] is True
+        assert timing_core["lynae_outro_source_attribution"] is True
+        assert timing_core["lynae_outro_legacy_aggregate_removed"] is True
+        assert timing_core["lynae_outro_scheduled_packet_damage_executes"] is True
+        assert timing_core["lynae_outro_scheduled_packet_base_coefficient_total"] == 1.0
+        assert timing_core["lynae_outro_zero_damage_regression"] is False
+        assert timing_core["lynae_outro_source_refs_utf8_exact"] is True
         assert timing_core["remaining_p0_packet_action_corrections"] == "pending"
         assert timing_core["benchmark_observation_version"] == "slot_generic_mechanics_v5"
         assert timing_core["benchmark_observation_shape"] == 314
@@ -1203,6 +1242,10 @@ def candidate_124_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/lynae_vivid_source_attribution_no_duplicate_v124_smoke_test.py"],
         [sys.executable, "scripts/scheduled_packet_equal_timestamp_numeric_order_v124_smoke_test.py"],
         [sys.executable, "scripts/lynae_vivid_92f_source_order_invariance_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_outro_packet_contract_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_outro_concurrent_incoming_intro_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_outro_payload_normalization_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_outro_source_attribution_no_serialization_v124_smoke_test.py"],
     ]
 
 

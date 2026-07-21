@@ -315,6 +315,62 @@
       "source_refs": ["角色-女!A2696:AT2696", "角色-女!A2697:AT2697", "角色-女!A2698:AT2698", "user_measurement:vivid_swap_input_1F"],
       "source_type": "user_measured",
       "confidence": "high"
+    },
+    {
+      "action_id": "lynae_outro_lets_hit_the_road",
+      "same_character_input_frame": 0,
+      "swap_input_frame": 0,
+      "transition_start_frame": 0,
+      "source_control_effective_frame": 153,
+      "source_action_end_frame": 181,
+      "action_end_frame": 181,
+      "global_time_stop_frames": 0,
+      "persist_character_after_swap": false,
+      "transition_source_persistence": true,
+      "defer_legacy_payload_to_scheduled_packets": true,
+      "scheduled_packet_groups": [
+        {
+          "packet_group_id": "row_2700_packet_family",
+          "scheduled_frames": [52, 58, 64, 70, 76, 82, 88, 94, 100, 106, 112, 118],
+          "source_frame_row_ref": "角色-女!A2700:AT2700",
+          "source_coefficient_resource_row_ref": "dmg!A2486:DF2486",
+          "packet_count": 12,
+          "payload_partition_rules": {"damage": "source_row_per_occurrence", "off_tune": "none", "resonance_energy": "none", "concerto": "none", "rest_mass": "none"},
+          "damage_payload": {"source_raw_multiplier_per_packet": 0.0455, "source_raw_multiplier_total": 0.546, "normalization_factor": 0.999000999000999, "damage_multiplier_per_packet": 0.045454545454545456, "damage_multiplier_total": 0.5454545454545454, "executable_multiplier_per_packet": 0.045454545454545456, "executable_multiplier_total": 0.5454545454545454, "self_hitstop_frames_per_successful_occurrence": 2},
+          "resource_payload": {"off_tune_total": 0.0, "off_tune_application": "none", "resonance_energy_total": 0.0, "concerto_total": 0.0, "rest_mass_total": 0.0, "rest_mass_application": "none"},
+          "detachable": false,
+          "cancel_on_swap": false,
+          "cancel_on_generic_owner_exit": false,
+          "persist_after_swap": false,
+          "transition_source_persistence": true,
+          "cancel_on_outro_transition": false,
+          "source_refs": ["角色-女!A2700:AT2700", "dmg!A2486:DF2486"],
+          "source_type": "workbook_audit_v2",
+          "confidence": "high"
+        },
+        {
+          "packet_group_id": "row_2701_packet_family",
+          "scheduled_frames": [92, 98, 104, 110, 116, 122, 128, 134, 140, 146],
+          "source_frame_row_ref": "角色-女!A2701:AT2701",
+          "source_coefficient_resource_row_ref": "dmg!A2487:DF2487",
+          "packet_count": 10,
+          "payload_partition_rules": {"damage": "source_row_per_occurrence", "off_tune": "none", "resonance_energy": "none", "concerto": "none", "rest_mass": "none"},
+          "damage_payload": {"source_raw_multiplier_per_packet": 0.0455, "source_raw_multiplier_total": 0.455, "normalization_factor": 0.999000999000999, "damage_multiplier_per_packet": 0.045454545454545456, "damage_multiplier_total": 0.45454545454545453, "executable_multiplier_per_packet": 0.045454545454545456, "executable_multiplier_total": 0.45454545454545453},
+          "resource_payload": {"off_tune_total": 0.0, "off_tune_application": "none", "resonance_energy_total": 0.0, "concerto_total": 0.0, "rest_mass_total": 0.0, "rest_mass_application": "none"},
+          "detachable": true,
+          "cancel_on_swap": false,
+          "cancel_on_generic_owner_exit": false,
+          "persist_after_swap": true,
+          "transition_source_persistence": true,
+          "cancel_on_outro_transition": false,
+          "source_refs": ["角色-女!A2701:AT2701", "dmg!A2487:DF2487"],
+          "source_type": "workbook_audit_v2",
+          "confidence": "high"
+        }
+      ],
+      "source_refs": ["角色-女!A2699:AT2699", "角色-女!A2700:AT2700", "角色-女!A2701:AT2701", "dmg!A2486:DF2486", "dmg!A2487:DF2487", "verified_transition_runtime:lynae_outro_zero_time"],
+      "source_type": "workbook_audit_v2_plus_verified_transition_runtime",
+      "confidence": "high"
     }
   ]
 }

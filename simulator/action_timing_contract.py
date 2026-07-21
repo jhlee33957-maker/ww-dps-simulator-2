@@ -53,6 +53,39 @@ def _validate_v124_stage2c_source_refs(contract: "ActionTimingContract") -> None
             raise ValueError(f"Missing exact source refs for {group.packet_group_id!r}")
 
 
+def _validate_lynae_outro_source_refs(contract: "ActionTimingContract") -> None:
+    if contract.action_id != "lynae_outro_lets_hit_the_road":
+        return
+    expected_action_refs = [
+        f"{ROLE_FEMALE_SHEET}!A2699:AT2699",
+        f"{ROLE_FEMALE_SHEET}!A2700:AT2700",
+        f"{ROLE_FEMALE_SHEET}!A2701:AT2701",
+        "dmg!A2486:DF2486",
+        "dmg!A2487:DF2487",
+        "verified_transition_runtime:lynae_outro_zero_time",
+    ]
+    expected_groups = {
+        "row_2700_packet_family": (f"{ROLE_FEMALE_SHEET}!A2700:AT2700", "dmg!A2486:DF2486"),
+        "row_2701_packet_family": (f"{ROLE_FEMALE_SHEET}!A2701:AT2701", "dmg!A2487:DF2487"),
+    }
+    if contract.source_refs != expected_action_refs:
+        raise ValueError("Lynae Outro requires exact UTF-8 action source references")
+    if len(contract.scheduled_packet_groups) != len(expected_groups):
+        raise ValueError("Lynae Outro requires exactly its two audited packet families")
+    for group in contract.scheduled_packet_groups:
+        expected = expected_groups.get(group.packet_group_id)
+        if expected is None:
+            raise ValueError(f"Unexpected Lynae Outro packet group {group.packet_group_id!r}")
+        frame_ref, damage_ref = expected
+        if group.source_frame_row_ref != frame_ref or group.source_coefficient_resource_row_ref != damage_ref:
+            raise ValueError(f"Invalid UTF-8/source row join for {group.packet_group_id!r}")
+        if group.source_refs != [frame_ref, damage_ref]:
+            raise ValueError(f"Lynae Outro requires exact source refs for {group.packet_group_id!r}")
+        for ref in [*group.source_refs, *contract.source_refs]:
+            if "?" in ref or any(ord(char) < 32 or ord(char) == 0xFFFD for char in ref) or "\ufeff" in ref:
+                raise ValueError(f"Invalid delimiter/control/replacement/BOM character in source ref {ref!r}")
+
+
 class ScheduledPacketGroupContract(BaseModel):
     packet_group_id: str
     scheduled_frames: list[float] = Field(min_length=1)
@@ -67,6 +100,8 @@ class ScheduledPacketGroupContract(BaseModel):
     cancel_on_generic_owner_exit: bool = False
     persist_after_swap: bool = False
     persist_on_vivid_pre_179_swap_branch: bool = False
+    transition_source_persistence: bool = False
+    cancel_on_outro_transition: bool = False
     source_refs: list[str] = Field(default_factory=list)
     source_frame_row_ref: str | None = None
     source_coefficient_resource_row_ref: str | None = None
@@ -142,6 +177,9 @@ class ActionTimingContract(BaseModel):
     global_time_stop_frames: float = Field(default=0, ge=0)
     timing_variants: list[ActionTimingVariant] = Field(default_factory=list)
     persist_character_after_swap: bool = False
+    transition_source_persistence: bool = False
+    transition_start_frame: float | None = Field(default=None, ge=0)
+    source_control_effective_frame: float | None = Field(default=None, ge=0)
     persist_if_swapped_before_frame: float | None = Field(default=None, ge=0)
     defer_legacy_payload_to_scheduled_packets: bool = False
     scheduled_packet_groups: list[ScheduledPacketGroupContract] = Field(default_factory=list)
@@ -258,7 +296,38 @@ class ActionTimingContract(BaseModel):
                 or not second_group.persist_after_swap
             ):
                 raise ValueError("Lynae Vivid requires measured 1F swap, 153F same-input, and 181F lifecycle contracts")
+        if self.action_id == "lynae_outro_lets_hit_the_road":
+            expected_frames = [
+                [52, 58, 64, 70, 76, 82, 88, 94, 100, 106, 112, 118],
+                [92, 98, 104, 110, 116, 122, 128, 134, 140, 146],
+            ]
+            first_group, second_group = self.scheduled_packet_groups
+            if (
+                self.same_character_input_frame != 0
+                or self.swap_input_frame != 0
+                or self.source_action_end_frame != 181
+                or self.action_end_frame != 181
+                or self.global_time_stop_frames != 0
+                or self.transition_start_frame != 0
+                or self.source_control_effective_frame != 153
+                or not self.transition_source_persistence
+                or not self.defer_legacy_payload_to_scheduled_packets
+                or [group.scheduled_frames for group in self.scheduled_packet_groups] != expected_frames
+                or first_group.packet_count != 12
+                or second_group.packet_count != 10
+                or first_group.detachable
+                or first_group.cancel_on_swap
+                or first_group.cancel_on_generic_owner_exit
+                or not first_group.transition_source_persistence
+                or first_group.cancel_on_outro_transition
+                or not second_group.detachable
+                or second_group.cancel_on_swap
+                or not second_group.persist_after_swap
+                or not second_group.transition_source_persistence
+            ):
+                raise ValueError("Lynae Outro requires its zero-time transition source and exact 22-packet contract")
         _validate_v124_stage2c_source_refs(self)
+        _validate_lynae_outro_source_refs(self)
         return self
 
     @property
@@ -435,6 +504,7 @@ def start_ongoing_action(
         selected_global_time_stop_frames=selected_timing.global_time_stop_frames,
         selected_legacy_hit_frame_overrides=list(selected_timing.legacy_hit_frame_overrides),
         persist_after_swap=contract.persist_character_after_swap,
+        transition_source_persistence=contract.transition_source_persistence,
         persistence_cutoff_wall_time=(
             start_wall + contract.persist_if_swapped_before_frame / FPS
             if contract.persist_if_swapped_before_frame is not None
@@ -554,6 +624,8 @@ def start_ongoing_action(
                 cancel_on_generic_owner_exit=group.cancel_on_generic_owner_exit,
                 persist_after_swap=group.persist_after_swap,
                 persist_on_vivid_pre_179_swap_branch=group.persist_on_vivid_pre_179_swap_branch,
+                transition_source_persistence=group.transition_source_persistence,
+                cancel_on_outro_transition=group.cancel_on_outro_transition,
                 source_refs=list(group.source_refs),
                 source_type=group.source_type or contract.source_type,
                 confidence=group.confidence or contract.confidence,
@@ -610,7 +682,7 @@ def handle_character_swap(state: CombatState, outgoing_character_id: str) -> Non
             instance.persistence_cutoff_wall_time is not None
             and now + 1e-9 < instance.persistence_cutoff_wall_time
         )
-        if instance.persist_after_swap or before_cutoff:
+        if instance.persist_after_swap or instance.transition_source_persistence or before_cutoff:
             instance.owner_character_persistent = True
             instance.owner_character_executing = True
             persistent.add(outgoing_character_id)

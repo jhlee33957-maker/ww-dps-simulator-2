@@ -75,6 +75,10 @@ class TransitionResolution:
     transition_events: list[dict[str, Any]] = field(default_factory=list)
     transition_action: ActionData | None = None
     outgoing_outro_event_id: str | None = None
+    outgoing_scheduled_action_id: str | None = None
+    outgoing_scheduled_action_started: bool = False
+    outgoing_scheduled_action_instance_id: str | None = None
+    outgoing_scheduled_source_summary: dict[str, Any] = field(default_factory=dict)
     incoming_intro_event_id: str | None = None
     warnings: list[str] = field(default_factory=list)
 
@@ -403,6 +407,14 @@ def resolve_party_transition(
         transition_events=events,
         transition_action=transition_action,
         outgoing_outro_event_id=outgoing_event.get("action_id") if outgoing_event else None,
+        outgoing_scheduled_action_id=(
+            "lynae_outro_lets_hit_the_road"
+            if outgoing_ready
+            and outgoing_character_id == "lynae"
+            and outgoing_event is not None
+            and outgoing_event.get("action_id") == "lynae_outro_lets_hit_the_road"
+            else None
+        ),
         incoming_intro_event_id=incoming_qte_candidate_id if incoming_qte_applied else incoming_event.get("action_id") if incoming_event else None,
         warnings=warnings,
     )
