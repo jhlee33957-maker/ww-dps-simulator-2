@@ -1243,6 +1243,9 @@ class Simulation:
             action_instance_id,
             {"scheduled_damage": 0.0, "events": [], "healing_events": [], "materialized": False},
         )
+        if event.get("resource_event_only"):
+            ledger.setdefault("resource_events", []).append(event)
+            return
         if event.get("event_type") == "scheduled_heal":
             ledger.setdefault("healing_events", []).append(event)
             for entry in self.timeline:

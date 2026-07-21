@@ -465,6 +465,12 @@ CANDIDATE_124_REQUIRED_FILES = (
     "scripts/scheduled_packet_actual_processing_time_v124_smoke_test.py",
     "scripts/scheduled_packet_source_attribution_v124_smoke_test.py",
     "scripts/scheduled_packet_off_tune_ordering_v124_smoke_test.py",
+    "scripts/lynae_polychrome_leap_stage2_packet_contract_v124_smoke_test.py",
+    "scripts/lynae_polychrome_leap_stage2_generic_swap_cancels_tail_v124_smoke_test.py",
+    "scripts/lynae_polychrome_leap_stage2_frame1_resource_timing_v124_smoke_test.py",
+    "scripts/lynae_polychrome_leap_stage2_stage3_overlap_v124_smoke_test.py",
+    "scripts/lynae_polychrome_leap_stage2_payload_parity_v124_smoke_test.py",
+    "scripts/lynae_polychrome_leap_stage2_source_attribution_no_duplicate_v124_smoke_test.py",
 )
 EXPECTED_TIMING_AUDIT_V2_JSON_SHA256 = "f50f06ca092b60f5019b460f87072b88ba05168be4a8fbd94a599b48a327dd9b"
 EXPECTED_TIMING_AUDIT_V2_XLSX_SHA256 = "fc95ddd3860eb1ff249fd2314069c73c6608f065ed444a62fc395349e3ba3d2d"
@@ -669,15 +675,44 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
             source_text = zf.read(relative_path).decode("utf-8")
             assert not any(ref in source_text for ref in forbidden_outro_refs), relative_path
 
-        assert progress["status"]["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(18).zip"
+        leap_stage_2 = timing_actions["lynae_polychrome_leap_stage_2"]
+        leap_refs = [
+            f"角色-女!A2647:AT2647",
+            f"角色-女!A2648:AT2648",
+            f"角色-女!A2649:AT2649",
+            f"角色-女!A2650:AT2650",
+            f"角色-女!A2651:AT2651",
+            "dmg!A2474:DF2474",
+        ]
+        assert leap_stage_2["source_refs"] == leap_refs
+        assert (
+            leap_stage_2["same_character_input_frame"],
+            leap_stage_2["swap_input_frame"],
+            leap_stage_2["unresolved_swap_runtime_fallback_frame"],
+            leap_stage_2["source_action_end_frame"],
+            leap_stage_2["action_end_frame"],
+            leap_stage_2["scheduled_payload_end_frame"],
+        ) == (36, None, 36, None, 42, 42)
+        leap_resource, leap_rupture, leap_strain = leap_stage_2["scheduled_packet_groups"]
+        assert leap_resource["scheduled_frames"] == [1]
+        assert leap_resource["resource_payload"] == {
+            "resource_event_kind": "lynae_true_color_lumiflow",
+            "true_color_delta": 1,
+            "lumiflow_delta": -40,
+        }
+        assert [group["scheduled_frames"] for group in (leap_rupture, leap_strain)] == [[12, 18, 24, 30, 36, 42]] * 2
+        assert [group["mode_selection"] for group in (leap_rupture, leap_strain)] == ["tune_rupture", "tune_strain"]
+        assert all(group["source_coefficient_resource_row_ref"] == "dmg!A2474:DF2474" for group in (leap_rupture, leap_strain))
+
+        assert progress["status"]["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(21).zip"
         assert progress["status"]["latest_externally_reviewed_archive_sha256"] == (
-            "5ca068ca55627b812a0e1703d658048ebc16ae1ef59e3b14ca76a1892116d919"
+            "48280980bfe52d5c3e7966f5b87aa9dad996da26c06cedb3c7197d47778ccc41"
         )
         assert progress["status"]["current_candidate"] == "124"
-        assert progress["status"]["current_task"] == "candidate-124 timing-core-2d-a2-lynae-outro-concurrent-packets"
-        assert progress["status"]["current_candidate_stage"] == "timing-core-2d-a2-lynae-outro-concurrent-packets"
+        assert progress["status"]["current_task"] == "candidate-124 timing-core-2d-b1-lynae-polychrome-leap-stage2"
+        assert progress["status"]["current_candidate_stage"] == "timing-core-2d-b1-lynae-polychrome-leap-stage2"
         timing_core = progress["candidate_124_timing_core_1"]
-        assert timing_core["stage"] == "timing-core-2d-a2-lynae-outro-concurrent-packets"
+        assert timing_core["stage"] == "timing-core-2d-b1-lynae-polychrome-leap-stage2"
         assert timing_core["stage_2a_externally_verified"] is False
         assert timing_core["stage_2b_externally_verified"] is False
         assert timing_core["timing_contract_layer_created"] is True
@@ -735,9 +770,9 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         assert timing_core["scheduled_packet_source_attribution"] is True
         assert timing_core["scheduled_packet_retroactive_backdating"] is False
         assert timing_core["mornye_tail_before_overlapping_aemeath_hit_verified"] is True
-        assert timing_core["candidate_124_smoke_test_count"] == 57
-        assert timing_core["candidate_124_fresh_extraction_command_count"] == 59
-        assert timing_core["authoritative_fresh_extraction_command_count"] == 257
+        assert timing_core["candidate_124_smoke_test_count"] == 63
+        assert timing_core["candidate_124_fresh_extraction_command_count"] == 65
+        assert timing_core["authoritative_fresh_extraction_command_count"] == 263
         assert timing_core["vivid_packet_families_implemented"] is True
         assert timing_core["vivid_measured_1f_swap_persistence_implemented"] is True
         assert timing_core["vivid_off_field_resource_credit_implemented"] is True
@@ -759,6 +794,19 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         assert timing_core["lynae_outro_scheduled_packet_base_coefficient_total"] == 1.0
         assert timing_core["lynae_outro_zero_damage_regression"] is False
         assert timing_core["lynae_outro_source_refs_utf8_exact"] is True
+        for field in (
+            "lynae_leap_stage_2_packet_frames_implemented",
+            "lynae_leap_stage_2_frame_1_resource_timing_implemented",
+            "lynae_leap_stage_2_same_character_tail_overlap_implemented",
+            "lynae_leap_stage_2_payload_parity_implemented",
+            "lynae_leap_stage_2_source_attribution_implemented",
+            "lynae_leap_stage_2_legacy_aggregate_removed",
+            "lynae_leap_stage_2_generic_swap_tail_cancellation",
+        ):
+            assert timing_core[field] is True, field
+        assert timing_core["lynae_leap_stage_2_swap_input_source_status"] == "unresolved"
+        assert timing_core["lynae_leap_stage_2_effective_legacy_swap_fallback_frames"] == 36
+        assert timing_core["lynae_leap_stage_2_fabricated_42f_swap_lock"] is False
         assert timing_core["remaining_p0_packet_action_corrections"] == "pending"
         assert timing_core["benchmark_observation_version"] == "slot_generic_mechanics_v5"
         assert timing_core["benchmark_observation_shape"] == 314
@@ -1246,6 +1294,12 @@ def candidate_124_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/lynae_outro_concurrent_incoming_intro_v124_smoke_test.py"],
         [sys.executable, "scripts/lynae_outro_payload_normalization_v124_smoke_test.py"],
         [sys.executable, "scripts/lynae_outro_source_attribution_no_serialization_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_polychrome_leap_stage2_packet_contract_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_polychrome_leap_stage2_generic_swap_cancels_tail_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_polychrome_leap_stage2_frame1_resource_timing_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_polychrome_leap_stage2_stage3_overlap_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_polychrome_leap_stage2_payload_parity_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_polychrome_leap_stage2_source_attribution_no_duplicate_v124_smoke_test.py"],
     ]
 
 

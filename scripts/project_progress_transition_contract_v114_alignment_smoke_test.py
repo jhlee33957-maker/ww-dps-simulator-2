@@ -30,7 +30,7 @@ def main() -> None:
         "2d6c396df09645c4a304acebffea88d41555a6de05ed41d6ee7867648a5712f8"
     )
     assert status["current_candidate"] == "124"
-    assert status["current_candidate_stage"] == "timing-core-2d-a2-lynae-outro-concurrent-packets"
+    assert status["current_candidate_stage"] == "timing-core-2d-b1-lynae-polychrome-leap-stage2"
     assert status["current_task_status"] == "candidate_pending_external_review"
     assert status["do_not_treat_current_task_as_complete_until_reviewed"] is True
 

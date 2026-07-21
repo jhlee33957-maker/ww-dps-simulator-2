@@ -13,18 +13,18 @@ def main() -> None:
     assert status["latest_externally_verified_baseline"] == "123"
     assert status["latest_verified_archive"] == "ww-dps-simulator-2-123(3).zip"
     assert status["latest_verified_archive_sha256"] == "2d6c396df09645c4a304acebffea88d41555a6de05ed41d6ee7867648a5712f8"
-    assert status["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(18).zip"
-    assert status["latest_externally_reviewed_archive_sha256"] == "5ca068ca55627b812a0e1703d658048ebc16ae1ef59e3b14ca76a1892116d919"
+    assert status["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(21).zip"
+    assert status["latest_externally_reviewed_archive_sha256"] == "48280980bfe52d5c3e7966f5b87aa9dad996da26c06cedb3c7197d47778ccc41"
     assert status["current_candidate"] == "124"
-    assert status["current_task"] == "candidate-124 timing-core-2d-a2-lynae-outro-concurrent-packets"
-    assert status["current_candidate_stage"] == "timing-core-2d-a2-lynae-outro-concurrent-packets"
+    assert status["current_task"] == "candidate-124 timing-core-2d-b1-lynae-polychrome-leap-stage2"
+    assert status["current_candidate_stage"] == "timing-core-2d-b1-lynae-polychrome-leap-stage2"
     assert status["current_task_status"] == "candidate_pending_external_review"
     assert status["current_task_expected_next_archive"] == "ww-dps-simulator-2-124.zip"
     assert status["candidate_expected_next_archive"] == "ww-dps-simulator-2-124.zip"
 
     stage = progress["candidate_124_timing_core_1"]
     assert stage["status"] == "candidate_pending_external_review"
-    assert stage["stage"] == "timing-core-2d-a2-lynae-outro-concurrent-packets"
+    assert stage["stage"] == "timing-core-2d-b1-lynae-polychrome-leap-stage2"
     assert stage["stage_2a_externally_verified"] is False
     assert stage["timing_contract_layer_created"] is True
     assert stage["ongoing_action_instances_created"] is True
@@ -49,6 +49,19 @@ def main() -> None:
         "global_time_stop": 300,
     }
     assert stage["remaining_p0_packet_action_corrections"] == "pending"
+    for field in (
+        "lynae_leap_stage_2_packet_frames_implemented",
+        "lynae_leap_stage_2_frame_1_resource_timing_implemented",
+        "lynae_leap_stage_2_same_character_tail_overlap_implemented",
+        "lynae_leap_stage_2_payload_parity_implemented",
+        "lynae_leap_stage_2_source_attribution_implemented",
+        "lynae_leap_stage_2_legacy_aggregate_removed",
+        "lynae_leap_stage_2_generic_swap_tail_cancellation",
+    ):
+        assert stage[field] is True, field
+    assert stage["lynae_leap_stage_2_swap_input_source_status"] == "unresolved"
+    assert stage["lynae_leap_stage_2_effective_legacy_swap_fallback_frames"] == 36
+    assert stage["lynae_leap_stage_2_fabricated_42f_swap_lock"] is False
     assert stage["benchmark_observation_version"] == "slot_generic_mechanics_v5"
     assert stage["benchmark_observation_shape"] == 314
     assert stage["account_observation_version"] == "slot_account_constellation_single_boss_v6"
@@ -79,9 +92,13 @@ def main() -> None:
     assert history["status"] == "candidate_pending_external_review"
     assert history["external_review_status"] == "pending"
     assert history["external_verification_claimed"] is False
-    assert history["stage"] == "timing-core-2d-a2-lynae-outro-concurrent-packets"
+    assert history["stage"] == "timing-core-2d-b1-lynae-polychrome-leap-stage2"
     assert history["stage_2a_externally_verified"] is False
     assert history["mornye_liberation_state_timing_implemented"] is True
+    assert history["lynae_leap_stage_2_swap_input_source_status"] == "unresolved"
+    assert history["lynae_leap_stage_2_effective_legacy_swap_fallback_frames"] == 36
+    assert history["lynae_leap_stage_2_generic_swap_tail_cancellation"] is True
+    assert history["lynae_leap_stage_2_fabricated_42f_swap_lock"] is False
     assert history["candidate_zip_created"] is True
     assert history["review_archive_created"] is True
     assert history["review_archive_name"] == "ww-dps-simulator-2-124.zip"

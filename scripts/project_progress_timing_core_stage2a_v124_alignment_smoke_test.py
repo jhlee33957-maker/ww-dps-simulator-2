@@ -10,14 +10,14 @@ ROOT = Path(__file__).resolve().parents[1]
 def main() -> None:
     progress = json.loads((ROOT / "PROJECT_PROGRESS_STATE.json").read_text(encoding="utf-8"))
     status = progress["status"]
-    assert status["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(18).zip"
-    assert status["latest_externally_reviewed_archive_sha256"] == "5ca068ca55627b812a0e1703d658048ebc16ae1ef59e3b14ca76a1892116d919"
+    assert status["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(21).zip"
+    assert status["latest_externally_reviewed_archive_sha256"] == "48280980bfe52d5c3e7966f5b87aa9dad996da26c06cedb3c7197d47778ccc41"
     assert status["current_candidate"] == "124"
-    assert status["current_candidate_stage"] == "timing-core-2d-a2-lynae-outro-concurrent-packets"
+    assert status["current_candidate_stage"] == "timing-core-2d-b1-lynae-polychrome-leap-stage2"
     assert status["current_task_status"] == "candidate_pending_external_review"
 
     stage = progress["candidate_124_timing_core_1"]
-    assert stage["stage"] == "timing-core-2d-a2-lynae-outro-concurrent-packets"
+    assert stage["stage"] == "timing-core-2d-b1-lynae-polychrome-leap-stage2"
     assert stage["status"] == "candidate_pending_external_review"
     assert stage["stage_2a_externally_verified"] is False
     assert stage["mornye_liberation_state_timing_implemented"] is True
@@ -50,7 +50,7 @@ def main() -> None:
         assert stage[field] is False, field
 
     history = next(item for item in progress["candidate_history"] if item.get("candidate") == "124")
-    assert history["stage"] == "timing-core-2d-a2-lynae-outro-concurrent-packets"
+    assert history["stage"] == "timing-core-2d-b1-lynae-polychrome-leap-stage2"
     assert history["mornye_liberation_state_timing_implemented"] is True
     assert history["account_first_cycle_executed"] is False
     assert history["account_120_second_baseline_executed"] is False

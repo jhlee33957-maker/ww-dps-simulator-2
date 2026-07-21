@@ -109,6 +109,7 @@ class ScheduledPacketGroupContract(BaseModel):
     payload_partition_rules: dict[str, str] = Field(default_factory=dict)
     source_type: str | None = None
     confidence: str | None = None
+    mode_selection: str | None = None
 
     @model_validator(mode="after")
     def validate_frames(self) -> "ScheduledPacketGroupContract":
@@ -157,21 +158,42 @@ class SelectedActionTiming(BaseModel):
     variant_id: str | None = None
     variant_source: str
     same_character_input_frame: float = Field(ge=0)
-    swap_input_frame: float = Field(ge=0)
-    source_action_end_frame: float = Field(ge=0)
+    swap_input_frame: float | None = Field(default=None, ge=0)
+    unresolved_swap_runtime_fallback_frame: float | None = Field(default=None, ge=0)
+    source_action_end_frame: float | None = Field(default=None, ge=0)
     lifecycle_end_frame: float = Field(ge=0)
     global_time_stop_frames: float = Field(default=0, ge=0)
     legacy_hit_frame_overrides: list[float] = Field(default_factory=list)
 
     @property
     def first_control_frame(self) -> float:
-        return min(self.same_character_input_frame, self.swap_input_frame)
+        return min(
+            self.same_character_input_frame,
+            self.swap_input_frame if self.swap_input_frame is not None else self.same_character_input_frame,
+        )
+
+    @property
+    def effective_swap_unlock_frame(self) -> float:
+        if self.swap_input_frame is not None:
+            return self.swap_input_frame
+        if self.unresolved_swap_runtime_fallback_frame is not None:
+            return self.unresolved_swap_runtime_fallback_frame
+        raise ValueError("unresolved swap input requires an explicit runtime fallback")
+
+    @property
+    def effective_swap_unlock_source(self) -> str:
+        if self.swap_input_frame is not None:
+            return "source_confirmed_swap_input_frame"
+        if self.unresolved_swap_runtime_fallback_frame is not None:
+            return "unresolved_swap_same_character_control_fallback"
+        raise ValueError("unresolved swap input requires an explicit runtime fallback")
 
 
 class ActionTimingContract(BaseModel):
     action_id: str
     same_character_input_frame: float | None = Field(default=None, ge=0)
     swap_input_frame: float | None = Field(default=None, ge=0)
+    unresolved_swap_runtime_fallback_frame: float | None = Field(default=None, ge=0)
     source_action_end_frame: float | None = Field(default=None, ge=0)
     action_end_frame: float | None = Field(default=None, ge=0)
     global_time_stop_frames: float = Field(default=0, ge=0)
@@ -182,6 +204,7 @@ class ActionTimingContract(BaseModel):
     source_control_effective_frame: float | None = Field(default=None, ge=0)
     persist_if_swapped_before_frame: float | None = Field(default=None, ge=0)
     defer_legacy_payload_to_scheduled_packets: bool = False
+    scheduled_payload_end_frame: float | None = Field(default=None, ge=0)
     scheduled_packet_groups: list[ScheduledPacketGroupContract] = Field(default_factory=list)
     source_refs: list[str] = Field(default_factory=list)
     source_type: str
@@ -203,7 +226,19 @@ class ActionTimingContract(BaseModel):
             conditions = [variant.condition.model_dump_json() for variant in self.timing_variants]
             if len(conditions) != len(set(conditions)):
                 raise ValueError("timing variant conditions must be deterministic and unique")
+        elif self.action_id == "lynae_polychrome_leap_stage_2":
+            if (
+                self.same_character_input_frame != 36
+                or self.swap_input_frame is not None
+                or self.unresolved_swap_runtime_fallback_frame != 36
+                or self.source_action_end_frame is not None
+                or self.action_end_frame != 42
+                or self.scheduled_payload_end_frame != 42
+            ):
+                raise ValueError("Lynae Polychrome Leap Stage 2 requires its exact 36F control and unresolved swap/source end")
         else:
+            if self.unresolved_swap_runtime_fallback_frame is not None:
+                raise ValueError("only unresolved swap contracts may define a runtime fallback")
             if any(value is None for value in static_values):
                 raise ValueError("static timing contracts require input unlock and action end frames")
             if float(self.action_end_frame) < max(
@@ -326,6 +361,45 @@ class ActionTimingContract(BaseModel):
                 or not second_group.transition_source_persistence
             ):
                 raise ValueError("Lynae Outro requires its zero-time transition source and exact 22-packet contract")
+        if self.action_id == "lynae_polychrome_leap_stage_2":
+            expected_damage_frames = [12, 18, 24, 30, 36, 42]
+            expected_groups = {
+                "frame_1_true_color_lumiflow": None,
+                "tune_rupture_packet_family": "tune_rupture",
+                "tune_strain_packet_family": "tune_strain",
+            }
+            if (
+                not self.defer_legacy_payload_to_scheduled_packets
+                or self.global_time_stop_frames != 0
+                or [group.packet_group_id for group in self.scheduled_packet_groups] != list(expected_groups)
+            ):
+                raise ValueError("Lynae Polychrome Leap Stage 2 requires its source-backed scheduled packet contract")
+            for group in self.scheduled_packet_groups:
+                if group.mode_selection != expected_groups[group.packet_group_id]:
+                    raise ValueError("Lynae Polychrome Leap Stage 2 mode selection must remain mutually exclusive")
+            resource_group, rupture_group, strain_group = self.scheduled_packet_groups
+            if (
+                resource_group.scheduled_frames != [1]
+                or not resource_group.damage_payload.get("placeholder")
+                or resource_group.resource_payload.get("resource_event_kind") != "lynae_true_color_lumiflow"
+                or resource_group.resource_payload.get("true_color_delta") != 1
+                or resource_group.resource_payload.get("lumiflow_delta") != -40
+            ):
+                raise ValueError("Lynae Polychrome Leap Stage 2 requires its exact 1F resource event")
+            for group in (rupture_group, strain_group):
+                if (
+                    group.scheduled_frames != expected_damage_frames
+                    or group.packet_count != 6
+                    or group.detachable
+                    or group.persist_after_swap
+                    or not group.cancel_on_generic_owner_exit
+                    or group.damage_payload.get("damage_multiplier_per_packet") != 0.169
+                    or group.damage_payload.get("damage_multiplier_total") != 1.014
+                    or group.resource_payload.get("off_tune_per_packet") != 8.0
+                    or group.resource_payload.get("resonance_energy_per_packet") != 0.38
+                    or group.resource_payload.get("concerto_per_packet") != 0.9
+                ):
+                    raise ValueError("Lynae Polychrome Leap Stage 2 requires exact non-detachable packet payloads")
         _validate_v124_stage2c_source_refs(self)
         _validate_lynae_outro_source_refs(self)
         return self
@@ -334,6 +408,10 @@ class ActionTimingContract(BaseModel):
     def first_control_frame(self) -> float:
         if self.timing_variants:
             raise ValueError("state-dependent timing requires variant selection")
+        if self.swap_input_frame is None:
+            if self.unresolved_swap_runtime_fallback_frame is None:
+                raise ValueError("unresolved swap input requires an explicit runtime fallback")
+            return min(float(self.same_character_input_frame), float(self.unresolved_swap_runtime_fallback_frame))
         return min(float(self.same_character_input_frame), float(self.swap_input_frame))
 
 
@@ -347,8 +425,15 @@ def select_action_timing(
         return SelectedActionTiming(
             variant_source="static_action_timing_contract",
             same_character_input_frame=float(contract.same_character_input_frame),
-            swap_input_frame=float(contract.swap_input_frame),
-            source_action_end_frame=float(contract.source_action_end_frame or action_end_frame),
+            swap_input_frame=(float(contract.swap_input_frame) if contract.swap_input_frame is not None else None),
+            unresolved_swap_runtime_fallback_frame=(
+                float(contract.unresolved_swap_runtime_fallback_frame)
+                if contract.unresolved_swap_runtime_fallback_frame is not None
+                else None
+            ),
+            source_action_end_frame=(
+                float(contract.source_action_end_frame) if contract.source_action_end_frame is not None else None
+            ),
             lifecycle_end_frame=action_end_frame,
             global_time_stop_frames=contract.global_time_stop_frames,
         )
@@ -419,8 +504,15 @@ def prepare_control_point_action(
         selected_timing = SelectedActionTiming(
             variant_source="static_action_timing_contract",
             same_character_input_frame=float(contract.same_character_input_frame),
-            swap_input_frame=float(contract.swap_input_frame),
-            source_action_end_frame=float(contract.source_action_end_frame or action_end_frame),
+            swap_input_frame=(float(contract.swap_input_frame) if contract.swap_input_frame is not None else None),
+            unresolved_swap_runtime_fallback_frame=(
+                float(contract.unresolved_swap_runtime_fallback_frame)
+                if contract.unresolved_swap_runtime_fallback_frame is not None
+                else None
+            ),
+            source_action_end_frame=(
+                float(contract.source_action_end_frame) if contract.source_action_end_frame is not None else None
+            ),
             lifecycle_end_frame=action_end_frame,
             global_time_stop_frames=contract.global_time_stop_frames,
         )
@@ -484,6 +576,7 @@ def start_ongoing_action(
     instance_id = f"action-instance-v124-{state.action_instance_next_order}:{action.id}"
     start_wall = float(state.current_time)
     start_combat = float(state.combat_time)
+    effective_swap_unlock_frame = selected_timing.effective_swap_unlock_frame
     instance = OngoingActionInstance(
         action_instance_id=instance_id,
         owner_character_id=str(action.character_id or state.active_character_id),
@@ -491,14 +584,20 @@ def start_ongoing_action(
         start_wall_time=start_wall,
         start_combat_time=start_combat,
         same_character_lock_until_wall_time=start_wall + selected_timing.same_character_input_frame / FPS,
-        swap_lock_until_wall_time=start_wall + selected_timing.swap_input_frame / FPS,
+        swap_lock_until_wall_time=start_wall + effective_swap_unlock_frame / FPS,
         action_end_wall_time=start_wall + selected_timing.lifecycle_end_frame / FPS,
-        source_action_end_wall_time=start_wall + selected_timing.source_action_end_frame / FPS,
+        source_action_end_wall_time=(
+            start_wall + selected_timing.source_action_end_frame / FPS
+            if selected_timing.source_action_end_frame is not None
+            else None
+        ),
         lifecycle_end_wall_time=start_wall + selected_timing.lifecycle_end_frame / FPS,
         selected_timing_variant_id=selected_timing.variant_id,
         selected_timing_variant_source=selected_timing.variant_source,
         selected_same_character_input_frame=selected_timing.same_character_input_frame,
         selected_swap_input_frame=selected_timing.swap_input_frame,
+        effective_swap_lock_until_wall_time=start_wall + effective_swap_unlock_frame / FPS,
+        effective_swap_lock_source=selected_timing.effective_swap_unlock_source,
         selected_source_action_end_frame=selected_timing.source_action_end_frame,
         selected_lifecycle_end_frame=selected_timing.lifecycle_end_frame,
         selected_global_time_stop_frames=selected_timing.global_time_stop_frames,
@@ -570,7 +669,11 @@ def start_ongoing_action(
                 "relative_momentum_after": 0.0,
             }
         )
+    owner_state = state.character_mechanics_state.setdefault(instance.owner_character_id, {})
+    selected_mode = owner_state.get("lynae_resonance_mode") if action.id == "lynae_polychrome_leap_stage_2" else None
     for group in contract.scheduled_packet_groups:
+        if group.mode_selection is not None and group.mode_selection != selected_mode:
+            continue
         for occurrence_index, scheduled_frame in enumerate(group.scheduled_frames, start=1):
             state.packet_instance_next_order += 1
             packet_id = (
@@ -648,6 +751,7 @@ def release_prior_owner_input_locks_for_followup(state: CombatState, owner_chara
         if now + 1e-9 >= instance.same_character_lock_until_wall_time:
             instance.same_character_lock_until_wall_time = now
             instance.swap_lock_until_wall_time = now
+            instance.effective_swap_lock_until_wall_time = now
 
 
 def same_character_input_locked(state: CombatState, character_id: str) -> bool:
@@ -691,7 +795,7 @@ def handle_character_swap(state: CombatState, outgoing_character_id: str) -> Non
         for packet in state.scheduled_packet_instances:
             if packet.action_instance_id != instance.action_instance_id or packet.resolved:
                 continue
-            if packet.cancel_on_swap or not packet.detachable:
+            if packet.cancel_on_swap or packet.cancel_on_generic_owner_exit or not packet.detachable:
                 packet.cancelled = True
     state.persistent_off_field_character_ids = sorted(persistent)
 
@@ -727,6 +831,32 @@ def advance_ongoing_action_runtime(
         if not placeholder and packet_resolver is None:
             raise ValueError(f"Scheduled packet {packet.packet_instance_id!r} requires a payload resolver")
         resolved_payload = {} if placeholder else dict(packet_resolver(packet))
+        if packet.resource_payload.get("resource_event_kind") == "lynae_true_color_lumiflow":
+            owner_state = state.character_mechanics_state.setdefault(packet.owner_character_id, {})
+            true_color_before = float(owner_state.get("true_color", 0.0) or 0.0)
+            lumiflow_before = float(owner_state.get("lumiflow", 0.0) or 0.0)
+            true_color_cap = float(owner_state.get("true_color_max", 3.0) or 3.0)
+            lumiflow_cap = float(owner_state.get("lumiflow_max", 120.0) or 120.0)
+            true_color_after = min(
+                true_color_cap,
+                max(0.0, true_color_before + float(packet.resource_payload.get("true_color_delta", 0.0) or 0.0)),
+            )
+            lumiflow_after = min(
+                lumiflow_cap,
+                max(0.0, lumiflow_before + float(packet.resource_payload.get("lumiflow_delta", 0.0) or 0.0)),
+            )
+            owner_state["true_color"] = true_color_after
+            owner_state["lumiflow"] = lumiflow_after
+            resolved_payload = {
+                "event_type": "v124_lynae_stage2_frame1_resource",
+                "resource_event_only": True,
+                "true_color_before": true_color_before,
+                "true_color_applied": true_color_after - true_color_before,
+                "true_color_after": true_color_after,
+                "lumiflow_before": lumiflow_before,
+                "lumiflow_applied": lumiflow_after - lumiflow_before,
+                "lumiflow_after": lumiflow_after,
+            }
         packet.resolved = True
         packet.processed_wall_time = processed_wall_time
         packet.processed_combat_time = processed_combat_time

@@ -6,7 +6,7 @@ from pathlib import Path
 def main() -> None:
     progress = json.loads((Path(__file__).resolve().parents[1] / "PROJECT_PROGRESS_STATE.json").read_text(encoding="utf-8-sig"))
     current = progress["candidate_history"][-1]
-    assert current["candidate"] == "124" and current["stage"] == "timing-core-2d-a2-lynae-outro-concurrent-packets"
+    assert current["candidate"] == "124" and current["stage"] == "timing-core-2d-b1-lynae-polychrome-leap-stage2"
     assert current["mornye_heavy_inversion_packet_timing_implemented"] is True
     assert current["distributed_array_complete_first_cast_concerto"] == 51
     assert current["vivid_packet_families_implemented"] is True
@@ -30,6 +30,19 @@ def main() -> None:
     assert current["lynae_outro_scheduled_packet_base_coefficient_total"] == 1.0
     assert current["lynae_outro_zero_damage_regression"] is False
     assert current["lynae_outro_source_refs_utf8_exact"] is True
+    for field in (
+        "lynae_leap_stage_2_packet_frames_implemented",
+        "lynae_leap_stage_2_frame_1_resource_timing_implemented",
+        "lynae_leap_stage_2_same_character_tail_overlap_implemented",
+        "lynae_leap_stage_2_payload_parity_implemented",
+        "lynae_leap_stage_2_source_attribution_implemented",
+        "lynae_leap_stage_2_legacy_aggregate_removed",
+        "lynae_leap_stage_2_generic_swap_tail_cancellation",
+    ):
+        assert current[field] is True, field
+    assert current["lynae_leap_stage_2_swap_input_source_status"] == "unresolved"
+    assert current["lynae_leap_stage_2_effective_legacy_swap_fallback_frames"] == 36
+    assert current["lynae_leap_stage_2_fabricated_42f_swap_lock"] is False
     assert current["training_search_blocked"] is True and current["account_first_cycle_executed"] is False
     print("project_progress_timing_core_stage2c_v124_alignment_smoke_test ok")
 

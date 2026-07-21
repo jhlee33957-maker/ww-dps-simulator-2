@@ -255,7 +255,10 @@ class LynaeMechanic(CharacterMechanic):
             self._exit_kaleidoscopic_parade(data)
         if action.id == LYNAE_LIBERATION_ACTION_ID:
             data["to_vivid_tomorrow_window_remaining"] = VIVID_TOMORROW_WINDOW_SECONDS
-        if action.id.startswith("lynae_polychrome_leap_stage_"):
+        if (
+            action.id.startswith("lynae_polychrome_leap_stage_")
+            and not bool((action.mechanic_effects or {}).get("v124_deferred_packet_payloads", False))
+        ):
             data["lumiflow"] = float(data.get("lumiflow", 0.0) or 0.0) - 40.0
             data["true_color"] = float(data.get("true_color", 0.0) or 0.0) + 1.0
             if action.id == "lynae_polychrome_leap_stage_1":
