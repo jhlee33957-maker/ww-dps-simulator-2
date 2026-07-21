@@ -29,6 +29,12 @@ HISTORY_AWARE_PROGRESS_TESTS = {
     "scripts/scheduled_packet_actual_processing_time_v124_smoke_test.py",
     "scripts/scheduled_packet_source_attribution_v124_smoke_test.py",
     "scripts/scheduled_packet_off_tune_ordering_v124_smoke_test.py",
+    "scripts/lynae_vivid_packet_contract_v124_smoke_test.py",
+    "scripts/lynae_vivid_immediate_swap_packet_persistence_v124_smoke_test.py",
+    "scripts/lynae_vivid_payload_parity_v124_smoke_test.py",
+    "scripts/lynae_vivid_source_attribution_no_duplicate_v124_smoke_test.py",
+    "scripts/scheduled_packet_equal_timestamp_numeric_order_v124_smoke_test.py",
+    "scripts/lynae_vivid_92f_source_order_invariance_v124_smoke_test.py",
     "scripts/project_progress_aemeath_runtime_fix_v123_alignment_smoke_test.py",
     "scripts/project_progress_account_party_v122_alignment_smoke_test.py",
     "scripts/project_progress_account_constellation_v121_alignment_smoke_test.py",
@@ -244,14 +250,14 @@ def main() -> None:
     legacy = legacy_fresh_extraction_check_commands()
     older = candidate_123 + candidate_122 + candidate_121 + candidate_120 + candidate_119 + legacy
     assert commands == candidate_124 + older
-    assert len(candidate_124) == 49
+    assert len(candidate_124) == 55
     assert len(candidate_123) == 8
     assert len(candidate_122) == 10
     assert len(candidate_121) == 81
     assert len(candidate_120) == 8
     assert len(candidate_119) == 8
     assert len(legacy) == 83
-    assert len(commands) == 247
+    assert len(commands) == 253
     assert_full_coverage(commands)
 
     mutations = {

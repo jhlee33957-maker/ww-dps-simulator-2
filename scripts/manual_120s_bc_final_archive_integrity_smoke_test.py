@@ -625,16 +625,32 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         ]
         assert all(group["damage_payload"]["damage_multiplier_per_packet"] == 0.3977 for group in array["scheduled_packet_groups"][1:])
         assert all((group["detachable"], group["cancel_on_swap"], group["persist_after_swap"]) == (True, False, True) for group in array["scheduled_packet_groups"][1:])
+        vivid = timing_actions["lynae_to_a_vivid_tomorrow"]
+        assert (
+            vivid["same_character_input_frame"], vivid["swap_input_frame"],
+            vivid["source_action_end_frame"], vivid["action_end_frame"],
+            vivid["global_time_stop_frames"], vivid["source_type"], vivid["confidence"],
+        ) == (153, 1, 181, 181, 0, "user_measured", "high")
+        vivid_first, vivid_second = vivid["scheduled_packet_groups"]
+        assert vivid_first["scheduled_frames"] == [52, 57, 62, 67, 72, 77, 82, 87, 92, 97, 102, 107]
+        assert vivid_second["scheduled_frames"] == [92, 98, 104, 110, 116, 122, 128, 134, 140, 146]
+        assert vivid_first["packet_count"] == 12 and vivid_second["packet_count"] == 10
+        assert vivid_first["damage_payload"]["damage_multiplier_total"] == 1.0056
+        assert vivid_second["damage_payload"]["damage_multiplier_total"] == 1.005
+        assert vivid_first["cancel_on_generic_owner_exit"] is True
+        assert vivid_first["persist_after_swap"] is False
+        assert vivid_first["persist_on_vivid_pre_179_swap_branch"] is True
+        assert (vivid_second["detachable"], vivid_second["cancel_on_swap"], vivid_second["persist_after_swap"]) == (True, False, True)
 
-        assert progress["status"]["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(11).zip"
+        assert progress["status"]["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(15).zip"
         assert progress["status"]["latest_externally_reviewed_archive_sha256"] == (
-            "4dd56f71f959025c429a9cf65fa64d81afc70a9c97591454cc525a635598802b"
+            "c1ebaeb010692e0428382d7ddeca6342f7ea6a4bf5a0167bdedee63379fefff6"
         )
         assert progress["status"]["current_candidate"] == "124"
-        assert progress["status"]["current_task"] == "candidate-124 timing-core-2c-mornye-inversion-distributed-array"
-        assert progress["status"]["current_candidate_stage"] == "timing-core-2c-mornye-inversion-distributed-array"
+        assert progress["status"]["current_task"] == "candidate-124 timing-core-2d-a1-lynae-vivid-runtime"
+        assert progress["status"]["current_candidate_stage"] == "timing-core-2d-a1-lynae-vivid-runtime"
         timing_core = progress["candidate_124_timing_core_1"]
-        assert timing_core["stage"] == "timing-core-2c-mornye-inversion-distributed-array"
+        assert timing_core["stage"] == "timing-core-2d-a1-lynae-vivid-runtime"
         assert timing_core["stage_2a_externally_verified"] is False
         assert timing_core["stage_2b_externally_verified"] is False
         assert timing_core["timing_contract_layer_created"] is True
@@ -692,9 +708,18 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         assert timing_core["scheduled_packet_source_attribution"] is True
         assert timing_core["scheduled_packet_retroactive_backdating"] is False
         assert timing_core["mornye_tail_before_overlapping_aemeath_hit_verified"] is True
-        assert timing_core["candidate_124_smoke_test_count"] == 47
-        assert timing_core["candidate_124_fresh_extraction_command_count"] == 49
-        assert timing_core["authoritative_fresh_extraction_command_count"] == 247
+        assert timing_core["candidate_124_smoke_test_count"] == 53
+        assert timing_core["candidate_124_fresh_extraction_command_count"] == 55
+        assert timing_core["authoritative_fresh_extraction_command_count"] == 253
+        assert timing_core["vivid_packet_families_implemented"] is True
+        assert timing_core["vivid_measured_1f_swap_persistence_implemented"] is True
+        assert timing_core["vivid_off_field_resource_credit_implemented"] is True
+        assert timing_core["vivid_source_attribution_implemented"] is True
+        assert timing_core["vivid_legacy_aggregate_removed"] is True
+        assert timing_core["scheduled_packet_equal_timestamp_numeric_ordering"] is True
+        assert timing_core["vivid_92f_source_order_invariant_to_prior_packet_history"] is True
+        assert timing_core["vivid_row_2697_persistence"] == "measured pre-179 branch only"
+        assert timing_core["lynae_outro_concurrent_packets"] == "pending Stage 2D-A2"
         assert timing_core["remaining_p0_packet_action_corrections"] == "pending"
         assert timing_core["benchmark_observation_version"] == "slot_generic_mechanics_v5"
         assert timing_core["benchmark_observation_shape"] == 314
@@ -1172,6 +1197,12 @@ def candidate_124_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/scheduled_packet_actual_processing_time_v124_smoke_test.py"],
         [sys.executable, "scripts/scheduled_packet_source_attribution_v124_smoke_test.py"],
         [sys.executable, "scripts/scheduled_packet_off_tune_ordering_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_vivid_packet_contract_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_vivid_immediate_swap_packet_persistence_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_vivid_payload_parity_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_vivid_source_attribution_no_duplicate_v124_smoke_test.py"],
+        [sys.executable, "scripts/scheduled_packet_equal_timestamp_numeric_order_v124_smoke_test.py"],
+        [sys.executable, "scripts/lynae_vivid_92f_source_order_invariance_v124_smoke_test.py"],
     ]
 
 

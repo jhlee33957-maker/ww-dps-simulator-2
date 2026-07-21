@@ -64,7 +64,9 @@ class ScheduledPacketGroupContract(BaseModel):
     buff_payload: dict[str, Any] = Field(default_factory=dict)
     detachable: bool = False
     cancel_on_swap: bool = False
+    cancel_on_generic_owner_exit: bool = False
     persist_after_swap: bool = False
+    persist_on_vivid_pre_179_swap_branch: bool = False
     source_refs: list[str] = Field(default_factory=list)
     source_frame_row_ref: str | None = None
     source_coefficient_resource_row_ref: str | None = None
@@ -235,6 +237,27 @@ class ActionTimingContract(BaseModel):
                 or [group.scheduled_frames for group in self.scheduled_packet_groups] != [[1], [22], [22], [36], [36]]
             ):
                 raise ValueError("Mornye Distributed Array requires its 1F heal and ordered 22F/22F/36F/36F source packets")
+        if self.action_id == "lynae_to_a_vivid_tomorrow":
+            first_group, second_group = self.scheduled_packet_groups
+            if (
+                self.same_character_input_frame != 153
+                or self.swap_input_frame != 1
+                or self.source_action_end_frame != 181
+                or self.action_end_frame != 181
+                or self.source_type != "user_measured"
+                or self.confidence != "high"
+                or [group.scheduled_frames for group in self.scheduled_packet_groups]
+                != [[52, 57, 62, 67, 72, 77, 82, 87, 92, 97, 102, 107], [92, 98, 104, 110, 116, 122, 128, 134, 140, 146]]
+                or first_group.packet_count != 12
+                or second_group.packet_count != 10
+                or not first_group.cancel_on_generic_owner_exit
+                or first_group.persist_after_swap
+                or not first_group.persist_on_vivid_pre_179_swap_branch
+                or not second_group.detachable
+                or second_group.cancel_on_swap
+                or not second_group.persist_after_swap
+            ):
+                raise ValueError("Lynae Vivid requires measured 1F swap, 153F same-input, and 181F lifecycle contracts")
         _validate_v124_stage2c_source_refs(self)
         return self
 
@@ -512,6 +535,8 @@ def start_ongoing_action(
             )
             packet = ScheduledPacketInstance(
                 packet_instance_id=packet_id,
+                packet_creation_order=state.packet_instance_next_order,
+                packet_occurrence_index=occurrence_index,
                 action_instance_id=instance_id,
                 owner_character_id=instance.owner_character_id,
                 source_action_id=action.id,
@@ -526,7 +551,9 @@ def start_ongoing_action(
                 buff_payload=dict(group.buff_payload),
                 detachable=group.detachable,
                 cancel_on_swap=group.cancel_on_swap,
+                cancel_on_generic_owner_exit=group.cancel_on_generic_owner_exit,
                 persist_after_swap=group.persist_after_swap,
+                persist_on_vivid_pre_179_swap_branch=group.persist_on_vivid_pre_179_swap_branch,
                 source_refs=list(group.source_refs),
                 source_type=group.source_type or contract.source_type,
                 confidence=group.confidence or contract.confidence,
@@ -609,7 +636,7 @@ def advance_ongoing_action_runtime(
     events: list[dict[str, Any]] = []
     for packet in sorted(
         state.scheduled_packet_instances,
-        key=lambda item: (item.scheduled_wall_time, item.packet_instance_id),
+        key=lambda item: (item.scheduled_wall_time, item.packet_creation_order),
     ):
         if packet.resolved or packet.cancelled or packet.scheduled_wall_time > now_wall + 1e-9:
             continue
@@ -640,6 +667,8 @@ def advance_ongoing_action_runtime(
             "event_wall_time": processed_wall_time,
             "event_combat_time": processed_combat_time,
             "packet_instance_id": packet.packet_instance_id,
+            "packet_creation_order": packet.packet_creation_order,
+            "packet_occurrence_index": packet.packet_occurrence_index,
             "action_instance_id": packet.action_instance_id,
             "owner_character_id": packet.owner_character_id,
             "source_action_id": packet.source_action_id,

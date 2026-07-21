@@ -1143,6 +1143,8 @@ class Simulation:
             event = {
                 "event_type": "scheduled_heal",
                 "packet_instance_id": packet.packet_instance_id,
+                "packet_creation_order": packet.packet_creation_order,
+                "packet_occurrence_index": packet.packet_occurrence_index,
                 "action_instance_id": packet.action_instance_id,
                 "packet_group_id": packet.packet_group_id,
                 "source_character_id": packet.owner_character_id,

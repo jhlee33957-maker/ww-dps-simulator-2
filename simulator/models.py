@@ -362,6 +362,8 @@ class ScheduledEffectState(BaseModel):
 
 class ScheduledPacketInstance(BaseModel):
     packet_instance_id: str
+    packet_creation_order: int = Field(ge=1, frozen=True)
+    packet_occurrence_index: int = Field(ge=1, frozen=True)
     action_instance_id: str
     owner_character_id: str
     source_action_id: str
@@ -376,7 +378,9 @@ class ScheduledPacketInstance(BaseModel):
     buff_payload: dict[str, Any] = Field(default_factory=dict)
     detachable: bool = False
     cancel_on_swap: bool = False
+    cancel_on_generic_owner_exit: bool = False
     persist_after_swap: bool = False
+    persist_on_vivid_pre_179_swap_branch: bool = False
     resolved: bool = False
     cancelled: bool = False
     resolved_wall_time: float | None = None
