@@ -11,6 +11,46 @@ from simulator.models import ActionData, CombatState, OngoingActionInstance, Sch
 
 FPS = 60.0
 TIMING_CONTRACT_SCHEMA_VERSION = "action_timing_contract_v124"
+ROLE_FEMALE_SHEET = "角色-女"
+SKILL_TYPE_SHEET = "角色技能类型"
+
+
+def _validate_v124_stage2c_source_refs(contract: "ActionTimingContract") -> None:
+    """Reject lossy/shifted workbook joins instead of accepting display text."""
+    expected_groups = {
+        "mornye_heavy_inversion": {
+            "mornye_heavy_inversion_impact": (
+                f"{ROLE_FEMALE_SHEET}!A4136:AT4136",
+                f"{SKILL_TYPE_SHEET}!A2664:AH2664",
+            ),
+        },
+        "mornye_skill_distributed_array": {
+            "mornye_distributed_array_frame_1_heal": (f"{ROLE_FEMALE_SHEET}!A4143:AT4143", None),
+            "mornye_distributed_array_e2_1": (f"{ROLE_FEMALE_SHEET}!A4144:AT4144", f"{SKILL_TYPE_SHEET}!A2666:AH2666"),
+            "mornye_distributed_array_e2_2": (f"{ROLE_FEMALE_SHEET}!A4145:AT4145", f"{SKILL_TYPE_SHEET}!A2667:AH2667"),
+            "mornye_distributed_array_e2_3": (f"{ROLE_FEMALE_SHEET}!A4146:AT4146", f"{SKILL_TYPE_SHEET}!A2668:AH2668"),
+            "mornye_distributed_array_e2_4": (f"{ROLE_FEMALE_SHEET}!A4147:AT4147", f"{SKILL_TYPE_SHEET}!A2669:AH2669"),
+        },
+    }.get(contract.action_id)
+    if expected_groups is None:
+        return
+    for group in contract.scheduled_packet_groups:
+        expected = expected_groups.get(group.packet_group_id)
+        if expected is None:
+            raise ValueError(f"Unexpected Stage-2C packet group {group.packet_group_id!r}")
+        expected_frame_ref, expected_coefficient_ref = expected
+        if group.source_frame_row_ref != expected_frame_ref:
+            raise ValueError(f"Invalid UTF-8/source row join for {group.packet_group_id!r}")
+        if group.source_coefficient_resource_row_ref != expected_coefficient_ref:
+            raise ValueError(f"Invalid UTF-8/coefficient row join for {group.packet_group_id!r}")
+        refs = [*group.source_refs, *contract.source_refs]
+        for ref in refs:
+            if any(ord(char) < 32 or ord(char) == 0xFFFD for char in ref) or "\ufeff" in ref:
+                raise ValueError(f"Invalid control/replacement/BOM character in source ref {ref!r}")
+        if expected_frame_ref not in group.source_refs or (
+            expected_coefficient_ref is not None and expected_coefficient_ref not in group.source_refs
+        ):
+            raise ValueError(f"Missing exact source refs for {group.packet_group_id!r}")
 
 
 class ScheduledPacketGroupContract(BaseModel):
@@ -19,6 +59,7 @@ class ScheduledPacketGroupContract(BaseModel):
     combat_time_resolution_rule: str = "source_action_wall_offset_minus_global_time_stop"
     damage_payload: dict[str, Any] = Field(default_factory=dict)
     resource_payload: dict[str, Any] = Field(default_factory=dict)
+    healing_payload: dict[str, Any] = Field(default_factory=dict)
     marker_payload: dict[str, Any] = Field(default_factory=dict)
     buff_payload: dict[str, Any] = Field(default_factory=dict)
     detachable: bool = False
@@ -142,6 +183,10 @@ class ActionTimingContract(BaseModel):
             raise ValueError("packet_group_id values must be unique within an action")
         if self.defer_legacy_payload_to_scheduled_packets:
             for group in self.scheduled_packet_groups:
+                if group.healing_payload:
+                    if not group.source_frame_row_ref or group.packet_count != len(group.scheduled_frames):
+                        raise ValueError("scheduled healing groups require an exact source row and packet count")
+                    continue
                 if group.damage_payload.get("placeholder"):
                     continue
                 if not group.source_frame_row_ref or not group.source_coefficient_resource_row_ref:
@@ -181,15 +226,16 @@ class ActionTimingContract(BaseModel):
             ):
                 raise ValueError("Mornye Heavy Inversion requires its audited 66F packet and 86F lifecycle")
         if self.action_id == "mornye_skill_distributed_array":
-            expected = ["mornye_distributed_array_e2_1", "mornye_distributed_array_e2_2", "mornye_distributed_array_e2_3", "mornye_distributed_array_e2_4"]
+            expected = ["mornye_distributed_array_frame_1_heal", "mornye_distributed_array_e2_1", "mornye_distributed_array_e2_2", "mornye_distributed_array_e2_3", "mornye_distributed_array_e2_4"]
             if (
                 self.same_character_input_frame != 60
                 or self.swap_input_frame != 60
                 or self.action_end_frame != 60
                 or [group.packet_group_id for group in self.scheduled_packet_groups] != expected
-                or [group.scheduled_frames for group in self.scheduled_packet_groups] != [[22], [22], [36], [36]]
+                or [group.scheduled_frames for group in self.scheduled_packet_groups] != [[1], [22], [22], [36], [36]]
             ):
-                raise ValueError("Mornye Distributed Array requires ordered 22F/22F/36F/36F source packets")
+                raise ValueError("Mornye Distributed Array requires its 1F heal and ordered 22F/22F/36F/36F source packets")
+        _validate_v124_stage2c_source_refs(self)
         return self
 
     @property
@@ -245,7 +291,10 @@ def load_action_timing_contracts(data_dir: Path | str) -> dict[str, ActionTiming
     path = Path(data_dir) / "action_timing_contract_v124.json"
     if not path.is_file():
         return {}
-    with path.open("r", encoding="utf-8-sig") as file:
+    raw = path.read_bytes()
+    if raw.startswith(b"\xef\xbb\xbf"):
+        raise ValueError("action timing contract must be UTF-8 without a BOM")
+    with path.open("r", encoding="utf-8") as file:
         payload = json.load(file)
     if payload.get("schema_version") != TIMING_CONTRACT_SCHEMA_VERSION:
         raise ValueError(f"Unsupported action timing contract schema: {payload.get('schema_version')!r}")
@@ -472,6 +521,7 @@ def start_ongoing_action(
                 combat_time_resolution_rule=group.combat_time_resolution_rule,
                 damage_payload=damage_payload,
                 resource_payload=resource_payload,
+                healing_payload=dict(group.healing_payload),
                 marker_payload=dict(group.marker_payload),
                 buff_payload=dict(group.buff_payload),
                 detachable=group.detachable,

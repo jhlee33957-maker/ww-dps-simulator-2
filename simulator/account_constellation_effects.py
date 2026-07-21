@@ -986,12 +986,17 @@ def mornye_dynamic_energy_regen_excess_amp(energy_regen: float, *, cap: float = 
     return min(cap, excess_percentage_points * 0.0025)
 
 
-def apply_mornye_s1_interfered_marker(simulation: Any) -> dict[str, Any] | None:
+def apply_mornye_s1_interfered_marker(
+    simulation: Any,
+    *,
+    application_combat_time: float | None = None,
+) -> dict[str, Any] | None:
     """Apply the account S1 enemy amp without changing the source Observation duration."""
     if _sequence_for(simulation, "mornye") < 1:
         return None
     duration = mornye_s1_marker_duration_seconds()
     simulation.state.interfered_marker_remaining = duration
+    simulation.state.interfered_marker_application_combat_time = application_combat_time
     simulation.state.interfered_marker_applied_count += 1
     amp = mornye_dynamic_energy_regen_excess_amp(simulation.characters["mornye"].energy_regen)
     simulation.state.interfered_marker_damage_taken_amp = amp
@@ -1002,12 +1007,21 @@ def apply_mornye_s1_interfered_marker(simulation: Any) -> dict[str, Any] | None:
         amp,
         duration,
         target_scope="enemy",
-        metadata={"dynamic_value": amp, "account_s1_direct_application": True},
+        metadata={
+            "dynamic_value": amp,
+            "account_s1_direct_application": True,
+            "application_combat_time": application_combat_time,
+        },
     )
     simulation.buffs[buff.id] = buff
     from simulator.buff_system import apply_buff
     apply_buff(simulation.state, buff, "mornye")
-    return {"event_type": "mornye_s1_marker", "remaining_seconds": duration, "damage_amp": amp}
+    return {
+        "event_type": "mornye_s1_marker",
+        "remaining_seconds": duration,
+        "damage_amp": amp,
+        "application_combat_time": application_combat_time,
+    }
 
 
 def mornye_s2_marker_crit_damage(energy_regen: float, *, cap: float = 0.32) -> float:

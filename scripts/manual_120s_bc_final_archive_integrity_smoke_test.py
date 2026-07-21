@@ -512,6 +512,8 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         name_set = set(names)
         for required in (*REQUIRED_FILES, *CANDIDATE_124_REQUIRED_FILES):
             assert required in name_set, required
+        forbidden_root_backups = [name for name in names if _is_forbidden_root_app_backup(name)]
+        assert not forbidden_root_backups, f"forbidden root-level app backup files: {forbidden_root_backups}"
         cache_entries = [name for name in names if _is_cache_entry(name)]
         obsolete_bundle_entries = [
             name for name in names if name.replace("\\", "/") == "bc_eval_bundle/" or name.startswith("bc_eval_bundle/")
@@ -607,10 +609,22 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         assert inversion_packet["scheduled_frames"] == [66]
         assert inversion_packet["damage_payload"]["damage_multiplier_per_packet"] == 2.5846
         assert inversion_packet["marker_payload"]["observation_marker_duration"] == 30.0
+        assert (inversion_packet["source_frame_row_ref"], inversion_packet["source_coefficient_resource_row_ref"]) == (
+            "角色-女!A4136:AT4136", "角色技能类型!A2664:AH2664"
+        )
+        assert (inversion_packet["detachable"], inversion_packet["cancel_on_swap"], inversion_packet["persist_after_swap"]) == (True, False, True)
         array = timing_actions["mornye_skill_distributed_array"]
         assert (array["same_character_input_frame"], array["swap_input_frame"], array["action_end_frame"]) == (60, 60, 60)
-        assert [group["scheduled_frames"] for group in array["scheduled_packet_groups"]] == [[22], [22], [36], [36]]
-        assert all(group["damage_payload"]["damage_multiplier_per_packet"] == 0.3977 for group in array["scheduled_packet_groups"])
+        assert [group["scheduled_frames"] for group in array["scheduled_packet_groups"]] == [[1], [22], [22], [36], [36]]
+        assert array["scheduled_packet_groups"][0]["source_frame_row_ref"] == "角色-女!A4143:AT4143"
+        assert [(group["source_frame_row_ref"], group["source_coefficient_resource_row_ref"]) for group in array["scheduled_packet_groups"][1:]] == [
+            ("角色-女!A4144:AT4144", "角色技能类型!A2666:AH2666"),
+            ("角色-女!A4145:AT4145", "角色技能类型!A2667:AH2667"),
+            ("角色-女!A4146:AT4146", "角色技能类型!A2668:AH2668"),
+            ("角色-女!A4147:AT4147", "角色技能类型!A2669:AH2669"),
+        ]
+        assert all(group["damage_payload"]["damage_multiplier_per_packet"] == 0.3977 for group in array["scheduled_packet_groups"][1:])
+        assert all((group["detachable"], group["cancel_on_swap"], group["persist_after_swap"]) == (True, False, True) for group in array["scheduled_packet_groups"][1:])
 
         assert progress["status"]["latest_externally_reviewed_archive"] == "ww-dps-simulator-2-124(11).zip"
         assert progress["status"]["latest_externally_reviewed_archive_sha256"] == (
@@ -678,7 +692,8 @@ def validate_archive(archive: Path, *, orchestration_smoke: bool = False) -> dic
         assert timing_core["scheduled_packet_source_attribution"] is True
         assert timing_core["scheduled_packet_retroactive_backdating"] is False
         assert timing_core["mornye_tail_before_overlapping_aemeath_hit_verified"] is True
-        assert timing_core["candidate_124_smoke_test_count"] == 49
+        assert timing_core["candidate_124_smoke_test_count"] == 47
+        assert timing_core["candidate_124_fresh_extraction_command_count"] == 49
         assert timing_core["authoritative_fresh_extraction_command_count"] == 247
         assert timing_core["remaining_p0_packet_action_corrections"] == "pending"
         assert timing_core["benchmark_observation_version"] == "slot_generic_mechanics_v5"
@@ -1053,6 +1068,16 @@ def _assert_guarded_completed_archive(zf: zipfile.ZipFile, name_set: set[str]) -
     }
 
 
+def _is_forbidden_root_app_backup(name: str) -> bool:
+    path = Path(name)
+    if path.parent != Path("."):
+        return False
+    lowered = path.name.lower()
+    return lowered in {"app_backup.py", "app_fixed.py"} or lowered.startswith(
+        ("app_backup.", "app_fixed.", "app_old.", "app_copy.")
+    )
+
+
 def scan_archive_text(zf: zipfile.ZipFile, names: list[str]) -> dict[str, int]:
     stats = {
         "text_entry_count": 0,
@@ -1101,7 +1126,7 @@ def candidate_124_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/timing_markov_state_observation_audit_v124.py"],
         [sys.executable, "scripts/account_observation_v6_unchanged_v124_guard_smoke_test.py"],
         [sys.executable, "scripts/action_timing_contract_v124_backward_compatibility_smoke_test.py"],
-        [sys.executable, "scripts/action_timing_contract_v124_schema_smoke_test.py"],
+        [sys.executable, "scripts/mornye_stage2c_source_ref_utf8_and_row_join_v124_smoke_test.py"],
         [sys.executable, "scripts/historical_results_timing_rebaseline_status_v124_smoke_test.py"],
         [sys.executable, "scripts/mcts_v118_3x50k_winner_replay_parity_smoke_test.py"],
         [sys.executable, "scripts/lynae_liberation_split_input_swap_v124_smoke_test.py"],
@@ -1133,11 +1158,11 @@ def candidate_124_fresh_extraction_check_commands() -> list[list[str]]:
         [sys.executable, "scripts/mornye_basic_packet_swap_persistence_v124_smoke_test.py"],
         [sys.executable, "scripts/mornye_basic_packet_no_duplicate_payload_v124_smoke_test.py"],
         [sys.executable, "scripts/project_progress_timing_core_stage2b_v124_alignment_smoke_test.py"],
-        [sys.executable, "scripts/mornye_heavy_inversion_packet_contract_v124_smoke_test.py"],
-        [sys.executable, "scripts/mornye_heavy_inversion_marker_timing_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_stage2c_detachable_contract_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_heavy_inversion_s1_marker_exact_duration_v124_smoke_test.py"],
         [sys.executable, "scripts/mornye_heavy_inversion_payload_parity_v124_smoke_test.py"],
         [sys.executable, "scripts/mornye_heavy_inversion_no_duplicate_payload_v124_smoke_test.py"],
-        [sys.executable, "scripts/mornye_distributed_array_packet_contract_v124_smoke_test.py"],
+        [sys.executable, "scripts/mornye_distributed_array_frame1_heal_v124_smoke_test.py"],
         [sys.executable, "scripts/mornye_distributed_array_payload_parity_v124_smoke_test.py"],
         [sys.executable, "scripts/mornye_distributed_array_cast_trigger_independence_v124_smoke_test.py"],
         [sys.executable, "scripts/mornye_distributed_array_no_duplicate_payload_v124_smoke_test.py"],

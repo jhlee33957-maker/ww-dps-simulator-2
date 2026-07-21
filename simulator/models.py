@@ -371,6 +371,7 @@ class ScheduledPacketInstance(BaseModel):
     combat_time_resolution_rule: str = "wall_time_due"
     damage_payload: dict[str, Any] = Field(default_factory=dict)
     resource_payload: dict[str, Any] = Field(default_factory=dict)
+    healing_payload: dict[str, Any] = Field(default_factory=dict)
     marker_payload: dict[str, Any] = Field(default_factory=dict)
     buff_payload: dict[str, Any] = Field(default_factory=dict)
     detachable: bool = False
@@ -506,6 +507,7 @@ class CombatState(BaseModel):
     lynae_tune_strain_source_status: str | None = None
     lynae_tune_strain_source_ref: str | None = None
     interfered_marker_remaining: float = 0.0
+    interfered_marker_application_combat_time: float | None = None
     interfered_marker_applied_count: int = 0
     interfered_marker_damage_taken_amp: float = 0.0
     party_response_scan_logs: list[dict[str, Any]] = Field(default_factory=list)

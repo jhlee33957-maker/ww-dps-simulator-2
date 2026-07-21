@@ -55,11 +55,18 @@ def tick_buffs(state: CombatState, combat_elapsed: float) -> None:
     remaining: list[ActiveBuff] = []
     for buff in state.active_buffs:
         previous_remaining = float(buff.remaining_duration)
-        buff.remaining_duration = max(0.0, buff.remaining_duration - combat_elapsed)
+        application_time = buff.metadata.get("application_combat_time")
+        elapsed_after_application = combat_elapsed
+        if application_time is not None:
+            elapsed_after_application = max(
+                0.0,
+                float(getattr(state, "combat_time", 0.0) or 0.0) - max(combat_tick_start, float(application_time)),
+            )
+        buff.remaining_duration = max(0.0, buff.remaining_duration - elapsed_after_application)
         if buff.remaining_duration > 0.0:
             remaining.append(buff)
         elif previous_remaining > 0.0:
-            _cap_combat_uptime_windows(state, buff.buff_id, combat_tick_start + min(previous_remaining, combat_elapsed))
+            _cap_combat_uptime_windows(state, buff.buff_id, combat_tick_start + min(previous_remaining, elapsed_after_application))
     state.active_buffs = remaining
     state.team_buffs = list(remaining)
 

@@ -1121,6 +1121,44 @@ class Simulation:
             self.state.scheduled_effect_event_log[-1].update(event)
 
     def _resolve_scheduled_action_packet(self, packet: ScheduledPacketInstance) -> dict[str, Any]:
+        if packet.healing_payload:
+            application_time = float(self.state.event_cursor_combat_time)
+            halo_log = apply_mornye_halo_of_starry_radiance_5set_event_buff(
+                source_character_id=packet.owner_character_id,
+                emitted_event_tags=[TEAM_HEAL_EVENT_TAG],
+                characters=self.characters,
+                state=self.state,
+                buffs=self.buffs,
+                application_time=application_time,
+                event_source="v124_distributed_array_frame_1_diagnostic_heal",
+            )
+            halo_log.update(
+                self._apply_team_heal_weapon_effects(
+                    halo_log,
+                    source_character_id=packet.owner_character_id,
+                    application_time=application_time,
+                    event_source="v124_distributed_array_frame_1_diagnostic_heal",
+                )
+            )
+            event = {
+                "event_type": "scheduled_heal",
+                "packet_instance_id": packet.packet_instance_id,
+                "action_instance_id": packet.action_instance_id,
+                "packet_group_id": packet.packet_group_id,
+                "source_character_id": packet.owner_character_id,
+                "source_action_id": packet.source_action_id,
+                "scheduled_wall_time": packet.scheduled_wall_time,
+                "scheduled_combat_time": packet.scheduled_combat_time,
+                "processed_wall_time": self.state.event_cursor_wall_time,
+                "processed_combat_time": application_time,
+                "source_frame_row_ref": packet.source_refs[0] if packet.source_refs else None,
+                "diagnostic_only": True,
+                "healing_amount": 0.0,
+                "numerical_healing_status": "source_amount_not_available_diagnostic_team_heal_event",
+                **halo_log,
+            }
+            self.state.scheduled_effect_event_log.append(event)
+            return event
         source_action = self.actions.get(packet.source_action_id)
         if source_action is None:
             raise ValueError(f"Unknown scheduled packet source action {packet.source_action_id!r}")
@@ -1160,11 +1198,9 @@ class Simulation:
         marker_duration = float(packet.marker_payload.get("observation_marker_duration", 0.0) or 0.0)
         if marker_duration:
             owner_state = self.state.character_mechanics_state.setdefault(packet.owner_character_id, {})
-            # execute_action advances its combat-duration bookkeeping after it
-            # drains chronological packets.  Offset that later full-action tick
-            # so a marker born at the source hit loses only post-hit time.
-            owner_state["observation_marker_remaining"] = marker_duration + max(
-                0.0, float(packet.scheduled_wall_time) - float(self.state.current_time)
+            owner_state["observation_marker_remaining"] = marker_duration
+            owner_state["observation_marker_remaining_application_combat_time"] = float(
+                self.state.event_cursor_combat_time
             )
             owner_state["observation_marker_active"] = True
             event.update(
@@ -1174,7 +1210,10 @@ class Simulation:
                     "observation_marker_source": packet.marker_payload.get("observation_marker_source"),
                 }
             )
-            marker_event = apply_mornye_s1_interfered_marker(self)
+            marker_event = apply_mornye_s1_interfered_marker(
+                self,
+                application_combat_time=float(self.state.event_cursor_combat_time),
+            )
             if marker_event is not None:
                 event["account_constellation_marker_event"] = marker_event
         if self.state.scheduled_effect_event_log:
@@ -1200,8 +1239,19 @@ class Simulation:
         action_instance_id = str(event["action_instance_id"])
         ledger = self.state.scheduled_packet_source_ledger.setdefault(
             action_instance_id,
-            {"scheduled_damage": 0.0, "events": [], "materialized": False},
+            {"scheduled_damage": 0.0, "events": [], "healing_events": [], "materialized": False},
         )
+        if event.get("event_type") == "scheduled_heal":
+            ledger.setdefault("healing_events", []).append(event)
+            for entry in self.timeline:
+                if entry.action_instance_id == action_instance_id:
+                    entry.scheduled_healing_events.append(event)
+                    break
+            for action_log_entry in self.state.action_log:
+                if action_log_entry.get("action_instance_id") == action_instance_id:
+                    action_log_entry.setdefault("scheduled_healing_events", []).append(event)
+                    break
+            return
         ledger["scheduled_damage"] = float(ledger.get("scheduled_damage", 0.0) or 0.0) + float(
             event.get("damage_applied", 0.0) or 0.0
         )
@@ -1228,6 +1278,7 @@ class Simulation:
             return
         for event in ledger.get("events", []):
             self._add_scheduled_packet_to_damage_summary(result, event)
+        result.scheduled_healing_events.extend(ledger.get("healing_events", []))
         ledger["materialized"] = True
         result.total_damage_after = self.state.total_damage
 
@@ -1719,7 +1770,14 @@ class Simulation:
             self.state.target_tune_strain_interfered_max_stacks = lynae_tune_strain_max_stacks(
                 self.state.mechanics_config
             )
-        self.state.interfered_marker_remaining = max(0.0, self.state.interfered_marker_remaining - combat_elapsed)
+        marker_tick_start = max(0.0, self.state.combat_time - combat_elapsed)
+        marker_elapsed = combat_elapsed
+        if self.state.interfered_marker_application_combat_time is not None:
+            marker_elapsed = max(
+                0.0,
+                self.state.combat_time - max(marker_tick_start, self.state.interfered_marker_application_combat_time),
+            )
+        self.state.interfered_marker_remaining = max(0.0, self.state.interfered_marker_remaining - marker_elapsed)
         if self.state.interfered_marker_remaining <= 0.0:
             self.state.interfered_marker_damage_taken_amp = 0.0
         self.state.aemeath_starburst_response_cooldown_remaining = max(

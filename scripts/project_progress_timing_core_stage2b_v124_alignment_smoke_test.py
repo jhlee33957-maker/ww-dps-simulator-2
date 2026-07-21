@@ -33,7 +33,8 @@ def main() -> None:
     ):
         assert stage[field] is True, field
     assert stage["scheduled_packet_retroactive_backdating"] is False
-    assert stage["candidate_124_smoke_test_count"] == 49
+    assert stage["candidate_124_smoke_test_count"] == 47
+    assert stage["candidate_124_fresh_extraction_command_count"] == 49
     assert stage["authoritative_fresh_extraction_command_count"] == 247
     assert stage["remaining_p0_packet_action_corrections"] == "pending"
     assert stage["policy_action_count"] == 25

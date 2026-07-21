@@ -304,6 +304,7 @@ class MornyeMechanic(CharacterMechanic):
 
     def advance_time(self, state: Any, combat_elapsed: float, action_elapsed: float | None = None) -> None:
         data = self._state(state)
+        combat_tick_start = max(0.0, float(getattr(state, "combat_time", 0.0) or 0.0) - combat_elapsed)
         for key in (
             "wide_field_observation_remaining",
             "syntony_field_remaining",
@@ -311,7 +312,14 @@ class MornyeMechanic(CharacterMechanic):
             "observation_marker_remaining",
         ):
             if data[key] > 0.0:
-                data[key] = max(0.0, float(data[key]) - combat_elapsed)
+                application_time = data.get(f"{key}_application_combat_time")
+                elapsed_after_application = combat_elapsed
+                if application_time is not None:
+                    elapsed_after_application = max(
+                        0.0,
+                        float(getattr(state, "combat_time", 0.0) or 0.0) - max(combat_tick_start, float(application_time)),
+                    )
+                data[key] = max(0.0, float(data[key]) - elapsed_after_application)
         if data["wide_field_observation_remaining"] <= 0.0 and data["mode"] == "wide_field_observation":
             data["mode"] = "baseline"
             data["relative_momentum"] = 0.0

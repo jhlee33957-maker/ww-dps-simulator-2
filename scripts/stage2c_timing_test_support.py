@@ -16,7 +16,13 @@ def ready_heavy_sim():
 
 
 def packet_events(sim, action_id: str):
-    return [event for event in sim.state.chronological_event_log if event.get("source_action_id") == action_id and "packet_group_id" in event]
+    return [
+        event
+        for event in sim.state.chronological_event_log
+        if event.get("source_action_id") == action_id
+        and "packet_group_id" in event
+        and event.get("event_type") != "scheduled_heal"
+    ]
 
 
 def ready_account_array_sim():
